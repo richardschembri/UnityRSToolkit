@@ -1,10 +1,10 @@
-﻿namespace RSToolkit.Tools
+﻿namespace RSToolkit.Helpers
 {
     using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.UI;
 
-    public sealed class GameObjectTools
+    public sealed class GameObjectHelpers
     {
         public static T GetGameObject<T>(string name)
         {
@@ -107,6 +107,18 @@
         public static void NormalizeTransform(Transform t){
             t.localEulerAngles = new Vector3(0f, 0f, 0f);
             t.localScale = new Vector3(1f, 1f, 1f);
+        }
+
+        public static void CopyTransformValues(Transform source, Transform target, bool includingParent = false)
+        {
+            if (includingParent)
+            {
+                target.parent = source.parent;
+            }
+            
+            target.localPosition = source.localPosition;
+            target.localRotation = source.localRotation;
+            target.localScale = source.localScale;
         }
     }
 }

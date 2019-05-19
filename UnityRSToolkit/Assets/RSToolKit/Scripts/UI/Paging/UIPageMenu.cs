@@ -5,7 +5,7 @@
     using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.UI;
-    using RSToolkit.Tools;
+    using RSToolkit.Helpers;
 
     public class UIPageMenu : MonoBehaviour
     {
@@ -54,7 +54,7 @@
             menuButton.interactable = !page.IsCurrentPage();
             menuButton.transform.SetParent(this.transform);
             menuButton.name = string.Format("{0} Menu Button", page.name);
-            GameObjectTools.NormalizeTransform(menuButton.transform);
+            GameObjectHelpers.NormalizeTransform(menuButton.transform);
             menuButton.GetComponentInChildren<Text>().text = page.PageHeader;
             menuButton.onClick.AddListener(delegate {
                 page.NavigateTo();

@@ -5,7 +5,7 @@
     using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.UI;
-    using RSToolkit.Tools;
+    using RSToolkit.Helpers;
 
     public class UIPageManager : MonoBehaviour
     {
