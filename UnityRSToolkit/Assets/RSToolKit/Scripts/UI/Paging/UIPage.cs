@@ -11,7 +11,7 @@
         public int SortOrder = 0;
         public string PageHeader = "";
         public bool LaunchPage = false;
-        public Texture BackgroundImage;
+        public Sprite BackgroundImage;
         public Color BackgroundColor = Color.white;
         public AudioSource NavigationSound;
         public KeyCode NavigateShortCut;

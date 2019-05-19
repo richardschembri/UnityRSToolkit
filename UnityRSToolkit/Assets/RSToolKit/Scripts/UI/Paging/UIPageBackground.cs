@@ -5,10 +5,10 @@
     using UnityEngine;
     using UnityEngine.UI;
 
-    [RequireComponent(typeof(RawImage))]
+    [RequireComponent(typeof(Image))]
     public class UIPageBackground : MonoBehaviour
     {
-        public Texture DefaultBackgroundTexture;
+        public Sprite DefaultBackgroundTexture;
         // Start is called before the first frame update
         void Start()
         {
@@ -37,19 +37,18 @@
 
         public void SetBackground(UIPage page)
         {
-            var pageBackground = this.GetComponent<RawImage>();
+            var pageBackground = this.GetComponent<Image>();
             if (page.BackgroundImage != null)
             {
-                pageBackground.texture = page.BackgroundImage;
-                pageBackground.SetNativeSize();
+                pageBackground.sprite = page.BackgroundImage;
             }
             else
             {
-                pageBackground.texture = DefaultBackgroundTexture;
+                pageBackground.sprite = DefaultBackgroundTexture;
             }
 
             pageBackground.color = page.BackgroundColor;
-            pageBackground.SetNativeSize();
+            //pageBackground.SetNativeSize();
         }
 
         #region Page Events
