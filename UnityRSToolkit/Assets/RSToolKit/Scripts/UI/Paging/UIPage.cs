@@ -13,7 +13,7 @@
         public bool LaunchPage = false;
         public Sprite BackgroundImage;
         public Color BackgroundColor = Color.white;
-        public AudioSource NavigationSound;
+
         public KeyCode NavigateShortCut;
 
         public bool ShowCursor = true;

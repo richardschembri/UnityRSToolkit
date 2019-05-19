@@ -24,3 +24,7 @@ A simple toolkit for the Unity Engine.
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+# Third Party Assets
+* Background Images: https://www.pexels.com
+* Background Music: https://www.playonloop.com (Under [Creative Commons License](https://creativecommons.org/licenses/by/4.0/))
