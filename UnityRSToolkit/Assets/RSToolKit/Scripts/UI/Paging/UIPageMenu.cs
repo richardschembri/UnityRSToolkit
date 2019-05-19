@@ -1,4 +1,4 @@
-﻿namespace RSToolkit.UI
+﻿namespace RSToolkit.UI.Paging
 {
     using System.Linq;
     using System.Collections;
@@ -71,6 +71,7 @@
 
         public void GenerateMenuButtons()
         {
+            MenuButtons.Clear();
             for (int i = 0; i < UIPageManager.Instance.Pages.Length; i++)
             {
                 var page = UIPageManager.Instance.Pages[i];

@@ -1,4 +1,4 @@
-﻿namespace RSToolkit.UI
+﻿namespace RSToolkit.UI.Paging
 {
     using UnityEngine;
     using System.Collections;
