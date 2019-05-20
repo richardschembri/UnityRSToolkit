@@ -28,26 +28,18 @@
                 if (page.DisplayHeader)
                 {
                     page.OnNavigatedTo.AddListener(onNavigatedTo);
-                    if (page.LaunchPage)
-                    {
-                        SetHeader(page);
-                    }
                 }
                 
             }
+
+            SetHeader(UIPageManager.Instance.CurrentPage);
         }
 
         public void SetHeader(UIPage page)
         {
-            var text = page.PageHeader;
-            if (string.IsNullOrEmpty(text))
-            {
-                text = page.gameObject.name;
-            }
-
-            this.gameObject.GetComponentInChildren<Text>().text = text;
-
+            this.gameObject.GetComponentInChildren<Text>().text = page.GetHeader();
         }
+
         #region Page Events
         void onNavigatedTo(UIPage page, bool keepCache)
         {

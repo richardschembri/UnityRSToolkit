@@ -49,6 +49,10 @@
             return UIPageManager.Instance.IsCurrentPage(this);
         }
 
+        public string GetHeader(){
+            return string.IsNullOrEmpty(PageHeader) ? name : PageHeader;
+        }
+
         #region Page Events
         public void NavigateToPrevPage()
         {

@@ -55,7 +55,7 @@
             menuButton.transform.SetParent(this.transform);
             menuButton.name = string.Format("{0} Menu Button", page.name);
             GameObjectHelpers.NormalizeTransform(menuButton.transform);
-            menuButton.GetComponentInChildren<Text>().text = page.PageHeader;
+            menuButton.GetComponentInChildren<Text>().text = page.GetHeader();
             menuButton.onClick.AddListener(delegate {
                 page.NavigateTo();
                 CloseMenu();
@@ -67,11 +67,19 @@
             MenuButtons.Add(uiMenuButton);
         }
 
-
+        private void DestroyAllButtons(){
+            if(!MenuButtons.Any()){
+                return;
+            }
+            for(int i = 0; i < MenuButtons.Count; i++){
+                Destroy(MenuButtons[i].MenuButton.gameObject);
+            }
+            MenuButtons.Clear();
+        }
 
         public void GenerateMenuButtons()
         {
-            MenuButtons.Clear();
+            DestroyAllButtons();
             for (int i = 0; i < UIPageManager.Instance.Pages.Length; i++)
             {
                 var page = UIPageManager.Instance.Pages[i];

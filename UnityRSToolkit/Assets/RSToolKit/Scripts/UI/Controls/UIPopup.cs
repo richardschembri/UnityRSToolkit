@@ -6,9 +6,13 @@
 
     public class UIPopup : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler {
 
-    public bool Draggable = false;
+        public bool Draggable = false;
         // Use this for initialization
 
+        void Start(){
+
+            this.transform.SetAsLastSibling();
+        }
 
         public void SetPosition(Vector3 position)
         {
@@ -39,6 +43,7 @@
         public void OpenPopup()
         {
             this.gameObject.SetActive(true);
+            this.transform.SetAsLastSibling();
         }
 
         public void ClosePopup()

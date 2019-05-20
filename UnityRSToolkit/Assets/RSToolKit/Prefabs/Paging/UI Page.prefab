@@ -16,7 +16,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2632599998007803214
 RectTransform:
   m_ObjectHideFlags: 0
@@ -45,15 +45,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 2632599998007803215}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b9afe189494b949ea9991e40bfa3901f, type: 3}
+  m_Script: {fileID: 11500000, guid: cde2824f775214f8094740eac5d8f6ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShowInMenu: 1
   DisplayHeader: 1
   DisplayMenu: 1
   SortOrder: 0
-  PageHeader: Page 1
-  LaunchPage: 1
+  PageHeader: 
+  LaunchPage: 0
   BackgroundImage: {fileID: 0}
   BackgroundColor: {r: 1, g: 1, b: 1, a: 1}
   NavigateShortCut: 0

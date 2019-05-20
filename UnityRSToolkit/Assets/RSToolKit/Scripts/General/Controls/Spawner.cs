@@ -16,11 +16,10 @@
         {
             get
             {
+                if(m_spawnedGameObjects == null){
+                    m_spawnedGameObjects = new List<GameObject>();
+                }
                 return m_spawnedGameObjects;
-            }
-            private set
-            {
-                m_spawnedGameObjects = value;
             }
         }
 
@@ -36,7 +35,10 @@
 
         }
 
-        public GameObject SpawnGameObject(bool useSpawnerTransformValues = true)
+        public void SpawnGameObject(bool useSpawnerTransformValues = true){
+            SpawnGetGameObject(useSpawnerTransformValues);
+        }
+        public GameObject SpawnGetGameObject(bool useSpawnerTransformValues = true)
         {
             if (SpawnedGameObjects.Count == SpawnLimit)
             {
@@ -51,30 +53,28 @@
             else
             {
                 GameObjectHelpers.CopyTransformValues(GameObjectToSpawn.transform, spawnedGameObject.transform, false);
+                spawnedGameObject.transform.SetParent(transform.parent);
+                spawnedGameObject.transform.localPosition = transform.localPosition;
             }
             SpawnedGameObjects.Add(spawnedGameObject);
             return spawnedGameObject;
         }
 
-        public bool DestroyLastSpawnedGameObject()
+        public void DestroyLastSpawnedGameObject()
         {
             if (SpawnedGameObjects.Count > 0)
             {
                 var spawnedGameObject = SpawnedGameObjects[SpawnedGameObjects.Count - 1];
-                return DestroySpawnedGameObject(spawnedGameObject);
+                DestroySpawnedGameObject(spawnedGameObject);
             }
-            return false;
         }
 
-        public bool DestroySpawnedGameObject(GameObject spawnedGameObject)
+        public void DestroySpawnedGameObject(GameObject spawnedGameObject)
         {
             if (spawnedGameObject != null && SpawnedGameObjects.Contains(spawnedGameObject)){
                 Destroy(spawnedGameObject);
                 SpawnedGameObjects.Remove(spawnedGameObject);
-                return true;
             }
-
-            return false;
         }
 
 

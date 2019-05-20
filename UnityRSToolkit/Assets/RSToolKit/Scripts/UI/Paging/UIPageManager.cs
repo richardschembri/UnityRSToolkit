@@ -46,9 +46,16 @@
         public UIPage[] Pages{
             get{
                 if (m_pages == null){
-                    m_pages = FindObjectsOfTypeAll(typeof(UIPage)) as UIPage[];
-                    m_pages = m_pages.OrderBy(p => p.SortOrder).ToArray();
+                    var lstPages = new List<UIPage>();
+                    foreach(Transform child in transform){
+                        var page = child.GetComponent<UIPage>();
+                        if (page != null){
+                            lstPages.Add(page);
+                        }
+                    }
+                    m_pages = lstPages.OrderBy(p => p.SortOrder).ToArray();
                 }
+                Debug.LogFormat("m=pages {0}", m_pages.Length);
                 return m_pages;
             }
         }       
