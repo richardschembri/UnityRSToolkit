@@ -13,9 +13,10 @@
         // Start is called before the first frame update
         void Start()
         {
-            OnStart.AddListener(onTick);
-            OnTick.AddListener(onTick);
-            OnReset.AddListener(onTick);
+            OnStart.AddListener(updateText);
+            OnTick.AddListener(updateText);
+            OnReset.AddListener(updateText);
+            ResetCountdown();
         }
 
         // Update is called once per frame
@@ -23,10 +24,11 @@
         {
             
         }
-        void onStart(){
 
+        void Awake(){
         }
-        void onTick(){
+
+        void updateText(){
             this.GetComponent<Text>().text = Count.ToString();
         }
     }

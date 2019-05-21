@@ -31,18 +31,30 @@
         public UnityEvent OnReset = new UnityEvent();
         public UnityEvent OnComplete = new UnityEvent();
 
+        void Start(){
+            ResetCounter();
+        }
+
         public void ResetCounter(){
             Count = CountFrom;
+        }
+
+        public void ResetCountdown(){
+            StopCountdown();
+            ResetCounter();
             OnReset.Invoke();
         }
-        public void StartCountdown(bool resume = false){
+
+        public void RestartCountdown(){
+            ResetCounter();
+            StopCountdown();
+            StartCountdown();
+        }
+        public void StartCountdown(){
             if(IsRunning){
                 return;
             }
 
-            if (!resume){
-                ResetCounter();
-            }
             StopCountdown();
             IsRunning = true;
             OnStart.Invoke();
