@@ -1059,6 +1059,16 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2632599998007803217, guid: d3fee8b13832a4366bf6e1a2f42d79aa,
+        type: 3}
+      propertyPath: NavigateToNextPageShortCut
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2632599998007803217, guid: d3fee8b13832a4366bf6e1a2f42d79aa,
+        type: 3}
+      propertyPath: NavigateShortCut
+      value: 98
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3fee8b13832a4366bf6e1a2f42d79aa, type: 3}
 --- !u!114 &890607028 stripped
@@ -2646,6 +2656,11 @@ PrefabInstance:
         type: 3}
       propertyPath: PageHeader
       value: Page 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3578033730571170993, guid: c232cce4dc0d24384808c9fc1539a7ff,
+        type: 3}
+      propertyPath: LaunchPage
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c232cce4dc0d24384808c9fc1539a7ff, type: 3}

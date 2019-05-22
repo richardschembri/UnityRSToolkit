@@ -119,7 +119,7 @@ using System.Linq;
             }
         }
 
-        public static List<FileInfo> GetFileInfoList(List<string> FileExtensions, string FolderPath, bool isRelativePath)
+        public static FileInfo[] GetFileInfoList(string[] extensions, string FolderPath, bool isRelativePath)
         {
             var absoluteFolderPath = FolderPath;
             if (isRelativePath)
@@ -127,19 +127,20 @@ using System.Linq;
                 absoluteFolderPath  = string.Format("{0}/{1}", Application.dataPath, FolderPath);
             }
 
-            var lstFileInfo = new List<FileInfo>();
+            FileInfo[] fileInfoList;
 
             FileHelpers.CreateDirectoryIfNotExists(absoluteFolderPath + "/foo.foo");
 
-            DirectoryInfo dir = new DirectoryInfo(absoluteFolderPath);
-            foreach (var f in dir.GetFiles("*")){
-                if (FileExtensions.Contains(f.Extension)) { 
-                    lstFileInfo.Add(f);
-                }
-            }
+            DirectoryInfo dirInfo = new DirectoryInfo(absoluteFolderPath);
 
-            return lstFileInfo;
+            var allowedExtensions = new HashSet<string>(extensions, StringComparer.OrdinalIgnoreCase);
+
+            fileInfoList = dirInfo.EnumerateFiles()
+                  .Where(f => allowedExtensions.Contains(f.Extension)).ToArray();
+
+            return fileInfoList;
         }
+
         public static void OpenWindowsDirectory(string path, bool isRelative = true){
             string absolutepath = path;
 

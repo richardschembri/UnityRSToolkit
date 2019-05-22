@@ -9,7 +9,7 @@
     public class LoadImageTools
     {
         // Start is called before the first frame update
-
+        private static string[] m_extensions = {"jpg", "jpeg", "png", "gif" };
         public string ImagesFolderPath = "Images/Dynamic";
 
         private string ImagesFolderDirectory(){
@@ -24,77 +24,77 @@
             ImagesFolderPath = imagesFolderPath;
         }
 
-        private List<FileInfo> _lstFileInfo;
-        public List<FileInfo> lstFileInfo{
+        private List<Texture2D> m_loadedTextures = new List<Texture2D>();
+        public List<Texture2D> LoadedTextures{
             get{
-                if (_lstFileInfo == null || _lstFileInfo.Count <= 0){
-                    _lstFileInfo = FileHelpers.GetFileInfoList(new List<string>{".jpg", ".png"},ImagesFolderDirectory(), false);
-                }
-                return _lstFileInfo;
-            }
-        }
-        private List<Texture2D> _generatedTextures;
-        public List<Texture2D> GeneratedTextures{
-            get{
-
-                if ((_generatedTextures == null) || (_generatedTextures.Count <= 0))
-                {
-                    lstFileInfo.Shuffle();
-                    _generatedTextures = new List<Texture2D>();
-                    for (int i = 0; i < lstFileInfo.Count; i++)
-                    {
-                        var referenceTexture = LoadImage(ImagesFileDirectory(lstFileInfo[i].Name));
-                        referenceTexture.name = lstFileInfo[i].Name.Replace(lstFileInfo[i].Extension, "");
-                        _generatedTextures.Add(referenceTexture);
-                    }
-                    _generatedTextures = _generatedTextures.OrderBy(gt => gt.name).ToList();
-                }
-
-                return _generatedTextures;
+                return m_loadedTextures;
             }
         }
 
-        public bool HasTextures(){
-            return ((_generatedTextures != null) && (!_generatedTextures.Any()));
+        public void LoadTexturesInMemory(bool shuffle = false){
+            for (int i = 0; i < m_loadedTextures.Count; i++){
+                m_loadedTextures[i] = null;
+            }
+            m_loadedTextures.Clear();
+            var fileInfoList = FileHelpers.GetFileInfoList(m_extensions, ImagesFolderDirectory(), false);
+
+            for (int i = 0; i < fileInfoList.Length; i++)
+            {
+                var referenceTexture = LoadImage(ImagesFileDirectory(fileInfoList[i].Name));
+                referenceTexture.name = fileInfoList[i].Name.Replace(fileInfoList[i].Extension, "");
+                m_loadedTextures.Add(referenceTexture);
+            }
+
+            if(shuffle){
+                m_loadedTextures.Shuffle(); 
+            }else{
+                m_loadedTextures = m_loadedTextures.OrderBy(gt => gt.name).ToList();
+            }
         }
 
-        void Start () {
-        }
 
-        void Update () {
-        }
+        
 
         public static Texture2D LoadImage(string imageFileDirectory, bool isRelativePath = false){
+            if (string.IsNullOrEmpty(imageFileDirectory)){
+                    return null;
+            }
+
+            bool has_ext = m_extensions.Any( e => imageFileDirectory.EndsWith(string.Format(".{0}", e)));
+
+            //if(imageFileDirectory.EndsWith(".jpg"))
             var absolutePath = imageFileDirectory;
             if (isRelativePath)
             {
                 absolutePath = FileHelpers.GetFullSaveFilePath(imageFileDirectory);
             }
-            if (string.IsNullOrEmpty(imageFileDirectory) || !File.Exists(absolutePath)){
+
+            if(!has_ext){
+                for(int i = 0; i < m_extensions.Length; i++){
+                    string extPath = string.Format("{0}.{1}", absolutePath, m_extensions[i]);
+                    if(File.Exists(extPath)){
+                        absolutePath = extPath;
+                        break;         
+                    }
+                }
+            }
+
+            if (!File.Exists(absolutePath)){
                 return null;
             }
 
             var www = new WWW("file://" + absolutePath );
-            var slotTexture = new Texture2D(4, 4);
+            var imageTexture = new Texture2D(4, 4);
 
             while(!www.isDone){}
-            www.LoadImageIntoTexture((Texture2D)slotTexture);
-            slotTexture.Apply();
-            return slotTexture;
-        }
-
-        public void RefreshReferenceSlotImages(){
-            lstFileInfo.Clear();	
-            GeneratedTextures.Clear();
+            www.LoadImageIntoTexture((Texture2D)imageTexture);
+            imageTexture.Apply();
+            return imageTexture;
         }
 
 
-        public void ShuffleGeneratedTextures(){
-            GeneratedTextures.Shuffle();
-        }
-
-        public Texture2D GetRandomGeneratedTexture(){
-            return GeneratedTextures[RandomHelpers.RandomInt(GeneratedTextures.Count)];
+        public Texture2D GetRandomLoadedTexture(){
+            return LoadedTextures[RandomHelpers.RandomInt(LoadedTextures.Count)];
         }
     }
 

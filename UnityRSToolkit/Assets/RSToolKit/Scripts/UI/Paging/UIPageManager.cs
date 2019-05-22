@@ -76,7 +76,15 @@
         // Update is called once per frame
         void Update()
         {
-            
+           if (Input.GetKeyUp(ExitKey)){
+               Application.Quit();
+           } 
+
+           for (int i = 0; i < Pages.Length; i++){
+               if(Input.GetKeyUp(Pages[i].NavigateShortCut)){
+                   NavigateTo(Pages[i]);
+               }
+           } 
         }
         #endregion
 

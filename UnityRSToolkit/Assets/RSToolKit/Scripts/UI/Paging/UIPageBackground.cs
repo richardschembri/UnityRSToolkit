@@ -9,6 +9,10 @@
     public class UIPageBackground : MonoBehaviour
     {
         public Sprite DefaultBackgroundTexture;
+        private static UIPageBackground m_instance;
+        public static UIPageBackground Instance{
+            get{ return m_instance; }
+        }
         // Start is called before the first frame update
         void Start()
         {
@@ -16,9 +20,9 @@
         }
 
         // Update is called once per frame
-        void Update()
+        void Awake()
         {
-
+            m_instance = this;
         }
 
         IEnumerator Init()
@@ -35,7 +39,7 @@
             }
         }
 
-        public void SetBackground(UIPage page)
+        private void SetBackground(UIPage page)
         {
             var pageBackground = this.GetComponent<Image>();
             if (page.BackgroundImage != null)
