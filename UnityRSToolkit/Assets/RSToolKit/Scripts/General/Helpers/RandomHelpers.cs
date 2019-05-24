@@ -2,7 +2,6 @@
 {
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 /// <summary>
 /// EN: Helper class used for random value functions
@@ -38,7 +37,6 @@ using UnityEngine;
         /// </summary>
         public static bool PercentTrue(int percentage){
             var randomVal = rng.Next(99) + 1;
-            Debug.Log("rand:" + randomVal.ToString() + " per:" + percentage.ToString());
             if (percentage >= randomVal){
                 return true;
             }

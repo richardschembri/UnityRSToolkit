@@ -55,7 +55,6 @@
                     }
                     m_pages = lstPages.OrderBy(p => p.SortOrder).ToArray();
                 }
-                Debug.LogFormat("m=pages {0}", m_pages.Length);
                 return m_pages;
             }
         }       
