@@ -62,7 +62,7 @@
             if (targetMinX > selfMaxX){
                 rtp.horizontalPostion = HorizontalPosition.RIGHT;
             }
-
+            
             return rtp;
         }
         public static bool HasWithinBounds(this RectTransform self, RectTransform target){
@@ -70,6 +70,15 @@
             var rtp = self.PositionWithinBounds(target);
             return rtp.horizontalPostion == HorizontalPosition.CENTER && rtp.verticalPostion == VerticalPosition.CENTER;
             
+        }
+
+
+        public static Vector2 ScaledSize(this RectTransform self){
+
+            return new Vector2{
+                x = self.rect.x * self.localScale.x,
+                y = self.rect.y * self.localScale.y 
+            };
         }
 
 
