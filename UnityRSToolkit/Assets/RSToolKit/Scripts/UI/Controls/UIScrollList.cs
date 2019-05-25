@@ -20,7 +20,7 @@
        } 
         protected override void Start(){
             base.Start();
-            onValueChanged.AddListener(m_onValueChanged);
+            onValueChanged.AddListener(m_onValueChanged);  
         }
 
        void m_onValueChanged(Vector2 value){

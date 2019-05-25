@@ -5,10 +5,10 @@
     using UnityEngine;
     using UnityEngine.UI;
 
-    [RequireComponent(typeof(Image))]
     public class UIPageBackground : MonoBehaviour
     {
-        public Sprite DefaultBackgroundTexture;
+        public Sprite DefaultBackgroundSprite;
+        public Image TargetGraphic;
         private static UIPageBackground m_instance;
         public static UIPageBackground Instance{
             get{ return m_instance; }
@@ -41,18 +41,18 @@
 
         private void SetBackground(UIPage page)
         {
-            var pageBackground = this.GetComponent<Image>();
+            
             if (page.BackgroundImage != null)
             {
-                pageBackground.sprite = page.BackgroundImage;
+                TargetGraphic.sprite = page.BackgroundImage;
             }
             else
             {
-                pageBackground.sprite = DefaultBackgroundTexture;
+                TargetGraphic.sprite = DefaultBackgroundSprite;
             }
 
-            pageBackground.color = page.BackgroundColor;
-            //pageBackground.SetNativeSize();
+            TargetGraphic.color = page.BackgroundColor;
+            
         }
 
         #region Page Events

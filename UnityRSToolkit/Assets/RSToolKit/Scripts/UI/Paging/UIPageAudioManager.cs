@@ -8,8 +8,8 @@
     {
         public AudioClip DefaultNavigationAudioClip;
         public AudioClip DefaultBGMAudioClip;
-        public AudioSource NavigateSound;
-        public AudioSource BGM;
+        public AudioSource NavigateAudioSource;
+        public AudioSource BGMAudioSource;
         // Start is called before the first frame update
         
         void Start()
@@ -53,8 +53,8 @@
 
         public void PlayPageAudio(UIPage page)
         {
-            PlayPageAudio(NavigateSound, page.GetComponent<UIPageNavigationAudio>(), DefaultNavigationAudioClip);
-            PlayPageAudio(BGM, page.GetComponent<UIPageBGMAudio>(), DefaultBGMAudioClip);
+            PlayPageAudio(NavigateAudioSource, page.GetComponent<UIPageNavigationAudio>(), DefaultNavigationAudioClip);
+            PlayPageAudio(BGMAudioSource, page.GetComponent<UIPageBGMAudio>(), DefaultBGMAudioClip);
         }
 
         #region Page Events

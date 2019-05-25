@@ -158,10 +158,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 8239074951384309490}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 878dc48bc7f8a4b1086b18b8b9cdba1f, type: 3}
+  m_Script: {fileID: 11500000, guid: df078353342085d4fa4e61eebd0233e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Draggable: 1
+  Draggable: 0
 --- !u!1 &8239074952534602635
 GameObject:
   m_ObjectHideFlags: 0

@@ -42,13 +42,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 2796065299856543238}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae443a2aa5c4f4fd68d223ad069c1a17, type: 3}
+  m_Script: {fileID: 11500000, guid: fe975d60514906642aa570edcb86924d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   DefaultNavigationAudioClip: {fileID: 0}
   DefaultBGMAudioClip: {fileID: 0}
-  NavigateSound: {fileID: 2796065299865710362}
-  BGM: {fileID: 2796065299992745704}
+  NavigateAudioSource: {fileID: 2796065299865710362}
+  BGMAudioSource: {fileID: 2796065299992745704}
 --- !u!1 &2796065299865710356
 GameObject:
   m_ObjectHideFlags: 0

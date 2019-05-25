@@ -15,7 +15,7 @@
             public UIPage Page;
         }
 
-        public GameObject MenuContainer;
+        public RectTransform Container;
 
         private static UIPageMenu m_instance;
         public static UIPageMenu Instance
@@ -52,13 +52,14 @@
         {
             var menuButton = Instantiate(TemplateMenuButton);
             menuButton.interactable = !page.IsCurrentPage();
-            menuButton.transform.SetParent(this.transform);
+            //menuButton.transform.SetParent(this.transform);
+            menuButton.transform.SetParent(Container.transform);
             menuButton.name = string.Format("{0} Menu Button", page.name);
             GameObjectHelpers.NormalizeTransform(menuButton.transform);
             menuButton.GetComponentInChildren<Text>().text = page.GetHeader();
             menuButton.onClick.AddListener(delegate {
                 page.NavigateTo();
-                CloseMenu();
+                
             });
 
             page.OnNavigatedTo.AddListener(onNavigatedTo);
@@ -106,17 +107,20 @@
 
                 MenuButtons[i].MenuButton.interactable = MenuButtons[i].Page != page;
             }
+            CloseMenu();
         }
         #endregion Page Events
 
         public void OpenMenu()
         {
-            MenuContainer.SetActive(true);
+            //MenuContainer.SetActive(true);
+            this.gameObject.SetActive(true);
         }
 
         public void CloseMenu()
         {
-            MenuContainer.SetActive(false);
+            //MenuContainer.SetActive(false);
+            this.gameObject.SetActive(false);
         }
     }
 }

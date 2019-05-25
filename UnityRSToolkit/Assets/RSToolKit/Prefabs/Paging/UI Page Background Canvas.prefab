@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 6629507644688436129}
   - component: {fileID: 6629507644688436135}
   - component: {fileID: 6629507644688436128}
-  - component: {fileID: 6629507644688436134}
   m_Layer: 5
   m_Name: UI Background
   m_TagString: Untagged
@@ -75,19 +74,6 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
---- !u!114 &6629507644688436134
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6629507644688436130}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 56e48980d3622461ba34dbc41a229014, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DefaultBackgroundTexture: {fileID: 0}
 --- !u!1 &6629507646230591451
 GameObject:
   m_ObjectHideFlags: 0
@@ -100,6 +86,7 @@ GameObject:
   - component: {fileID: 6629507646230591448}
   - component: {fileID: 6629507646230591449}
   - component: {fileID: 6629507646230591450}
+  - component: {fileID: 8913848024394167778}
   m_Layer: 5
   m_Name: UI Page Background Canvas
   m_TagString: Untagged
@@ -187,3 +174,17 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &8913848024394167778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6629507646230591451}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f0e2c6daa3c4464cbb7b349ebfbd7b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DefaultBackgroundSprite: {fileID: 0}
+  TargetGraphic: {fileID: 6629507644688436128}

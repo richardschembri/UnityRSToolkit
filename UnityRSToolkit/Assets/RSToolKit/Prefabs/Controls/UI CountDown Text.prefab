@@ -89,7 +89,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 258333614058660885}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 911e76eb7840645d69a2e6cd197b7575, type: 3}
+  m_Script: {fileID: 11500000, guid: bfa4bb6c5ca10f8468ab68f7287851d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   CountFrom: 10
@@ -100,6 +100,11 @@ MonoBehaviour:
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   OnTick:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  OnReset:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
