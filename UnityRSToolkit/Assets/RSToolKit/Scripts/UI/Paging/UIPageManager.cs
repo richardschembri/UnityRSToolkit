@@ -46,18 +46,16 @@
         public UIPage[] Pages{
             get{
                 if (m_pages == null){
-                    var lstPages = new List<UIPage>();
-                    foreach(Transform child in transform){
-                        var page = child.GetComponent<UIPage>();
-                        if (page != null){
-                            lstPages.Add(page);
-                        }
-                    }
-                    m_pages = lstPages.OrderBy(p => p.SortOrder).ToArray();
+                    return GetPages();
                 }
                 return m_pages;
             }
-        }       
+        }
+
+        public UIPage[] GetPages() {
+            return transform.GetComponentsInChildren<UIPage>(true)
+                        .OrderBy(p => p.SortOrder).ToArray();
+        }
 
         #endregion
         #region Unity Events

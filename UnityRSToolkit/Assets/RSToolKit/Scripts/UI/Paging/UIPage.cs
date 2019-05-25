@@ -9,7 +9,8 @@
         public bool DisplayHeader = true;
         public bool DisplayMenu = true;
         public int SortOrder = 0;
-        public string PageHeader = "";
+        [SerializeField]
+        private string PageHeader = "";
         public bool LaunchPage = false;
         public Sprite BackgroundImage;
         public Color BackgroundColor = Color.white;
