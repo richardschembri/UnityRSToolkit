@@ -21,5 +21,17 @@
                 }
             }
         }
+
+        public static void ResetScaleAndRotation(this Transform t)
+        {
+            t.localEulerAngles = new Vector3(0f, 0f, 0f);
+            t.localScale = new Vector3(1f, 1f, 1f);
+        }
+
+        public static void CopyScaleAndRotation(this Transform t, Transform from)
+        {
+            t.localEulerAngles = new Vector3(from.localEulerAngles.x, from.localEulerAngles.y, from.localEulerAngles.z);
+            t.localScale = new Vector3(from.localScale.x, from.localScale.y, from.localScale.z);
+        }
     }
 }

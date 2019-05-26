@@ -104,10 +104,6 @@
             t.localScale = new Vector3(t.localScale.x, ScaleY, t.localScale.z);
         }
 
-        public static void NormalizeTransform(Transform t){
-            t.localEulerAngles = new Vector3(0f, 0f, 0f);
-            t.localScale = new Vector3(1f, 1f, 1f);
-        }
 
         public static void CopyTransformValues(Transform source, Transform target, bool includingParent = false)
         {

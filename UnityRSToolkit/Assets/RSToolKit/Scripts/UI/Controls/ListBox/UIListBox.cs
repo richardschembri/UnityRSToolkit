@@ -38,7 +38,17 @@
             for(int i = 0; i < m_ContentChildren.Length; i++){
                 m_ContentChildren[i].gameObject.SetActive(viewport.HasWithinBounds(m_ContentChildren[i]));
             }
-
        }
+        /// <summary>
+        /// Adds a gameobject in 
+        /// </summary>
+        /// <param name=""></param>
+        public void GeneratedGameObject(GameObject go)
+        {
+            var new_go = Instantiate(go);
+            new_go.transform.CopyScaleAndRotation(go.transform);
+            new_go.transform.SetParent(content.transform);
+        }
+
     }
 }

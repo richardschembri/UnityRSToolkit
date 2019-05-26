@@ -3,7 +3,7 @@
     using UnityEngine;
     using UnityEngine.EventSystems;
     using RSToolkit.Helpers;
-
+    [AddComponentMenu("RSToolKit/Controls/UIPopup")]
     public class UIPopup : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler {
 
         public bool Draggable = false;

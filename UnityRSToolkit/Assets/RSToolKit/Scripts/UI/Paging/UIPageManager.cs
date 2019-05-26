@@ -46,7 +46,7 @@
         public UIPage[] Pages{
             get{
                 if (m_pages == null){
-                    return GetPages();
+                    m_pages = GetPages();
                 }
                 return m_pages;
             }

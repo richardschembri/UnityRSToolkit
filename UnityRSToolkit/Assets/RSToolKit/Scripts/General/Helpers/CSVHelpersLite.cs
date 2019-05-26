@@ -65,9 +65,7 @@ using System.Text.RegularExpressions;
                 for (var j = 0; j < header.Length && j < values.Length; j++)
                 {
                     string value = values[j];
-                    if(value.Contains(@"\r\n")){
-                        var foo = true;
-                    }
+     
                     var multi_line = Regex.Split(value, @"\\r\\n");
                     if (multi_line.Length > 1){
                         var sb = new StringBuilder();

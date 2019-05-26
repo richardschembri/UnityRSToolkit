@@ -84,6 +84,7 @@
             }
 
             var www = new WWW("file://" + absolutePath );
+            
             var imageTexture = new Texture2D(4, 4);
 
             while(!www.isDone){}

@@ -55,7 +55,8 @@
             //menuButton.transform.SetParent(this.transform);
             menuButton.transform.SetParent(Container.transform);
             menuButton.name = string.Format("{0} Menu Button", page.name);
-            GameObjectHelpers.NormalizeTransform(menuButton.transform);
+            //GameObjectHelpers.NormalizeTransform(menuButton.transform);
+            menuButton.transform.ResetScaleAndRotation();
             menuButton.GetComponentInChildren<Text>().text = page.GetHeader();
             menuButton.onClick.AddListener(delegate {
                 page.NavigateTo();
