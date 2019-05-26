@@ -8,7 +8,7 @@
     using RSToolkit.Helpers;
     using System.Linq;
 
-    public class UIScrollList : ScrollRect
+    public class UIListBox : ScrollRect
     {
        private RectTransform[] m_contentChildren ;
        private RectTransform[] m_ContentChildren{
