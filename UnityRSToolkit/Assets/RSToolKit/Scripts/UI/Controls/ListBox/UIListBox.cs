@@ -14,7 +14,7 @@
        private RectTransform[] m_ContentChildren{
            get{
             if (m_contentChildren == null)
-                return content.GetComponent<RectTransform>().GetTopLevelChildren().ToArray();
+                return content.GetComponent<RectTransform>().GetTopLevelChildren<RectTransform>().ToArray();
             return null;
            }
        } 

@@ -7,17 +7,17 @@
     using System.Linq;
     public static class TransformHelpers
     {
-        public static T[] GetTopLevelChildren<T>(this T self) where T : Transform{
-            return self.GetTopLevelChildrenEnumerable().ToArray();
+        public static T[] GetTopLevelChildren<T>(this Transform self){
+            return self.GetTopLevelChildrenEnumerable<T>().ToArray();
         }
         /// <summary>
         /// Depth First Search of Rect Transforms
         /// </summary>
-        public static IEnumerable<T> GetTopLevelChildrenEnumerable<T>(this T self) where T : Transform{
+        public static IEnumerable<T> GetTopLevelChildrenEnumerable<T>(this Transform self) {
             for(int i = 0; i < self.childCount; i++){
-                var c = self.GetChild(i);
-                if (c is T){
-                    yield return (T)self.GetChild(i);
+                var c = self.GetChild(i).GetComponent<T>();
+                if (c != null){
+                    yield return c;
                 }
             }
         }

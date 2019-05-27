@@ -12,9 +12,6 @@
     [AddComponentMenu("RSToolKit/Controls/UIEditableListBoxItem")]
     public class UIEditableListBoxItem : Selectable, IPointerClickHandler, ISubmitHandler
     {
-
-       
-
         bool SelectableItem = false;
 
         public enum ListBoxItemMode
@@ -26,8 +23,6 @@
         }
 
         public ListBoxItemMode Mode { get; private set; }
-
-
 
         private Dictionary<ListBoxItemMode, Transform> m_modeTransforms;
 
@@ -75,8 +70,6 @@
 
         public class OnItemClickEvent : UnityEvent<UIEditableListBoxItem> { }
         public OnItemClickEvent OnItemClick = new OnItemClickEvent();
-
-
 
         private Button buttonComponent;
         public Button ButtonComponent
@@ -187,6 +180,7 @@
             if (!IsActive() || !IsInteractable())
                 return;
 
+            OnItemClick.Invoke(this);
         }
 
         private void Press()
