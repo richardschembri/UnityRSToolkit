@@ -43,11 +43,12 @@
         /// Adds a gameobject in 
         /// </summary>
         /// <param name=""></param>
-        public void GeneratedGameObject(GameObject go)
+        public GameObject GeneratedGameObject(GameObject go)
         {
             var new_go = Instantiate(go);
             new_go.transform.CopyScaleAndRotation(go.transform);
             new_go.transform.SetParent(content.transform);
+            return new_go;
         }
 
     }
