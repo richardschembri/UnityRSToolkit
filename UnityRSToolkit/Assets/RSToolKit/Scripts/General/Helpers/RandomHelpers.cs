@@ -1,15 +1,17 @@
 ﻿namespace RSToolkit.Helpers
 {
-using System.Collections;
+    using System;
+    using System.Collections;
 using System.Collections.Generic;
+    using System.Linq;
 
-/// <summary>
-/// EN: Helper class used for random value functions
-/// JA: 乱数系ヘルパークラス
-/// </summary>
+    /// <summary>
+    /// EN: Helper class used for random value functions
+    /// JA: 乱数系ヘルパークラス
+    /// </summary>
     public static class RandomHelpers{
 
-        private static System.Random rng = new System.Random();  
+        private static System.Random rnd = new System.Random();  
 
         /// <summary>
         /// EN: Shuffle the specified list.
@@ -20,7 +22,7 @@ using System.Collections.Generic;
             int n = list.Count;  
             while (n > 1) {  
                 n--;  
-                int k = rng.Next(n + 1);  
+                int k = rnd.Next(n + 1);  
                 T value = list[k];  
                 list[k] = list[n];  
                 list[n] = value;  
@@ -36,7 +38,7 @@ using System.Collections.Generic;
         /// 例：「５」を渡したら、５％の確率でTRUEを返します。
         /// </summary>
         public static bool PercentTrue(int percentage){
-            var randomVal = rng.Next(99) + 1;
+            var randomVal = rnd.Next(99) + 1;
             if (percentage >= randomVal){
                 return true;
             }
@@ -45,15 +47,33 @@ using System.Collections.Generic;
 
         public static int RandomInt(int MaxVal)
         {
-            return rng.Next(MaxVal);
+            return rnd.Next(MaxVal);
         }
 
         public static int RandomIntWithinRange(int MinVal, int MaxVal){
-            return rng.Next (MinVal, MaxVal);
+            return rnd.Next(MinVal, MaxVal);
+        }
+        
+        public static double RandomDoubleWithinRange(double MinVal, double MaxVal, int digits = 2){
+            return System.Math.Round(rnd.NextDouble() * (MaxVal - MinVal) + MinVal, digits);
+        }
+
+        public static float RandomFloatWithinRange(float MinVal, float MaxVal, int digits = 2){
+            return (float)RandomDoubleWithinRange(MinVal ,MinVal, digits);
         }
 
         public static bool RandomBool(){
-            return rng.Next(2) == 1;
+            return rnd.Next(2) == 1;
+        }
+
+        public static string GetRandomHexNumber(int digits)
+        {
+            byte[] buffer = new byte[digits / 2];
+            rnd.NextBytes(buffer);
+            string result = String.Concat(buffer.Select(x => x.ToString("X2")).ToArray());
+            if (digits % 2 == 0)
+                return result;
+            return result + rnd.Next(16).ToString("X");
         }
     }
 }
