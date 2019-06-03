@@ -61,6 +61,11 @@
 
         private void OnGUI()
         {
+            if (Application.isPlaying)
+            {
+                EditorGUILayout.LabelField("Application is running", GUILayout.Height(300));
+                return; 
+            }
             DisplayPages();
         }
 
