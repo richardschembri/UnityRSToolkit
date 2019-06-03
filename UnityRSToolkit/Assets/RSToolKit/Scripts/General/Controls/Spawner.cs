@@ -7,8 +7,8 @@
 
     public class Spawner : MonoBehaviour
     {
-        public int SpawnLimit = 1;
-
+        public int SpawnLimit = -1;
+        public bool isParent = false;
         public GameObject GameObjectToSpawn;
 
         private List<GameObject> m_spawnedGameObjects;
@@ -35,26 +35,26 @@
 
         }
 
-        public void SpawnGameObject(bool useSpawnerTransformValues = true){
-            SpawnGetGameObject(useSpawnerTransformValues);
-        }
-        public GameObject SpawnGetGameObject(bool useSpawnerTransformValues = true)
+        public GameObject SpawnGameObject(bool useSpawnerTransformValues = true)
         {
-            if (SpawnedGameObjects.Count == SpawnLimit)
-            {
+            if (SpawnLimit > 0 && SpawnedGameObjects.Count >= SpawnLimit){
                 return null;
             }
 
             var spawnedGameObject = Instantiate(GameObjectToSpawn);
             if (useSpawnerTransformValues)
             {
-                GameObjectHelpers.CopyTransformValues(gameObject.transform, spawnedGameObject.transform, true);
+                GameObjectHelpers.CopyTransformValues(gameObject.transform, spawnedGameObject.transform, false);
             }
             else
             {
                 GameObjectHelpers.CopyTransformValues(GameObjectToSpawn.transform, spawnedGameObject.transform, false);
-                spawnedGameObject.transform.SetParent(transform.parent);
                 spawnedGameObject.transform.localPosition = transform.localPosition;
+            }
+            if(isParent){
+                spawnedGameObject.transform.SetParent(transform);
+            }else{
+                spawnedGameObject.transform.SetParent(transform.parent);
             }
             SpawnedGameObjects.Add(spawnedGameObject);
             return spawnedGameObject;
