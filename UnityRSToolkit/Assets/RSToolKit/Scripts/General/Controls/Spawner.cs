@@ -84,6 +84,13 @@
             }
         }
 
+        public void DestroyAllSpawns(){
+            if (SpawnedGameObjects.Count > 0){
+                DestroySpawnedGameObject(SpawnedGameObjects[SpawnedGameObjects.Count -1]);
+                DestroyAllSpawns();
+            }
+        }
+
 
     }
 }
