@@ -112,7 +112,7 @@
                 target.parent = source.parent;
             }
             
-            target.localPosition = source.localPosition;
+            target.position = source.position;
             target.localRotation = source.localRotation;
             target.localScale = source.localScale;
         }

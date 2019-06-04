@@ -35,27 +35,34 @@
 
         }
 
-        public GameObject SpawnGameObject(bool useSpawnerTransformValues = true)
+        public void SpawnGameObject(bool useSpawnerTransformValues = true){
+            SpawnAndGetGameObject(useSpawnerTransformValues);
+        }
+
+        public GameObject SpawnAndGetGameObject(bool useSpawnerTransformValues = true)
         {
             if (SpawnLimit > 0 && SpawnedGameObjects.Count >= SpawnLimit){
                 return null;
             }
 
             var spawnedGameObject = Instantiate(GameObjectToSpawn);
+
+            if(isParent){
+                spawnedGameObject.transform.SetParent(transform);
+            }else{
+                spawnedGameObject.transform.SetParent(transform.parent);
+            }
+
             if (useSpawnerTransformValues)
             {
                 GameObjectHelpers.CopyTransformValues(gameObject.transform, spawnedGameObject.transform, false);
             }
             else
             {
-                GameObjectHelpers.CopyTransformValues(GameObjectToSpawn.transform, spawnedGameObject.transform, false);
+                spawnedGameObject.transform.ResetScaleAndRotation();
                 spawnedGameObject.transform.localPosition = transform.localPosition;
             }
-            if(isParent){
-                spawnedGameObject.transform.SetParent(transform);
-            }else{
-                spawnedGameObject.transform.SetParent(transform.parent);
-            }
+
             SpawnedGameObjects.Add(spawnedGameObject);
             return spawnedGameObject;
         }
