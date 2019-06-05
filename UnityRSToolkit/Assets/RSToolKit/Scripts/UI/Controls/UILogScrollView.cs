@@ -19,16 +19,15 @@
             }
         }
 
-        public void AppendLog(StringBuilder sb){
-            AppendLog(sb.ToString());
-        }
-
         public void AppendLog(string text){
-            m_textComponent.text = string.Format("{0} /n {1}", m_textComponent.text, text);
+            var sbLog = new StringBuilder();
+            sbLog.AppendLine(TextComponent.text);
+            sbLog.AppendLine(text);
+            TextComponent.text = sbLog.ToString();
         }
 
         public void ClearLog(){
-            m_textComponent.text = string.Empty;
+            TextComponent.text = string.Empty;
         }
     }
 
