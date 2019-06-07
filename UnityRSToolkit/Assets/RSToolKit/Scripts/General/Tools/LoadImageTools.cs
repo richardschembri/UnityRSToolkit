@@ -30,6 +30,12 @@
                 return m_loadedTextures;
             }
         }
+        private List<Sprite> m_loadedSprites = new List<Sprite>();
+        public List<Sprite> LoadedSprites{
+            get{
+                return m_loadedSprites;
+            }
+        }
 
         public void LoadTexturesInMemory(bool shuffle = false){
             for (int i = 0; i < m_loadedTextures.Count; i++){
@@ -40,7 +46,7 @@
 
             for (int i = 0; i < fileInfoList.Length; i++)
             {
-                var referenceTexture = LoadImage(ImagesFileDirectory(fileInfoList[i].Name));
+                var referenceTexture = LoadTexture2D(ImagesFileDirectory(fileInfoList[i].Name));
                 referenceTexture.name = fileInfoList[i].Name.Replace(fileInfoList[i].Extension, "");
                 m_loadedTextures.Add(referenceTexture);
             }
@@ -53,9 +59,16 @@
         }
 
 
+        public void LoadSpritesInMemory(bool shuffle = false){
+            LoadTexturesInMemory(shuffle);
+            m_loadedSprites = LoadedTextures.Select(t => t.ToSprite()).ToList();
+        }
         
+        public static Sprite LoadSprite(string imageFileDirectory, bool isRelativePath = false){
+            return LoadTexture2D(imageFileDirectory, isRelativePath).ToSprite();
+        }
 
-        public static Texture2D LoadImage(string imageFileDirectory, bool isRelativePath = false){
+        public static Texture2D LoadTexture2D(string imageFileDirectory, bool isRelativePath = false){
             if (string.IsNullOrEmpty(imageFileDirectory)){
                     return null;
             }
