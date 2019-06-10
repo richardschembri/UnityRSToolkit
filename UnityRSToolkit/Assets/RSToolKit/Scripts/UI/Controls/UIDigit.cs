@@ -4,6 +4,7 @@
     using UnityEngine;
     using UnityEngine.UI;
     using RSToolkit.Helpers;
+    using UnityEngine.Serialization;
 
     [RequireComponent(typeof(Image))]
     public class UIDigit : MonoBehaviour
@@ -12,8 +13,28 @@
         [SerializeField]
         private Sprite[] m_digitSprites;
 
+        [FormerlySerializedAs("Digit")]
+        [SerializeField]
         [Range(0, 9)]
-        public int digit =0;
+        private uint m_digit = 0;
+
+        public uint Digit{
+            get{
+                return m_digit;
+            }set{
+                if (m_digit != value){
+                    m_digit = value;
+                    RefreshImage();
+                }
+            }
+        }
+
+        public void RefreshImage(){
+            if (m_digitSprites.Length > Digit && m_digitSprites[Digit] != null && m_digitSprites[Digit] != ImageComponent.sprite){
+                ImageComponent.sprite = m_digitSprites[Digit];
+                ImageComponent.preserveAspect = true;
+            }
+        }
 
         private Image m_imageComponent;
         public Image ImageComponent{
@@ -38,10 +59,7 @@
         }
 
         private void OnGUI(){
-            if (m_digitSprites.Length > digit && m_digitSprites[digit] != null && m_digitSprites[digit] != ImageComponent.sprite){
-                ImageComponent.sprite = m_digitSprites[digit];
-                ImageComponent.preserveAspect = true;
-            }
+            RefreshImage();
         }
     }
 }
