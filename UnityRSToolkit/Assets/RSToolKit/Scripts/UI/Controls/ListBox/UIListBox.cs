@@ -10,6 +10,9 @@
 
     public class UIListBox : ScrollRect
     {
+        public bool InitCullingByUser = true;
+
+        bool m_CullingOn = false;
        private RectTransform[] m_contentChildren ;
        private RectTransform[] m_ContentChildren{
            get{
@@ -23,20 +26,62 @@
             onValueChanged.AddListener(m_onValueChanged);  
         }
 
-       void m_onValueChanged(Vector2 value){
+        void Awake(){
+            if(!InitCullingByUser){
+                TurnOnCulling();
+            }
+        }
 
-           ViewportOcclusionCulling();
+       void m_onValueChanged(Vector2 value){
+            ViewportOcclusionCulling();
+       }
+
+       public void TurnOnCulling(){
+          m_CullingOn = true; 
+          ViewportOcclusionCulling();
+       }
+
+       public void TurnOffCulling(){
+          m_CullingOn = false; 
+          ViewportOcclusionCulling();
+       }
+
+       private VerticalLayoutGroup m_verticalLayoutGroupComponent = null;
+       private VerticalLayoutGroup VerticalLayoutGroupComponent{
+           get{
+               if (m_verticalLayoutGroupComponent == null){
+                   m_verticalLayoutGroupComponent = content.GetComponent<VerticalLayoutGroup>(); 
+               }
+               return m_verticalLayoutGroupComponent;
+           }
+       }
+       
+       private HorizontalLayoutGroup m_horizontalLayoutGroupComponent  = null;
+       private HorizontalLayoutGroup HorizontalLayoutGroupComponent{
+           get{
+               if (m_horizontalLayoutGroupComponent == null){
+                   m_horizontalLayoutGroupComponent = content.GetComponent<HorizontalLayoutGroup>(); 
+               }
+               return m_horizontalLayoutGroupComponent;
+           }
        }
 
        void ViewportOcclusionCulling(){
             if (content == null){
                 return;
             }
-            content.GetComponent<ContentSizeFitter>().enabled = false;
-            content.GetComponent<VerticalLayoutGroup>().enabled = false;
+            content.GetComponent<ContentSizeFitter>().enabled = !m_CullingOn;
+
+            if (VerticalLayoutGroupComponent != null){
+                VerticalLayoutGroupComponent.enabled = !m_CullingOn;
+            }
+
+            if(HorizontalLayoutGroupComponent != null){
+                HorizontalLayoutGroupComponent.enabled = !m_CullingOn;
+            }
 
             for(int i = 0; i < m_ContentChildren.Length; i++){
-                m_ContentChildren[i].gameObject.SetActive(viewport.HasWithinBounds(m_ContentChildren[i]));
+                m_ContentChildren[i].gameObject.SetActive(m_CullingOn && viewport.HasWithinBounds(m_ContentChildren[i]));
             }
        }
         /// <summary>

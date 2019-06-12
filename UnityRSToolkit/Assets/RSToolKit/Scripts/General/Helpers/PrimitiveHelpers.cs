@@ -31,6 +31,9 @@ namespace RSToolkit.Helpers
                 result.Add(value % 10);
                 value = value / 10;
             }
+            if (result.Count <= 0){
+                result.Add(0);
+            }
             result.Reverse();
             return result.ToArray();
         }

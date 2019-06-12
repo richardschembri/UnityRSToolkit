@@ -31,6 +31,7 @@
 
         public void RefreshImage(){
             if (m_digitSprites.Length > Digit && m_digitSprites[Digit] != null && m_digitSprites[Digit] != ImageComponent.sprite){
+                ImageComponent.sprite = null; // Set to null because of Unity Aspect bug
                 ImageComponent.sprite = m_digitSprites[Digit];
                 ImageComponent.preserveAspect = true;
             }
@@ -57,8 +58,11 @@
         {
             
         }
-
         private void OnGUI(){
+            RefreshImage();
+        }
+
+        private void OnInspectorGUI(){
             RefreshImage();
         }
     }

@@ -65,14 +65,15 @@
                 uidigit.transform.SetAsLastSibling();
             }
             int extraIndex = digitsArr.Length;
-            while (digitsArr.Length > SpawnerComponent.SpawnedGameObjects.Count){
+            while ( SpawnerComponent.SpawnedGameObjects.Count > digitsArr.Length ){
                 SpawnerComponent.DestroySpawnedGameObject(SpawnerComponent.SpawnedGameObjects[extraIndex]);
                 extraIndex++;
             }
             
         }
 
-        private void OnGUI(){
+        private void OnInspectorGUI(){
+            SeperateDigits();
         }
     }
 }
