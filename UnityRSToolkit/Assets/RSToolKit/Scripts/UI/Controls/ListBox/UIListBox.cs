@@ -8,27 +8,46 @@
     using RSToolkit.Helpers;
     using System.Linq;
 
-    public class UIListBox : ScrollRect
+    [RequireComponent(typeof(ScrollRect))]
+    public class UIListBox : MonoBehaviour
     {
+        [SerializeField]
         public bool InitCullingByUser = true;
 
+        private bool m_initCullingComplete = false;
+
         bool m_CullingOn = false;
+
+        private ScrollRect m_scrollRectComponent = null;
+        private ScrollRect m_ScrollRectComponent{
+            get{
+                if (m_scrollRectComponent == null)
+                    m_scrollRectComponent = this.GetComponent<ScrollRect>();
+                return m_scrollRectComponent;
+            }
+        }
        private RectTransform[] m_contentChildren ;
        private RectTransform[] m_ContentChildren{
            get{
             if (m_contentChildren == null)
-                return content.GetComponent<RectTransform>().GetTopLevelChildren<RectTransform>().ToArray();
+                return m_ScrollRectComponent.content.GetComponent<RectTransform>().GetTopLevelChildren<RectTransform>().ToArray();
             return null;
            }
        } 
-        protected override void Start(){
-            base.Start();
-            onValueChanged.AddListener(m_onValueChanged);  
+        int countdown = 20; // For some reason coroutine is not working. Need to refactor.
+        void Start(){
+            m_ScrollRectComponent.onValueChanged.AddListener(m_onValueChanged);
         }
-
-        void Awake(){
-            if(!InitCullingByUser){
-                TurnOnCulling();
+        void Update(){
+            if (countdown > 0){
+                countdown--;
+                Debug.Log(countdown);
+            }else if(countdown == 0){
+                countdown--;
+                if(!m_initCullingComplete && !InitCullingByUser){
+                    m_initCullingComplete = true;
+                    TurnOnCulling();
+                }
             }
         }
 
@@ -37,20 +56,27 @@
        }
 
        public void TurnOnCulling(){
-          m_CullingOn = true; 
-          ViewportOcclusionCulling();
+           if(!m_CullingOn ){
+            m_CullingOn = true; 
+            ViewportOcclusionCulling();
+           }
        }
 
        public void TurnOffCulling(){
-          m_CullingOn = false; 
-          ViewportOcclusionCulling();
+           if(m_CullingOn ){
+            m_CullingOn = false; 
+            ViewportOcclusionCulling();
+            for(int i = 0; i < m_ContentChildren.Length; i++){
+                m_ContentChildren[i].gameObject.SetActive(true);
+            }
+           }
        }
 
        private VerticalLayoutGroup m_verticalLayoutGroupComponent = null;
        private VerticalLayoutGroup VerticalLayoutGroupComponent{
            get{
                if (m_verticalLayoutGroupComponent == null){
-                   m_verticalLayoutGroupComponent = content.GetComponent<VerticalLayoutGroup>(); 
+                   m_verticalLayoutGroupComponent = m_ScrollRectComponent.content.GetComponent<VerticalLayoutGroup>(); 
                }
                return m_verticalLayoutGroupComponent;
            }
@@ -60,17 +86,16 @@
        private HorizontalLayoutGroup HorizontalLayoutGroupComponent{
            get{
                if (m_horizontalLayoutGroupComponent == null){
-                   m_horizontalLayoutGroupComponent = content.GetComponent<HorizontalLayoutGroup>(); 
+                   m_horizontalLayoutGroupComponent = m_ScrollRectComponent.content.GetComponent<HorizontalLayoutGroup>(); 
                }
                return m_horizontalLayoutGroupComponent;
            }
        }
 
        void ViewportOcclusionCulling(){
-            if (content == null){
+            if (m_ScrollRectComponent.content == null){
                 return;
             }
-            content.GetComponent<ContentSizeFitter>().enabled = !m_CullingOn;
 
             if (VerticalLayoutGroupComponent != null){
                 VerticalLayoutGroupComponent.enabled = !m_CullingOn;
@@ -80,8 +105,11 @@
                 HorizontalLayoutGroupComponent.enabled = !m_CullingOn;
             }
 
-            for(int i = 0; i < m_ContentChildren.Length; i++){
-                m_ContentChildren[i].gameObject.SetActive(m_CullingOn && viewport.HasWithinBounds(m_ContentChildren[i]));
+            m_ScrollRectComponent.content.GetComponent<ContentSizeFitter>().enabled = !m_CullingOn;
+            if(m_CullingOn){
+                for(int i = 0; i < m_ContentChildren.Length; i++){
+                    m_ContentChildren[i].gameObject.SetActive(m_ScrollRectComponent.viewport.HasWithinBounds(m_ContentChildren[i]));
+                }
             }
        }
         /// <summary>
@@ -92,7 +120,7 @@
         {
             var new_go = Instantiate(go);
             new_go.transform.CopyScaleAndRotation(go.transform);
-            new_go.transform.SetParent(content.transform);
+            new_go.transform.SetParent(m_ScrollRectComponent.content.transform);
             return new_go;
         }
 
