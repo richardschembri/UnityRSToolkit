@@ -15,6 +15,7 @@
         public bool InitCullingByUser = true;
 
         private bool m_initCullingComplete = false;
+        bool m_init = false;
 
         bool m_CullingOn = false;
 
@@ -35,8 +36,11 @@
            }
        } 
         int countdown = 20; // For some reason coroutine is not working. Need to refactor.
-        void Start(){
-            m_ScrollRectComponent.onValueChanged.AddListener(m_onValueChanged);
+        void Awake(){
+            if(!m_init){
+                m_init = true;
+                m_ScrollRectComponent.onValueChanged.AddListener(m_onValueChanged);
+            }
         }
         void Update(){
             if (countdown > 0){
