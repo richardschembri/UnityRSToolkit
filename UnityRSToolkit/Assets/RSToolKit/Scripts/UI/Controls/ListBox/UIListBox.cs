@@ -41,7 +41,6 @@
         void Update(){
             if (countdown > 0){
                 countdown--;
-                Debug.Log(countdown);
             }else if(countdown == 0){
                 countdown--;
                 if(!m_initCullingComplete && !InitCullingByUser){
