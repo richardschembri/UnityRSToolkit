@@ -13,6 +13,7 @@
     [RequireComponent(typeof(EventTrigger))]
     public class UISlideBackOnTimeout : MonoBehaviour
     {
+        public float TimeoutSeconds = 10;
         DateTime timeOut = DateTime.Now;
         public float springSpeed = 0.5f;
         EventTrigger m_scrollRectEventTrigger;
@@ -47,7 +48,7 @@
         }
 
         void onDrag(BaseEventData data){
-            timeOut = DateTime.Now.AddSeconds(10);
+            timeOut = DateTime.Now.AddSeconds(TimeoutSeconds);
         }
 
         // Update is called once per frame
