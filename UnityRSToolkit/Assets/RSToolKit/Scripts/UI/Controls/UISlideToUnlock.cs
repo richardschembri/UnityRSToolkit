@@ -3,7 +3,9 @@
     using UnityEngine;
     using UnityEngine.Events;
     using UnityEngine.UI;
+    using RSToolkit.Helpers;
 
+    [RequireComponent(typeof(Scrollbar))]
     public class UISlideToUnlock : MonoBehaviour
     {
         public float springSpeed = 0.5f;
@@ -55,16 +57,10 @@
             {
                 if (ScrollbarComponent.value > 0)
                 {
-                    ScrollbarComponent.value = Berp(ScrollbarComponent.value, 0f, Time.deltaTime * springSpeed);
+                    ScrollbarComponent.value = MathHelpers.Berp(ScrollbarComponent.value, 0f, Time.deltaTime * springSpeed);
                 }
             }
         }
 
-        public static float Berp(float start, float end, float value)
-        {
-            value = Mathf.Clamp01(value);
-            value = (Mathf.Sin(value * Mathf.PI * (0.2f + 2.5f * value * value * value)) * Mathf.Pow(1f - value, 2.2f) + value) * (1f + (1.2f * (1f - value)));
-            return start + (end - start) * value;
-        }
     }
 }
