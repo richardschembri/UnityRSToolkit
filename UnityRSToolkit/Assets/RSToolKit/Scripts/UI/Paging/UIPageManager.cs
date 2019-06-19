@@ -37,7 +37,7 @@
 
         #endregion
 
-        #region Propertiesn
+        #region Properties
 
         public static UIPageManager Instance{
             get{ return m_instance; }
@@ -121,6 +121,14 @@
         public bool IsCurrentPage(UIPage page)
         {
             return CurrentPage == page;
+        }
+
+        public T GetPage<T>(){
+            return Pages.OfType<T>().FirstOrDefault();
+        }
+
+        public UIPage GetPage(string name){
+            return Pages.FirstOrDefault(p => p.gameObject.name == name);
         }
 
 
