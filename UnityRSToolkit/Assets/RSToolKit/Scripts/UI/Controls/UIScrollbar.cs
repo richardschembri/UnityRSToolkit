@@ -40,10 +40,12 @@
         }
         void ScrollDec(){
             m_value -= ScrollSpeed;
+            m_value = (m_value < 0f) ? 0f : m_value;
             ScrollBarComponent.value = m_value;
         }
         void ScrollInc(){
             m_value += ScrollSpeed;
+            m_value = (m_value > 1f) ? 1f : m_value;
             ScrollBarComponent.value = m_value;
         }
     }

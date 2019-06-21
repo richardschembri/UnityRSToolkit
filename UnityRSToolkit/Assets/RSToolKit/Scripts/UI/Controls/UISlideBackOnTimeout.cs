@@ -48,9 +48,11 @@
         }
 
         void onDrag(BaseEventData data){
+            ResetTimeout();
+        }
+        public void ResetTimeout(){
             timeOut = DateTime.Now.AddSeconds(TimeoutSeconds);
         }
-
         // Update is called once per frame
         void Update()
         {
