@@ -21,6 +21,8 @@
 
         private UIPage[] m_pages;
 
+        private UIPage m_NavigatedFromPage{get; set;}
+
         private bool m_initComplete = false;
         public bool InitComplete
         {
@@ -104,7 +106,7 @@
 
         #region Page Functions
 
-        private void CloseOtherPages(UIPage activePage)
+        protected void CloseOtherPages(UIPage activePage)
         {
             for (int i = 0; i < Pages.Length; i++)
             {
@@ -135,14 +137,14 @@
         #region Navigation Functions
 
 
-        public void NavigateTo(UIPage page, bool keepCache = false)
+        public virtual void NavigateTo(UIPage page, bool keepCache = false)
         {
 
             if (CurrentPage != null && CurrentPage.OnNavigatedFrom != null)
             {
                 CurrentPage.OnNavigatedFrom.Invoke(CurrentPage);
             }
-
+            m_NavigatedFromPage = CurrentPage;
             CurrentPage = page;
             CloseOtherPages(page);
 
@@ -152,12 +154,18 @@
 
         }
 
-        public void NavigateToNextPage()
+        public virtual void NavigateBack(){
+            if(m_NavigatedFromPage != null){
+                m_NavigatedFromPage.NavigateTo();           
+            }
+        }
+
+        public virtual void NavigateToNextPage()
         {
             CurrentPage.NavigateToNextPage();
         }
 
-        public void NavigateToPrevPage()
+        public virtual void NavigateToPrevPage()
         {
             CurrentPage.NavigateToPrevPage();
         }
