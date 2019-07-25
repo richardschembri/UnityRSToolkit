@@ -79,7 +79,8 @@
         public void DestroySpawnedGameObject(GameObject spawnedGameObject)
         {
             if (spawnedGameObject != null && SpawnedGameObjects.Contains(spawnedGameObject)){
-                Destroy(spawnedGameObject);
+                //Destroy(spawnedGameObject);
+                DestroyImmediate(spawnedGameObject);
                 SpawnedGameObjects.Remove(spawnedGameObject);
             }
         }
