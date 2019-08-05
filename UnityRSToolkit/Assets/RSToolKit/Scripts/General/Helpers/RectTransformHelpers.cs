@@ -8,6 +8,19 @@
     using System.Linq;
     public static class RectTransformHelpers 
     {
+        public class RectTransformWorldEdges{
+            public Vector2 Min{get; private set;}
+            public Vector2 Max{get; private set;}
+
+            public RectTransformWorldEdges(RectTransform trans){
+
+                Vector3[] bounds = new Vector3[4];
+                trans.GetWorldCorners(bounds);
+
+                Min = new Vector2(bounds.Min(b => b.x), bounds.Min(b => b.y));
+                Max = new Vector2(bounds.Max(b => b.x), bounds.Max(b => b.y));
+            }
+        }
         public enum VerticalPosition{
             ABOVE,
             BELOW,
@@ -24,42 +37,29 @@
             public VerticalPosition verticalPostion;
             public bool isInside;
         }
-
         public static RectTransformPosition PositionWithinBounds(this RectTransform self, RectTransform target){
+            return  PositionWithinBounds(self, target, Vector2.zero, Vector2.zero);
+        }
+
+        public static RectTransformPosition PositionWithinBounds(this RectTransform self, RectTransform target, Vector2 paddingMin, Vector2 paddingMax){
             RectTransformPosition rtp;
             rtp.horizontalPostion = HorizontalPosition.CENTER;
             rtp.verticalPostion = VerticalPosition.CENTER;
             rtp.isInside = true;
 
-
-            Vector3[] selfBounds = new Vector3[4];
-            self.GetWorldCorners(selfBounds);
-    
-            Vector3[] targetBounds = new Vector3[4];
-            target.GetWorldCorners(targetBounds);
-
-            float selfMaxY = selfBounds.Max(b => b.y);
-            float selfMinY = selfBounds.Min(b => b.y);
-
-            float selfMaxX = selfBounds.Max(b => b.x);
-            float selfMinX = selfBounds.Min(b => b.x);
-
-            float targetMaxY = targetBounds.Max(b => b.y);
-            float targetMinY = targetBounds.Min(b => b.y);
-
-            float targetMaxX = targetBounds.Max(b => b.x);
-            float targetMinX = targetBounds.Min(b => b.x);
+            var selfEdges = new RectTransformWorldEdges(self);
+            var targetEdges = new RectTransformWorldEdges(target);
             
-            if (targetMaxY < selfMinY){
+            if (targetEdges.Max.y + paddingMax.y < selfEdges.Min.y){
                 rtp.verticalPostion = VerticalPosition.BELOW;
             }
-            if (targetMinY > selfMaxY){
+            if (targetEdges.Min.y + paddingMin.y > selfEdges.Max.y){
                 rtp.verticalPostion = VerticalPosition.ABOVE;
             }
-            if (targetMaxX < selfMinX){
+            if (targetEdges.Max.x + paddingMax.x < selfEdges.Min.x){
                 rtp.horizontalPostion = HorizontalPosition.LEFT;
             }
-            if (targetMinX > selfMaxX){
+            if (targetEdges.Min.x + paddingMin.x > selfEdges.Max.x){
                 rtp.horizontalPostion = HorizontalPosition.RIGHT;
             }
             
@@ -81,7 +81,21 @@
             };
         }
 
+        public static Vector2 ShiftUpPosition(this RectTransform self){
+            return new Vector2(self.position.x, self.position.y + self.ScaledSize().y);
+        }
 
+        public static Vector2 ShiftDownPosition(this RectTransform self){
+            return new Vector2(self.position.x, self.position.y - self.ScaledSize().y);
+        }
+
+        public static Vector2 ShiftLeftPosition(this RectTransform self){
+            return new Vector2(self.position.x - self.ScaledSize().x, self.position.y);
+        }
+
+        public static Vector2 ShiftRightPosition(this RectTransform self){
+            return new Vector2(self.position.x + self.ScaledSize().x, self.position.y);
+        }
 
     }
 

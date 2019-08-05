@@ -115,17 +115,35 @@
                 }
             }
        }
-        /// <summary>
-        /// Adds a gameobject in 
-        /// </summary>
-        /// <param name=""></param>
-        public GameObject GeneratedGameObject(GameObject go)
-        {
-            var new_go = Instantiate(go);
-            new_go.transform.CopyScaleAndRotation(go.transform);
-            new_go.transform.SetParent(m_ScrollRectComponent.content.transform);
-            return new_go;
+
+       public Vector2 ListItemsSize(){
+           var x = m_ContentChildren.Sum(r => r.ScaledSize().x);
+           var y = m_ContentChildren.Sum(r => r.ScaledSize().y);
+           return new Vector2(x, y);
+       }
+
+        public void VerticalFooBar(){
+            
+            var vertList = m_ContentChildren.OrderByDescending(rt => rt.GetComponent<RectTransform>().position.y);
+            /*
+            if(m_ScrollRectComponent.viewport.HasWithinBounds(vertList[0])){
+
+            }
+            */
         }
+
+
+       /// <summary>
+       /// Adds a gameobject in 
+       /// </summary>
+       /// <param name=""></param>
+       public GameObject GeneratedGameObject(GameObject go)
+       {
+           var new_go = Instantiate(go);
+           new_go.transform.CopyScaleAndRotation(go.transform);
+           new_go.transform.SetParent(m_ScrollRectComponent.content.transform);
+           return new_go;
+       }
 
     }
 }
