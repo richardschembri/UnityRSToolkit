@@ -24,12 +24,12 @@
         public enum VerticalPosition{
             ABOVE,
             BELOW,
-            CENTER
+            WITHIN
         }  
         public enum HorizontalPosition{
             LEFT,
             RIGHT,
-            CENTER
+            WITHIN
         }  
 
         public struct RectTransformPosition{
@@ -43,8 +43,8 @@
 
         public static RectTransformPosition PositionWithinBounds(this RectTransform self, RectTransform target, Vector2 paddingMin, Vector2 paddingMax){
             RectTransformPosition rtp;
-            rtp.horizontalPostion = HorizontalPosition.CENTER;
-            rtp.verticalPostion = VerticalPosition.CENTER;
+            rtp.horizontalPostion = HorizontalPosition.WITHIN;
+            rtp.verticalPostion = VerticalPosition.WITHIN;
             rtp.isInside = true;
 
             var selfEdges = new RectTransformWorldEdges(self);
@@ -68,7 +68,7 @@
         public static bool HasWithinBounds(this RectTransform self, RectTransform target){
 
             var rtp = self.PositionWithinBounds(target);
-            return rtp.horizontalPostion == HorizontalPosition.CENTER && rtp.verticalPostion == VerticalPosition.CENTER;
+            return rtp.horizontalPostion == HorizontalPosition.WITHIN && rtp.verticalPostion == VerticalPosition.WITHIN;
             
         }
 
@@ -76,8 +76,8 @@
         public static Vector2 ScaledSize(this RectTransform self){
 
             return new Vector2{
-                x = self.rect.x * self.localScale.x,
-                y = self.rect.y * self.localScale.y 
+                x = self.rect.width * self.localScale.x,
+                y = self.rect.height * self.localScale.y 
             };
         }
 
