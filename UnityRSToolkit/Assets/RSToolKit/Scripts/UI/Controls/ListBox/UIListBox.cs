@@ -6,6 +6,7 @@
     using UnityEngine.EventSystems;
     using UnityEngine.UI;
     using RSToolkit.Helpers;
+    using RSToolkit.Controls;
     using System.Linq;
 
     [RequireComponent(typeof(ScrollRect))]
@@ -35,6 +36,24 @@
             return null;
            }
        } 
+
+       public Spawner ListItemSpawner;
+       
+       public GameObject AddListItem(){
+            if(ListItemSpawner == null){
+                return null;
+            }
+
+            return ListItemSpawner.SpawnAndGetGameObject();
+       }
+
+       public void Refresh(){
+           m_contentChildren = null;
+           m_scrollRectComponent = null;
+           TurnOffCulling();
+           TurnOnCulling();
+m_ScrollRectComponent.content.anchoredPosition = new Vector2(m_ScrollRectComponent.content.anchoredPosition.x, 0);
+       }
         int countdown = 20; // For some reason coroutine is not working. Need to refactor.
         void Awake(){
             if(!m_init){
@@ -61,6 +80,11 @@
        }
 
        public void TurnOnCulling(){
+           StartCoroutine(DelayedTurnOnCulling());
+       }
+
+       IEnumerator DelayedTurnOnCulling(){
+           yield return new WaitForEndOfFrame();
            if(!m_CullingOn ){
             m_CullingOn = true; 
             ViewportOcclusionCulling();
@@ -180,17 +204,6 @@
             }
         }
 
-       /// <summary>
-       /// Adds a gameobject in 
-       /// </summary>
-       /// <param name=""></param>
-       public GameObject GeneratedGameObject(GameObject go)
-       {
-           var new_go = Instantiate(go);
-           new_go.transform.CopyScaleAndRotation(go.transform);
-           new_go.transform.SetParent(m_ScrollRectComponent.content.transform);
-           return new_go;
-       }
 
     }
 }
