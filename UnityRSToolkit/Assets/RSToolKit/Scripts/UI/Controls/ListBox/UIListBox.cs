@@ -12,6 +12,11 @@
     [RequireComponent(typeof(ScrollRect))]
     public class UIListBox : MonoBehaviour
     {
+        private enum ManualScroll{
+            NONE, LEFT, RIGHT, UP, DOWN
+        }
+        ManualScroll m_manualScroll = ManualScroll.NONE;
+
         [SerializeField]
         public bool InitCullingByUser = true;
 
@@ -19,6 +24,8 @@
         bool m_init = false;
 
         bool m_CullingOn = false;
+
+        public float ManualScrollSpeed = 0.01f;
 
         private ScrollRect m_scrollRectComponent = null;
         private ScrollRect m_ScrollRectComponent{
@@ -52,7 +59,7 @@
            m_scrollRectComponent = null;
            TurnOffCulling();
            TurnOnCulling();
-m_ScrollRectComponent.content.anchoredPosition = new Vector2(m_ScrollRectComponent.content.anchoredPosition.x, 0);
+           m_ScrollRectComponent.content.anchoredPosition = new Vector2(m_ScrollRectComponent.content.anchoredPosition.x, 0);
        }
         int countdown = 20; // For some reason coroutine is not working. Need to refactor.
         void Awake(){
@@ -75,8 +82,23 @@ m_ScrollRectComponent.content.anchoredPosition = new Vector2(m_ScrollRectCompone
 
        void m_onValueChanged(Vector2 value){
             ViewportOcclusionCulling();
-            InfiniteVerticalScroll(m_ScrollRectComponent.velocity.y < 0);
-            InfiniteHorizontalScroll(m_ScrollRectComponent.velocity.x > 0);
+            if (m_manualScroll == ManualScroll.NONE){
+                InfiniteVerticalScroll(m_ScrollRectComponent.velocity.y < 0);
+                InfiniteHorizontalScroll(m_ScrollRectComponent.velocity.x > 0);
+            }else{
+                switch(m_manualScroll){
+                    case ManualScroll.DOWN:
+                    case ManualScroll.UP:
+                    InfiniteVerticalScroll(m_manualScroll == ManualScroll.DOWN);
+                    break;
+                    case ManualScroll.LEFT:
+                    case ManualScroll.RIGHT:
+                    InfiniteHorizontalScroll(m_manualScroll == ManualScroll.RIGHT);
+                    break;
+                }
+
+                 m_manualScroll = ManualScroll.NONE;
+            }
        }
 
        public void TurnOnCulling(){
@@ -204,6 +226,25 @@ m_ScrollRectComponent.content.anchoredPosition = new Vector2(m_ScrollRectCompone
             }
         }
 
+        public void ScrollLeft(){
+            m_manualScroll = ManualScroll.LEFT; 
+            m_ScrollRectComponent.horizontalNormalizedPosition += ManualScrollSpeed;
+        }
+
+        public void ScrollRight(){
+            m_manualScroll = ManualScroll.RIGHT; 
+            m_ScrollRectComponent.horizontalNormalizedPosition -= ManualScrollSpeed;
+        }
+
+        public void ScrollDown(){
+            m_manualScroll = ManualScroll.DOWN; 
+            m_ScrollRectComponent.verticalNormalizedPosition += ManualScrollSpeed;
+        }
+
+        public void ScrollUp(){
+            m_manualScroll = ManualScroll.UP; 
+            m_ScrollRectComponent.verticalNormalizedPosition -= ManualScrollSpeed;
+        }
 
     }
 }
