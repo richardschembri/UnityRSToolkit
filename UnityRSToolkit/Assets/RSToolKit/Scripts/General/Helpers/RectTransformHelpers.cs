@@ -72,6 +72,32 @@
             
         }
 
+        public static Vector2 GetResizeByWidth(this RectTransform self, float width){
+            var resizePercent = MathHelpers.GetValuePercent(width, self.sizeDelta.x);
+            var resizedHeight = MathHelpers.GetPercentValue(resizePercent, self.sizeDelta.y);
+            return new Vector2(width, resizedHeight);
+        }
+        public static void ResizeByWidth(this RectTransform self, float width){
+            self.sizeDelta = self.GetResizeByWidth(width);
+        }
+
+        public static Vector2 GetResizeByHeight(this RectTransform self, float height){
+            var resizePercent = MathHelpers.GetValuePercent(height, self.sizeDelta.y);
+            var resizedWidth = MathHelpers.GetPercentValue(resizePercent, self.sizeDelta.x);
+            return new Vector2(resizedWidth, height);
+        }
+        public static void ResizeByHeight(this RectTransform self, float height){
+            self.sizeDelta = self.GetResizeByHeight(height);
+        }
+
+        public static void ResizeToParentAndKeepAspect(this RectTransform self){
+            var parent = self.parent.GetComponent<RectTransform>();
+            var newSize =  self.GetResizeByWidth(parent.sizeDelta.x);
+            if(newSize.x < parent.sizeDelta.x || newSize.y < parent.sizeDelta.y){
+                newSize =  self.GetResizeByHeight(parent.sizeDelta.y);
+            }
+           self.sizeDelta = newSize;
+        }
 
         public static Vector2 ScaledSize(this RectTransform self){
 
