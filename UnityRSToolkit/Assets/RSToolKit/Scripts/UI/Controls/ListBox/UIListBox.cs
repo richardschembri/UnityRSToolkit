@@ -59,6 +59,8 @@
            m_scrollRectComponent = null;
            TurnOffCulling();
            TurnOnCulling();
+           m_ScrollRectComponent.velocity = new Vector2(0f, 0f);
+           //m_ScrollRectComponent.verticalNormalizedPosition = 0f;
            m_ScrollRectComponent.content.anchoredPosition = new Vector2(m_ScrollRectComponent.content.anchoredPosition.x, 0);
        }
         int countdown = 20; // For some reason coroutine is not working. Need to refactor.

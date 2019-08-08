@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using RSToolkit.Controls;
 using RSToolkit.UI.Controls;
 using RSToolkit.UI.Paging;
@@ -25,9 +26,11 @@ public class ScrollListPage : UIPage
     }
 
     public void AddButtons(){
+       VerticalListBox.Refresh();
        VerticalListBox.TurnOffCulling();
        for(int i = 0; i < 5; i++){
-           VerticalListBox.AddListItem();
+           var b = VerticalListBox.AddListItem().GetComponent<Button>();
+           b.GetComponentInChildren<Text>().text = string.Format("Button {0}", VerticalListBox.ListItemSpawner.SpawnedGameObjects.Count);
        }
        VerticalListBox.TurnOnCulling();
        VerticalListBox.Refresh();
