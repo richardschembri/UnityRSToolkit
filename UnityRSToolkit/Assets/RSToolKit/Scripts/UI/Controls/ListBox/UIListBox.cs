@@ -96,9 +96,8 @@
                     InfiniteHorizontalScroll(m_manualScroll == ManualScroll.RIGHT);
                     break;
                 }
-
-                 m_manualScroll = ManualScroll.NONE;
             }
+            m_manualScroll = ManualScroll.NONE;
        }
 
        public void TurnOnCulling(){
