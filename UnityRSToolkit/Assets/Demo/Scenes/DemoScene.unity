@@ -4785,8 +4785,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 330464906}
   m_HandleRect: {fileID: 330464905}
   m_Direction: 0
-  m_Value: 1.0100293
-  m_Size: 0.21908943
+  m_Value: 1.0000092
+  m_Size: 0.2229289
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5037,8 +5037,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 333042081}
   m_HandleRect: {fileID: 333042080}
   m_Direction: 2
-  m_Value: -0.01991946
-  m_Size: 0.3525571
+  m_Value: -0.000018427856
+  m_Size: 0.3587358
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -6683,7 +6683,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 355.54395}
+  m_AnchoredPosition: {x: 0, y: 348.60638}
   m_SizeDelta: {x: 0, y: 564.3}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &643562811
@@ -8302,7 +8302,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -722.97894, y: 0}
+  m_AnchoredPosition: {x: -715.80664, y: 0}
   m_SizeDelta: {x: 938.8, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &816844770
@@ -21007,6 +21007,7 @@ GameObject:
   - component: {fileID: 8594384253462899626}
   - component: {fileID: 8594384253462899625}
   - component: {fileID: 8594384253462899624}
+  - component: {fileID: 8594384253462899632}
   m_Layer: 5
   m_Name: UI Page Foreground Canvas
   m_TagString: Untagged
@@ -21014,6 +21015,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &8594384253462899632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8594384253462899631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fd3beb3b2a6b44a8b1f317e0bfddf7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!222 &8594384253824355924
 CanvasRenderer:
   m_ObjectHideFlags: 0
