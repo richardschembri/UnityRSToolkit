@@ -22,10 +22,7 @@
             for (int i = 0; i < UIPageManager.Instance.Pages.Length; i++)
             {
                 var page = UIPageManager.Instance.Pages[i];
-                if (page.DisplayHeader)
-                {
-                    page.OnNavigatedTo.AddListener(onNavigatedTo);
-                }
+                page.OnNavigatedTo.AddListener(onNavigatedTo);
                 
             }
 
