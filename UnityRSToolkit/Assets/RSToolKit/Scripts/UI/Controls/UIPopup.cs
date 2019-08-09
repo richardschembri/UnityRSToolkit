@@ -3,15 +3,25 @@
     using UnityEngine;
     using UnityEngine.EventSystems;
     using RSToolkit.Helpers;
+    using UnityEngine.Events;
     [AddComponentMenu("RSToolKit/Controls/UIPopup")]
     public class UIPopup : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler {
 
+        public class OnPopupEvent : UnityEvent<UIPopup> { }
+        public OnPopupEvent OnOpenPopup = new OnPopupEvent();
+        public OnPopupEvent OnClosePopup = new OnPopupEvent();
         public bool Draggable = false;
+        public bool ShowOnTop = true;
         // Use this for initialization
 
         void Start(){
+            PopupOnTop();
+        }
 
-            this.transform.SetAsLastSibling();
+        void PopupOnTop(){
+            if(ShowOnTop){
+                this.transform.SetAsLastSibling();
+            }
         }
 
         public void SetPosition(Vector3 position)
@@ -43,12 +53,14 @@
         public void OpenPopup()
         {
             this.gameObject.SetActive(true);
-            this.transform.SetAsLastSibling();
+            PopupOnTop();
+            OnOpenPopup.Invoke(this);
         }
 
         public void ClosePopup()
         {
             this.gameObject.SetActive(false);
+            OnClosePopup.Invoke(this);
         }
 
         public void DestroyPopup()
