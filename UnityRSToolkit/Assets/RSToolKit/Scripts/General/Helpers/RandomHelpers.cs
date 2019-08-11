@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections;
-using System.Collections.Generic;
+    using System.Collections.Generic;
     using System.Linq;
 
     /// <summary>
@@ -27,6 +27,12 @@ using System.Collections.Generic;
                 list[k] = list[n];  
                 list[n] = value;  
             }  
+        }
+
+        public static List<int> GetShuffledRange(int start, int count){
+           var result = Enumerable.Range(start, count).ToList(); 
+           result.Shuffle();
+           return result;
         }
 
         /// <summary>
