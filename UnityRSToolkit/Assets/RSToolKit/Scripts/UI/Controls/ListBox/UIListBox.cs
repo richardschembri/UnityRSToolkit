@@ -54,6 +54,11 @@
             return ListItemSpawner.SpawnAndGetGameObject();
        }
 
+       public void ClearSpawnedListItems(){
+            ListItemSpawner.DestroyAllSpawns();
+            Refresh();
+       }
+
        public void Refresh(){
            m_contentChildren = null;
            m_scrollRectComponent = null;
