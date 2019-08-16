@@ -108,7 +108,11 @@
        }
 
        public void TurnOnCulling(){
-           StartCoroutine(DelayedTurnOnCulling());
+           if(gameObject.activeSelf){
+            StartCoroutine(DelayedTurnOnCulling());
+           }else{
+               Debug.LogWarning("Listbox Inactive, unable to turn on Culling");
+           }
        }
 
        IEnumerator DelayedTurnOnCulling(){
