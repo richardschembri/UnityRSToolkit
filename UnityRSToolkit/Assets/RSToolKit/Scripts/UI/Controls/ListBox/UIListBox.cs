@@ -196,13 +196,21 @@
             if(isScrollDown){
                 if(topPos.verticalPostion == RectTransformHelpers.VerticalPosition.WITHIN
                     && bottomPos.verticalPostion == RectTransformHelpers.VerticalPosition.BELOW){
-                    bottomLI.position = topLI.ShiftUpPosition();
+                    if(VerticalLayoutGroupComponent != null){
+                        bottomLI.position = topLI.ShiftUpPosition(VerticalLayoutGroupComponent.spacing);
+                    }else{
+                        bottomLI.position = topLI.ShiftUpPosition();
+                    }
                     bottomLI.SetAsFirstSibling();
                 }
             }else{
                 if(bottomPos.verticalPostion == RectTransformHelpers.VerticalPosition.WITHIN
                     && topPos.verticalPostion == RectTransformHelpers.VerticalPosition.ABOVE){
-                    topLI.position = bottomLI.ShiftDownPosition();
+                    if(VerticalLayoutGroupComponent != null){
+                        topLI.position = bottomLI.ShiftDownPosition(VerticalLayoutGroupComponent.spacing);
+                    }else{
+                        topLI.position = bottomLI.ShiftDownPosition();
+                    }
                     topLI.SetAsLastSibling();
                 }
             }
@@ -224,13 +232,21 @@
             if(isScrollRight){
                 if(leftPos.horizontalPostion == RectTransformHelpers.HorizontalPosition.WITHIN
                     && rightPos.horizontalPostion == RectTransformHelpers.HorizontalPosition.RIGHT){
-                    rightLI.position = leftLI.ShiftLeftPosition();
+                    if(HorizontalLayoutGroupComponent != null){
+                        rightLI.position = leftLI.ShiftLeftPosition(HorizontalLayoutGroupComponent.spacing);
+                    }else{
+                        rightLI.position = leftLI.ShiftLeftPosition();
+                    }
                     rightLI.SetAsFirstSibling();
                 }
             }else{
                 if(rightPos.horizontalPostion == RectTransformHelpers.HorizontalPosition.WITHIN
                     && leftPos.horizontalPostion == RectTransformHelpers.HorizontalPosition.LEFT){
-                    leftLI.position = rightLI.ShiftRightPosition();
+                    if(HorizontalLayoutGroupComponent != null){
+                        leftLI.position = rightLI.ShiftRightPosition(HorizontalLayoutGroupComponent.spacing);
+                    }else{
+                        leftLI.position = rightLI.ShiftRightPosition();
+                    }
                     leftLI.SetAsLastSibling();
                 }
             }
