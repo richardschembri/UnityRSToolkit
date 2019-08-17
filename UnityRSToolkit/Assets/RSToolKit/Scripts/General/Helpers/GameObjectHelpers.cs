@@ -1,10 +1,11 @@
 ﻿namespace RSToolkit.Helpers
 {
+    using System;
     using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.UI;
 
-    public sealed class GameObjectHelpers
+    public static class GameObjectHelpers
     {
         public static T GetGameObject<T>(string name)
         {
@@ -21,26 +22,7 @@
             return gameObject;
         }
 
-        public static Toggle GetToggle(Toggle toggle, string name)
-        {
-
-            if (toggle == null)
-            {
-                toggle = GameObject.Find(name).GetComponent<Toggle>();
-            }
-            return toggle;
-        }
-
-        public static GameObject GetGameObject(GameObject go, string name)
-        {
-            if (go == null)
-            {
-                go = GameObject.Find(name);
-            }
-            return go;
-        }
-
-        public static GameObject GetChild(GameObject parent, string childName)
+        public static GameObject GetChild(this GameObject parent, string childName)
         {
             Component[] transforms = parent.GetComponentsInChildren(typeof(Transform), true);
 
@@ -53,6 +35,10 @@
             }
 
             return null;
+        }
+
+        public static bool HasChild(this GameObject source, GameObject target){
+            return source.transform.HasChild(target.transform);
         }
     
 
@@ -84,37 +70,7 @@
 
         }
 
-        public static void FlipX(Transform t, bool Flip)
-        {
-            var ScaleX = Mathf.Abs(t.localScale.x);
-            if (Flip)
-            {
-                ScaleX = -ScaleX;
-            }
-            t.localScale = new Vector3(ScaleX, t.localScale.y, t.localScale.z);
-        }
-
-        public static void FlipY(Transform t, bool Flip)
-        {
-            var ScaleY = Mathf.Abs(t.localScale.y);
-            if (Flip)
-            {
-                ScaleY = -ScaleY;
-            }
-            t.localScale = new Vector3(t.localScale.x, ScaleY, t.localScale.z);
-        }
 
 
-        public static void CopyTransformValues(Transform source, Transform target, bool includingParent = false)
-        {
-            if (includingParent)
-            {
-                target.parent = source.parent;
-            }
-            
-            target.position = source.position;
-            target.localRotation = source.localRotation;
-            target.localScale = source.localScale;
-        }
     }
 }

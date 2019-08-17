@@ -55,7 +55,7 @@
 
             if (useSpawnerTransformValues)
             {
-                GameObjectHelpers.CopyTransformValues(gameObject.transform, spawnedGameObject.transform, false);
+                gameObject.transform.CopyValuesTo(spawnedGameObject.transform, false);
             }
             else
             {
