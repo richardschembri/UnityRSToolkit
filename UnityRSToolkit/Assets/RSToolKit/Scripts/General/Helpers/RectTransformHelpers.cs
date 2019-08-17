@@ -107,20 +107,20 @@
             };
         }
 
-        public static Vector2 ShiftUpPosition(this RectTransform self){
-            return new Vector2(self.position.x, self.position.y + self.ScaledSize().y);
+        public static Vector2 ShiftUpPosition(this RectTransform self, float offset = 0f){
+            return new Vector2(self.position.x, self.position.y + self.ScaledSize().y + offset);
         }
 
-        public static Vector2 ShiftDownPosition(this RectTransform self){
-            return new Vector2(self.position.x, self.position.y - self.ScaledSize().y);
+        public static Vector2 ShiftDownPosition(this RectTransform self, float offset = 0f){
+            return new Vector2(self.position.x, self.position.y - (self.ScaledSize().y + offset));
         }
 
-        public static Vector2 ShiftLeftPosition(this RectTransform self){
-            return new Vector2(self.position.x - self.ScaledSize().x, self.position.y);
+        public static Vector2 ShiftLeftPosition(this RectTransform self, float offset = 0f){
+            return new Vector2(self.position.x - (self.ScaledSize().x + offset), self.position.y);
         }
 
-        public static Vector2 ShiftRightPosition(this RectTransform self){
-            return new Vector2(self.position.x + self.ScaledSize().x, self.position.y);
+        public static Vector2 ShiftRightPosition(this RectTransform self, float offset = 0f){
+            return new Vector2(self.position.x + self.ScaledSize().x + offset, self.position.y);
         }
 
     }
