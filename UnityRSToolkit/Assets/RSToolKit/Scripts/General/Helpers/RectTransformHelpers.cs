@@ -93,7 +93,7 @@
         public static void ResizeToParentAndKeepAspect(this RectTransform self){
             var parent = self.parent.GetComponent<RectTransform>();
             var newSize =  self.GetResizeByWidth(parent.sizeDelta.x);
-            if(newSize.x < parent.sizeDelta.x || newSize.y < parent.sizeDelta.y){
+            if(newSize.y < parent.sizeDelta.y){
                 newSize =  self.GetResizeByHeight(parent.sizeDelta.y);
             }
            self.sizeDelta = newSize;
