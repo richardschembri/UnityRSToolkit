@@ -1,10 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public static class CollectionHelpers 
+﻿namespace RSToolkit.Helpers
 {
-    public static int GetCircularIndex(int index, int size){
-        return ((index % size) + size) % size;
+    using System.Collections;
+    using System.Collections.Generic;
+    using UnityEngine;
+
+    public static class CollectionHelpers 
+    {
+        public static int GetCircularIndex(int index, int size){
+            return ((index % size) + size) % size;
+        }
     }
 }

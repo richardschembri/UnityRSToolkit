@@ -101,5 +101,9 @@
         {
             this.transform.SetAsLastSibling();
         }
+
+        public bool IsOpen(){
+            return gameObject.activeSelf;
+        }
     }
 }
