@@ -123,6 +123,13 @@
             return new Vector2(self.position.x + self.ScaledSize().x + offset, self.position.y);
         }
 
+        public static Vector2 GetRelativeAnchorPositionOf(this RectTransform self, RectTransform target){
+            Vector2 result;
+            Vector2 screenP = RectTransformUtility.WorldToScreenPoint( null, target.position);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(self, screenP, null, out result );
+            return result;
+        }
+
     }
 
 }
