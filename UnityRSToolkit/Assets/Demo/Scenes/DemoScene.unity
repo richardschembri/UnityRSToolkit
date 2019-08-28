@@ -5893,7 +5893,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 5d4de26fb89844543b2e92f526f228e6, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -10276,7 +10276,7 @@ MonoBehaviour:
   NavigateToNextPageShortCut: 0
   PrevPage: {fileID: 0}
   NextPage: {fileID: 0}
-  imageRect: {fileID: 563814501}
+  previewImage: {fileID: 1555312760}
 --- !u!1 &1146627528
 GameObject:
   m_ObjectHideFlags: 0
@@ -14766,6 +14766,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1555312758}
   - component: {fileID: 1555312759}
+  - component: {fileID: 1555312760}
   m_Layer: 5
   m_Name: UI Preview Image
   m_TagString: Untagged
@@ -14803,6 +14804,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -146154839, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1555312760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1555312757}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2864e74c6b6f94aaeb290b7b396cdbef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1566569325
