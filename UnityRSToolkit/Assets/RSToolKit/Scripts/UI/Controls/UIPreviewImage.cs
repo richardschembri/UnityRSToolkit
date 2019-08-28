@@ -39,6 +39,7 @@
             m_AspectRatioFitterComponent.aspectMode = AspectRatioFitter.AspectMode.None;
             ImageComponent.sprite = null;
             ImageComponent.sprite = sprite;
+            ImageComponent.preserveAspect = true;
             ImageComponent.SetNativeSize();
             m_AspectRatioFitterComponent.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
 
