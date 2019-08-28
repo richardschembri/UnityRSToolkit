@@ -90,6 +90,8 @@
             self.sizeDelta = self.GetResizeByHeight(height);
         }
 
+/*
+Aspect Ration Fitter does the same job
         public static void ResizeToParentAndKeepAspect(this RectTransform self){
             var parent = self.parent.GetComponent<RectTransform>();
             var newSize =  self.GetResizeByWidth(parent.sizeDelta.x);
@@ -98,6 +100,7 @@
             }
            self.sizeDelta = newSize;
         }
+*/
 
         public static Vector2 ScaledSize(this RectTransform self){
 

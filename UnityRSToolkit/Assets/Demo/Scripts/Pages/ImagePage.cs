@@ -10,7 +10,7 @@ public class ImagePage : UIPage
     // Start is called before the first frame update
     void Start()
     {
-       imageRect.ResizeToParentAndKeepAspect(); 
+       //imageRect.ResizeToParentAndKeepAspect(); 
     }
 
     // Update is called once per frame
