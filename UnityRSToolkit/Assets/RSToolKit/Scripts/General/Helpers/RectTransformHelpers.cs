@@ -8,6 +8,48 @@
     using System.Linq;
     public static class RectTransformHelpers 
     {
+        public enum AnchorPresets
+        {
+            TopLeft,
+            TopCenter,
+            TopRight,
+        
+            MiddleLeft,
+            MiddleCenter,
+            MiddleRight,
+        
+            BottomLeft,
+            BottonCenter,
+            BottomRight,
+            BottomStretch,
+        
+            VertStretchLeft,
+            VertStretchRight,
+            VertStretchCenter,
+        
+            HorStretchTop,
+            HorStretchMiddle,
+            HorStretchBottom,
+        
+            StretchAll
+        }
+        
+        public enum PivotPresets
+        {
+            TopLeft,
+            TopCenter,
+            TopRight,
+        
+            MiddleLeft,
+            MiddleCenter,
+            MiddleRight,
+        
+            BottomLeft,
+            BottomCenter,
+            BottomRight,
+        }
+
+
         public class RectTransformWorldEdges{
             public Vector2 Min{get; private set;}
             public Vector2 Max{get; private set;}
@@ -131,6 +173,191 @@ Aspect Ration Fitter does the same job
             Vector2 screenP = RectTransformUtility.WorldToScreenPoint( null, target.position);
             RectTransformUtility.ScreenPointToLocalPointInRectangle(self, screenP, null, out result );
             return result;
+        }
+
+             public static void SetAnchor(this RectTransform source, AnchorPresets allign, int offsetX=0, int offsetY=0)
+     {
+         source.anchoredPosition = new Vector3(offsetX, offsetY, 0);
+ 
+         switch (allign)
+         {
+             case(AnchorPresets.TopLeft):
+             {
+                 source.anchorMin = new Vector2(0, 1);
+                 source.anchorMax = new Vector2(0, 1);
+                 break;
+             }
+             case (AnchorPresets.TopCenter):
+             {
+                 source.anchorMin = new Vector2(0.5f, 1);
+                 source.anchorMax = new Vector2(0.5f, 1);
+                 break;
+             }
+             case (AnchorPresets.TopRight):
+             {
+                 source.anchorMin = new Vector2(1, 1);
+                 source.anchorMax = new Vector2(1, 1);
+                 break;
+             }
+ 
+             case (AnchorPresets.MiddleLeft):
+             {
+                 source.anchorMin = new Vector2(0, 0.5f);
+                 source.anchorMax = new Vector2(0, 0.5f);
+                 break;
+             }
+             case (AnchorPresets.MiddleCenter):
+             {
+                 source.anchorMin = new Vector2(0.5f, 0.5f);
+                 source.anchorMax = new Vector2(0.5f, 0.5f);
+                 break;
+             }
+             case (AnchorPresets.MiddleRight):
+             {
+                 source.anchorMin = new Vector2(1, 0.5f);
+                 source.anchorMax = new Vector2(1, 0.5f);
+                 break;
+             }
+ 
+             case (AnchorPresets.BottomLeft):
+             {
+                 source.anchorMin = new Vector2(0, 0);
+                 source.anchorMax = new Vector2(0, 0);
+                 break;
+             }
+             case (AnchorPresets.BottonCenter):
+             {
+                 source.anchorMin = new Vector2(0.5f, 0);
+                 source.anchorMax = new Vector2(0.5f,0);
+                 break;
+             }
+             case (AnchorPresets.BottomRight):
+             {
+                 source.anchorMin = new Vector2(1, 0);
+                 source.anchorMax = new Vector2(1, 0);
+                 break;
+             }
+ 
+             case (AnchorPresets.HorStretchTop):
+             {
+                 source.anchorMin = new Vector2(0, 1);
+                 source.anchorMax = new Vector2(1, 1);
+                 break;
+             }
+             case (AnchorPresets.HorStretchMiddle):
+             {
+                 source.anchorMin = new Vector2(0, 0.5f);
+                 source.anchorMax = new Vector2(1, 0.5f);
+                 break;
+             }
+             case (AnchorPresets.HorStretchBottom):
+             {
+                 source.anchorMin = new Vector2(0, 0);
+                 source.anchorMax = new Vector2(1, 0);
+                 break;
+             }
+ 
+             case (AnchorPresets.VertStretchLeft):
+             {
+                 source.anchorMin = new Vector2(0, 0);
+                 source.anchorMax = new Vector2(0, 1);
+                 break;
+             }
+             case (AnchorPresets.VertStretchCenter):
+             {
+                 source.anchorMin = new Vector2(0.5f, 0);
+                 source.anchorMax = new Vector2(0.5f, 1);
+                 break;
+             }
+             case (AnchorPresets.VertStretchRight):
+             {
+                 source.anchorMin = new Vector2(1, 0);
+                 source.anchorMax = new Vector2(1, 1);
+                 break;
+             }
+ 
+             case (AnchorPresets.StretchAll):
+             {
+                 source.anchorMin = new Vector2(0, 0);
+                 source.anchorMax = new Vector2(1, 1);
+                 break;
+             }
+         }
+     }
+
+          public static void SetPivot(this RectTransform source, PivotPresets preset)
+     {
+ 
+         switch (preset)
+         {
+             case (PivotPresets.TopLeft):
+             {
+                 source.pivot = new Vector2(0, 1);
+                 break;
+             }
+             case (PivotPresets.TopCenter):
+             {
+                 source.pivot = new Vector2(0.5f, 1);
+                 break;
+             }
+             case (PivotPresets.TopRight):
+             {
+                 source.pivot = new Vector2(1, 1);
+                 break;
+             }
+ 
+             case (PivotPresets.MiddleLeft):
+             {
+                 source.pivot = new Vector2(0, 0.5f);
+                 break;
+             }
+             case (PivotPresets.MiddleCenter):
+             {
+                 source.pivot = new Vector2(0.5f, 0.5f);
+                 break;
+             }
+             case (PivotPresets.MiddleRight):
+             {
+                 source.pivot = new Vector2(1, 0.5f);
+                 break;
+             }
+ 
+             case (PivotPresets.BottomLeft):
+             {
+                 source.pivot = new Vector2(0, 0);
+                 break;
+             }
+             case (PivotPresets.BottomCenter):
+             {
+                 source.pivot = new Vector2(0.5f, 0);
+                 break;
+             }
+             case (PivotPresets.BottomRight):
+             {
+                 source.pivot = new Vector2(1, 0);
+                 break;
+             }
+         }
+     }
+     	public static void SetStretch_Left(this RectTransform source, float left){
+		source.offsetMin = new Vector2(left, source.offsetMin.y); // new Vector2(left, bottom);
+	}
+
+        public static void SetStretch_Right(this RectTransform source, float right){
+            source.offsetMax = new Vector2(-right, source.offsetMax.y); // new Vector2(-right, -top);
+        }
+
+        public static void SetStretch_Top(this RectTransform source, float top){
+            source.offsetMax = new Vector2(source.offsetMax.x, -top); // new Vector2(-right, -top);
+        }
+        public static void SetStretch_Bottom(this RectTransform source, float bottom){
+            source.offsetMin = new Vector2(source.offsetMin.x, bottom); // new Vector2(left, bottom);
+        }
+        public static void SetStretch_LeftBottom(this RectTransform source, float left, float bottom){
+            source.offsetMin = new Vector2(left, bottom);
+        }
+        public static void SetStretch_RightTop(this RectTransform source, float right, float top){
+            source.offsetMax = new Vector2(-right, -top);
         }
 
     }
