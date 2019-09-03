@@ -23,6 +23,10 @@
             get { return m_instance; }
         }
 
+        public bool AutoGenerate = true;
+        public bool AutoShow = false;
+        public bool DisableActivePageMenuButton = true;
+
         public Button TemplateMenuButton;
         private List<UIMenuButton> m_menubuttons;
         public List<UIMenuButton> MenuButtons
@@ -35,11 +39,17 @@
                 }
                 return m_menubuttons;
             }
+            private set{
+                m_menubuttons = value;
+            }
 
         }
 
         void Start()
         {
+            if(Container == null){
+                Container = this.GetComponent<RectTransform>();
+            }
             StartCoroutine(Init());
         }
 
@@ -88,7 +98,6 @@
                 if (page.ShowInMenu)
                 {
                     GenerateMenuButton(page);
-
                 }
             }
         }
@@ -96,7 +105,15 @@
         IEnumerator Init()
         {
             yield return new WaitUntil(() => UIPageManager.Instance.InitComplete);
-            GenerateMenuButtons();
+            if(AutoGenerate){
+                GenerateMenuButtons();
+            }else{
+                for (int i = 0; i < UIPageManager.Instance.Pages.Length; i++)
+                {
+                    var page = UIPageManager.Instance.Pages[i];
+                    page.OnNavigatedTo.AddListener(onNavigatedTo);
+                }
+            }
         }
 
 
@@ -105,22 +122,26 @@
         {
             for (int i = 0; i < MenuButtons.Count(); i++)
             {
-
-                MenuButtons[i].MenuButton.interactable = MenuButtons[i].Page != page;
+                if(DisableActivePageMenuButton ){
+                    MenuButtons[i].MenuButton.interactable = MenuButtons[i].Page != page;
+                }
             }
-            CloseMenu();
+            if(AutoShow){
+                this.gameObject.SetActive(page.DisplayMenu);
+            }
+            else{
+                CloseMenu();
+            }
         }
         #endregion Page Events
 
         public void OpenMenu()
         {
-            //MenuContainer.SetActive(true);
             this.gameObject.SetActive(true);
         }
 
         public void CloseMenu()
         {
-            //MenuContainer.SetActive(false);
             this.gameObject.SetActive(false);
         }
     }

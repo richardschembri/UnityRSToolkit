@@ -9,6 +9,8 @@
     {
         public Sprite DefaultBackgroundSprite;
         public Image TargetGraphic;
+
+        public bool SetNativeSize = false;
         private static UIPageBackground m_instance;
         public static UIPageBackground Instance{
             get{ return m_instance; }
@@ -41,6 +43,10 @@
 
         private void SetBackground(UIPage page)
         {
+            TargetGraphic.gameObject.SetActive(page.DisplayBackground);
+            if(!page.DisplayBackground){
+                return;
+            }
             
             if (page.BackgroundImage != null)
             {
@@ -52,6 +58,9 @@
             }
 
             TargetGraphic.color = page.BackgroundColor;
+            if(SetNativeSize){
+                TargetGraphic.SetNativeSize();
+            }
             
         }
 

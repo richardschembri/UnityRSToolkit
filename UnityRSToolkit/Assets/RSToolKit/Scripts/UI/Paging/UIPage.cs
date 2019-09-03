@@ -12,6 +12,7 @@
         [SerializeField]
         private string PageHeader = "";
         public bool LaunchPage = false;
+        public bool DisplayBackground = true;
         public Sprite BackgroundImage;
         public Color BackgroundColor = Color.white;
 
@@ -30,17 +31,12 @@
 
         #region Unity Event
         // Start is called before the first frame update
-        void Start()
+        protected virtual void Awake()
         {
-            
+            OnNavigatedTo.AddListener(onNavigatedTo);
+            OnNavigatedFrom.AddListener(onNavigatedFrom);
         }
-
-        // Update is called once per frame
-        void Update()
-        {
-            
-        }
-        void OnEnable()
+        protected virtual void OnEnable()
         {
             Cursor.visible = ShowCursor;
         }
@@ -82,6 +78,9 @@
             UIPageManager.Instance.NavigateTo(this, keepCache);
         }
         #endregion
+
+        protected virtual void onNavigatedTo(UIPage page, bool keepCache){}
+        protected virtual void onNavigatedFrom(UIPage page){} 
     }
 
 }
