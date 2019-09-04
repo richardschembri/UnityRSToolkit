@@ -15,6 +15,7 @@ public class ImagePage : UIPage
     {
         var pi = LoadImageTools.LoadSprite("Images/sample/caferacer.jpg", true);
         previewImage.SetImageSprite(pi);
+        displayImage.SetImageSprite(pi);
        //imageRect.ResizeToParentAndKeepAspect(); 
     }
 

@@ -144,10 +144,13 @@ Aspect Ration Fitter does the same job
         }
 */
         public static Vector2 GetScaleToMatch(this RectTransform self, RectTransform to){
-            var scaled_to = ScaledSize(to);
-            var newSize =  self.GetResizeByWidth(scaled_to.x);
-            if(newSize.y > scaled_to.y){
-                newSize =  self.GetResizeByHeight(scaled_to.y);
+            var scaledSize = ScaledSize(to);
+            return self.GetScaleToMatch(scaledSize);
+        }
+        public static Vector2 GetScaleToMatch(this RectTransform self, Vector2 scaledSize){
+            var newSize =  self.GetResizeByWidth(scaledSize.x);
+            if(newSize.y > scaledSize.y){
+                newSize =  self.GetResizeByHeight(scaledSize.y);
             }
             var newScaleVal = newSize.x / self.sizeDelta.x;
             return new Vector2(newScaleVal, newScaleVal);

@@ -9,6 +9,7 @@
     {
 
         public KeyCode ToggleKey = KeyCode.F;
+        public bool RefreshResolution = false;
 
         // Start is called before the first frame update
         void Start()
@@ -28,7 +29,12 @@
         }
         public void ToggleFullscreen(bool on){
             Debug.LogFormat("Toggle Fullscreen {0}", on ? "ON" : "OFF");
-            Screen.fullScreen = on;
+            if(RefreshResolution){
+                Screen.SetResolution(Screen.currentResolution.width,
+                                        Screen.currentResolution.height, on);
+            }else{
+                Screen.fullScreen = on;
+            }
         }
     }
 }
