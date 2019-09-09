@@ -52,18 +52,26 @@
         public virtual void SetImageSprite(Sprite sprite){
             m_AspectRatioFitterComponent.aspectMode = AspectRatioFitter.AspectMode.None;
             ImageComponent.sprite = null;
-            ImageComponent.sprite = sprite;
-            ImageComponent.preserveAspect = true;
-            ImageComponent.SetNativeSize();
-            CalculateAspectRatio();
+            if(sprite != null){
+                ImageComponent.sprite = sprite;
+                ImageComponent.preserveAspect = true;
+                ImageComponent.SetNativeSize();
+                CalculateAspectRatio();
+            }else{
+                m_AspectRatioFitterComponent.aspectRatio = 1;
+            }
         }
 
         public virtual void SetRawImageTexture2D(Texture2D texture){
             m_AspectRatioFitterComponent.aspectMode = AspectRatioFitter.AspectMode.None;
             RawImageComponent.texture = null;
-            RawImageComponent.texture = texture;
-            RawImageComponent.SetNativeSize();
-            CalculateAspectRatio();
+            if(texture == null){
+                RawImageComponent.texture = texture;
+                RawImageComponent.SetNativeSize();
+                CalculateAspectRatio();
+            }else{
+                m_AspectRatioFitterComponent.aspectRatio = 1;
+            }
         }
     }
 }
