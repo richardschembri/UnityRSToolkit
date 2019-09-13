@@ -162,6 +162,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Draggable: 0
+  ShowOnTop: 1
+  ControlsToHide: []
+  HigherPriorityPopups: []
 --- !u!1 &8239074952534602635
 GameObject:
   m_ObjectHideFlags: 0
@@ -364,14 +367,14 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 8239074951384309492}
         m_MethodName: ClosePopup
-        m_Mode: 1
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null

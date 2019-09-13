@@ -11,9 +11,10 @@ public class ImagePage : UIPage
     public UIDisplayImage displayImage;
     public RectTransform scaleCompare;
     // Start is called before the first frame update
-    void Start()
+    async void Start()
     {
-        var pi = LoadImageTools.LoadSprite("Images/sample/caferacer.jpg", true);
+        var pi = await LoadImageTools.LoadSprite("Images/sample/caferacer.jpg", true);
+        
         previewImage.SetImageSprite(pi);
         displayImage.SetImageSprite(pi);
        //imageRect.ResizeToParentAndKeepAspect(); 

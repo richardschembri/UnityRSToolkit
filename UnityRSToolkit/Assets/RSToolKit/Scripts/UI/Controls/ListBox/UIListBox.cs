@@ -28,7 +28,7 @@
         public float ManualScrollSpeed = 0.01f;
 
         private ScrollRect m_scrollRectComponent = null;
-        private ScrollRect m_ScrollRectComponent{
+        public ScrollRect ScrollRectComponent{
             get{
                 if (m_scrollRectComponent == null)
                     m_scrollRectComponent = this.GetComponent<ScrollRect>();
@@ -39,7 +39,7 @@
        private RectTransform[] m_ContentChildren{
            get{
             if (m_contentChildren == null)
-                return m_ScrollRectComponent.content.GetComponent<RectTransform>().GetTopLevelChildren<RectTransform>().ToArray();
+                return ScrollRectComponent.content.GetComponent<RectTransform>().GetTopLevelChildren<RectTransform>().ToArray();
             return null;
            }
        } 
@@ -64,15 +64,16 @@
            m_scrollRectComponent = null;
            TurnOffCulling();
            TurnOnCulling();
-           m_ScrollRectComponent.velocity = new Vector2(0f, 0f);
+           ScrollRectComponent.velocity = new Vector2(0f, 0f);
            //m_ScrollRectComponent.verticalNormalizedPosition = 0f;
-           m_ScrollRectComponent.content.anchoredPosition = new Vector2(m_ScrollRectComponent.content.anchoredPosition.x, 0);
+           //m_ScrollRectComponent.content.anchoredPosition = new Vector2(m_ScrollRectComponent.content.anchoredPosition.x, 0);
+           ScrollRectComponent.content.anchoredPosition = new Vector2(0f, 0f);
        }
         int countdown = 20; // For some reason coroutine is not working. Need to refactor.
         void Awake(){
             if(!m_init){
                 m_init = true;
-                m_ScrollRectComponent.onValueChanged.AddListener(m_onValueChanged);
+                ScrollRectComponent.onValueChanged.AddListener(m_onValueChanged);
             }
         }
         void Update(){
@@ -90,8 +91,8 @@
        void m_onValueChanged(Vector2 value){
             ViewportOcclusionCulling();
             if (m_manualScroll == ManualScroll.NONE){
-                InfiniteVerticalScroll(m_ScrollRectComponent.velocity.y < 0);
-                InfiniteHorizontalScroll(m_ScrollRectComponent.velocity.x > 0);
+                InfiniteVerticalScroll(ScrollRectComponent.velocity.y < 0);
+                InfiniteHorizontalScroll(ScrollRectComponent.velocity.x > 0);
             }else{
                 switch(m_manualScroll){
                     case ManualScroll.DOWN:
@@ -137,7 +138,7 @@
        private VerticalLayoutGroup VerticalLayoutGroupComponent{
            get{
                if (m_verticalLayoutGroupComponent == null){
-                   m_verticalLayoutGroupComponent = m_ScrollRectComponent.content.GetComponent<VerticalLayoutGroup>(); 
+                   m_verticalLayoutGroupComponent = ScrollRectComponent.content.GetComponent<VerticalLayoutGroup>(); 
                }
                return m_verticalLayoutGroupComponent;
            }
@@ -147,14 +148,14 @@
        private HorizontalLayoutGroup HorizontalLayoutGroupComponent{
            get{
                if (m_horizontalLayoutGroupComponent == null){
-                   m_horizontalLayoutGroupComponent = m_ScrollRectComponent.content.GetComponent<HorizontalLayoutGroup>(); 
+                   m_horizontalLayoutGroupComponent = ScrollRectComponent.content.GetComponent<HorizontalLayoutGroup>(); 
                }
                return m_horizontalLayoutGroupComponent;
            }
        }
 
        void ViewportOcclusionCulling(){
-            if (m_ScrollRectComponent.content == null){
+            if (ScrollRectComponent.content == null){
                 return;
             }
 
@@ -166,10 +167,10 @@
                 HorizontalLayoutGroupComponent.enabled = !m_CullingOn;
             }
 
-            m_ScrollRectComponent.content.GetComponent<ContentSizeFitter>().enabled = !m_CullingOn;
+            ScrollRectComponent.content.GetComponent<ContentSizeFitter>().enabled = !m_CullingOn;
             if(m_CullingOn){
                 for(int i = 0; i < m_ContentChildren.Length; i++){
-                    m_ContentChildren[i].gameObject.SetActive(m_ScrollRectComponent.viewport.HasWithinBounds(m_ContentChildren[i]));
+                    m_ContentChildren[i].gameObject.SetActive(ScrollRectComponent.viewport.HasWithinBounds(m_ContentChildren[i]));
                 }
             }
        }
@@ -210,7 +211,7 @@
             }
        }
         public void InfiniteVerticalScroll(bool isScrollDown){
-            if (!m_ScrollRectComponent.vertical || m_ScrollRectComponent.movementType != ScrollRect.MovementType.Unrestricted){ //} || ListItemsSize().y < m_ScrollRectComponent.viewport.ScaledSize().y){
+            if (!ScrollRectComponent.vertical || ScrollRectComponent.movementType != ScrollRect.MovementType.Unrestricted){ //} || ListItemsSize().y < m_ScrollRectComponent.viewport.ScaledSize().y){
                 return;
             } 
             var vertList = m_ContentChildren.OrderByDescending(rt => rt.GetComponent<RectTransform>().position.y).ToArray();
@@ -223,14 +224,14 @@
             if(!isScrollDown){
                 padding = 5f;
             }
-            var topPos = m_ScrollRectComponent.viewport.PositionWithinBounds(topLI, new Vector2(0, padding), Vector2.zero);
-            var bottomPos = m_ScrollRectComponent.viewport.PositionWithinBounds(bottomLI, new Vector2(0, padding), Vector2.zero); 
+            var topPos = ScrollRectComponent.viewport.PositionWithinBounds(topLI, new Vector2(0, padding), Vector2.zero);
+            var bottomPos = ScrollRectComponent.viewport.PositionWithinBounds(bottomLI, new Vector2(0, padding), Vector2.zero); 
             if(isScrollDown){
                 if((vertList.Length < 2 && bottomPos.verticalPostion == RectTransformHelpers.VerticalPosition.BELOW) || (topPos.verticalPostion == RectTransformHelpers.VerticalPosition.WITHIN
                     && bottomPos.verticalPostion == RectTransformHelpers.VerticalPosition.BELOW)){
                     while(bottomPos.verticalPostion != RectTransformHelpers.VerticalPosition.ABOVE){
                         ShiftListItemAbove(bottomLI, bottomLI);
-                        bottomPos = m_ScrollRectComponent.viewport.PositionWithinBounds(bottomLI, new Vector2(0, padding), Vector2.zero); 
+                        bottomPos = ScrollRectComponent.viewport.PositionWithinBounds(bottomLI, new Vector2(0, padding), Vector2.zero); 
                     }
                     bottomLI.SetAsFirstSibling();
                 }
@@ -239,7 +240,7 @@
                     && topPos.verticalPostion == RectTransformHelpers.VerticalPosition.ABOVE)){
                     while(topPos.verticalPostion != RectTransformHelpers.VerticalPosition.BELOW){
                         ShiftListItemBelow(topLI, topLI);
-                        topPos = m_ScrollRectComponent.viewport.PositionWithinBounds(topLI, new Vector2(0, padding), Vector2.zero);
+                        topPos = ScrollRectComponent.viewport.PositionWithinBounds(topLI, new Vector2(0, padding), Vector2.zero);
                     }
                     topLI.SetAsLastSibling();
                 }
@@ -248,7 +249,7 @@
         }
 
         public void InfiniteHorizontalScroll(bool isScrollRight){
-            if (!m_ScrollRectComponent.horizontal || m_ScrollRectComponent.movementType != ScrollRect.MovementType.Unrestricted){ //} || ListItemsSize().x < m_ScrollRectComponent.viewport.ScaledSize().x){
+            if (!ScrollRectComponent.horizontal || ScrollRectComponent.movementType != ScrollRect.MovementType.Unrestricted){ //} || ListItemsSize().x < m_ScrollRectComponent.viewport.ScaledSize().x){
                 return;
             } 
             var horizList = m_ContentChildren.OrderByDescending(rt => rt.GetComponent<RectTransform>().position.x).ToArray();
@@ -261,14 +262,14 @@
             if(!isScrollRight){
                 padding = 5f;
             }
-            var leftPos = m_ScrollRectComponent.viewport.PositionWithinBounds(leftLI, new Vector2(padding, 0), Vector2.zero);
-            var rightPos = m_ScrollRectComponent.viewport.PositionWithinBounds(rightLI, new Vector2(padding, 0), Vector2.zero); 
+            var leftPos = ScrollRectComponent.viewport.PositionWithinBounds(leftLI, new Vector2(padding, 0), Vector2.zero);
+            var rightPos = ScrollRectComponent.viewport.PositionWithinBounds(rightLI, new Vector2(padding, 0), Vector2.zero); 
             if(isScrollRight){
                 if((horizList.Length < 2 && rightPos.horizontalPostion == RectTransformHelpers.HorizontalPosition.RIGHT) || (leftPos.horizontalPostion == RectTransformHelpers.HorizontalPosition.WITHIN
                     && rightPos.horizontalPostion == RectTransformHelpers.HorizontalPosition.RIGHT)){
                     while(rightPos.horizontalPostion != RectTransformHelpers.HorizontalPosition.LEFT){
                         ShiftListItemLeft(rightLI, rightLI);                    
-                        rightPos = m_ScrollRectComponent.viewport.PositionWithinBounds(rightLI, new Vector2(padding, 0), Vector2.zero); 
+                        rightPos = ScrollRectComponent.viewport.PositionWithinBounds(rightLI, new Vector2(padding, 0), Vector2.zero); 
                     }
                     rightLI.SetAsFirstSibling();
                 }
@@ -277,7 +278,7 @@
                     && leftPos.horizontalPostion == RectTransformHelpers.HorizontalPosition.LEFT)){
                     while(leftPos.horizontalPostion != RectTransformHelpers.HorizontalPosition.RIGHT){
                         ShiftListItemRight(leftLI, leftLI);
-                        leftPos = m_ScrollRectComponent.viewport.PositionWithinBounds(leftLI, new Vector2(padding, 0), Vector2.zero);
+                        leftPos = ScrollRectComponent.viewport.PositionWithinBounds(leftLI, new Vector2(padding, 0), Vector2.zero);
                     }
                     leftLI.SetAsLastSibling();
                 }
@@ -286,22 +287,22 @@
 
         public void ScrollLeft(){
             m_manualScroll = ManualScroll.LEFT; 
-            m_ScrollRectComponent.horizontalNormalizedPosition += ManualScrollSpeed;
+            ScrollRectComponent.horizontalNormalizedPosition += ManualScrollSpeed;
         }
 
         public void ScrollRight(){
             m_manualScroll = ManualScroll.RIGHT; 
-            m_ScrollRectComponent.horizontalNormalizedPosition -= ManualScrollSpeed;
+            ScrollRectComponent.horizontalNormalizedPosition -= ManualScrollSpeed;
         }
 
         public void ScrollDown(){
             m_manualScroll = ManualScroll.DOWN; 
-            m_ScrollRectComponent.verticalNormalizedPosition += ManualScrollSpeed;
+            ScrollRectComponent.verticalNormalizedPosition += ManualScrollSpeed;
         }
 
         public void ScrollUp(){
             m_manualScroll = ManualScroll.UP; 
-            m_ScrollRectComponent.verticalNormalizedPosition -= ManualScrollSpeed;
+            ScrollRectComponent.verticalNormalizedPosition -= ManualScrollSpeed;
         }
 
     }

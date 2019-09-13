@@ -4,6 +4,7 @@
     using UnityEngine.EventSystems;
     using RSToolkit.Helpers;
     using UnityEngine.Events;
+    using System.Linq;
     [AddComponentMenu("RSToolKit/Controls/UIPopup")]
     public class UIPopup : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler {
 
@@ -12,10 +13,18 @@
         public OnPopupEvent OnClosePopup = new OnPopupEvent();
         public bool Draggable = false;
         public bool ShowOnTop = true;
+
+        public GameObject[] ControlsToHide;
+        public UIPopup[] HigherPriorityPopups;
+
         // Use this for initialization
 
-        void Start(){
+        protected virtual void Start(){
             PopupOnTop();
+        }
+
+        protected virtual void Update(){
+
         }
 
         void PopupOnTop(){
@@ -50,20 +59,34 @@
             this.transform.position = new Vector3(xPos, yPos, pt.z);
         }
 
-        public void OpenPopup()
+        private void ToggleControls(){
+            for(int i = 0; i < ControlsToHide.Length; i++){
+                ControlsToHide[i].SetActive(!IsOpen());                
+            }
+        }
+
+        public virtual void OpenPopup()
         {
+            if(IsOpen() || HigherPriorityPopups.Any(p => p.IsOpen())){
+                return; 
+            }
+
             this.gameObject.SetActive(true);
+            ToggleControls();
             PopupOnTop();
             OnOpenPopup.Invoke(this);
         }
 
-        public void ClosePopup()
+        public virtual void ClosePopup(bool showControls = true)
         {
             this.gameObject.SetActive(false);
+            if(showControls){
+                ToggleControls();
+            }
             OnClosePopup.Invoke(this);
         }
 
-        public void DestroyPopup()
+        public virtual void DestroyPopup()
         {
             Destroy(this.gameObject);
         }

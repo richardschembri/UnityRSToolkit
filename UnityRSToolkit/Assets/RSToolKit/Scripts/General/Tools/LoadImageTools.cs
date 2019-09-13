@@ -5,6 +5,8 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using UnityEngine.Networking;
+    using System.Threading.Tasks;
 
     public class LoadImageTools
     {
@@ -37,7 +39,7 @@
             }
         }
 
-        public void LoadTexturesInMemory(bool shuffle = false){
+        public async void LoadTexturesInMemory(bool shuffle = false){
             for (int i = 0; i < m_loadedTextures.Count; i++){
                 m_loadedTextures[i] = null;
             }
@@ -46,7 +48,7 @@
 
             for (int i = 0; i < fileInfoList.Length; i++)
             {
-                var referenceTexture = LoadTexture2D(ImagesFileDirectory(fileInfoList[i].Name));
+                var referenceTexture = await LoadTexture2D(ImagesFileDirectory(fileInfoList[i].Name));
                 referenceTexture.name = fileInfoList[i].Name.Replace(fileInfoList[i].Extension, "");
                 m_loadedTextures.Add(referenceTexture);
             }
@@ -64,11 +66,12 @@
             m_loadedSprites = LoadedTextures.Select(t => t.ToSprite()).ToList();
         }
         
-        public static Sprite LoadSprite(string imageFileDirectory, bool isRelativePath = false){
-            return LoadTexture2D(imageFileDirectory, isRelativePath).ToSprite();
+        public static async Task<Sprite> LoadSprite(string imageFileDirectory, bool isRelativePath = false){
+            var resultTexture = await LoadTexture2D(imageFileDirectory, isRelativePath);
+            return resultTexture.ToSprite();
         }
 
-        public static Texture2D LoadTexture2D(string imageFileDirectory, bool isRelativePath = false){
+        public static async Task<Texture2D> LoadTexture2D(string imageFileDirectory, bool isRelativePath = false){
             if (string.IsNullOrEmpty(imageFileDirectory)){
                     return null;
             }
@@ -96,14 +99,23 @@
                 return null;
             }
 
-            var www = new WWW("file://" + absolutePath );
-            
-            var imageTexture = new Texture2D(4, 4);
+            var www = UnityWebRequestTexture.GetTexture("file://" + absolutePath);
+            var request = www.SendWebRequest();
 
-            while(!www.isDone){}
-            www.LoadImageIntoTexture((Texture2D)imageTexture);
-            imageTexture.Apply();
-            return imageTexture;
+            while(!request.isDone ){
+                await Task.Delay( 1000 / 30 );
+            }
+            if (www.isHttpError || www.isNetworkError)
+            {
+                UnityEngine.Debug.LogError("Error while Receiving: " + www.error);
+                return null;
+            }
+            else
+            {
+                //imageTexture.LoadImage(handle.data);
+                return DownloadHandlerTexture.GetContent(www);
+            }
+
         }
 
 
