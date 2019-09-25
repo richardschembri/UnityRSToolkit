@@ -20,7 +20,7 @@
                         this.GetComponent<RectTransform>().sizeDelta = new Vector2(sd.x, shd.RectHeight);
                     }
                     var ap = this.GetComponent<RectTransform>().anchoredPosition;
-                    this.GetComponent<RectTransform>().SetAnchor(RectTransformHelpers.AnchorPresets.HorStretchMiddle);
+                    // this.GetComponent<RectTransform>().SetAnchor(RectTransformHelpers.AnchorPresets.HorStretchMiddle);
                     this.GetComponent<RectTransform>().anchoredPosition = new Vector2(ap.x , shd.PosY);
                     this.GetComponent<RectTransform>().SetStretch_Left(shd.Left);
                     this.GetComponent<RectTransform>().SetStretch_Right(shd.Right);

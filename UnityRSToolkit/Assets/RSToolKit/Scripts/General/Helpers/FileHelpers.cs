@@ -111,6 +111,16 @@ using System.Linq;
             return lstFolderNames;
         }
 
+        public static bool FilePathHasExtension(string path, string[] extensions){
+            return extensions.Any( e => path.EndsWith(string.Format(".{0}", e)));
+        }
+
+        public static bool FileExistsWithExt(string path, string[] extensions){
+            return extensions.Any( ext => File.Exists( string.Format("{0}.{1}",
+                                                        path, ext.Replace(".", string.Empty)))
+            );
+        }
+
         public static void DeleteFileIfExists(string filepath)
         {
             if (File.Exists(filepath))

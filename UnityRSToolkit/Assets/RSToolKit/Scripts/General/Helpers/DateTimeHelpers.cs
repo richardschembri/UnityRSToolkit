@@ -1,6 +1,7 @@
 ﻿namespace RSToolkit.Helpers
 {
     using System;
+    using System.Globalization;
 
     public static class DateTimeHelpers
     {
@@ -50,6 +51,32 @@
         }
         public static bool IsSameDate(this DateTime value, DateTime compareTo){
             return value.Day == compareTo.Day && value.IsSameYearMonth(compareTo);
+        }
+        
+        private static JapaneseCalendar m_jc = new JapaneseCalendar();
+        private static CultureInfo m_jaJp = null;
+        private static CultureInfo m_JaJp{
+            get{
+                if(m_jaJp == null){
+                    m_jaJp = new CultureInfo("ja-JP");
+                    m_jaJp.DateTimeFormat.Calendar = m_jc ;
+                }
+                return m_jaJp;
+            }
+        }
+
+        public static int GetJapaneseEra(this DateTime value){
+            return m_jc.GetEra(value);
+        }
+
+        public static string GetJapaneseEraName(this DateTime value){
+            return m_JaJp.DateTimeFormat.GetEraName(value.GetJapaneseEra());
+        }
+        public static int GetJapaneseYear(this DateTime value){
+            return m_jc.GetYear(value);
+        }
+        public static string GetJapaneseEraYear(this DateTime value){
+            return string.Format("{0}{1}", value.GetJapaneseEraName(), value.GetJapaneseYear());
         }
 
     }

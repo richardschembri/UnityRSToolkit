@@ -71,18 +71,38 @@
             return resultTexture.ToSprite();
         }
 
-        public static async Task<Texture2D> LoadTexture2D(string imageFileDirectory, bool isRelativePath = false){
-            if (string.IsNullOrEmpty(imageFileDirectory)){
+        public static bool FilePathHasImageExtension(string path){
+            return FileHelpers.FilePathHasExtension(path, m_extensions);
+        }
+
+        public static bool ImageFileExists(string path){
+
+            bool has_ext = FilePathHasImageExtension(path);
+
+            if(!has_ext){
+                for(int i = 0; i < m_extensions.Length; i++){
+                    string extPath = string.Format("{0}.{1}", path, m_extensions[i]);
+                    if(File.Exists(extPath)){
+                        return true;
+                    }
+                }
+            }
+
+            return File.Exists(path);
+        }
+
+        public static async Task<Texture2D> LoadTexture2D(string path, bool isRelativePath = false){
+            if (string.IsNullOrEmpty(path)){
                     return null;
             }
 
-            bool has_ext = m_extensions.Any( e => imageFileDirectory.EndsWith(string.Format(".{0}", e)));
+            bool has_ext = FilePathHasImageExtension(path);
 
             //if(imageFileDirectory.EndsWith(".jpg"))
-            var absolutePath = imageFileDirectory;
+            var absolutePath = path;
             if (isRelativePath)
             {
-                absolutePath = FileHelpers.GetFullSaveFilePath(imageFileDirectory);
+                absolutePath = FileHelpers.GetFullSaveFilePath(path);
             }
 
             if(!has_ext){
