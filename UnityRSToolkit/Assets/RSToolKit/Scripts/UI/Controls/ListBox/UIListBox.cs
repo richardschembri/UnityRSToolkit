@@ -183,31 +183,39 @@
 
        private void ShiftListItemAbove(RectTransform toshift, RectTransform target ){
             if(VerticalLayoutGroupComponent != null){
-                toshift.position = target.ShiftUpPosition(VerticalLayoutGroupComponent.spacing);
+                //toshift.position = target.ShiftUpPosition(VerticalLayoutGroupComponent.spacing);
+                toshift.localPosition = target.ShiftUpLocalPosition(VerticalLayoutGroupComponent.spacing);
             }else{
-                toshift.position = target.ShiftUpPosition();
+                //toshift.position = target.ShiftUpPosition();
+                toshift.localPosition = target.ShiftUpLocalPosition();
             }
        }
        private void ShiftListItemBelow(RectTransform toshift, RectTransform target){
             if(VerticalLayoutGroupComponent != null){
-                toshift.position = target.ShiftDownPosition(VerticalLayoutGroupComponent.spacing);
+                //toshift.position = target.ShiftDownPosition(VerticalLayoutGroupComponent.spacing);
+                toshift.localPosition = target.ShiftDownLocalPosition(VerticalLayoutGroupComponent.spacing);
             }else{
-                toshift.position = target.ShiftDownPosition();
+                //toshift.position = target.ShiftDownPosition();
+                toshift.localPosition = target.ShiftDownLocalPosition();
             }
        }
        private void ShiftListItemLeft(RectTransform toshift, RectTransform target){
             if(HorizontalLayoutGroupComponent != null){
-                toshift.position = target.ShiftLeftPosition(HorizontalLayoutGroupComponent.spacing);
+                //toshift.position = target.ShiftLeftPosition(HorizontalLayoutGroupComponent.spacing);
+                toshift.localPosition = target.ShiftLeftLocalPosition(HorizontalLayoutGroupComponent.spacing);
             }else{
-                toshift.position = target.ShiftLeftPosition();
+                //toshift.position = target.ShiftLeftPosition();
+                toshift.localPosition = target.ShiftLeftLocalPosition();
             }
        }
 
        private void ShiftListItemRight(RectTransform toshift, RectTransform target){
             if(HorizontalLayoutGroupComponent != null){
-                toshift.position = target.ShiftRightPosition(HorizontalLayoutGroupComponent.spacing);
+                //toshift.position = target.ShiftRightPosition(HorizontalLayoutGroupComponent.spacing);
+                toshift.localPosition = target.ShiftRightLocalPosition(HorizontalLayoutGroupComponent.spacing);
             }else{
-                toshift.position = target.ShiftRightPosition();
+                //toshift.position = target.ShiftRightPosition();
+                toshift.localPosition = target.ShiftRightLocalPosition();
             }
        }
         public void InfiniteVerticalScroll(bool isScrollDown){

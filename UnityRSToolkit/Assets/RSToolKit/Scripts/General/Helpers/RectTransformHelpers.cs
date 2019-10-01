@@ -49,20 +49,34 @@
             BottomRight,
         }
 
-
-        public class RectTransformWorldEdges{
+        public class RectTransformEdges{
             public Vector2 Min{get; private set;}
             public Vector2 Max{get; private set;}
 
-            public RectTransformWorldEdges(RectTransform trans){
-
-                Vector3[] bounds = new Vector3[4];
-                trans.GetWorldCorners(bounds);
-
+            protected void SetMinMax(Vector3[] bounds){
                 Min = new Vector2(bounds.Min(b => b.x), bounds.Min(b => b.y));
                 Max = new Vector2(bounds.Max(b => b.x), bounds.Max(b => b.y));
             }
+
+            public RectTransformEdges(RectTransform trans){
+                Vector3[] bounds = new Vector3[4];
+                trans.GetWorldCorners(bounds);
+
+                var c = trans.GetComponentInParent<Canvas>();
+                if (c.renderMode == RenderMode.ScreenSpaceCamera){
+                    for(int i = 0; i < bounds.Length; i++){
+                        bounds[i] = RectTransformUtility.WorldToScreenPoint(c.worldCamera, bounds[i]); //c.worldCamera.WorldToViewportPoint(bounds[i]);
+                    }
+                }
+                
+                SetMinMax(bounds);
+            }
         }
+
+        public static RectTransformEdges GetEdges(this RectTransform self){
+            return new RectTransformEdges(self);
+        }
+
         public enum VerticalPosition{
             ABOVE,
             BELOW,
@@ -89,8 +103,20 @@
             rtp.verticalPostion = VerticalPosition.WITHIN;
             rtp.isInside = true;
 
-            var selfEdges = new RectTransformWorldEdges(self);
-            var targetEdges = new RectTransformWorldEdges(target);
+            var selfEdges = self.GetEdges();
+            var targetEdges = target.GetEdges();
+
+            /*
+            var c = self.GetComponentInParent<Canvas>();
+            if (c.renderMode == RenderMode.ScreenSpaceCamera){
+                if(paddingMin.x != 0 || paddingMin.y != 0){
+                    paddingMin = paddingMin / 10;
+                }
+                if(paddingMax.x != 0 || paddingMax.y != 0){
+                    paddingMax = paddingMax / 10;
+                }
+            }
+            */
             
             if (targetEdges.Max.y + paddingMax.y < selfEdges.Min.y){
                 rtp.verticalPostion = VerticalPosition.BELOW;
@@ -168,16 +194,31 @@ Aspect Ration Fitter does the same job
             return new Vector2(self.position.x, self.position.y + self.ScaledSize().y + offset);
         }
 
+        public static Vector2 ShiftUpLocalPosition(this RectTransform self, float offset = 0f){
+            return new Vector2(self.localPosition.x, self.localPosition.y + self.ScaledSize().y + offset);
+        }
+
         public static Vector2 ShiftDownPosition(this RectTransform self, float offset = 0f){
             return new Vector2(self.position.x, self.position.y - (self.ScaledSize().y + offset));
+        }
+
+        public static Vector2 ShiftDownLocalPosition(this RectTransform self, float offset = 0f){
+            return new Vector2(self.localPosition.x, self.localPosition.y - (self.ScaledSize().y + offset));
         }
 
         public static Vector2 ShiftLeftPosition(this RectTransform self, float offset = 0f){
             return new Vector2(self.position.x - (self.ScaledSize().x + offset), self.position.y);
         }
+        public static Vector2 ShiftLeftLocalPosition(this RectTransform self, float offset = 0f){
+            return new Vector2(self.localPosition.x - (self.ScaledSize().x + offset), self.localPosition.y);
+        }
 
         public static Vector2 ShiftRightPosition(this RectTransform self, float offset = 0f){
             return new Vector2(self.position.x + self.ScaledSize().x + offset, self.position.y);
+        }
+
+        public static Vector2 ShiftRightLocalPosition(this RectTransform self, float offset = 0f){
+            return new Vector2(self.localPosition.x + self.ScaledSize().x + offset, self.localPosition.y);
         }
 
         public static Vector2 GetRelativeAnchorPositionOf(this RectTransform self, RectTransform target){
