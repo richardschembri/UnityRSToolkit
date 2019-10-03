@@ -8,8 +8,23 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 
+
     public class CSVHelpersLite
     {
+
+        [System.AttributeUsage(System.AttributeTargets.Property | System.AttributeTargets.Field)]
+        public class CSVHeader : System.Attribute {
+            string m_header;
+
+            public CSVHeader(string header){
+                m_header = header;
+            }
+
+            public string GetHeader(){
+                return m_header;
+            }
+        }
+
     static string SPLIT_RE = @",(?=(?:[^""]*""[^""]*"")*(?![^""]*""))";
         static string LINE_SPLIT_RE = @"\r\n|\n\r|\n|\r";
         static char[] TRIM_CHARS = { '\"' };
@@ -174,7 +189,8 @@ using System.Text.RegularExpressions;
             PropertyInfo[] properties = typeof(T).GetProperties();
             if (header)
             {
-                yield return String.Join(separator, fields.Select(f => f.Name).Concat(properties.Select(p => p.Name)).ToArray());
+                //yield return String.Join(separator, fields.Select(f => f.Name).Concat(properties.Select(p => p.Name)).ToArray());
+                yield return GetHeadersString<T>(separator);
             }
             foreach (var o in objectlist)
             {
@@ -215,6 +231,35 @@ using System.Text.RegularExpressions;
             return tEntries;
         }
 
+        public static string GetHeadersString<T>(string separator = ","){
+            return string.Join(separator, GetHeaders<T>());
+        }
+        public static IEnumerable<string> GetHeaders<T>(){
+
+            FieldInfo[] fields = typeof(T).GetFields();
+            PropertyInfo[] properties = typeof(T).GetProperties();
+
+            List<string> headers = new List<string>();
+            for(int i = 0; i < fields.Length; i ++){
+                var h = fields[i].GetCustomAttribute(typeof(CSVHeader));
+                if (h != null){
+                    headers.Add((((CSVHeader)h).GetHeader())); 
+                }else{
+                    headers.Add (fields[i].Name);
+                }
+            }
+            for(int i = 0; i < properties.Length; i ++){
+                var h = properties[i].GetCustomAttribute(typeof(CSVHeader));
+                if (h != null){
+                    headers.Add((((CSVHeader)h).GetHeader())); 
+                }else{
+                    headers.Add(properties[i].Name);
+                }
+            }
+
+            return headers;
+        }
+
         /// <summary>
         /// EN: Converts a object's(class) properties into CSV format.
         /// JA: オブジェクト（クラス）のプロパティーをCSV形式に変換します。
@@ -233,7 +278,8 @@ using System.Text.RegularExpressions;
 
             if (header)
             {
-                yield return String.Join(separator, fields.Select(f => f.Name).Concat(properties.Select(p => p.Name)).ToArray());
+                // yield return String.Join(separator, fields.Select(f => f.Name).Concat(properties.Select(p => p.Name)).ToArray());
+                yield return GetHeadersString<T>(separator);
             }
 
             yield return string.Join(separator, fields.Select(f => (f.GetValue(obj) ?? "").ToString())
