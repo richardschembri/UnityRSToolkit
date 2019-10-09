@@ -2,10 +2,9 @@
 {
     using System.Linq;
     using System.Collections;
-    using System.Collections.Generic;
     using UnityEngine;
-    using UnityEngine.UI;
-    using RSToolkit.Helpers;
+    using RSToolkit.Collections;
+    
 
     public class UIPageManager : MonoBehaviour
     {
@@ -21,7 +20,11 @@
 
         private UIPage[] m_pages;
 
-        private UIPage m_NavigatedFromPage{get; set;}
+        public UIPage NavigatedFromPage{get{
+            return NavigationHistory.PeekOrDefault();
+        }}
+
+        public SizedStack<UIPage> NavigationHistory = new SizedStack<UIPage>(5);
 
         private bool m_initComplete = false;
         public bool InitComplete
@@ -144,7 +147,8 @@
             {
                 CurrentPage.OnNavigatedFrom.Invoke(CurrentPage);
             }
-            m_NavigatedFromPage = CurrentPage;
+            NavigationHistory.Push(CurrentPage);
+            //NavigatedFromPage = CurrentPage;
             CurrentPage = page;
             CloseOtherPages(page);
 
@@ -155,8 +159,21 @@
         }
 
         public virtual void NavigateBack(){
-            if(m_NavigatedFromPage != null){
-                m_NavigatedFromPage.NavigateTo();           
+            if(NavigatedFromPage != null){
+                //NavigatedFromPage.NavigateTo();           
+                NavigationHistory.Pop().NavigateTo();
+            }
+        }
+
+        public virtual void NavigateBackToLastUniquePage(){
+            UIPage lastPage = null;
+            do{
+                lastPage = NavigationHistory.Pop();
+            }while((NavigationHistory.Any() && lastPage == null)
+                    || (lastPage != null && lastPage == CurrentPage));
+
+            if(lastPage != null){
+                lastPage.NavigateTo();
             }
         }
 

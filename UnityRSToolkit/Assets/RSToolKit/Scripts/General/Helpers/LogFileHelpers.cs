@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Collections.Generic;
+    using System.Text;
 
     /// <summary>
     /// EN: Log file helpers.
@@ -65,12 +66,14 @@ using System.Collections.Generic;
             var txtFilePath = GetTextFilePath();
 
             if (File.Exists(txtFilePath)){
-                using(TextWriter tw = File.AppendText(txtFilePath))
+                //using(TextWriter tw = File.AppendText(txtFilePath))
+                using(var tw = new StreamWriter(txtFilePath, true, Encoding.UTF8)) // File.AppendText(txtFilePath))
                 {
                     tw.WriteLine(log_line);
                 }
             }else{
-                using(TextWriter tw = File.CreateText(txtFilePath))
+                //using(TextWriter tw = File.CreateText(txtFilePath))
+                using(var tw = new StreamWriter(txtFilePath, false, Encoding.UTF8)) // File.CreateText(txtFilePath))
                 {
                     tw.WriteLine(log_line);
                 }
@@ -119,7 +122,8 @@ using System.Collections.Generic;
         /// <typeparam name="T">The 1st type parameter.// 与えたオブジェクトのT型</typeparam>
         private static void LogToNewCSVFile<T>(T obj, string separator = ","){
 
-            using (TextWriter tw = File.CreateText(GetCSVFilePath()))
+            //using (TextWriter tw = File.CreateText(GetCSVFilePath()))
+            using(var tw = new StreamWriter(GetCSVFilePath(), false, Encoding.UTF8)) // File.CreateText(GetCSVFilePath()))
             {
                 foreach (var line in CSVHelpersLite.ToCsv(obj, separator, true))
                 {
@@ -138,7 +142,8 @@ using System.Collections.Generic;
         /// <typeparam name="T">The 1st type parameter.// 与えたオブジェクトのT型</typeparam>
         private static void LogToNewCSVFile<T>(IEnumerable<T> objectlist, string separator = ","){
 
-            using (TextWriter tw = File.CreateText(GetCSVFilePath()))
+            //using (TextWriter tw = File.CreateText(GetCSVFilePath()))
+            using(var tw = new StreamWriter(GetCSVFilePath(), false, Encoding.UTF8)) // File.CreateText(GetCSVFilePath()))
             {
                 foreach (var line in CSVHelpersLite.ToCsv(objectlist, separator, true))
                 {
@@ -158,7 +163,8 @@ using System.Collections.Generic;
         /// <typeparam name="T">The 1st type parameter.// 与えたオブジェクトのT型</typeparam>
         private static void LogAppendToCSVFile<T>(T obj, string separator = ","){
 
-            using (TextWriter tw = File.AppendText(GetCSVFilePath()))
+            //using (TextWriter tw = File.AppendText(GetCSVFilePath()))
+            using(var tw = new StreamWriter(GetCSVFilePath(), true, Encoding.UTF8)) // File.AppendText(GetCSVFilePath()))
             {
                 foreach (var line in CSVHelpersLite.ToCsv(obj, separator, false))
                 {
@@ -177,7 +183,8 @@ using System.Collections.Generic;
         /// <typeparam name="T">The 1st type parameter.// 与えたオブジェクトのT型</typeparam>
         private static void LogAppendToCSVFile<T>(IEnumerable<T> objectlist, string separator = ","){
 
-            using (TextWriter tw = File.AppendText(GetCSVFilePath()))
+            //using (TextWriter tw = File.AppendText(GetCSVFilePath()))
+            using(var tw = new StreamWriter(GetCSVFilePath(), true, Encoding.UTF8)) // File.AppendText(GetCSVFilePath()))
             {
                 foreach (var line in CSVHelpersLite.ToCsv(objectlist, separator, false))
                 {

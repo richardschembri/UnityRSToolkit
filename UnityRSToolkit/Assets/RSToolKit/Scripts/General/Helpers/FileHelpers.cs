@@ -151,6 +151,11 @@ using System.Linq;
             return fileInfoList;
         }
 
+        public static FileInfo[] GetFileInfoList(string extension, string FolderPath, bool isRelativePath)
+        {
+            return GetFileInfoList(new string[]{extension}, FolderPath, isRelativePath);
+        }
+
         public static void OpenWindowsDirectory(string path, bool isRelative = true){
             string absolutepath = path;
 

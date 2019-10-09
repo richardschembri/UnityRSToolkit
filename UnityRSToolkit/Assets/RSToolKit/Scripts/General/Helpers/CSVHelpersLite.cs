@@ -348,7 +348,8 @@ using System.Text.RegularExpressions;
                 FileHelpers.DeleteFileIfExists(filepath);
             }
 
-            using (TextWriter tw = File.CreateText(filepath))
+            //using (TextWriter tw = File.CreateText(filepath))
+            using (var tw = new StreamWriter(filepath, false, Encoding.UTF8)) // File.CreateText(filepath))
             {
                 foreach (var line in CSVHelpersLite.ToCsv(obj, separator, true))
                 {
@@ -373,7 +374,8 @@ using System.Text.RegularExpressions;
                 FileHelpers.DeleteFileIfExists(filepath);
             }
 
-            using (TextWriter tw = File.CreateText(filepath))
+            //using (TextWriter tw = File.CreateText(filepath))
+            using (var tw = new StreamWriter(filepath, false, Encoding.UTF8)) // File.CreateText(filepath))
             {
                 foreach (var line in CSVHelpersLite.ToCsv(objectlist, separator, true))
                 {
@@ -392,7 +394,8 @@ using System.Text.RegularExpressions;
         /// <typeparam name="T">The 1st type parameter.// 与えたオブジェクトのT型</typeparam>
         private static void AppendToCSVFile<T>(T obj, string filepath, string separator = ",")
         {
-            using (TextWriter tw = File.AppendText(filepath))
+            //using (TextWriter tw = File.AppendText(filepath))
+            using (var tw = new StreamWriter(filepath, true, Encoding.UTF8)) // File.AppendText(filepath))
             {
                 foreach (var line in CSVHelpersLite.ToCsv(obj, separator, false))
                 {
@@ -411,7 +414,8 @@ using System.Text.RegularExpressions;
         /// <typeparam name="T">The 1st type parameter.// 与えたオブジェクトのT型</typeparam>
         private static void AppendToCSVFile<T>(IEnumerable<T> objectlist, string filepath, string separator = ",")
         {
-            using (TextWriter tw = File.AppendText(filepath))
+            //using (TextWriter tw = File.AppendText(filepath))
+            using (var tw = new StreamWriter(filepath, true, Encoding.UTF8)) // File.AppendText(filepath))
             {
                 foreach (var line in CSVHelpersLite.ToCsv(objectlist, separator, false))
                 {
