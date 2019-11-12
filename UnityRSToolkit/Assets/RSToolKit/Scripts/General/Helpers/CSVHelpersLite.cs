@@ -29,23 +29,23 @@ using System.Text.RegularExpressions;
         static string LINE_SPLIT_RE = @"\r\n|\n\r|\n|\r";
         static char[] TRIM_CHARS = { '\"' };
 
-        public static List<T> Read<T>(string filePath)
+        public static List<T> Read<T>(string filePath, int startFromLine = 0, bool ignoreNonCsv = true)
         {
-            return Read<T>(filePath, Encoding.UTF8);
+            return Read<T>(filePath, Encoding.UTF8, startFromLine, ignoreNonCsv);
         }
 
-        public static List<T> Read<T>(string filePath, Encoding encoding)
+        public static List<T> Read<T>(string filePath, Encoding encoding, int startFromLine = 0, bool ignoreNonCsv = true)
         {
-            var csvDict = Read(filePath, encoding);
+            var csvDict = Read(filePath, encoding, startFromLine, ignoreNonCsv);
             return CSVTo<T>(csvDict);
         }
 
-        public static List<Dictionary<string, object>> Read(string filePath)
+        public static List<Dictionary<string, object>> Read(string filePath, int startFromLine = 0, bool ignoreNonCsv = true)
         {
-            return Read(filePath, Encoding.UTF8);
+            return Read(filePath, Encoding.UTF8, startFromLine, ignoreNonCsv);
         }
 
-        public static List<Dictionary<string, object>> Read(string filePath, Encoding encoding)
+        public static List<Dictionary<string, object>> Read(string filePath, Encoding encoding, int startFromLine = 0, bool ignoreNonCsv = true)
         {
             var list = new List<Dictionary<string, object>>();
 
@@ -63,15 +63,18 @@ using System.Text.RegularExpressions;
 
             if (lines.Length <= 1) return list;
 
-            var header = Regex.Split(lines[0], SPLIT_RE);
+            //var header = Regex.Split(lines[0], SPLIT_RE);
+            var header = Regex.Split(lines[startFromLine], SPLIT_RE);
 
             for (var j = 0; j < header.Length; j++)
             {
                 header[j] = header[j].TrimStart(TRIM_CHARS).TrimEnd(TRIM_CHARS).Replace("\\", "");
             }
 
-            for (var i = 1; i < lines.Length; i++)
+            //for (var i = 1; i < lines.Length; i++)
+            for (var i = startFromLine + 1; i < lines.Length; i++)
             {
+                if (!lines[i].Contains(",")) continue;
 
                 var values = Regex.Split(lines[i], SPLIT_RE);
                 if (values.Length == 0 || values[0] == "") continue;
@@ -216,7 +219,7 @@ using System.Text.RegularExpressions;
                     var pi = tEntry.GetType().GetProperty(h);
                     
 
-                    if (pi.CanWrite)
+                    if (pi != null && pi.CanWrite)
                     {
                         try{
                             pi.SetValue(tEntry, Convert.ChangeType(csvEntry[h], pi.PropertyType), null);

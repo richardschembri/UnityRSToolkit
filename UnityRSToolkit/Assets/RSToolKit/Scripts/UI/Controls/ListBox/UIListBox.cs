@@ -17,10 +17,7 @@
         }
         ManualScroll m_manualScroll = ManualScroll.NONE;
 
-        [SerializeField]
-        public bool InitCullingByUser = true;
-
-        private bool m_initCullingComplete = false;
+        private bool m_initDelayedCullingComplete = false;
         bool m_init = false;
 
         bool m_CullingOn = false;
@@ -63,13 +60,13 @@
            m_contentChildren = null;
            m_scrollRectComponent = null;
            TurnOffCulling();
-           TurnOnCulling();
+           DelayedTurnOnCulling();
            ScrollRectComponent.velocity = new Vector2(0f, 0f);
            //m_ScrollRectComponent.verticalNormalizedPosition = 0f;
            //m_ScrollRectComponent.content.anchoredPosition = new Vector2(m_ScrollRectComponent.content.anchoredPosition.x, 0);
            ScrollRectComponent.content.anchoredPosition = new Vector2(0f, 0f);
        }
-        int countdown = 20; // For some reason coroutine is not working. Need to refactor.
+        int m_culling_countdown = 5; // For some reason coroutine is not working. Need to refactor.
         void Awake(){
             if(!m_init){
                 m_init = true;
@@ -77,12 +74,12 @@
             }
         }
         void Update(){
-            if (countdown > 0){
-                countdown--;
-            }else if(countdown == 0){
-                countdown--;
-                if(!m_initCullingComplete && !InitCullingByUser){
-                    m_initCullingComplete = true;
+            if (m_culling_countdown > 0){
+                m_culling_countdown--;
+            }else if(m_culling_countdown == 0){
+                m_culling_countdown--;
+                if(!m_initDelayedCullingComplete){
+                    m_initDelayedCullingComplete = true;
                     TurnOnCulling();
                 }
             }
@@ -109,6 +106,18 @@
        }
 
        public void TurnOnCulling(){
+           if(!m_CullingOn ){
+            m_CullingOn = true; 
+            ViewportOcclusionCulling();
+           }
+       }
+
+       void DelayedTurnOnCulling(){
+            m_initDelayedCullingComplete = false;
+            m_culling_countdown = 5;
+       }
+        /*
+       public void TurnOnCulling(){
            if(gameObject.activeSelf){
             StartCoroutine(DelayedTurnOnCulling());
            }else{
@@ -123,6 +132,7 @@
             ViewportOcclusionCulling();
            }
        }
+       */
 
        public void TurnOffCulling(){
            if(m_CullingOn ){
