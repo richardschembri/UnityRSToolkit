@@ -8,6 +8,7 @@
     {
         public bool UseDefault = true;
         public AudioClip PageAudioClip;
+        public bool IgnoreSelfNavigation;
 
     }
 }
