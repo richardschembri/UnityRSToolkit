@@ -53,6 +53,9 @@
 
         public void PlayPageAudio(UIPage page)
         {
+            if(!CanPlayAudio(page)){
+                return;
+            }
             PlayPageAudio(NavigateAudioSource, page.GetComponent<UIPageNavigationAudio>(), DefaultNavigationAudioClip);
             PlayPageAudio(BGMAudioSource, page.GetComponent<UIPageBGMAudio>(), DefaultBGMAudioClip);
         }
@@ -63,6 +66,13 @@
         void onNavigatedTo(UIPage page, bool keepCache)
         {
             PlayPageAudio(page);
+        }
+
+        bool CanPlayAudio(UIPage page){
+            var pageAudio = page.GetComponent<UIPageNavigationAudio>();
+            return pageAudio != null && (!pageAudio.IgnoreSelfNavigation || 
+                (pageAudio.IgnoreSelfNavigation && page != UIPageManager.Instance.PreviousPage)
+            );
         }
         #endregion Page Events
        
