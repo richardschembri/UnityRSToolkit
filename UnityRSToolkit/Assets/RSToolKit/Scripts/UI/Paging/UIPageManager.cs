@@ -13,6 +13,8 @@
         #region Fields
 
         public KeyCode ExitKey = KeyCode.Escape;    
+
+        public UIPage PreviousPage {get; private set;}
  
         public UIPage CurrentPage { get; private set;}
 
@@ -145,6 +147,7 @@
 
             if (CurrentPage != null && CurrentPage.OnNavigatedFrom != null)
             {
+                PreviousPage = CurrentPage;
                 CurrentPage.OnNavigatedFrom.Invoke(CurrentPage);
             }
             NavigationHistory.Push(CurrentPage);
@@ -158,14 +161,14 @@
 
         }
 
-        public virtual void NavigateBack(){
+        public virtual void NavigateBack(bool keepCache = false){
             if(NavigatedFromPage != null){
                 //NavigatedFromPage.NavigateTo();           
-                NavigationHistory.Pop().NavigateTo();
+                NavigationHistory.Pop().NavigateTo(keepCache);
             }
         }
 
-        public virtual void NavigateBackToLastUniquePage(){
+        public virtual void NavigateBackToLastUniquePage(bool keepCache = false){
             UIPage lastPage = null;
             do{
                 lastPage = NavigationHistory.Pop();
@@ -173,7 +176,7 @@
                     || (lastPage != null && lastPage == CurrentPage));
 
             if(lastPage != null){
-                lastPage.NavigateTo();
+                lastPage.NavigateTo(keepCache);
             }
         }
 

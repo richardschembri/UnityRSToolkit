@@ -69,11 +69,7 @@
             UIPageManager.Instance.NavigateTo(NextPage, keepCache);
         }
 
-        public void NavigateTo()
-        {
-            NavigateTo(false);
-        }
-        public void NavigateTo(bool keepCache)
+        public void NavigateTo(bool keepCache = false)
         {
             UIPageManager.Instance.NavigateTo(this, keepCache);
         }

@@ -650,7 +650,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a416944337058074aa2876e54c123cbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InitCullingByUser: 0
   ManualScrollSpeed: 0.01
   ListItemSpawner: {fileID: 1193028690}
 --- !u!114 &38661409
@@ -2036,7 +2035,7 @@ PrefabInstance:
     - target: {fileID: 2632599998007803215, guid: 92035e571c7f3b9468c4c3d3e9fbe6fc,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2632599998007803214, guid: 92035e571c7f3b9468c4c3d3e9fbe6fc,
         type: 3}
@@ -7416,7 +7415,7 @@ PrefabInstance:
     - target: {fileID: 2632599998007803215, guid: 92035e571c7f3b9468c4c3d3e9fbe6fc,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2632599998007803214, guid: 92035e571c7f3b9468c4c3d3e9fbe6fc,
         type: 3}
@@ -7890,7 +7889,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 6024927046724291300}
         m_MethodName: NavigateBackToLastUniquePage
-        m_Mode: 1
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -18736,7 +18735,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a416944337058074aa2876e54c123cbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InitCullingByUser: 0
   ManualScrollSpeed: 0.01
   ListItemSpawner: {fileID: 0}
 --- !u!114 &1823955143
@@ -21825,22 +21823,22 @@ PrefabInstance:
     - target: {fileID: 2260227810256457931, guid: db13c7b49bb4e45ecb4cf18d9b7ca6b6,
         type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2260227810256457931, guid: db13c7b49bb4e45ecb4cf18d9b7ca6b6,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2260227810256457931, guid: db13c7b49bb4e45ecb4cf18d9b7ca6b6,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: -17
       objectReference: {fileID: 0}
     - target: {fileID: 2260227810817984999, guid: db13c7b49bb4e45ecb4cf18d9b7ca6b6,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 33
       objectReference: {fileID: 0}
     - target: {fileID: 2260227810398895146, guid: db13c7b49bb4e45ecb4cf18d9b7ca6b6,
         type: 3}
@@ -21850,12 +21848,12 @@ PrefabInstance:
     - target: {fileID: 2260227810810767257, guid: db13c7b49bb4e45ecb4cf18d9b7ca6b6,
         type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2260227810810767257, guid: db13c7b49bb4e45ecb4cf18d9b7ca6b6,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: db13c7b49bb4e45ecb4cf18d9b7ca6b6, type: 3}
