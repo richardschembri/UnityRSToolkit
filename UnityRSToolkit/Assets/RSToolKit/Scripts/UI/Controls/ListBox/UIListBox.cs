@@ -116,23 +116,6 @@
             m_initDelayedCullingComplete = false;
             m_culling_countdown = 5;
        }
-        /*
-       public void TurnOnCulling(){
-           if(gameObject.activeSelf){
-            StartCoroutine(DelayedTurnOnCulling());
-           }else{
-               Debug.LogWarning("Listbox Inactive, unable to turn on Culling");
-           }
-       }
-
-       IEnumerator DelayedTurnOnCulling(){
-           yield return new WaitForEndOfFrame();
-           if(!m_CullingOn ){
-            m_CullingOn = true; 
-            ViewportOcclusionCulling();
-           }
-       }
-       */
 
        public void TurnOffCulling(){
            if(m_CullingOn ){

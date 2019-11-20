@@ -130,9 +130,13 @@
 
         public bool IsToggleOn()
         {
-            var t = ModeTransforms[Mode].transform.GetComponentInChildren<Toggle>();
+            var t = GetToggle();
 
             return t != null ? t.isOn : false;
+        }
+
+        public Toggle GetToggle(){
+            return ModeTransforms[Mode].GetComponentInChildren<Toggle>();
         }
 
         void SetToggle(Transform t, bool value)

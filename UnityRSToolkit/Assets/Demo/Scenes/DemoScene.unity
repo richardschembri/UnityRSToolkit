@@ -755,9 +755,9 @@ RectTransform:
   m_Father: {fileID: 1811693546}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 848, y: -50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &39102911
@@ -2035,7 +2035,7 @@ PrefabInstance:
     - target: {fileID: 2632599998007803215, guid: 92035e571c7f3b9468c4c3d3e9fbe6fc,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2632599998007803214, guid: 92035e571c7f3b9468c4c3d3e9fbe6fc,
         type: 3}
@@ -10272,6 +10272,21 @@ MonoBehaviour:
   PrevPage: {fileID: 0}
   NextPage: {fileID: 0}
   UIDigitsDemo: {fileID: 381006568}
+--- !u!114 &1072080186
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1072080184}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5005661d6dd63c548a9ad17341bd94a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NavigationAudioClip: {fileID: 8300000, guid: d5ae659e2020e401d9cac4f1b80a4b03, type: 3}
+  BGMAudioClip: {fileID: 0}
+  IgnoreSelfNavigation: 0
 --- !u!1 &1078518049
 GameObject:
   m_ObjectHideFlags: 0
@@ -13662,6 +13677,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2796065299856543236, guid: 595a200695696e94e810019927cba574,
+        type: 3}
+      propertyPath: DefaultNavigationAudioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: f8e2ce6c7838f4631bbf0fb5aae8dde7, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 595a200695696e94e810019927cba574, type: 3}
 --- !u!1 &1402215635
@@ -16795,9 +16815,9 @@ RectTransform:
   m_Father: {fileID: 1811693546}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 176, y: -50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1714462510
@@ -21887,6 +21907,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2632599998960237256}
   - component: {fileID: 2632599998960237271}
+  - component: {fileID: 2632599998960237258}
   m_Layer: 5
   m_Name: Countdown Page
   m_TagString: Untagged
@@ -21894,6 +21915,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
+--- !u!114 &2632599998960237258
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2632599998960237257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5005661d6dd63c548a9ad17341bd94a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NavigationAudioClip: {fileID: 0}
+  BGMAudioClip: {fileID: 0}
+  IgnoreSelfNavigation: 0
 --- !u!114 &2632599998960237271
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21930,6 +21966,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2632599999560656043}
   - component: {fileID: 2632599999560656044}
+  - component: {fileID: 2632599999560656045}
   m_Layer: 5
   m_Name: Scroll List Page
   m_TagString: Untagged
@@ -21990,6 +22027,21 @@ MonoBehaviour:
   PrevPage: {fileID: 0}
   NextPage: {fileID: 0}
   VerticalListBox: {fileID: 38661408}
+--- !u!114 &2632599999560656045
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2632599999560656042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5005661d6dd63c548a9ad17341bd94a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NavigationAudioClip: {fileID: 0}
+  BGMAudioClip: {fileID: 0}
+  IgnoreSelfNavigation: 0
 --- !u!1001 &2785316923901376528
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22752,7 +22804,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &7844980052443931177
 RectTransform:
   m_ObjectHideFlags: 0

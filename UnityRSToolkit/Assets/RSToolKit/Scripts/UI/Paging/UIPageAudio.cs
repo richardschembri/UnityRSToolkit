@@ -6,9 +6,10 @@
 
     public class UIPageAudio : MonoBehaviour
     {
-        public bool UseDefault = true;
-        public AudioClip PageAudioClip;
-        public bool IgnoreSelfNavigation;
+        public AudioClip NavigationAudioClip;
+        public AudioClip BGMAudioClip;
+        public bool IgnoreSelfNavigation = true;
+
 
     }
 }

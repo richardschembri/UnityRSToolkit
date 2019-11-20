@@ -10,17 +10,26 @@
         public AudioClip DefaultBGMAudioClip;
         public AudioSource NavigateAudioSource;
         public AudioSource BGMAudioSource;
-        // Start is called before the first frame update
+
+        public bool m_skipNavigationSound = false;
+
+        public void SkipNavigationSound(){
+            m_skipNavigationSound = true;
+        } 
+
+        private static UIPageAudioManager m_instance;
+
+        public static UIPageAudioManager Instance{
+            get{ return m_instance; }
+        }
         
-        void Start()
+        protected virtual void Start()
         {
             StartCoroutine(Init());
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-
+        protected virtual void Awake(){
+            m_instance = this;
         }
 
         IEnumerator Init()
@@ -29,35 +38,39 @@
             for (int i = 0; i < UIPageManager.Instance.Pages.Length; i++)
             {
                 var page = UIPageManager.Instance.Pages[i];
-                page.OnNavigatedTo.AddListener(onNavigatedTo);
+                if(page.GetComponent<UIPageAudio>() != null){
+                    page.OnNavigatedTo.AddListener(onNavigatedTo);
+                }
             }
         }
-        void PlayPageAudio(AudioSource source, UIPageAudio pageAudio, AudioClip defaultClip)
+        void PlayPageAudio(AudioSource source, AudioClip pageAudioClip, AudioClip defaultClip)
         {
             source.Stop();
-            if (pageAudio == null)
-            {
-                return;
-            }
 
-            if (!pageAudio.UseDefault)
+            if (pageAudioClip != null)
             {
-                source.clip = pageAudio.PageAudioClip;
-            }
-            else
-            {
+                source.clip = pageAudioClip;
+            } else if (defaultClip != null){
                 source.clip = defaultClip;
             }
-            source.Play();
+
+            if (source.clip != null)
+            {
+                source.Play();
+            }
         }
 
         public void PlayPageAudio(UIPage page)
         {
-            if(!CanPlayAudio(page)){
+            if(!canPlayAudio(page)){
                 return;
             }
-            PlayPageAudio(NavigateAudioSource, page.GetComponent<UIPageNavigationAudio>(), DefaultNavigationAudioClip);
-            PlayPageAudio(BGMAudioSource, page.GetComponent<UIPageBGMAudio>(), DefaultBGMAudioClip);
+            var pageAudio = page.GetComponent<UIPageAudio>();
+            if(!m_skipNavigationSound){
+                PlayPageAudio(NavigateAudioSource, pageAudio.NavigationAudioClip, DefaultNavigationAudioClip);
+            }
+            m_skipNavigationSound = false;
+            PlayPageAudio(BGMAudioSource, pageAudio.BGMAudioClip, DefaultBGMAudioClip);
         }
 
         #region Page Events
@@ -68,9 +81,9 @@
             PlayPageAudio(page);
         }
 
-        bool CanPlayAudio(UIPage page){
-            var pageAudio = page.GetComponent<UIPageNavigationAudio>();
-            return pageAudio != null && (!pageAudio.IgnoreSelfNavigation || 
+        bool canPlayAudio(UIPage page){
+            var pageAudio = page.GetComponent<UIPageAudio>();
+            return (!pageAudio.IgnoreSelfNavigation || 
                 (pageAudio.IgnoreSelfNavigation && page != UIPageManager.Instance.PreviousPage)
             );
         }

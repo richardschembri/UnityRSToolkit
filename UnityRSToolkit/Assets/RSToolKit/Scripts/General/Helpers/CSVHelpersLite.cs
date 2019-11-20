@@ -45,6 +45,17 @@ using System.Text.RegularExpressions;
             return Read(filePath, Encoding.UTF8, startFromLine, ignoreNonCsv);
         }
 
+
+        private static string NormalizeField(string csvfield){
+            return csvfield.TrimStart(TRIM_CHARS).TrimEnd(TRIM_CHARS).Replace("\\", "").Trim();
+        }
+
+
+        public static string NormalizeHeader(string header){
+            return NormalizeField(header);
+        }
+
+
         public static List<Dictionary<string, object>> Read(string filePath, Encoding encoding, int startFromLine = 0, bool ignoreNonCsv = true)
         {
             var list = new List<Dictionary<string, object>>();
@@ -63,15 +74,13 @@ using System.Text.RegularExpressions;
 
             if (lines.Length <= 1) return list;
 
-            //var header = Regex.Split(lines[0], SPLIT_RE);
             var header = Regex.Split(lines[startFromLine], SPLIT_RE);
 
             for (var j = 0; j < header.Length; j++)
             {
-                header[j] = header[j].TrimStart(TRIM_CHARS).TrimEnd(TRIM_CHARS).Replace("\\", "");
+                header[j] = NormalizeHeader(header[j]);
             }
 
-            //for (var i = 1; i < lines.Length; i++)
             for (var i = startFromLine + 1; i < lines.Length; i++)
             {
                 if (!lines[i].Contains(",")) continue;
@@ -88,11 +97,11 @@ using System.Text.RegularExpressions;
                     if (multi_line.Length > 1){
                         var sb = new StringBuilder();
                         for(int ml = 0; ml < multi_line.Length; ml++){
-                            sb.AppendLine(multi_line[ml].TrimStart(TRIM_CHARS).TrimEnd(TRIM_CHARS).Replace("\\", ""));
+                            sb.AppendLine(NormalizeField(multi_line[ml]));
                         }
                         value = sb.ToString();
                     }
-                    value = value.TrimStart(TRIM_CHARS).TrimEnd(TRIM_CHARS).Replace("\\", "");
+                    value = NormalizeField(value);
                     object finalvalue = value;
                     int n;
                     long l;
@@ -192,7 +201,6 @@ using System.Text.RegularExpressions;
             PropertyInfo[] properties = typeof(T).GetProperties();
             if (header)
             {
-                //yield return String.Join(separator, fields.Select(f => f.Name).Concat(properties.Select(p => p.Name)).ToArray());
                 yield return GetHeadersString<T>(separator);
             }
             foreach (var o in objectlist)
@@ -205,9 +213,19 @@ using System.Text.RegularExpressions;
         public static List<T> CSVTo<T>(List<Dictionary<string, object>> csvEntries)
         {
             FieldInfo[] fields = typeof(T).GetFields();
-            PropertyInfo[] properties = typeof(T).GetProperties();
+            //PropertyInfo[] properties = typeof(T).GetProperties();
+            //var headers = fields.Select(f => f.Name).Concat(properties.Select(p => p.Name));
 
-            var headers = fields.Select(f => f.Name).Concat(properties.Select(p => p.Name));
+            var headerAttributes = typeof(T).GetProperties().Where(
+                            prop => Attribute.IsDefined(prop, typeof(CSVHeader)) && prop.CanWrite).ToArray();
+            PropertyInfo[] properties = typeof(T).GetProperties().Where(p => !headerAttributes.Contains(p) && p.CanWrite).ToArray();
+
+
+            var headers = fields.Select(f => f.Name).Concat(properties.Select(p => p.Name))
+                                                    .Concat(headerAttributes.Select(h => ((CSVHeader)h.GetCustomAttribute(typeof(CSVHeader)))
+                                                        .GetHeader()) 
+                                                    );
+
             var tEntries = new List<T>();
 
             foreach (var csvEntry in csvEntries)
@@ -216,8 +234,12 @@ using System.Text.RegularExpressions;
 
                 foreach (var h in headers)
                 {
-                    var pi = tEntry.GetType().GetProperty(h);
-                    
+                    var normHeader = NormalizeHeader(h);
+                    var pi = tEntry.GetType().GetProperties().FirstOrDefault(p => NormalizeHeader(((CSVHeader)p.GetCustomAttribute(typeof(CSVHeader))).GetHeader()) == normHeader);
+
+                    if(pi == null) {
+                        pi = tEntry.GetType().GetProperty(h);
+                    }
 
                     if (pi != null && pi.CanWrite)
                     {

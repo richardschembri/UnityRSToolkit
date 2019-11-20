@@ -130,7 +130,7 @@
             return CurrentPage == page;
         }
 
-        public T GetPage<T>(){
+        public T GetPage<T>() where T : UIPage{
             return Pages.OfType<T>().FirstOrDefault();
         }
 
