@@ -70,9 +70,16 @@
         }
 
         public static string GetJapaneseEraName(this DateTime value){
+            // Reiwa hotfix
+            if(value.Year >= 2019 && value.Month >= 5){
+                return "令和";
+            }
             return m_JaJp.DateTimeFormat.GetEraName(value.GetJapaneseEra());
         }
         public static int GetJapaneseYear(this DateTime value){
+            if(value.Year >= 2019 && value.Month >= 5){
+                return value.Year - 2018;
+            }
             return m_jc.GetYear(value);
         }
         public static string GetJapaneseEraYear(this DateTime value){

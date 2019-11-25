@@ -8,9 +8,10 @@
     [AddComponentMenu("RSToolKit/Controls/UIPopup")]
     public class UIPopup : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler {
 
-        public class OnPopupEvent : UnityEvent<UIPopup> { }
-        public OnPopupEvent OnOpenPopup = new OnPopupEvent();
-        public OnPopupEvent OnClosePopup = new OnPopupEvent();
+        public class OnOpenPopupEvent : UnityEvent<UIPopup, bool> { }
+        public class OnClosePopupEvent : UnityEvent<UIPopup> { }
+        public OnOpenPopupEvent OnOpenPopup = new OnOpenPopupEvent();
+        public OnClosePopupEvent OnClosePopup = new OnClosePopupEvent();
         public bool Draggable = false;
         public bool ShowOnTop = true;
 
@@ -65,7 +66,7 @@
             }
         }
 
-        public virtual void OpenPopup()
+        public virtual void OpenPopup(bool keepCache = false)
         {
             if(IsOpen() || HigherPriorityPopups.Any(p => p.IsOpen())){
                 return; 
@@ -74,7 +75,7 @@
             this.gameObject.SetActive(true);
             ToggleControls();
             PopupOnTop();
-            OnOpenPopup.Invoke(this);
+            OnOpenPopup.Invoke(this, keepCache);
         }
 
         public virtual void ClosePopup(bool showControls = true)
