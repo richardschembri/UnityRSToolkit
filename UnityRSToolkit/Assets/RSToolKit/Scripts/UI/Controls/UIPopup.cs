@@ -5,6 +5,8 @@
     using RSToolkit.Helpers;
     using UnityEngine.Events;
     using System.Linq;
+    using System.Collections;
+
     [AddComponentMenu("RSToolKit/Controls/UIPopup")]
     public class UIPopup : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler {
 
@@ -17,6 +19,7 @@
 
         public GameObject[] ControlsToHide;
         public UIPopup[] HigherPriorityPopups;
+        public float PopupTimeoutSeconds = -1f;
 
         // Use this for initialization
 
@@ -26,6 +29,11 @@
 
         protected virtual void Update(){
 
+        }
+
+        protected virtual IEnumerator PopupTimeout(){
+            yield return new WaitForSeconds(PopupTimeoutSeconds);
+            ClosePopup();
         }
 
         void PopupOnTop(){
@@ -76,6 +84,9 @@
             ToggleControls();
             PopupOnTop();
             OnOpenPopup.Invoke(this, keepCache);
+            if(PopupTimeoutSeconds > 0){
+                StartCoroutine("PopupTimeout");
+            }
         }
 
         public virtual void ClosePopup(bool showControls = true)
@@ -85,6 +96,8 @@
                 ToggleControls();
             }
             OnClosePopup.Invoke(this);
+            
+            StopCoroutine("PopupTimeout");
         }
 
         public virtual void DestroyPopup()
