@@ -39,6 +39,9 @@
         }
 
         private void AdvancedShow(){
+            if(GetDropdownList() != null){
+                return;
+            }
             Show();
             var dropdownRect = GetDropdownList().GetComponent<RectTransform>();
             dropdownRect.sizeDelta = dropdownRect.sizeDelta + Settings.SizeOffset;
