@@ -5,6 +5,7 @@
     using UnityEngine;
     using UnityEngine.EventSystems;
     using UnityEngine.UI;
+    using UnityEngine.Events;
     using RSToolkit.Helpers;
     using RSToolkit.Controls;
     using System.Linq;
@@ -42,7 +43,12 @@
        } 
 
        public Spawner ListItemSpawner;
+
+       public class OnShiftMostHorizontalEvent : UnityEvent<RectTransform, RectTransformHelpers.HorizontalPosition>{}
+       public OnShiftMostHorizontalEvent OnShiftMostHorizontal = new OnShiftMostHorizontalEvent();
        
+       public class OnShiftMostVerticalEvent : UnityEvent<RectTransform, RectTransformHelpers.VerticalPosition>{}
+       public OnShiftMostVerticalEvent OnShiftMostVertical = new OnShiftMostVerticalEvent();
        public GameObject AddListItem(){
             if(ListItemSpawner == null){
                 return null;
@@ -62,11 +68,9 @@
            TurnOffCulling();
            DelayedTurnOnCulling();
            ScrollRectComponent.velocity = new Vector2(0f, 0f);
-           //m_ScrollRectComponent.verticalNormalizedPosition = 0f;
-           //m_ScrollRectComponent.content.anchoredPosition = new Vector2(m_ScrollRectComponent.content.anchoredPosition.x, 0);
            ScrollRectComponent.content.anchoredPosition = new Vector2(0f, 0f);
        }
-        int m_culling_countdown = 5; // For some reason coroutine is not working. Need to refactor.
+        int m_culling_countdown = 5;
         void Awake(){
             if(!m_init){
                 m_init = true;
@@ -174,45 +178,92 @@
            return new Vector2(x, y);
        }
 
+       private void ShiftListItemAbove(RectTransform toshift){
+            ShiftListItemAbove(toshift, toshift);
+       }
        private void ShiftListItemAbove(RectTransform toshift, RectTransform target ){
             if(VerticalLayoutGroupComponent != null){
-                //toshift.position = target.ShiftUpPosition(VerticalLayoutGroupComponent.spacing);
                 toshift.localPosition = target.ShiftUpLocalPosition(VerticalLayoutGroupComponent.spacing);
             }else{
-                //toshift.position = target.ShiftUpPosition();
                 toshift.localPosition = target.ShiftUpLocalPosition();
             }
        }
+       private void ShiftListItemBelow(RectTransform toshift){
+            ShiftListItemBelow(toshift, toshift);
+       }
        private void ShiftListItemBelow(RectTransform toshift, RectTransform target){
             if(VerticalLayoutGroupComponent != null){
-                //toshift.position = target.ShiftDownPosition(VerticalLayoutGroupComponent.spacing);
                 toshift.localPosition = target.ShiftDownLocalPosition(VerticalLayoutGroupComponent.spacing);
             }else{
-                //toshift.position = target.ShiftDownPosition();
                 toshift.localPosition = target.ShiftDownLocalPosition();
             }
        }
+       private void ShiftListItemLeft(RectTransform toshift){
+            ShiftListItemLeft(toshift, toshift);
+       }
        private void ShiftListItemLeft(RectTransform toshift, RectTransform target){
             if(HorizontalLayoutGroupComponent != null){
-                //toshift.position = target.ShiftLeftPosition(HorizontalLayoutGroupComponent.spacing);
                 toshift.localPosition = target.ShiftLeftLocalPosition(HorizontalLayoutGroupComponent.spacing);
             }else{
-                //toshift.position = target.ShiftLeftPosition();
                 toshift.localPosition = target.ShiftLeftLocalPosition();
             }
        }
+       private void PlaceListItemLeftMost(RectTransform toplace, float padding){
+            var toplacePos = GetPositionWithinViewPort(toplace, padding); 
+            while(toplacePos.horizontalPostion != RectTransformHelpers.HorizontalPosition.LEFT){
+                ShiftListItemLeft(toplace);                    
+                toplacePos = ScrollRectComponent.viewport.PositionWithinBounds(toplace, new Vector2(padding, 0), Vector2.zero); 
+            }
+            toplace.SetAsFirstSibling();
+            OnShiftMostHorizontal.Invoke(toplace, RectTransformHelpers.HorizontalPosition.LEFT); 
+       }
 
+       private void ShiftListItemRight(RectTransform toshift){
+            ShiftListItemRight(toshift, toshift);
+       }
        private void ShiftListItemRight(RectTransform toshift, RectTransform target){
             if(HorizontalLayoutGroupComponent != null){
-                //toshift.position = target.ShiftRightPosition(HorizontalLayoutGroupComponent.spacing);
                 toshift.localPosition = target.ShiftRightLocalPosition(HorizontalLayoutGroupComponent.spacing);
             }else{
-                //toshift.position = target.ShiftRightPosition();
                 toshift.localPosition = target.ShiftRightLocalPosition();
             }
        }
+       private void ShiftListItemRightMost(RectTransform toplace, float padding){
+            var toplacePos = GetPositionWithinViewPort(toplace, padding); 
+            while(toplacePos.horizontalPostion != RectTransformHelpers.HorizontalPosition.RIGHT){
+                ShiftListItemRight(toplace);
+                toplacePos = ScrollRectComponent.viewport.PositionWithinBounds(toplace, new Vector2(padding, 0), Vector2.zero);
+            }
+            toplace.SetAsLastSibling();
+            OnShiftMostHorizontal.Invoke(toplace, RectTransformHelpers.HorizontalPosition.RIGHT); 
+       }
+
+       private void ShiftListItemTopMost(RectTransform toplace, float padding){
+            var toplacePos = GetPositionWithinViewPort(toplace, padding); 
+            while(toplacePos.verticalPostion != RectTransformHelpers.VerticalPosition.ABOVE){
+                ShiftListItemAbove(toplace);
+                toplacePos = ScrollRectComponent.viewport.PositionWithinBounds(toplace, new Vector2(0, padding), Vector2.zero); 
+            }
+            toplace.SetAsFirstSibling();
+            OnShiftMostVertical.Invoke(toplace, RectTransformHelpers.VerticalPosition.ABOVE); 
+       }
+
+       private void ShiftListItemBottomMost(RectTransform toplace, float padding){
+            var toplacePos = GetPositionWithinViewPort(toplace, padding); 
+            while(toplacePos.verticalPostion != RectTransformHelpers.VerticalPosition.BELOW){
+                ShiftListItemBelow(toplace);
+                toplacePos = ScrollRectComponent.viewport.PositionWithinBounds(toplace, new Vector2(0, padding), Vector2.zero);
+            }
+            toplace.SetAsLastSibling();
+            OnShiftMostVertical.Invoke(toplace, RectTransformHelpers.VerticalPosition.BELOW); 
+       }
+
+       private RectTransformHelpers.RectTransformPosition GetPositionWithinViewPort(RectTransform toplace, float padding){
+            return ScrollRectComponent.viewport.PositionWithinBounds(toplace, new Vector2(0, padding), Vector2.zero); 
+       }
+
         public void InfiniteVerticalScroll(bool isScrollDown){
-            if (!ScrollRectComponent.vertical || ScrollRectComponent.movementType != ScrollRect.MovementType.Unrestricted){ //} || ListItemsSize().y < m_ScrollRectComponent.viewport.ScaledSize().y){
+            if (!ScrollRectComponent.vertical || ScrollRectComponent.movementType != ScrollRect.MovementType.Unrestricted){
                 return;
             } 
             var vertList = m_ContentChildren.OrderByDescending(rt => rt.GetComponent<RectTransform>().position.y).ToArray();
@@ -230,20 +281,26 @@
             if(isScrollDown){
                 if((vertList.Length < 2 && bottomPos.verticalPostion == RectTransformHelpers.VerticalPosition.BELOW) || (topPos.verticalPostion == RectTransformHelpers.VerticalPosition.WITHIN
                     && bottomPos.verticalPostion == RectTransformHelpers.VerticalPosition.BELOW)){
+                    /*
                     while(bottomPos.verticalPostion != RectTransformHelpers.VerticalPosition.ABOVE){
                         ShiftListItemAbove(bottomLI, bottomLI);
                         bottomPos = ScrollRectComponent.viewport.PositionWithinBounds(bottomLI, new Vector2(0, padding), Vector2.zero); 
                     }
                     bottomLI.SetAsFirstSibling();
+                    */
+                    ShiftListItemTopMost(bottomLI, padding);
                 }
             }else{
                 if((vertList.Length < 2 && topPos.verticalPostion == RectTransformHelpers.VerticalPosition.ABOVE) || (bottomPos.verticalPostion == RectTransformHelpers.VerticalPosition.WITHIN
                     && topPos.verticalPostion == RectTransformHelpers.VerticalPosition.ABOVE)){
+                    /*
                     while(topPos.verticalPostion != RectTransformHelpers.VerticalPosition.BELOW){
                         ShiftListItemBelow(topLI, topLI);
                         topPos = ScrollRectComponent.viewport.PositionWithinBounds(topLI, new Vector2(0, padding), Vector2.zero);
                     }
                     topLI.SetAsLastSibling();
+                    */
+                    ShiftListItemBottomMost(topLI, padding);
                 }
 
             }
@@ -268,20 +325,26 @@
             if(isScrollRight){
                 if((horizList.Length < 2 && rightPos.horizontalPostion == RectTransformHelpers.HorizontalPosition.RIGHT) || (leftPos.horizontalPostion == RectTransformHelpers.HorizontalPosition.WITHIN
                     && rightPos.horizontalPostion == RectTransformHelpers.HorizontalPosition.RIGHT)){
+                    /*
                     while(rightPos.horizontalPostion != RectTransformHelpers.HorizontalPosition.LEFT){
                         ShiftListItemLeft(rightLI, rightLI);                    
                         rightPos = ScrollRectComponent.viewport.PositionWithinBounds(rightLI, new Vector2(padding, 0), Vector2.zero); 
                     }
                     rightLI.SetAsFirstSibling();
+                    */
+                    PlaceListItemLeftMost(rightLI, padding);
                 }
             }else{
                 if((horizList.Length < 2 && leftPos.horizontalPostion == RectTransformHelpers.HorizontalPosition.LEFT) || (rightPos.horizontalPostion == RectTransformHelpers.HorizontalPosition.WITHIN
                     && leftPos.horizontalPostion == RectTransformHelpers.HorizontalPosition.LEFT)){
+                    /*
                     while(leftPos.horizontalPostion != RectTransformHelpers.HorizontalPosition.RIGHT){
                         ShiftListItemRight(leftLI, leftLI);
                         leftPos = ScrollRectComponent.viewport.PositionWithinBounds(leftLI, new Vector2(padding, 0), Vector2.zero);
                     }
                     leftLI.SetAsLastSibling();
+                    */
+                    ShiftListItemRightMost(leftLI, padding);
                 }
             }
         }

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using RSToolkit.Controls;
 using RSToolkit.UI.Controls;
 using RSToolkit.UI.Paging;
+using RSToolkit.Helpers;
 
 public class ScrollListPage : UIPage
 {
@@ -23,6 +24,7 @@ public class ScrollListPage : UIPage
     // Start is called before the first frame update
     void Start()
     {
+       VerticalListBox.OnShiftMostVertical.AddListener(ShiftTest);
     }
 
     public void AddButtons(){
@@ -30,10 +32,15 @@ public class ScrollListPage : UIPage
        VerticalListBox.TurnOffCulling();
        for(int i = 0; i < 5; i++){
            var b = VerticalListBox.AddListItem().GetComponent<Button>();
-           b.GetComponentInChildren<Text>().text = string.Format("Button {0}", VerticalListBox.ListItemSpawner.SpawnedGameObjects.Count);
+           b.name = string.Format("Button {0}", VerticalListBox.ListItemSpawner.SpawnedGameObjects.Count);
+           b.GetComponentInChildren<Text>().text = b.name;
        }
        VerticalListBox.TurnOnCulling();
        VerticalListBox.Refresh();
+    }
+
+    void ShiftTest(RectTransform li, RectTransformHelpers.VerticalPosition horpos){
+        Debug.Log(li.name);
     }
 
     // Update is called once per frame
