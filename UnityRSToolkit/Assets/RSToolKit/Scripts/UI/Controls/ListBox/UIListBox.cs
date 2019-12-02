@@ -33,14 +33,22 @@
                 return m_scrollRectComponent;
             }
         }
+       private RectTransform m_contentRectTransform;
+       public RectTransform ContentRectTransform{
+           get{
+               return ScrollRectComponent.content.GetComponent<RectTransform>();
+           }
+       }
+
        private RectTransform[] m_contentChildren ;
        private RectTransform[] m_ContentChildren{
            get{
             if (m_contentChildren == null)
-                return ScrollRectComponent.content.GetComponent<RectTransform>().GetTopLevelChildren<RectTransform>().ToArray();
+                return ContentRectTransform.GetTopLevelChildren<RectTransform>().ToArray();
             return null;
            }
        } 
+
 
        public Spawner ListItemSpawner;
 
@@ -53,13 +61,18 @@
             if(ListItemSpawner == null){
                 return null;
             }
-
-            return ListItemSpawner.SpawnAndGetGameObject();
+            var result = ListItemSpawner.SpawnAndGetGameObject();
+            Refresh();
+            return result;
        }
 
        public void ClearSpawnedListItems(){
             ListItemSpawner.DestroyAllSpawns();
             Refresh();
+       }
+
+       public int VisibleSpawnedListItemCount(){
+           return ListItemSpawner.SpawnedGameObjects.Where(li => li.gameObject.activeSelf).Count();
        }
 
        public void Refresh(){
@@ -71,10 +84,11 @@
            ScrollRectComponent.content.anchoredPosition = new Vector2(0f, 0f);
        }
         int m_culling_countdown = 5;
-        void Awake(){
+        protected void Awake(){
             if(!m_init){
                 m_init = true;
                 ScrollRectComponent.onValueChanged.AddListener(m_onValueChanged);
+                //  m_Base_padding = GetLayoutGroupPadding();
             }
         }
         void Update(){
@@ -149,6 +163,28 @@
                }
                return m_horizontalLayoutGroupComponent;
            }
+       }
+
+        // protected RectOffset m_Base_padding{get; set;}
+
+       public RectOffset GetLayoutGroupPadding(){
+           if(HorizontalLayoutGroupComponent != null){
+               return HorizontalLayoutGroupComponent.padding;
+           }else if(VerticalLayoutGroupComponent != null){
+               return VerticalLayoutGroupComponent.padding;
+           }
+
+           return null;
+       }
+
+       public float GetLayoutGroupSpacing(){
+           if(HorizontalLayoutGroupComponent != null){
+               return HorizontalLayoutGroupComponent.spacing;
+           }else if(VerticalLayoutGroupComponent != null){
+               return VerticalLayoutGroupComponent.spacing;
+           }
+
+           return 0f;
        }
 
        void ViewportOcclusionCulling(){
@@ -369,5 +405,174 @@
             ScrollRectComponent.verticalNormalizedPosition -= ManualScrollSpeed;
         }
 
+        //------------------------------------------------------------------------------------
+        // LayoutGroup code
+        //------------------------------------------------------------------------------------
+
+        [SerializeField] protected TextAnchor m_ChildAlignment = TextAnchor.UpperLeft;
+        public TextAnchor childAlignment { get { return m_ChildAlignment; } set { SetProperty(ref m_ChildAlignment, value); }}
+        [SerializeField] protected RectOffset m_Padding = new RectOffset();
+        protected DrivenRectTransformTracker m_Tracker;
+
+        public RectOffset padding { get { return m_Padding; } set { SetProperty(ref m_Padding, value); }}
+
+        private Vector2 m_TotalMinSize = Vector2.zero;
+        private Vector2 m_TotalPreferredSize = Vector2.zero;
+
+        [SerializeField] protected float m_Spacing = 0;
+        public float spacing {get {return m_Spacing;} set { SetProperty(ref m_Spacing, value); }}
+
+        protected float GetTotalMinSize(int axis){
+            return m_TotalMinSize[axis];
+        }
+
+        protected float GetTotalPreferredSize(int axis){
+            return m_TotalPreferredSize[axis];
+        }
+
+        /// <summary>
+        /// Returns the alignment on the specified axis as a fraction where 0 is left/top, 0.5 is middle, and 1 is right/bottom.
+        /// </summary>
+        /// <param name="axis">The axis to get alignment along. 0 is horizontal and 1 is vertical.</param>
+        /// <returns>The alignment as a fraction where 0 is left/top, 0.5 is middle, and 1 is right/bottom.</returns>
+        protected float GetAlignmentOnAxis(int axis){
+            if(axis == 0)
+                return((int)childAlignment % 3) * 0.5f;
+            return((int)childAlignment / 3) * 0.5f;
+        }
+
+        protected void SetProperty<T>(ref T currentValue, T newValue){
+            if((currentValue == null && newValue == null) || (currentValue != null && currentValue.Equals(newValue)))
+                return;
+            currentValue = newValue;
+            // SetDirty
+        }
+
+        private void GetChildSizes(RectTransform child, int axis, out float min, out float preferred, out float flexible){
+            min = LayoutUtility.GetMinSize(child, axis);
+            preferred = LayoutUtility.GetPreferredSize(child, axis);
+            flexible = Mathf.Max(LayoutUtility.GetFlexibleSize(child, axis), 1);
+        }
+
+        protected float GetStartOffset(int axis, float requiredSpaceWithoutPadding){
+            float requiredSpace = requiredSpaceWithoutPadding + (axis == 0 ? padding.horizontal : padding.vertical);
+            float availableSpace = ContentRectTransform.rect.size[axis];
+            float surplusSpace = availableSpace - requiredSpace;
+            float alignmentOnAxis = GetAlignmentOnAxis(axis);
+            return (axis == 0 ? padding.left : padding.top) + surplusSpace * alignmentOnAxis;
+        }
+
+        /// <summary>
+        /// Set the position and size of a child layout element along the given axis.
+        /// </summary>
+        /// <param name="rect">The RectTransform of the child layout element.</param>
+        /// <param name="axis">The axis to set the position and size along. 0 is horizontal and 1 is vertical.</param>
+        /// <param name="pos">The position from the left side or top.</param>
+        /// <param name="size">The size.</param>
+        protected void SetChildrenAlongAxisWithScale(RectTransform rect, int axis, float pos, float size, float scaleFactor){
+            if (rect == null)
+                return;
+
+            m_Tracker.Add(this, rect,
+                DrivenTransformProperties.Anchors |
+                (axis == 0 ?
+                    (DrivenTransformProperties.AnchoredPositionX | DrivenTransformProperties.SizeDeltaX) :
+                    (DrivenTransformProperties.AnchoredPositionY | DrivenTransformProperties.SizeDeltaY)
+                )
+            );
+
+            rect.anchorMin = Vector2.up;
+            rect.anchorMax = Vector2.up;
+
+            Vector2 sizeDelta = rect.sizeDelta;
+            sizeDelta[axis] = size;
+            rect.sizeDelta = sizeDelta;
+
+            Vector2 anchoredPosition = rect.anchoredPosition;
+            anchoredPosition[axis] = (axis == 0) ? (pos + size * rect.pivot[axis] * scaleFactor) : (-pos - size * (1f - rect.pivot[axis] * scaleFactor));
+            rect.anchoredPosition = anchoredPosition;
+        }
+
+        /// <summary>
+        /// Set the position and size of a child layout element along the given axis.
+        /// </summary>
+        /// <param name="rect">The RectTransform of the child layout element.</param>
+        /// <param name="axis">The axis to set the position and size along. 0 is horizontal and 1 is vertical.</param>
+        /// <param name="pos">The position from the left side or top.</param>
+        /// <param name="size">The size.</param>
+        protected void SetChildrenAlongAxisWithScale(RectTransform rect, int axis, float pos, float scaleFactor){
+            if(rect == null)
+                return;
+            
+            m_Tracker.Add(this, rect,
+                DrivenTransformProperties.Anchors | 
+                (axis == 0 ? DrivenTransformProperties.AnchoredPositionX : DrivenTransformProperties.AnchoredPositionY));
+
+            rect.anchorMin = Vector2.up;
+            rect.anchorMax = Vector2.up;
+
+            Vector2 anchoredPosition = rect.anchoredPosition;
+            anchoredPosition[axis] = (axis == 0) ? (pos + rect.sizeDelta[axis] * rect.pivot[axis] * scaleFactor) : (-pos - rect.sizeDelta[axis] * (1f - rect.pivot[axis]) * scaleFactor);
+            rect.anchoredPosition = anchoredPosition;
+        }
+
+        private void SetChildrenAlongAxis(int axis, bool isVertical){
+            float size = ContentRectTransform.rect.size[axis];
+            bool controlSize = (axis == 0 ? isVertical : !isVertical);
+            bool useScale = false;
+            float alignmentOnAxis = GetAlignmentOnAxis(axis);
+            bool alongOtherAxis = (isVertical ^ (axis == 1));
+            if(alongOtherAxis){
+                float innerSize = size - (axis == 0 ? padding.horizontal : padding.vertical);
+                for (int i = 0; i < m_ContentChildren.Length; i++){
+                    RectTransform child = m_ContentChildren[i];
+                    float min, preferred, flexible;
+                    GetChildSizes(child, axis, out min, out preferred, out flexible);
+                    float scaleFactor = useScale ? child.localScale[axis] : 1f;
+                    float requiredSpace = Mathf.Clamp(innerSize, min, flexible > 0 ? size : preferred);
+                    float startOffset = GetStartOffset(axis, requiredSpace * scaleFactor);
+                    if(controlSize){
+                        SetChildrenAlongAxisWithScale(child, axis, startOffset, requiredSpace, scaleFactor);
+                    } else {
+                        float offsetInCell = (requiredSpace - child.sizeDelta[axis]) * alignmentOnAxis;
+                        SetChildrenAlongAxisWithScale(child, axis, startOffset + offsetInCell, scaleFactor);
+
+                    }
+                }
+
+            } else {
+                float pos = (axis == 0 ? padding.left : padding.top);
+                float itemFlexibleMultiplier = 0;
+                float surplusSpace = size - GetTotalPreferredSize(axis);
+
+                if(surplusSpace > 0){
+                    if(GetTotalPreferredSize(axis) == 0)
+                        pos = GetStartOffset(axis, GetTotalPreferredSize(axis) - (axis == 0 ? padding.horizontal : padding.vertical));
+                    else if (GetTotalPreferredSize(axis) == 0)
+                        itemFlexibleMultiplier = surplusSpace / GetTotalPreferredSize(axis);
+                }
+
+                float minMaxLerp = 0;
+                if(GetTotalMinSize(axis) != GetTotalPreferredSize(axis) )
+                    minMaxLerp = Mathf.Clamp01((size - GetTotalMinSize(axis)) / (GetTotalPreferredSize(axis) - GetTotalMinSize(axis)));
+                
+                for (int i = 0; i < m_ContentChildren.Length; i++){
+                    RectTransform child = m_ContentChildren[i];
+                    float min, preferred, flexible;
+                    GetChildSizes(child, axis,out min, out preferred, out flexible);
+                    float scaleFactor = useScale ? child.localScale[axis] : 1f;
+
+                    float childSize = Mathf.Lerp(min, preferred, minMaxLerp);
+                    childSize += flexible * itemFlexibleMultiplier;
+                    if(controlSize){
+                        SetChildrenAlongAxisWithScale(child, axis, pos, childSize, scaleFactor);
+                    } else {
+                        float offsetInCell = (childSize - child.sizeDelta[axis]) * alignmentOnAxis;
+                        SetChildrenAlongAxisWithScale(child, axis, pos + offsetInCell, scaleFactor);
+                    }
+                    pos += childSize * scaleFactor + spacing;
+                }
+            }
+        }
     }
 }

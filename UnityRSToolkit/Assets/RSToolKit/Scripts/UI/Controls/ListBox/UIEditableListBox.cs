@@ -28,7 +28,7 @@
         public UIEditableListBoxItem AddEditableListItem(){
             var li = AddListItem();
             if(li != null){
-                Refresh();
+                // Refresh();
                 return li.GetComponent<UIEditableListBoxItem>();
             }
             return null;
