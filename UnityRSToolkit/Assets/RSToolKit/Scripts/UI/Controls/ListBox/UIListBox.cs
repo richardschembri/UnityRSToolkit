@@ -23,7 +23,14 @@
 
         bool m_CullingOn = false;
 
-        public float ManualScrollSpeed = 0.01f;
+        public float manualScrollSpeed { get { return m_ManualScrollSpeed; } set { m_ManualScrollSpeed = value; }}
+
+        [SerializeField]
+        private float m_ManualScrollSpeed = 0.01f;
+
+        public bool isVertical  { get { return m_IsVertical; } set { m_IsVertical = value; }}
+        [SerializeField]
+        private bool m_IsVertical = true;
 
         private ScrollRect m_scrollRectComponent = null;
         public ScrollRect ScrollRectComponent{
@@ -33,7 +40,7 @@
                 return m_scrollRectComponent;
             }
         }
-       private RectTransform m_contentRectTransform;
+       // private RectTransform m_contentRectTransform;
        public RectTransform ContentRectTransform{
            get{
                return ScrollRectComponent.content.GetComponent<RectTransform>();
@@ -44,13 +51,21 @@
        private RectTransform[] m_ContentChildren{
            get{
             if (m_contentChildren == null)
-                return ContentRectTransform.GetTopLevelChildren<RectTransform>().ToArray();
-            return null;
+                m_contentChildren = ContentRectTransform.GetTopLevelChildren<RectTransform>().ToArray();
+            return m_contentChildren;
            }
        } 
 
 
-       public Spawner ListItemSpawner;
+       private Spawner m_ListItemSpawner;
+       public Spawner listItemSpawner { 
+           get { 
+               if(m_ListItemSpawner == null){
+                   m_ListItemSpawner = ContentRectTransform.GetComponent<Spawner>();
+               }
+               return m_ListItemSpawner; 
+            } 
+       }
 
        public class OnShiftMostHorizontalEvent : UnityEvent<RectTransform, RectTransformHelpers.HorizontalPosition>{}
        public OnShiftMostHorizontalEvent OnShiftMostHorizontal = new OnShiftMostHorizontalEvent();
@@ -58,27 +73,29 @@
        public class OnShiftMostVerticalEvent : UnityEvent<RectTransform, RectTransformHelpers.VerticalPosition>{}
        public OnShiftMostVerticalEvent OnShiftMostVertical = new OnShiftMostVerticalEvent();
        public GameObject AddListItem(){
-            if(ListItemSpawner == null){
+            if(listItemSpawner == null){
                 return null;
             }
-            var result = ListItemSpawner.SpawnAndGetGameObject();
+            var result = listItemSpawner.SpawnAndGetGameObject();
             Refresh();
             return result;
        }
 
        public void ClearSpawnedListItems(){
-            ListItemSpawner.DestroyAllSpawns();
+            listItemSpawner.DestroyAllSpawns();
             Refresh();
        }
 
        public int VisibleSpawnedListItemCount(){
-           return ListItemSpawner.SpawnedGameObjects.Where(li => li.gameObject.activeSelf).Count();
+           return listItemSpawner.SpawnedGameObjects.Where(li => li.gameObject.activeSelf).Count();
        }
 
        public void Refresh(){
            m_contentChildren = null;
            m_scrollRectComponent = null;
+
            TurnOffCulling();
+           SetLayout();
            DelayedTurnOnCulling();
            ScrollRectComponent.velocity = new Vector2(0f, 0f);
            ScrollRectComponent.content.anchoredPosition = new Vector2(0f, 0f);
@@ -88,7 +105,7 @@
             if(!m_init){
                 m_init = true;
                 ScrollRectComponent.onValueChanged.AddListener(m_onValueChanged);
-                //  m_Base_padding = GetLayoutGroupPadding();
+                SetLayout();
             }
         }
         void Update(){
@@ -145,62 +162,10 @@
            }
        }
 
-       private VerticalLayoutGroup m_verticalLayoutGroupComponent = null;
-       private VerticalLayoutGroup VerticalLayoutGroupComponent{
-           get{
-               if (m_verticalLayoutGroupComponent == null){
-                   m_verticalLayoutGroupComponent = ScrollRectComponent.content.GetComponent<VerticalLayoutGroup>(); 
-               }
-               return m_verticalLayoutGroupComponent;
-           }
-       }
-       
-       private HorizontalLayoutGroup m_horizontalLayoutGroupComponent  = null;
-       private HorizontalLayoutGroup HorizontalLayoutGroupComponent{
-           get{
-               if (m_horizontalLayoutGroupComponent == null){
-                   m_horizontalLayoutGroupComponent = ScrollRectComponent.content.GetComponent<HorizontalLayoutGroup>(); 
-               }
-               return m_horizontalLayoutGroupComponent;
-           }
-       }
-
-        // protected RectOffset m_Base_padding{get; set;}
-
-       public RectOffset GetLayoutGroupPadding(){
-           if(HorizontalLayoutGroupComponent != null){
-               return HorizontalLayoutGroupComponent.padding;
-           }else if(VerticalLayoutGroupComponent != null){
-               return VerticalLayoutGroupComponent.padding;
-           }
-
-           return null;
-       }
-
-       public float GetLayoutGroupSpacing(){
-           if(HorizontalLayoutGroupComponent != null){
-               return HorizontalLayoutGroupComponent.spacing;
-           }else if(VerticalLayoutGroupComponent != null){
-               return VerticalLayoutGroupComponent.spacing;
-           }
-
-           return 0f;
-       }
-
        void ViewportOcclusionCulling(){
             if (ScrollRectComponent.content == null){
                 return;
             }
-
-            if (VerticalLayoutGroupComponent != null){
-                VerticalLayoutGroupComponent.enabled = !m_CullingOn;
-            }
-
-            if(HorizontalLayoutGroupComponent != null){
-                HorizontalLayoutGroupComponent.enabled = !m_CullingOn;
-            }
-
-            ScrollRectComponent.content.GetComponent<ContentSizeFitter>().enabled = !m_CullingOn;
             if(m_CullingOn){
                 for(int i = 0; i < m_ContentChildren.Length; i++){
                     m_ContentChildren[i].gameObject.SetActive(ScrollRectComponent.viewport.HasWithinBounds(m_ContentChildren[i]));
@@ -218,31 +183,19 @@
             ShiftListItemAbove(toshift, toshift);
        }
        private void ShiftListItemAbove(RectTransform toshift, RectTransform target ){
-            if(VerticalLayoutGroupComponent != null){
-                toshift.localPosition = target.ShiftUpLocalPosition(VerticalLayoutGroupComponent.spacing);
-            }else{
-                toshift.localPosition = target.ShiftUpLocalPosition();
-            }
+            toshift.localPosition = target.ShiftUpLocalPosition(spacing);
        }
        private void ShiftListItemBelow(RectTransform toshift){
             ShiftListItemBelow(toshift, toshift);
        }
        private void ShiftListItemBelow(RectTransform toshift, RectTransform target){
-            if(VerticalLayoutGroupComponent != null){
-                toshift.localPosition = target.ShiftDownLocalPosition(VerticalLayoutGroupComponent.spacing);
-            }else{
-                toshift.localPosition = target.ShiftDownLocalPosition();
-            }
+            toshift.localPosition = target.ShiftDownLocalPosition(spacing);
        }
        private void ShiftListItemLeft(RectTransform toshift){
             ShiftListItemLeft(toshift, toshift);
        }
        private void ShiftListItemLeft(RectTransform toshift, RectTransform target){
-            if(HorizontalLayoutGroupComponent != null){
-                toshift.localPosition = target.ShiftLeftLocalPosition(HorizontalLayoutGroupComponent.spacing);
-            }else{
-                toshift.localPosition = target.ShiftLeftLocalPosition();
-            }
+            toshift.localPosition = target.ShiftLeftLocalPosition(spacing);
        }
        private void PlaceListItemLeftMost(RectTransform toplace, float padding){
             var toplacePos = GetPositionWithinViewPort(toplace, padding); 
@@ -258,11 +211,7 @@
             ShiftListItemRight(toshift, toshift);
        }
        private void ShiftListItemRight(RectTransform toshift, RectTransform target){
-            if(HorizontalLayoutGroupComponent != null){
-                toshift.localPosition = target.ShiftRightLocalPosition(HorizontalLayoutGroupComponent.spacing);
-            }else{
-                toshift.localPosition = target.ShiftRightLocalPosition();
-            }
+            toshift.localPosition = target.ShiftRightLocalPosition(spacing);
        }
        private void ShiftListItemRightMost(RectTransform toplace, float padding){
             var toplacePos = GetPositionWithinViewPort(toplace, padding); 
@@ -317,25 +266,11 @@
             if(isScrollDown){
                 if((vertList.Length < 2 && bottomPos.verticalPostion == RectTransformHelpers.VerticalPosition.BELOW) || (topPos.verticalPostion == RectTransformHelpers.VerticalPosition.WITHIN
                     && bottomPos.verticalPostion == RectTransformHelpers.VerticalPosition.BELOW)){
-                    /*
-                    while(bottomPos.verticalPostion != RectTransformHelpers.VerticalPosition.ABOVE){
-                        ShiftListItemAbove(bottomLI, bottomLI);
-                        bottomPos = ScrollRectComponent.viewport.PositionWithinBounds(bottomLI, new Vector2(0, padding), Vector2.zero); 
-                    }
-                    bottomLI.SetAsFirstSibling();
-                    */
                     ShiftListItemTopMost(bottomLI, padding);
                 }
             }else{
                 if((vertList.Length < 2 && topPos.verticalPostion == RectTransformHelpers.VerticalPosition.ABOVE) || (bottomPos.verticalPostion == RectTransformHelpers.VerticalPosition.WITHIN
                     && topPos.verticalPostion == RectTransformHelpers.VerticalPosition.ABOVE)){
-                    /*
-                    while(topPos.verticalPostion != RectTransformHelpers.VerticalPosition.BELOW){
-                        ShiftListItemBelow(topLI, topLI);
-                        topPos = ScrollRectComponent.viewport.PositionWithinBounds(topLI, new Vector2(0, padding), Vector2.zero);
-                    }
-                    topLI.SetAsLastSibling();
-                    */
                     ShiftListItemBottomMost(topLI, padding);
                 }
 
@@ -343,7 +278,7 @@
         }
 
         public void InfiniteHorizontalScroll(bool isScrollRight){
-            if (!ScrollRectComponent.horizontal || ScrollRectComponent.movementType != ScrollRect.MovementType.Unrestricted){ //} || ListItemsSize().x < m_ScrollRectComponent.viewport.ScaledSize().x){
+            if (!ScrollRectComponent.horizontal || ScrollRectComponent.movementType != ScrollRect.MovementType.Unrestricted){
                 return;
             } 
             var horizList = m_ContentChildren.OrderByDescending(rt => rt.GetComponent<RectTransform>().position.x).ToArray();
@@ -361,25 +296,11 @@
             if(isScrollRight){
                 if((horizList.Length < 2 && rightPos.horizontalPostion == RectTransformHelpers.HorizontalPosition.RIGHT) || (leftPos.horizontalPostion == RectTransformHelpers.HorizontalPosition.WITHIN
                     && rightPos.horizontalPostion == RectTransformHelpers.HorizontalPosition.RIGHT)){
-                    /*
-                    while(rightPos.horizontalPostion != RectTransformHelpers.HorizontalPosition.LEFT){
-                        ShiftListItemLeft(rightLI, rightLI);                    
-                        rightPos = ScrollRectComponent.viewport.PositionWithinBounds(rightLI, new Vector2(padding, 0), Vector2.zero); 
-                    }
-                    rightLI.SetAsFirstSibling();
-                    */
                     PlaceListItemLeftMost(rightLI, padding);
                 }
             }else{
                 if((horizList.Length < 2 && leftPos.horizontalPostion == RectTransformHelpers.HorizontalPosition.LEFT) || (rightPos.horizontalPostion == RectTransformHelpers.HorizontalPosition.WITHIN
                     && leftPos.horizontalPostion == RectTransformHelpers.HorizontalPosition.LEFT)){
-                    /*
-                    while(leftPos.horizontalPostion != RectTransformHelpers.HorizontalPosition.RIGHT){
-                        ShiftListItemRight(leftLI, leftLI);
-                        leftPos = ScrollRectComponent.viewport.PositionWithinBounds(leftLI, new Vector2(padding, 0), Vector2.zero);
-                    }
-                    leftLI.SetAsLastSibling();
-                    */
                     ShiftListItemRightMost(leftLI, padding);
                 }
             }
@@ -387,32 +308,69 @@
 
         public void ScrollLeft(){
             m_manualScroll = ManualScroll.LEFT; 
-            ScrollRectComponent.horizontalNormalizedPosition += ManualScrollSpeed;
+            ScrollRectComponent.horizontalNormalizedPosition += m_ManualScrollSpeed;
         }
 
         public void ScrollRight(){
             m_manualScroll = ManualScroll.RIGHT; 
-            ScrollRectComponent.horizontalNormalizedPosition -= ManualScrollSpeed;
+            ScrollRectComponent.horizontalNormalizedPosition -= m_ManualScrollSpeed;
         }
 
         public void ScrollDown(){
             m_manualScroll = ManualScroll.DOWN; 
-            ScrollRectComponent.verticalNormalizedPosition += ManualScrollSpeed;
+            ScrollRectComponent.verticalNormalizedPosition += m_ManualScrollSpeed;
         }
 
         public void ScrollUp(){
             m_manualScroll = ManualScroll.UP; 
-            ScrollRectComponent.verticalNormalizedPosition -= ManualScrollSpeed;
+            ScrollRectComponent.verticalNormalizedPosition -= m_ManualScrollSpeed;
         }
 
-        //------------------------------------------------------------------------------------
-        // LayoutGroup code
-        //------------------------------------------------------------------------------------
+        #region Content Size Fitter
+        protected DrivenRectTransformTracker m_ContentSizeTracker; // m_Tracker
 
+        private void HandleSelfFittingAlongAxis(int axis){
+           m_ContentSizeTracker.Add(this, ContentRectTransform, (axis == 0 ? DrivenTransformProperties.SizeDeltaX : DrivenTransformProperties.SizeDeltaY)); 
+           ContentRectTransform.SetSizeWithCurrentAnchors((RectTransform.Axis)axis, LayoutUtility.GetPreferredSize(ContentRectTransform, axis));
+        }
+
+        public virtual void SetLayout(){
+            SetLayoutHorizontal();
+            SetLayoutVertical();
+        }
+
+        public virtual void SetLayoutHorizontal(){
+            m_ContentSizeTracker.Clear();
+
+            SetChildrenAlongAxis(0, isVertical);
+        }
+
+        public virtual void SetLayoutVertical(){
+            SetChildrenAlongAxis(1, isVertical);
+        }
+
+        protected void SetDirty(){
+            if(!gameObject.activeSelf)
+                return;
+            
+            if(!CanvasUpdateRegistry.IsRebuildingLayout())
+                LayoutRebuilder.MarkLayoutForRebuild(ContentRectTransform);
+            else
+                StartCoroutine(DelayedSetDirty(ContentRectTransform));
+                
+        }
+
+        IEnumerator DelayedSetDirty(RectTransform rectTransform){
+            yield return null;
+            LayoutRebuilder.MarkLayoutForRebuild(ContentRectTransform);
+        }
+        #endregion
+
+        #region LayoutGroup code
         [SerializeField] protected TextAnchor m_ChildAlignment = TextAnchor.UpperLeft;
         public TextAnchor childAlignment { get { return m_ChildAlignment; } set { SetProperty(ref m_ChildAlignment, value); }}
         [SerializeField] protected RectOffset m_Padding = new RectOffset();
-        protected DrivenRectTransformTracker m_Tracker;
+        protected DrivenRectTransformTracker m_LayoutGroupTracker; // m_Tracker
 
         public RectOffset padding { get { return m_Padding; } set { SetProperty(ref m_Padding, value); }}
 
@@ -421,14 +379,6 @@
 
         [SerializeField] protected float m_Spacing = 0;
         public float spacing {get {return m_Spacing;} set { SetProperty(ref m_Spacing, value); }}
-
-        protected float GetTotalMinSize(int axis){
-            return m_TotalMinSize[axis];
-        }
-
-        protected float GetTotalPreferredSize(int axis){
-            return m_TotalPreferredSize[axis];
-        }
 
         /// <summary>
         /// Returns the alignment on the specified axis as a fraction where 0 is left/top, 0.5 is middle, and 1 is right/bottom.
@@ -446,12 +396,6 @@
                 return;
             currentValue = newValue;
             // SetDirty
-        }
-
-        private void GetChildSizes(RectTransform child, int axis, out float min, out float preferred, out float flexible){
-            min = LayoutUtility.GetMinSize(child, axis);
-            preferred = LayoutUtility.GetPreferredSize(child, axis);
-            flexible = Mathf.Max(LayoutUtility.GetFlexibleSize(child, axis), 1);
         }
 
         protected float GetStartOffset(int axis, float requiredSpaceWithoutPadding){
@@ -473,7 +417,7 @@
             if (rect == null)
                 return;
 
-            m_Tracker.Add(this, rect,
+            m_LayoutGroupTracker.Add(this, rect,
                 DrivenTransformProperties.Anchors |
                 (axis == 0 ?
                     (DrivenTransformProperties.AnchoredPositionX | DrivenTransformProperties.SizeDeltaX) :
@@ -504,7 +448,7 @@
             if(rect == null)
                 return;
             
-            m_Tracker.Add(this, rect,
+            m_LayoutGroupTracker.Add(this, rect,
                 DrivenTransformProperties.Anchors | 
                 (axis == 0 ? DrivenTransformProperties.AnchoredPositionX : DrivenTransformProperties.AnchoredPositionY));
 
@@ -519,17 +463,15 @@
         private void SetChildrenAlongAxis(int axis, bool isVertical){
             float size = ContentRectTransform.rect.size[axis];
             bool controlSize = (axis == 0 ? isVertical : !isVertical);
-            bool useScale = false;
+            //bool useScale = false;
             float alignmentOnAxis = GetAlignmentOnAxis(axis);
             bool alongOtherAxis = (isVertical ^ (axis == 1));
             if(alongOtherAxis){
                 float innerSize = size - (axis == 0 ? padding.horizontal : padding.vertical);
                 for (int i = 0; i < m_ContentChildren.Length; i++){
                     RectTransform child = m_ContentChildren[i];
-                    float min, preferred, flexible;
-                    GetChildSizes(child, axis, out min, out preferred, out flexible);
-                    float scaleFactor = useScale ? child.localScale[axis] : 1f;
-                    float requiredSpace = Mathf.Clamp(innerSize, min, flexible > 0 ? size : preferred);
+                    float scaleFactor = child.localScale[axis];
+                    float requiredSpace = Mathf.Clamp(innerSize, 0, size);
                     float startOffset = GetStartOffset(axis, requiredSpace * scaleFactor);
                     if(controlSize){
                         SetChildrenAlongAxisWithScale(child, axis, startOffset, requiredSpace, scaleFactor);
@@ -542,28 +484,11 @@
 
             } else {
                 float pos = (axis == 0 ? padding.left : padding.top);
-                float itemFlexibleMultiplier = 0;
-                float surplusSpace = size - GetTotalPreferredSize(axis);
-
-                if(surplusSpace > 0){
-                    if(GetTotalPreferredSize(axis) == 0)
-                        pos = GetStartOffset(axis, GetTotalPreferredSize(axis) - (axis == 0 ? padding.horizontal : padding.vertical));
-                    else if (GetTotalPreferredSize(axis) == 0)
-                        itemFlexibleMultiplier = surplusSpace / GetTotalPreferredSize(axis);
-                }
-
-                float minMaxLerp = 0;
-                if(GetTotalMinSize(axis) != GetTotalPreferredSize(axis) )
-                    minMaxLerp = Mathf.Clamp01((size - GetTotalMinSize(axis)) / (GetTotalPreferredSize(axis) - GetTotalMinSize(axis)));
-                
                 for (int i = 0; i < m_ContentChildren.Length; i++){
                     RectTransform child = m_ContentChildren[i];
-                    float min, preferred, flexible;
-                    GetChildSizes(child, axis,out min, out preferred, out flexible);
-                    float scaleFactor = useScale ? child.localScale[axis] : 1f;
+                    float scaleFactor = child.localScale[axis];
 
-                    float childSize = Mathf.Lerp(min, preferred, minMaxLerp);
-                    childSize += flexible * itemFlexibleMultiplier;
+                    float childSize = axis == 0 ? child.rect.width : child.rect.height;
                     if(controlSize){
                         SetChildrenAlongAxisWithScale(child, axis, pos, childSize, scaleFactor);
                     } else {
@@ -571,8 +496,15 @@
                         SetChildrenAlongAxisWithScale(child, axis, pos + offsetInCell, scaleFactor);
                     }
                     pos += childSize * scaleFactor + spacing;
+                    var sizeDelta = ContentRectTransform.sizeDelta;
+                    sizeDelta[axis] = pos;
+                    ContentRectTransform.sizeDelta = sizeDelta;
                 }
             }
         }
+
+
+        #endregion
+
     }
 }

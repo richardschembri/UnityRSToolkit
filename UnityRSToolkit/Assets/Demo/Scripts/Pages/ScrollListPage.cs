@@ -10,14 +10,24 @@ using RSToolkit.Helpers;
 public class ScrollListPage : UIPage
 {
     public UIListBox VerticalListBox;
+    public UIListBox HorizontalListBox;
 
-    private Spawner m_buttonSpawner;
-    public Spawner ButtonSpawner{
+    private Spawner m_verticalButtonSpawner;
+    public Spawner VerticalButtonSpawner{
         get{
-            if(m_buttonSpawner == null){
-                m_buttonSpawner = VerticalListBox.GetComponentInChildren<Spawner>();
+            if(m_verticalButtonSpawner == null){
+                m_verticalButtonSpawner = VerticalListBox.GetComponentInChildren<Spawner>();
             }
-            return m_buttonSpawner;
+            return m_verticalButtonSpawner;
+        }
+    }
+    private Spawner m_horizontalButtonSpawner;
+    public Spawner HorizontalButtonSpawner{
+        get{
+            if(m_horizontalButtonSpawner == null){
+                m_horizontalButtonSpawner = HorizontalListBox.GetComponentInChildren<Spawner>();
+            }
+            return m_horizontalButtonSpawner;
         }
     }
 
@@ -28,15 +38,15 @@ public class ScrollListPage : UIPage
     }
 
     public void AddButtons(){
-       VerticalListBox.Refresh();
-       VerticalListBox.TurnOffCulling();
        for(int i = 0; i < 5; i++){
-           var b = VerticalListBox.AddListItem().GetComponent<Button>();
-           b.name = string.Format("Button {0}", VerticalListBox.ListItemSpawner.SpawnedGameObjects.Count);
-           b.GetComponentInChildren<Text>().text = b.name;
+           var vb = VerticalListBox.AddListItem().GetComponent<Button>();
+           vb.name = string.Format("Button {0}", VerticalListBox.listItemSpawner.SpawnedGameObjects.Count);
+           vb.GetComponentInChildren<Text>().text = vb.name;
+
+           var hb = HorizontalListBox.AddListItem().GetComponent<Button>();
+           hb.name = string.Format("Button {0}", HorizontalListBox.listItemSpawner.SpawnedGameObjects.Count);
+           hb.GetComponentInChildren<Text>().text = hb.name;
        }
-       VerticalListBox.TurnOnCulling();
-       VerticalListBox.Refresh();
     }
 
     void ShiftTest(RectTransform li, RectTransformHelpers.VerticalPosition horpos){

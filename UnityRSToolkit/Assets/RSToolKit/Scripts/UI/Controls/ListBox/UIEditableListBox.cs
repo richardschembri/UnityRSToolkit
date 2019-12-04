@@ -10,7 +10,7 @@
     {
         private UIEditableListBoxItem.ListBoxItemMode m_ListMode = UIEditableListBoxItem.ListBoxItemMode.VIEW; 
         public UIEditableListBoxItem[] GetListBoxItems(){
-            return ListItemSpawner.SpawnedGameObjects
+            return listItemSpawner.SpawnedGameObjects
                     .Select(li => li.GetComponent<UIEditableListBoxItem>()).ToArray();
         }
 
@@ -19,8 +19,8 @@
         }
 
         public bool HasAllToggledListItems(bool on = true){
-            if(ListItemSpawner.SpawnedGameObjects.Any()){
-                return ListItemSpawner.SpawnedGameObjects.Count == GetToggledListItems(on).Length;
+            if(listItemSpawner.SpawnedGameObjects.Any()){
+                return listItemSpawner.SpawnedGameObjects.Count == GetToggledListItems(on).Length;
             }
             return false;
         }
