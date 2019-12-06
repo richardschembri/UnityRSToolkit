@@ -36,7 +36,6 @@
             EditorGUILayout.PropertyField(m_Padding, true);
             EditorGUILayout.PropertyField(m_Spacing, true);
             EditorGUILayout.PropertyField(m_ManualScrollSpeed, true);
-            EditorGUILayout.PropertyField(m_IsVertical, true);
 
             Rect rect = EditorGUILayout.GetControlRect();
             EditorGUIUtility.labelWidth = 50;
