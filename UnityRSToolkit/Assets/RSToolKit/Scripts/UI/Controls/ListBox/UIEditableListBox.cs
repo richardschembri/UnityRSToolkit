@@ -10,8 +10,23 @@
     {
         [SerializeField]
         private bool m_OrderAscending = true;
-        public bool orderAscending { get { return m_OrderAscending; } set { m_OrderAscending = value; }}
+        public bool orderAscending { get { return m_OrderAscending; } set { m_OrderAscending = value; Refresh(); }}
         private UIEditableListBoxItem.ListBoxItemMode m_ListMode = UIEditableListBoxItem.ListBoxItemMode.VIEW; 
+
+
+       protected override RectTransform[] m_ContentChildren{
+           get{
+            if (m_contentChildren == null)
+                if(orderAscending){
+                    m_contentChildren = ContentRectTransform.GetTopLevelChildren<RectTransform>()
+                                         .OrderBy(rt => rt.GetComponent<UIEditableListBoxItem>().OrderIndex).ToArray();
+                }else{
+                    m_contentChildren = ContentRectTransform.GetTopLevelChildren<RectTransform>()
+                                         .OrderByDescending(rt => rt.GetComponent<UIEditableListBoxItem>().OrderIndex).ToArray();
+                }
+            return m_contentChildren;
+           }
+       } 
         public UIEditableListBoxItem[] GetListBoxItems(){
             return listItemSpawner.SpawnedGameObjects
                     .Select(li => li.GetComponent<UIEditableListBoxItem>()).ToArray();
@@ -28,14 +43,26 @@
             return false;
         }
 
+       public override GameObject AddListItem(){
+           return AddListItem(null);
+       }
+
+       public GameObject AddListItem(int? orderIndex){
+           return AddEditableListItem(orderIndex)?.gameObject ?? null;
+       }
         public UIEditableListBoxItem AddEditableListItem(int? orderIndex = null){
-            var li = AddListItem();
+            if(listItemSpawner == null){
+                return null;
+            }
+            var li = listItemSpawner.SpawnAndGetGameObject();
+
             UIEditableListBoxItem result = null;
             if(li != null){
                 // Refresh();
                 result = li.GetComponent<UIEditableListBoxItem>();
                 result.OrderIndex = orderIndex ?? listItemSpawner.SpawnedGameObjects.Count;
             }
+            Refresh();
             return result;
         }
 

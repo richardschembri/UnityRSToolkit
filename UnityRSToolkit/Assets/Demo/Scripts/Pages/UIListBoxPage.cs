@@ -48,6 +48,10 @@ public class UIListBoxPage : UIPage
         }
     }
 
+    public void ButtonSort(){
+        uiEditableListBox.orderAscending = !uiEditableListBox.orderAscending;
+    }
+
     private void CheckToggles(){
         if(ToggleView.isOn){
             uiEditableListBox.SetMode(UIEditableListBoxItem.ListBoxItemMode.VIEW);

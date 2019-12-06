@@ -75,7 +75,7 @@
        
        public class OnShiftMostVerticalEvent : UnityEvent<RectTransform, RectTransformHelpers.VerticalPosition>{}
        public OnShiftMostVerticalEvent OnShiftMostVertical = new OnShiftMostVerticalEvent();
-       public GameObject AddListItem(){
+       public virtual GameObject AddListItem(){
             if(listItemSpawner == null){
                 return null;
             }
@@ -96,8 +96,8 @@
        public void Refresh(){
            m_contentChildren = null;
            m_scrollRectComponent = null;
-           CheckCulling();
            SetLayout();
+           CheckCulling();
            ScrollRectComponent.velocity = new Vector2(0f, 0f);
            ScrollRectComponent.content.anchoredPosition = new Vector2(0f, 0f);
        }
@@ -175,8 +175,8 @@
        public void TurnOnCulling(){
            if(!m_CullingOn ){
             m_CullingOn = true; 
-            ViewportOcclusionCulling();
            }
+           ViewportOcclusionCulling();
        }
 
        void DelayedTurnOnCulling(){
@@ -498,6 +498,7 @@
             Vector2 anchoredPosition = rect.anchoredPosition;
             anchoredPosition[axis] = (axis == 0) ? (pos + rect.sizeDelta[axis] * rect.pivot[axis] * scaleFactor) : (-pos - rect.sizeDelta[axis] * (1f - rect.pivot[axis]) * scaleFactor);
             rect.anchoredPosition = anchoredPosition;
+            rect.SetAsLastSibling();
         }
 
         private void SetChildrenAlongAxis(int axis, bool isVertical){
@@ -518,7 +519,6 @@
                     } else {
                         float offsetInCell = (requiredSpace - child.sizeDelta[axis]) * alignmentOnAxis;
                         SetChildrenAlongAxisWithScale(child, axis, startOffset + offsetInCell, scaleFactor);
-
                     }
                 }
 
