@@ -14,6 +14,9 @@
     {
         bool SelectableItem = false;
 
+        int m_orderIndex;
+        public int OrderIndex {get{return m_orderIndex;} set{m_orderIndex = value;}}
+
         public enum ListBoxItemMode
         {
             VIEW,
@@ -115,6 +118,24 @@
             if (transform != null)
             {
                 transform.Find(name).GetComponent<Text>().text = text;
+            }
+        }
+
+        public void SetModeTextComponent(ListBoxItemMode mode, string name, string text)
+        {
+            SetTextComponent(ModeTransforms[mode], name, text);
+        }
+        
+        public void SetCommonTextComponent(string name, string text){
+
+            var nt = new Dictionary<string, string>();
+            nt.Add(name, text);
+            SetCommonTextComponents(nt);
+        }
+        public void SetModeTextComponents(ListBoxItemMode mode, Dictionary<string, string> nametexts){
+            foreach (var nt in nametexts)
+            {
+                SetModeTextComponent(mode, nt.Key, nt.Value);
             }
         }
         public void SetCommonTextComponents(Dictionary<string, string> nametexts)

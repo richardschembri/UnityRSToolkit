@@ -32,6 +32,9 @@
         [SerializeField]
         private bool m_IsVertical = true;
 
+        public bool occlusionCulling { get { return m_OcclusionCulling; } set { m_OcclusionCulling = value; CheckCulling(); }}
+        [SerializeField]
+        private bool m_OcclusionCulling = true;
         private ScrollRect m_scrollRectComponent = null;
         public ScrollRect ScrollRectComponent{
             get{
@@ -47,8 +50,8 @@
            }
        }
 
-       private RectTransform[] m_contentChildren ;
-       private RectTransform[] m_ContentChildren{
+       protected RectTransform[] m_contentChildren ;
+       protected virtual RectTransform[] m_ContentChildren{
            get{
             if (m_contentChildren == null)
                 m_contentChildren = ContentRectTransform.GetTopLevelChildren<RectTransform>().ToArray();
@@ -93,17 +96,46 @@
        public void Refresh(){
            m_contentChildren = null;
            m_scrollRectComponent = null;
-
-           TurnOffCulling();
+           CheckCulling();
            SetLayout();
-           DelayedTurnOnCulling();
            ScrollRectComponent.velocity = new Vector2(0f, 0f);
            ScrollRectComponent.content.anchoredPosition = new Vector2(0f, 0f);
        }
         int m_culling_countdown = 5;
+        protected void Start(){
+            ScrollRectComponent.vertical = isVertical;
+            ScrollRectComponent.horizontal = !isVertical;
+
+            if(ScrollRectComponent.movementType == ScrollRect.MovementType.Unrestricted){
+                bool removeScrollbar = false;
+                if (ScrollRectComponent.vertical && ScrollRectComponent.verticalScrollbar != null)
+                {
+                    var vs = ScrollRectComponent.verticalScrollbar;
+                    ScrollRectComponent.verticalScrollbar = null;
+                    Destroy(vs.gameObject);
+                    // vs.gameObject.SetActive(false);
+                    removeScrollbar = true;
+                }
+
+                if (ScrollRectComponent.horizontal && ScrollRectComponent.horizontalScrollbar != null)
+                {
+                    var hs = ScrollRectComponent.horizontalScrollbar;
+                    ScrollRectComponent.horizontalScrollbar = null;
+                    Destroy(hs.gameObject);
+                    // hs.gameObject.SetActive(false);
+                    removeScrollbar = true;
+                }
+                if(removeScrollbar){
+                    ScrollRectComponent.viewport.SetAnchor(RectTransformHelpers.AnchorPresets.StretchAll);
+                }
+            }
+
+        }
         protected void Awake(){
             if(!m_init){
                 m_init = true;
+
+
                 ScrollRectComponent.onValueChanged.AddListener(m_onValueChanged);
                 SetLayout();
             }
@@ -159,6 +191,14 @@
             for(int i = 0; i < m_ContentChildren.Length; i++){
                 m_ContentChildren[i].gameObject.SetActive(true);
             }
+           }
+       }
+
+       private void CheckCulling(){
+           if(occlusionCulling){
+               TurnOnCulling();
+           }else{
+               TurnOffCulling();
            }
        }
 
@@ -496,10 +536,10 @@
                         SetChildrenAlongAxisWithScale(child, axis, pos + offsetInCell, scaleFactor);
                     }
                     pos += childSize * scaleFactor + spacing;
-                    var sizeDelta = ContentRectTransform.sizeDelta;
-                    sizeDelta[axis] = pos;
-                    ContentRectTransform.sizeDelta = sizeDelta;
                 }
+                var sizeDelta = ContentRectTransform.sizeDelta;
+                sizeDelta[axis] = pos;
+                ContentRectTransform.sizeDelta = sizeDelta;
             }
         }
 

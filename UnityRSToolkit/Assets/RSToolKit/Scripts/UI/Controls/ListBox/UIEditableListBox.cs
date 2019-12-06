@@ -8,6 +8,9 @@
 
     public class UIEditableListBox : UIListBox
     {
+        [SerializeField]
+        private bool m_OrderAscending = true;
+        public bool orderAscending { get { return m_OrderAscending; } set { m_OrderAscending = value; }}
         private UIEditableListBoxItem.ListBoxItemMode m_ListMode = UIEditableListBoxItem.ListBoxItemMode.VIEW; 
         public UIEditableListBoxItem[] GetListBoxItems(){
             return listItemSpawner.SpawnedGameObjects
@@ -25,13 +28,15 @@
             return false;
         }
 
-        public UIEditableListBoxItem AddEditableListItem(){
+        public UIEditableListBoxItem AddEditableListItem(int? orderIndex = null){
             var li = AddListItem();
+            UIEditableListBoxItem result = null;
             if(li != null){
                 // Refresh();
-                return li.GetComponent<UIEditableListBoxItem>();
+                result = li.GetComponent<UIEditableListBoxItem>();
+                result.OrderIndex = orderIndex ?? listItemSpawner.SpawnedGameObjects.Count;
             }
-            return null;
+            return result;
         }
 
         public UIEditableListBoxItem AddEditableListItem(string name, string text, object value = null){

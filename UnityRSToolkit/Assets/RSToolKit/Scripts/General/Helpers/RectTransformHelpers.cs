@@ -105,18 +105,6 @@
 
             var selfEdges = self.GetEdges();
             var targetEdges = target.GetEdges();
-
-            /*
-            var c = self.GetComponentInParent<Canvas>();
-            if (c.renderMode == RenderMode.ScreenSpaceCamera){
-                if(paddingMin.x != 0 || paddingMin.y != 0){
-                    paddingMin = paddingMin / 10;
-                }
-                if(paddingMax.x != 0 || paddingMax.y != 0){
-                    paddingMax = paddingMax / 10;
-                }
-            }
-            */
             
             if (targetEdges.Max.y + paddingMax.y < selfEdges.Min.y){
                 rtp.verticalPostion = VerticalPosition.BELOW;

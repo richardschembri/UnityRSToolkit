@@ -1,12 +1,12 @@
 ﻿namespace  RSToolkit.UI.Editor
 {
-    using UnityEngine;
     using UnityEditor;
+    using UnityEngine;
     using RSToolkit.UI.Controls;
 
-    [CustomEditor(typeof(UIListBox))]
+    [CustomEditor(typeof(UIEditableListBox))]
     [CanEditMultipleObjects]
-    public class UIListBoxEditor : Editor
+    public class UIEditableListBoxEditor : Editor 
     {
         SerializedProperty m_Padding;
         SerializedProperty m_Spacing;
@@ -15,6 +15,7 @@
 
         SerializedProperty m_ChildAlignment;
         SerializedProperty m_OcclusionCulling;
+        SerializedProperty m_OrderAscending;
 
         protected virtual void OnEnable(){
             m_Padding           = serializedObject.FindProperty("m_Padding");
@@ -23,21 +24,19 @@
             m_IsVertical        = serializedObject.FindProperty("m_IsVertical");
             m_ChildAlignment    = serializedObject.FindProperty("m_ChildAlignment");
             m_OcclusionCulling  = serializedObject.FindProperty("m_OcclusionCulling"); 
+            m_OrderAscending = serializedObject.FindProperty("m_OrderAscending");
         }
-
         public override void OnInspectorGUI(){
             serializedObject.Update();
             DrawInspectorGUI();
             serializedObject.ApplyModifiedProperties();
         }
-
         protected virtual void DrawInspectorGUI(){
-
             EditorGUILayout.PropertyField(m_Padding, true);
             EditorGUILayout.PropertyField(m_Spacing, true);
             EditorGUILayout.PropertyField(m_ManualScrollSpeed, true);
             EditorGUILayout.PropertyField(m_IsVertical, true);
-
+            EditorGUILayout.PropertyField(m_OrderAscending, true);
             Rect rect = EditorGUILayout.GetControlRect();
             EditorGUIUtility.labelWidth = 50;
             ToggleLeft(rect, m_IsVertical, EditorGUIUtility.TrTextContent("Is Vertical"));
@@ -46,6 +45,11 @@
             rect = EditorGUILayout.GetControlRect();
             EditorGUIUtility.labelWidth = 50;
             ToggleLeft(rect, m_OcclusionCulling, EditorGUIUtility.TrTextContent("Occlusion Culling"));
+            EditorGUIUtility.labelWidth = 0;
+
+            rect = EditorGUILayout.GetControlRect();
+            EditorGUIUtility.labelWidth = 50;
+            ToggleLeft(rect, m_OrderAscending, EditorGUIUtility.TrTextContent("Order Ascending"));
             EditorGUIUtility.labelWidth = 0;
         }
 
