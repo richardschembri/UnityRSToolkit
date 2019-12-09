@@ -538,7 +538,7 @@
                     pos += childSize * scaleFactor + spacing;
                 }
                 var sizeDelta = ContentRectTransform.sizeDelta;
-                sizeDelta[axis] = pos;
+                sizeDelta[axis] = pos + (isVertical ? padding.bottom : padding.right);
                 ContentRectTransform.sizeDelta = sizeDelta;
             }
         }
