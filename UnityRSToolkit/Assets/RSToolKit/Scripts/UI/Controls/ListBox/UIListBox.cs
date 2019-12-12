@@ -97,9 +97,9 @@
            m_contentChildren = null;
            m_scrollRectComponent = null;
            SetLayout();
-           CheckCulling();
            ScrollRectComponent.velocity = new Vector2(0f, 0f);
            ScrollRectComponent.content.anchoredPosition = new Vector2(0f, 0f);
+           CheckCulling();
        }
         int m_culling_countdown = 5;
         protected void Start(){

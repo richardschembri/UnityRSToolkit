@@ -66,14 +66,14 @@
             return result;
         }
 
-        public UIEditableListBoxItem AddEditableListItem(string name, string text, object value = null){
+        public UIEditableListBoxItem AddEditableListItem(string name, string text, object value = null, int? orderIndex = null){
             var bl = new Dictionary<string, string>();
             bl.Add("Text", text);
-            return AddEditableListItem(name, bl, value);
+            return AddEditableListItem(name, bl, value, orderIndex);
         }
 
-        public UIEditableListBoxItem AddEditableListItem(string name, Dictionary<string, string> nametexts, object value = null){
-            var li = AddEditableListItem();
+        public UIEditableListBoxItem AddEditableListItem(string name, Dictionary<string, string> nametexts, object value = null, int? orderIndex = null){
+            var li = AddEditableListItem(orderIndex);
             if(li != null){
                 li.name = name;
                 li.SetMode(m_ListMode);
