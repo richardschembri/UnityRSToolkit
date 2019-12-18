@@ -5,22 +5,9 @@
     using UnityEngine;
     using System.Linq;
 
-    public class ScaleByScreenDimensions : MonoBehaviour
+    public class ScaleByScreenDimensions : AdjustByScreenDimensions
     {
         public ScaleByScreenDimensionsSettings[] settings; 
-        // Use this for initialization
-        void Start () {
-            SetScale();
-        }
-        
-        // Update is called once per frame
-        void Update () {
-            
-        }
-
-        void Awake(){
-            SetScale();
-        }
 
     /* 
         void OnEnable()
@@ -28,7 +15,17 @@
             SetScale();
         }
     */
-        public void SetScale(){
+        // public void SetScale(){
+        public override void Adjust(){
+            for(int i = 0; i < settings.Length; i++){
+                var presets = GetPresetScreenDimensions(settings[i].ScreenDimensionsType, settings[i].OtherScreenDimensions);
+                if(presets.Any( p => IsDimensions(p))){
+                    this.transform.localScale = settings[i].Scale;
+                    m_adjusted = true;
+                    break;
+                }
+            }
+            /*
             var ordSclByScreenDimensions = settings.OrderBy(ssd => ssd.ResolutionOrAspectRatio).ToList();
             for (int i = 0; i < ordSclByScreenDimensions.Count(); i++){
                 var ssd = ordSclByScreenDimensions[i];
@@ -43,8 +40,10 @@
                     this.transform.localScale = ssd.Scale;
                 }
             }
+            */
         }
 
+        /*
         bool CheckResolution(ScaleByScreenDimensionsSettings ssd){
             return (ssd.Width == Screen.width && ssd.Height == Screen.height); 
         }
@@ -52,13 +51,13 @@
         bool CheckAspectRatio(ScaleByScreenDimensionsSettings ssd){
             return (((float)Screen.width / (float)Screen.height) == (ssd.Width / ssd.Height));
         }
+        */
     }
 
     [System.Serializable]
     public struct ScaleByScreenDimensionsSettings {
-        public bool ResolutionOrAspectRatio;
-        public float Width;
-        public float Height;
+        public AdjustByScreenDimensions.ResolutionAspectType ScreenDimensionsType;
+        public ScreenDimensions OtherScreenDimensions; 
         public Vector3 Scale;
     }
 }

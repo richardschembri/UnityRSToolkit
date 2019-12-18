@@ -12,6 +12,18 @@
         public bool SetNativeSize = false;
 
         public override void Adjust(){
+            for(int i = 0; i < settings.Length; i++){
+                var presets = GetPresetScreenDimensions(settings[i].ScreenDimensionsType, settings[i].OtherScreenDimensions);
+                if(presets.Any( p => IsDimensions(p))){
+                    this.GetComponent<RawImage>().texture = settings[i].rawImageTexture;
+                    m_adjusted = true;
+                    if(SetNativeSize){
+                        this.GetComponent<RawImage>().SetNativeSize();
+                    }
+                    break;
+                }
+            }
+            /*
             var ordScreenDimensions = settings.OrderBy(sd => sd.ResolutionOrAspectRatio).ToList();
 
             for (int i = 0; i < ordScreenDimensions.Count(); i++){
@@ -25,15 +37,15 @@
                     }
                 }
             }
+            */
         }
     }
 
     [System.Serializable]
     public struct RawImageForScreenDimensionsSettings {
 
-        public bool ResolutionOrAspectRatio;
-        public float Width;
-        public float Height;
+        public AdjustByScreenDimensions.ResolutionAspectType ScreenDimensionsType;
+        public ScreenDimensions OtherScreenDimensions; 
 
         public Texture2D rawImageTexture;
     }

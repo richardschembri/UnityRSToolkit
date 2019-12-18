@@ -12,6 +12,15 @@
 
         // Use this for initialization
         public override void Adjust(){
+            for(int i = 0; i < settings.Length; i++){
+                var presets = GetPresetScreenDimensions(settings[i].ScreenDimensionsType, settings[i].OtherScreenDimensions);
+                if(presets.Any( p => IsDimensions(p))){
+                    m_sprite = settings[i].sprite;
+                    m_adjusted = true;
+                    break;
+                }
+            }
+            /*
             var ordScreenDimensions = settings.OrderBy(sd => sd.ResolutionOrAspectRatio).ToList();
 
             for (int i = 0; i < ordScreenDimensions.Count(); i++){
@@ -22,6 +31,7 @@
                     m_adjusted = true;
                 }
             }
+            */
         }
 
         public Sprite GetSprite(){
@@ -39,9 +49,8 @@
     [System.Serializable]
     public struct SpriteByScreenDimensionsSettings {
 
-        public bool ResolutionOrAspectRatio;
-        public float Width;
-        public float Height;
+        public AdjustByScreenDimensions.ResolutionAspectType ScreenDimensionsType;
+        public ScreenDimensions OtherScreenDimensions; 
 
         public Sprite sprite;
     }

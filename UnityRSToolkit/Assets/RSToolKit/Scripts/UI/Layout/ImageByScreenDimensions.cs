@@ -10,6 +10,17 @@
     {
         public ImageByScreenDimensionsSettings[] settings;
         public override void Adjust(){
+            for(int i = 0; i < settings.Length; i++){
+                var presets = GetPresetScreenDimensions(settings[i].ScreenDimensionsType, settings[i].OtherScreenDimensions);
+                if(presets.Any( p => IsDimensions(p))){
+                    this.GetComponent<Image>().sprite = settings[i].imageSprite;
+                    this.GetComponent<Image>().preserveAspect = settings[i].preserveAspect;
+                    m_adjusted = true;
+                    break;
+                }
+            }
+
+            /*
             var ordScreenDimensions = settings.OrderBy(sd => sd.ResolutionOrAspectRatio).ToList();
             for (int i = 0; i < ordScreenDimensions.Count(); i++){
                 var sd = ordScreenDimensions[i];
@@ -19,15 +30,15 @@
                     this.GetComponent<Image>().preserveAspect = sd.preserveAspect;
                 }
             }
+            */
         }
     }
 
     [System.Serializable]
     public struct ImageByScreenDimensionsSettings {
 
-        public bool ResolutionOrAspectRatio;
-        public float Width;
-        public float Height;
+        public AdjustByScreenDimensions.ResolutionAspectType ScreenDimensionsType;
+        public ScreenDimensions OtherScreenDimensions; 
 
         public Sprite imageSprite;
 

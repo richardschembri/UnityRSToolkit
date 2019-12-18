@@ -8,24 +8,55 @@
     {
         public bool AdjustOnStart = true;
         protected bool m_adjusted = false;
-        // Use this for initialization
-        void Start () {
+
+        public enum ResolutionAspectType{
+            iPhonePremium,
+            iPhoneBudget,
+            iPad,
+            Other
+        }
+#region MonoBehaviour Funcitons
+        protected virtual void Start () {
             if(AdjustOnStart){
                 Adjust();		
             }
         }
 
-        void Awake(){
+        protected virtual void Awake(){
             if(AdjustOnStart){
                 Adjust();		
             }
         }
-        
-        // Update is called once per frame
-        void Update () {
+
+        protected virtual void Update () {
             
         }
+#endregion MonoBehaviour Funcitons
 
+        public List<ScreenDimensions> GetPresetScreenDimensions(ResolutionAspectType rat, ScreenDimensions other){
+            var result = new List<ScreenDimensions>();
+
+            switch(rat){
+                case ResolutionAspectType.iPhonePremium:
+                result.Add(new ScreenDimensions(false, 90, 185));
+                result.Add(new ScreenDimensions(true, 1125, 2436));
+                result.Add(new ScreenDimensions(true, 1242, 2688));
+                break;
+                case ResolutionAspectType.iPhoneBudget:
+                result.Add(new ScreenDimensions(true, 828, 1792));
+                break;
+                case ResolutionAspectType.iPad:
+                result.Add(new ScreenDimensions(false, 3, 4));
+                result.Add(new ScreenDimensions(false, 512, 683));
+                result.Add(new ScreenDimensions(true, 1668, 2388));
+                break;
+                case ResolutionAspectType.Other:
+                result.Add(other);
+                break;
+            }
+
+            return result;
+        }
         public bool IsDimensions(ScreenDimensions sd){
             return IsDimensions(sd.ResolutionOrAspectRatio, sd.Width, sd.Height);
         }
@@ -60,9 +91,13 @@
 
     [System.Serializable]
     public struct ScreenDimensions {
-        public string Name;
         public bool ResolutionOrAspectRatio;
         public float Width;
         public float Height;
+        public ScreenDimensions(bool resolutionOrAspectRatio, float width, float height){
+            ResolutionOrAspectRatio = resolutionOrAspectRatio;
+            Width = width;
+            Height = height;
+        }
     }
 }

@@ -13,6 +13,16 @@
         public FontByScreenDimensionsSettings[] settings; 
 
         public override void Adjust(){
+
+            for(int i = 0; i < settings.Length; i++){
+                var presets = GetPresetScreenDimensions(settings[i].ScreenDimensionsType, settings[i].OtherScreenDimensions);
+                if(presets.Any( p => IsDimensions(p))){
+                    this.GetComponent<Text>().fontSize = settings[i].NewFontSize;
+                    m_adjusted = true;
+                    break;
+                }
+            }
+            /*
             var ordLRTBByScreenDimensions = settings.OrderBy(psd => psd.ResolutionOrAspectRatio).ToList();
             for (int i = 0; i < ordLRTBByScreenDimensions.Count(); i++){
                 var sd = ordLRTBByScreenDimensions[i];
@@ -22,15 +32,15 @@
                     m_adjusted = true;
                 }
             }
+            */
         }
 
     }
 
     [System.Serializable]
     public struct FontByScreenDimensionsSettings {
-        public bool ResolutionOrAspectRatio;
-        public float Width;
-        public float Height;
+        public AdjustByScreenDimensions.ResolutionAspectType ScreenDimensionsType;
+        public ScreenDimensions OtherScreenDimensions; 
         public int NewFontSize;
     }
 }

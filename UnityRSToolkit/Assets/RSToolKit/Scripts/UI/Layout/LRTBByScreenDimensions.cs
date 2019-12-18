@@ -13,6 +13,17 @@
         // Use this for initialization
         public override void Adjust(){
 
+            for(int i = 0; i < settings.Length; i++){
+                var presets = GetPresetScreenDimensions(settings[i].ScreenDimensionsType, settings[i].OtherScreenDimensions);
+                if(presets.Any( p => IsDimensions(p))){
+                    this.GetComponent<RectTransform>().SetStretch_LeftBottom(settings[i].NewLeft, settings[i].NewBottom);
+                    this.GetComponent<RectTransform>().SetStretch_RightTop(settings[i].NewRight, settings[i].NewTop);
+                    m_adjusted = true;
+                    break;
+                }
+            }
+
+            /*
             var ordLRTBByScreenDimensions = settings.OrderBy(psd => psd.ResolutionOrAspectRatio).ToList();
             for (int i = 0; i < ordLRTBByScreenDimensions.Count(); i++){
                 var sd = ordLRTBByScreenDimensions[i];
@@ -25,15 +36,15 @@
                     m_adjusted = true;
                 }
             }
+            */
         }
     }
 
     [System.Serializable]
     public struct LRTBByScreenDimensionsSettings {
 
-        public bool ResolutionOrAspectRatio;
-        public float Width;
-        public float Height;
+        public AdjustByScreenDimensions.ResolutionAspectType ScreenDimensionsType;
+        public ScreenDimensions OtherScreenDimensions; 
 
         public float NewTop;
         public float NewBottom;

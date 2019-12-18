@@ -13,6 +13,15 @@
 
         // Use this for initialization
         public override void Adjust(){
+            for(int i = 0; i < settings.Length; i++){
+                var presets = GetPresetScreenDimensions(settings[i].ScreenDimensionsType, settings[i].OtherScreenDimensions);
+                if(presets.Any( p => IsDimensions(p))){
+                    m_texture2D = settings[i].texture2D;
+                    m_adjusted = true;
+                    break;
+                }
+            }
+            /*
             var ordScreenDimensions = settings.OrderBy(sd => sd.ResolutionOrAspectRatio).ToList();
 
             for (int i = 0; i < ordScreenDimensions.Count(); i++){
@@ -23,6 +32,7 @@
                     m_adjusted = true;
                 }
             }
+            */
         }
 
         public Texture2D GetTexture2D(){
@@ -40,9 +50,8 @@
     [System.Serializable]
     public struct Texture2DScreenDimensionsSettings {
 
-        public bool ResolutionOrAspectRatio;
-        public float Width;
-        public float Height;
+        public AdjustByScreenDimensions.ResolutionAspectType ScreenDimensionsType;
+        public ScreenDimensions OtherScreenDimensions; 
 
         public Texture2D texture2D;
     }
