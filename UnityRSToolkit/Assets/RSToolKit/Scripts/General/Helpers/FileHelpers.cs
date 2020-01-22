@@ -156,6 +156,17 @@ using System.Linq;
             return GetFileInfoList(new string[]{extension}, FolderPath, isRelativePath);
         }
 
+        public static void OpenDirectory(string path, bool isRelative = true){
+            string absolutepath = path;
+
+            if (isRelative){
+                absolutepath = GetFullSaveFolderPath(path);
+            }
+
+            Application.OpenURL(string.Format("file://{0}", absolutepath));
+
+        }
+
         public static void OpenWindowsDirectory(string path, bool isRelative = true){
             string absolutepath = path;
 

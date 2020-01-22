@@ -97,6 +97,18 @@
             return  PositionWithinBounds(self, target, Vector2.zero, Vector2.zero);
         }
 
+        public struct RectTransformLRTB{
+            public float Left;
+            public float Right;
+            public float Top;
+            public float Bottom;
+            public RectTransformLRTB(float left, float right, float top, float bottom){
+                Left = left;
+                Right = right;
+                Top = top;
+                Bottom = bottom;
+            }
+        }
         public static RectTransformPosition PositionWithinBounds(this RectTransform self, RectTransform target, Vector2 paddingMin, Vector2 paddingMax){
             RectTransformPosition rtp;
             rtp.horizontalPostion = HorizontalPosition.WITHIN;
@@ -399,6 +411,14 @@ Aspect Ration Fitter does the same job
         }
         public static void SetStretch_RightTop(this RectTransform source, float right, float top){
             source.offsetMax = new Vector2(-right, -top);
+        }
+
+        public static RectTransformLRTB Get_LRTB(this RectTransform source){
+            return new RectTransformLRTB(source.offsetMin.x, -source.offsetMax.x, -source.offsetMax.y, source.offsetMin.y);
+        }
+        public static void Set_LRTB(this RectTransform source, RectTransformLRTB lrtb){
+            source.SetStretch_LeftBottom(lrtb.Left, lrtb.Bottom);
+            source.SetStretch_RightTop(lrtb.Right, lrtb.Top);
         }
 
     }

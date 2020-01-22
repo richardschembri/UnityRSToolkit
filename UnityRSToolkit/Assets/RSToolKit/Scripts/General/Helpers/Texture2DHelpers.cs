@@ -31,6 +31,28 @@ namespace RSToolkit.Helpers
             return result;                 
         }
 
+        public static string SaveToPNG(this Texture2D texture2D, string folderPath = "", string fileName = "textureImage", bool addTimeStamp = true){
+            string textureFileName = string.Empty;
+
+            if (!addTimeStamp){
+                textureFileName = FileHelpers.GenerateFileName(fileName, "png");
+            }
+            else{
+                textureFileName = FileHelpers.GenerateFileName_WithDateTimeStamp(fileName, "png");
+            }
+
+            var savePath = FileHelpers.GetFullSaveFilePath(textureFileName, folderPath);
+            texture2D.SaveToPNG(savePath);
+            return textureFileName;
+        }
+
+        public static void SaveToPNG(this Texture2D texture2D, string filePath){
+            FileHelpers.CreateDirectoryIfNotExists(filePath);
+
+            var bytes = texture2D.EncodeToPNG();
+            System.IO.File.WriteAllBytes(filePath, bytes);
+        }
+
         /*
         static void _gpu_scale(Texture2D src, int width, int height, FilterMode fmode)
         {
