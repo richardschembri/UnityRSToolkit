@@ -12,16 +12,10 @@
             return SpawnAndGetGameObject(GameObjectsToSpawn[gameObjectToSpawnIndex] ,useSpawnerTransformValues);
         }
 
-        // Start is called before the first frame update
-        void Start()
+        public GameObject SpawnAndGetRandomGameObject(bool useSpawnerTransformValues = true)
         {
-            
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-            
+            int randomIndex = Random.Range(0, GameObjectsToSpawn.Length);
+            return SpawnAndGetGameObject(randomIndex ,useSpawnerTransformValues);
         }
     }
 }

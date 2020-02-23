@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using UnityEngine;
     using RSToolkit.Helpers;
+    using UnityEngine.Events;
 
     public abstract class SpawnerCore : MonoBehaviour
     {
@@ -20,6 +21,11 @@
                 return m_spawnedGameObjects;
             }
         }
+
+        public class SpawnerEvent : UnityEvent<GameObject> { }
+
+        public SpawnerEvent OnSpawnEvent = new SpawnerEvent();
+
         public void DestroyLastSpawnedGameObject()
         {
             if (SpawnedGameObjects.Count > 0)
@@ -67,19 +73,9 @@
             }
 
             SpawnedGameObjects.Add(spawnedGameObject);
+            OnSpawnEvent.Invoke(spawnedGameObject);
             return spawnedGameObject;
         }
 
-        // Start is called before the first frame update
-        void Start()
-        {
-            
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-            
-        }
     }
 }

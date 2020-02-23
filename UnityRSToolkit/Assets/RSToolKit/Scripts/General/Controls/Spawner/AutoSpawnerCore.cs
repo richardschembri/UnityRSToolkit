@@ -41,6 +41,7 @@ namespace RSToolkit.Controls
                StartCoroutine(AutoSpawn(useSpawnerTransformValues));
            }
         }
+
         IEnumerator OffsetSpawn(int count, bool useSpawnerTransformValues = true) {
            yield return new WaitForSeconds(spawnOffset);
            if(count > 0 && IsSpawning)
