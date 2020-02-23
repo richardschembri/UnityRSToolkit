@@ -5,17 +5,13 @@ using RSToolkit.Helpers;
 
 namespace RSToolkit.Controls
 {
-    public class AutoSpawner : Spawner
+    public abstract class AutoSpawnerCore : Spawner
     {
-        // To implement editor
         public float time_From = 3f;
         public float time_To = 4f;
-
-        public int spawnAmount_Min = 2;
-        public int spawnAmount_Max = 3;
         public float spawnOffset = 0.1f;
+
         public bool IsSpawning { get; private set; } = false; 
-        
         public void StartAutoSpawn(bool useSpawnerTransformValues = true)
         {
             if (!IsSpawning)
@@ -24,24 +20,27 @@ namespace RSToolkit.Controls
                 StartCoroutine(AutoSpawn(useSpawnerTransformValues ));
             }
         }
-
         public void StopAutoSpawn()
         {
             IsSpawning = false;
         }
 
+        protected abstract int GetSpawnCount();
+
         IEnumerator AutoSpawn(bool useSpawnerTransformValues = true) {
            yield return new WaitForSeconds(RandomHelpers.RandomFloatWithinRange(time_From, time_To));
            if(IsSpawning)
            {
-               int spawnCount = RandomHelpers.RandomIntWithinRange(spawnAmount_Min, spawnAmount_Max + 1);
-               Debug.Log(spawnCount);
-               SpawnGameObject(useSpawnerTransformValues);
-               StartCoroutine(OffsetSpawn(spawnCount - 1, useSpawnerTransformValues));
+               int spawnCount = GetSpawnCount();
+               // Debug.Log(transform.name + " " + spawnCount);
+                if(spawnCount > 0)
+                {
+                   SpawnGameObject(useSpawnerTransformValues);
+                   StartCoroutine(OffsetSpawn(spawnCount - 1, useSpawnerTransformValues));
+                }
                StartCoroutine(AutoSpawn(useSpawnerTransformValues));
            }
         }
-
         IEnumerator OffsetSpawn(int count, bool useSpawnerTransformValues = true) {
            yield return new WaitForSeconds(spawnOffset);
            if(count > 0 && IsSpawning)
@@ -50,5 +49,6 @@ namespace RSToolkit.Controls
                StartCoroutine(OffsetSpawn(count - 1, useSpawnerTransformValues));
            }
         }
+
     }
 }
