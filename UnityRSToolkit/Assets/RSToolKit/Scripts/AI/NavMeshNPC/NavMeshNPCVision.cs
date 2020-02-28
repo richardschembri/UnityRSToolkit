@@ -78,9 +78,14 @@ namespace RSToolkit.AI
             return GetAllLookOutForTransforms(refreshList).Where(isWithinSightLambda).ToArray();
         }
 
-        public Transform[] DoLookoutFor(bool refreshList = false)
+        public Transform[] DoLookoutFor(bool newTransformsOnly = true, bool refreshList = false)
         {
             var targets = GetTrasnformsWithinSight(refreshList);
+            if (newTransformsOnly)
+            {
+                targets = targets.Where(t => !NavMeshNPCComponent.NoticedTransforms.Contains(t)).ToArray();
+            }
+                
             
             for (int i = 0; i < targets.Length; i++)
             {
