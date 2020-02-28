@@ -97,6 +97,45 @@ namespace RSToolkit.AI
 
         public Transform FocusedOnTransform { get; private set; } = null;
 
+        public bool AttractMyAttention_ToTransform(Transform target) //, bool ignoredAlreadyNoticed = true)
+        {
+            /*
+            if (ignoredAlreadyNoticed && NoticedTransforms.Contains(target))
+            {
+                return false;
+            }
+            */
+            if (IsWithinInteractionDistance(target))
+            {
+                // StartForgetTransform(target);
+                FocusOnTransform(target);
+
+                return true;
+            }
+            return false;
+            
+        }
+
+        public bool AttractMyAttention_ToTransform()
+        {
+            return AttractMyAttention_ToTransform(FocusedOnTransform);
+
+        }
+
+        public bool AttractMyAttention_FromNavMeshNPC(NavMeshNPC target)
+        {
+            return target.GetComponent<NavMeshNPC>().AttractMyAttention_ToTransform(transform);
+
+        }
+
+        public bool AttractMyAttention_FromNavMeshNPC()
+        {
+            return AttractMyAttention_FromNavMeshNPC(FocusedOnTransform.GetComponent<NavMeshNPC>());
+
+        }
+
+
+        /*
 
         public bool AttractAttention_FromTransform(Transform target, bool ignoredAlreadyNoticed = true)
         {
@@ -107,12 +146,13 @@ namespace RSToolkit.AI
             if (IsWithinInteractionDistance(target))
             {
                 StartForgetTransform(target);
-                AttractAttention_ToPosition(target.position);
+                FocusOnPosition(target.position);
             }
             return true;
         }
+        */
 
-        public void AttractAttention_ToPosition(Vector3 target_position)
+        public void FocusOnPosition(Vector3 target_position)
         {
             FocusedOnPosition = target_position;
         }
@@ -164,6 +204,7 @@ namespace RSToolkit.AI
         public void UnFocus()
         {
             StartForgetTransform(FocusedOnTransform);
+            FocusedOnTransform = null;
         }
 
         public float CurrentSpeed

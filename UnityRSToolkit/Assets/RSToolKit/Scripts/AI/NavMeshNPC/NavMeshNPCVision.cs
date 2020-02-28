@@ -57,7 +57,7 @@ namespace RSToolkit.AI
                 m_tagLookOutForTransforms.AddRange(GameObject.FindGameObjectsWithTag(LookOutForTags[i])
                             .Select(go => go.transform));
             }
-
+            m_tagLookOutForTransforms.Remove(transform); // Remove self
             return m_tagLookOutForTransforms;
         }
 
@@ -86,14 +86,11 @@ namespace RSToolkit.AI
                 targets = targets.Where(t => !NavMeshNPCComponent.NoticedTransforms.Contains(t)).ToArray();
             }
                 
-            
             for (int i = 0; i < targets.Length; i++)
             {
-                if (NavMeshNPCComponent.AttractAttention_FromTransform(targets[i]))
-                {
-                    OnTransformSeen.Invoke(targets[i]);       
-                }
+                OnTransformSeen.Invoke(targets[i]);
             }
+
             return targets;
         }
 
