@@ -4,15 +4,15 @@ using UnityEngine;
 
 namespace RSToolkit.AI.Behaviour.Composite
 {
-    public class BehaviourSequence : BehaviourSequenceSelectBase 
+    public class BehaviourSelector : BehaviourSequenceSelectBase
     {
-        public BehaviourSequence() : base("Sequence")
+        public BehaviourSelector() : base("Selector")
         {
         }
 
         protected override void ProcessChildNodeSequence()
         {
-            ProcessChildNodeSequence(true);
+            ProcessChildNodeSequence(false);
         }
 
 
@@ -20,11 +20,11 @@ namespace RSToolkit.AI.Behaviour.Composite
         {
             if (success)
             {
-                OnStopped.Invoke(true);
+                ProcessChildNodeSequence();
             }
             else
             {
-                ProcessChildNodeSequence();
+                OnStopped.Invoke(false);
             }
         }
 
