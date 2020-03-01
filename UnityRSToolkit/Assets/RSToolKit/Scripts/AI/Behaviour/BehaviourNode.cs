@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
 using UnityEngine.Events;
+using RSToolkit.Helpers;
 
 namespace RSToolkit.AI.Behaviour
 {
@@ -78,7 +79,8 @@ namespace RSToolkit.AI.Behaviour
 
         }
 
-        public NodeState CurrentState { get; protected set; } = NodeState.INACTIVE;
+        public NodeState State { get; protected set; } = NodeState.INACTIVE;
+        public bool? Result { get; private set; } = null;
         public string Name { get; protected set; }
 
         //public BehaviourNode Root { get; set; }
@@ -180,14 +182,19 @@ namespace RSToolkit.AI.Behaviour
 
         public void StartNode()
         {
-            this.CurrentState = NodeState.ACTIVE;
+            this.State = NodeState.ACTIVE;
             OnStarted.Invoke();
         }
 
-        public void RequestStopNode()
+        public bool RequestStopNode()
         {
-            this.CurrentState = NodeState.STOPPING;
-            OnStopping.Invoke();
+            if (this.State == NodeState.ACTIVE)
+            {
+                this.State = NodeState.STOPPING;
+                OnStopping.Invoke();
+                return true;
+            }
+            return false;
         }
 
         public BehaviourNode(string name, NodeType type)
@@ -199,7 +206,8 @@ namespace RSToolkit.AI.Behaviour
 
         private void OnStopped_Listener(bool success)
         {
-            this.CurrentState = NodeState.INACTIVE;
+            this.State = NodeState.INACTIVE;
+            this.Result = success;
             Parent?.OnChildNodeStopped.Invoke(this, success);
         }
 
@@ -213,18 +221,40 @@ namespace RSToolkit.AI.Behaviour
 
         public void UpdateRecursively()
         {
-            if (CurrentState == NodeState.INACTIVE)
+            if (State == NodeState.INACTIVE)
             {
                 return;
             }
             for(int i = 0; i < Children.Count; i++)
             {
-                if(Children[i].CurrentState != NodeState.INACTIVE)
+                if(Children[i].State != NodeState.INACTIVE)
                 {
                     Children[i].UpdateRecursively();
                 }
             }
             Update();
+        }
+        
+        protected void ShuffleChildren()
+        {
+            m_children.Shuffle();            
+        }
+
+        protected void StartChildren()
+        {
+            Result = null;
+            for (int i = 0; i < Children.Count; i++)
+            {
+                Children[i].StartNode();
+            }
+        }
+
+        protected void StopChildren()
+        {
+            for (int i = 0; i < Children.Count; i++)
+            {
+                Children[i].RequestStopNode();
+            }
         }
     }
 }

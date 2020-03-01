@@ -6,7 +6,7 @@ namespace RSToolkit.AI.Behaviour.Composite
 {
     public class BehaviourSelector : BehaviourSequenceSelectBase
     {
-        public BehaviourSelector() : base("Selector")
+        public BehaviourSelector(bool isRandom) : base("Selector")
         {
         }
 

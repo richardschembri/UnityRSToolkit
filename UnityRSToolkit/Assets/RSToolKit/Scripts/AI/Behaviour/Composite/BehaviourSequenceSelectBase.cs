@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using RSToolkit.Helpers;
 
 namespace RSToolkit.AI.Behaviour.Composite
 {
@@ -8,8 +9,10 @@ namespace RSToolkit.AI.Behaviour.Composite
     {
         private int m_index = -1;
 
-        public BehaviourSequenceSelectBase(string name) : base(name, NodeType.COMPOSITE)
+        public bool IsRandom { get; private set; }
+        public BehaviourSequenceSelectBase(string name, bool isRandom) : base(name, NodeType.COMPOSITE)
         {
+            IsRandom = isRandom;
             OnStarted.AddListener(OnStarted_Listener);
             OnStopping.AddListener(OnStopping_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
@@ -19,7 +22,7 @@ namespace RSToolkit.AI.Behaviour.Composite
         {
             if (++m_index < Children.Count)
             {
-                if (CurrentState == NodeState.STOPPING)
+                if (State == NodeState.STOPPING)
                 {
 
                     // Stopped manually
@@ -47,6 +50,10 @@ namespace RSToolkit.AI.Behaviour.Composite
         protected virtual void OnStarted_Listener()
         {
             ResetIndex();
+            if (IsRandom)
+            {
+                ShuffleChildren();
+            }
             ProcessChildNodeSequence();
         }
 
@@ -62,7 +69,7 @@ namespace RSToolkit.AI.Behaviour.Composite
             int next_child_index = Children.IndexOf(child) + 1;
             if(next_child_index < Children.Count)
             {
-                if(Children[next_child_index].CurrentState == NodeState.ACTIVE)
+                if(Children[next_child_index].State == NodeState.ACTIVE)
                 {
                     Children[next_child_index].RequestStopNode();
                     m_index = restart_child ? next_child_index - 1 : Children.Count;
