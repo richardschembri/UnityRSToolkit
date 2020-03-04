@@ -40,6 +40,8 @@ namespace RSToolkit.Space3D
         public KeyCode YawPositive = KeyCode.L;
         public KeyCode YawNegative = KeyCode.J;
 
+        public KeyCode ToggleHover = KeyCode.Space;
+
 
         #region GetKey
         private bool GetFlightKey(bool positive, KeyCode postiveKey, KeyCode negativeKey)
@@ -65,6 +67,11 @@ namespace RSToolkit.Space3D
         public bool GetYawKey(bool positive)
         {
             return GetFlightKey(positive, YawPositive, YawNegative);
+        }
+
+        public bool GetToggleHoverKey()
+        {
+            return Input.GetKeyUp(ToggleHover);
         }
         #endregion GetKey
 
@@ -106,10 +113,15 @@ namespace RSToolkit.Space3D
 
         // Thrust: X = Lateral // Y = Vertical // Z = Forward 
         [SerializeField]
-        public Vector3 DefaultFlightThrust = new Vector3(0f, 98.1f, 0f);
+        public Vector3 HoverFlightThrust = new Vector3(0f, 98.1f, 0f);
+
         [SerializeField]
         public Vector3 MovementFlightThrust = new Vector3(300f, 450f, 250f); // new FlightForces(450f, 0f, 0f, 500f); // 200f negative lift
         public Vector3 CurrentFlightThrust = new Vector3(0f, 0f, 0f);
+
+        public bool ManualControl = true;
+
+        public bool m_FlightEnabled = true;
 
         //[SerializeField]
         //private Vector3 TargetFlightThrust = new Vector3();
@@ -123,6 +135,8 @@ namespace RSToolkit.Space3D
 
         public float VerticalDeadzone = 0.2f;
         public float LateralDeadzone = 0.2f;
+
+        public bool HoverWhenIdle = true;
 
         public bool IsOutDeadzoneVertical()
         {
@@ -147,9 +161,17 @@ namespace RSToolkit.Space3D
 
         public void ResetAppliedForces()
         {
-            CurrentFlightThrust.x = DefaultFlightThrust.x;
-            CurrentFlightThrust.y = DefaultFlightThrust.y;
-            CurrentFlightThrust.z = DefaultFlightThrust.z;
+            if (HoverWhenIdle)
+            {
+                CurrentFlightThrust.x = HoverFlightThrust.x;
+                CurrentFlightThrust.y = HoverFlightThrust.y;
+                CurrentFlightThrust.z = HoverFlightThrust.z;
+            }
+            else
+            {
+                CurrentFlightThrust = Vector3.zero;
+            }
+            
         }
 
         public void ResetAppliedValues()
@@ -176,12 +198,28 @@ namespace RSToolkit.Space3D
             ResetAppliedForces();
         }
 
+        void Update()
+        {
+            if (InputControls.GetToggleHoverKey())
+            {
+                HoverWhenIdle = !HoverWhenIdle;
+            }
+        }
+
         void FixedUpdate()
         {
-            ManualVerticalThrustControl();
-            ManualForwardMovementControl();
-            ManualLateralMovementControl();
-            ManualYawControl();
+            if (!m_FlightEnabled)
+            {
+                return;
+            }
+            if (ManualControl)
+            {
+                ManualVerticalThrustControl();
+                ManualForwardMovementControl();
+                ManualLateralMovementControl();
+                ManualYawControl();
+            }
+
             UpdateYaw();
             UpdateRoll();
             UpdatePitch();
@@ -193,6 +231,15 @@ namespace RSToolkit.Space3D
         }
 
         public (KeyCode, KeyCode) VerticalThrustKeys;
+
+        public void EnabledFlight()
+        {
+            m_FlightEnabled = true;
+        }
+        public void DisableFlight()
+        {
+            m_FlightEnabled = false;
+        }
 
 
         void ManualVerticalThrustControl()
@@ -229,9 +276,13 @@ namespace RSToolkit.Space3D
             {
                 CurrentFlightThrust.y = -MovementFlightThrust.y; //.lift; // MovementFlightForces.weight;
             }
+            else if(HoverWhenIdle)
+            {
+                CurrentFlightThrust.y = HoverFlightThrust.y;
+            }
             else
             {
-                CurrentFlightThrust.y = DefaultFlightThrust.y;
+                CurrentFlightThrust.y = 0;
             }
         }
 
@@ -369,6 +420,28 @@ namespace RSToolkit.Space3D
             {
                 m_RigidBodyComponent.velocity = Vector3.SmoothDamp(m_RigidBodyComponent.velocity, Vector3.zero, ref m_clampedVelocity, 0.95f);
             }
+        }
+
+        bool m_isGrounded = false;
+        void OnCollisionStay(Collision collision)
+        {
+            m_isGrounded = false;
+            foreach (ContactPoint contact in collision.contacts)
+            {
+                // print(contact.thisCollider.name + " hit " + contact.otherCollider.name);
+                // Visualize the contact point
+                // Debug.DrawRay(contact.point, contact.normal, Color.white);
+                if (contact.point.y < transform.position.y)
+                {
+                    print("Grounded");
+                    m_isGrounded = true;
+                }
+                
+            }
+        }
+        public bool IsGrounded()
+        {
+            return Physics.Raycast(transform.position, Vector3.down, .5f);
         }
     }
 }

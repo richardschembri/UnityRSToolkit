@@ -9,7 +9,7 @@ using UnityEngine.Events;
 
 namespace RSToolkit.AI
 {
-    [RequireComponent(typeof(NavMeshAgent))]
+    [RequireComponent(typeof(NavMeshNPC))]
     public class NavMeshNPCVision : MonoBehaviour
     {
         public float ViewMagnitude = 10;
