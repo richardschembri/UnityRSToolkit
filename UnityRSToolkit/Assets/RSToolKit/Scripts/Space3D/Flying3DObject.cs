@@ -422,26 +422,22 @@ namespace RSToolkit.Space3D
             }
         }
 
-        bool m_isGrounded = false;
+        public bool IsGrounded { get; private set; } = false;
+
         void OnCollisionStay(Collision collision)
         {
-            m_isGrounded = false;
+            IsGrounded = false;
+            // To optimize. Use GetContacts.
             foreach (ContactPoint contact in collision.contacts)
             {
-                // print(contact.thisCollider.name + " hit " + contact.otherCollider.name);
-                // Visualize the contact point
-                // Debug.DrawRay(contact.point, contact.normal, Color.white);
                 if (contact.point.y < transform.position.y)
                 {
                     print("Grounded");
-                    m_isGrounded = true;
+                    IsGrounded = true;
                 }
                 
             }
         }
-        public bool IsGrounded()
-        {
-            return Physics.Raycast(transform.position, Vector3.down, .5f);
-        }
+
     }
 }

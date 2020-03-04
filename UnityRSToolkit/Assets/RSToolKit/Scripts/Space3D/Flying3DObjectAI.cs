@@ -9,7 +9,7 @@ namespace RSToolkit.AI
     public class NavMeshNPCFlight : MonoBehaviour
     {
         public Vector3? destination;
-        private bool m_idle = true;
+
         public float arrivalMagnitude = 0f;
         public float SqrArrivalMagnitude
         {
