@@ -23,6 +23,74 @@ namespace RSToolkit.Space3D
         }
     }
 
+    [System.Serializable]
+    public class FlightInputControls
+    {
+        public KeyCode VerticalThrustPositive = KeyCode.I;
+        public KeyCode VerticalThrustNegative = KeyCode.K;
+
+        public KeyCode LateralThrustPositive = KeyCode.A;
+        public KeyCode LateralThrustNegative = KeyCode.D;
+
+        
+        public KeyCode ForwardThrustPositive = KeyCode.W;
+        public KeyCode ForwardThrustNegative = KeyCode.S;
+
+        public KeyCode YawPositive = KeyCode.L;
+        public KeyCode YawNegative = KeyCode.J;
+
+
+        #region GetKey
+        private bool GetFlightKey(bool positive, KeyCode postiveKey, KeyCode negativeKey)
+        {
+            return positive ? Input.GetKey(postiveKey) : Input.GetKey(negativeKey);
+        }
+
+        public bool GetVerticalThrustKey(bool positive)
+        {
+            return GetFlightKey(positive, VerticalThrustPositive, VerticalThrustNegative);
+        }
+
+        public bool GetLateralThrustKey(bool positive)
+        {
+            return GetFlightKey(positive, LateralThrustPositive, LateralThrustNegative);
+        }
+
+        public bool GetForwardThrustKey(bool positive)
+        {
+            return GetFlightKey(positive, ForwardThrustPositive, ForwardThrustNegative);
+        }
+
+        public bool GetYawKey(bool positive)
+        {
+            return GetFlightKey(positive, YawPositive, YawNegative);
+        }
+        #endregion GetKey
+
+        #region Down
+        public bool IsVerticalThrustDown()
+        {
+            return Input.GetKey(VerticalThrustPositive) || Input.GetKey(VerticalThrustNegative);
+        }
+
+        public bool IsLateralThrustDown()
+        {
+            return Input.GetKey(LateralThrustPositive) || Input.GetKey(LateralThrustNegative);
+        }
+
+        public bool IsForwardThrustDown()
+        {
+            return Input.GetKey(ForwardThrustPositive) || Input.GetKey(ForwardThrustNegative);
+        }
+
+        public bool IsYawDown()
+        {
+            return Input.GetKey(YawPositive) || Input.GetKey(YawNegative);
+        }
+        #endregion
+
+    }
+
     [RequireComponent(typeof(Rigidbody))]
     public class Flying3DObject : MonoBehaviour
     {
@@ -40,28 +108,23 @@ namespace RSToolkit.Space3D
         public float verticalInputDeadzone = 0.2f;
         public float horizontalInputDeadzone = 0.2f;
 
-        private bool IsBeyondDeadzone_Vertical
+        public FlightInputControls InputControls;
+
+        public float VerticalDeadzone = 0.2f;
+        public float LateralDeadzone = 0.2f;
+
+        public bool IsOutDeadzoneVertical()
         {
-            get
-            {
-                return Mathf.Abs(Input.GetAxis("Vertical")) > verticalInputDeadzone;
-            }
+            return Mathf.Abs(Input.GetAxis("Vertical")) > VerticalDeadzone;
+        }
+        public bool IsOutDeadzoneLateral()
+        {
+            return Mathf.Abs(Input.GetAxis("Horizontal")) > LateralDeadzone;
         }
 
-        private bool IsBeyondDeadzone_Horizontal
+        public bool IsOutDeadzone()
         {
-            get
-            {
-                return Mathf.Abs(Input.GetAxis("Horizontal")) > horizontalInputDeadzone;
-            }
-        }
-
-        private bool IsBeyondDeadzone_AnyDirection
-        {
-            get
-            {
-                return IsBeyondDeadzone_Vertical || IsBeyondDeadzone_Horizontal;
-            }
+            return IsOutDeadzoneVertical() || IsOutDeadzoneLateral();
         }
 
         private float m_yawTo = 0f;
@@ -112,39 +175,42 @@ namespace RSToolkit.Space3D
             m_RigidBodyComponent.rotation = Quaternion.Euler(CurrentFlightAxis.toVector3()); // new Vector3(CurrentFlightAxis.pitch, CurrentFlightAxis.yaw, m_RigidBodyComponent.rotation.z));
         }
 
+        public (KeyCode, KeyCode) VerticalThrustKeys;
+
+
         void ManualVerticalThrustControl()
         {
-            if(IsBeyondDeadzone_AnyDirection)
+            if(IsOutDeadzone())
             {
-                if(!Input.GetKey(KeyCode.I) && !Input.GetKey(KeyCode.K) && !Input.GetKey(KeyCode.J) && !Input.GetKey(KeyCode.L))
+                if(!InputControls.IsVerticalThrustDown() && !InputControls.IsYawDown())
                 {
-                    m_RigidBodyComponent.velocity = new Vector3(m_RigidBodyComponent.velocity.x, Mathf.Lerp(m_RigidBodyComponent.velocity.y, 0, Time.deltaTime * 5), m_RigidBodyComponent.velocity.z);
-                    CurrentFlightThrust.y = 281f;
+                    m_RigidBodyComponent.velocity = new Vector3(m_RigidBodyComponent.velocity.x, 
+                        Mathf.Lerp(m_RigidBodyComponent.velocity.y, 0, Time.deltaTime * 5), m_RigidBodyComponent.velocity.z);
+
+                    CurrentFlightThrust.y = InputControls.IsYawDown()? 110f : 281f;
+
+
                 }
-                if(!Input.GetKey(KeyCode.I) && !Input.GetKey(KeyCode.K) && (Input.GetKey(KeyCode.J) || Input.GetKey(KeyCode.L)))
-                {
-                    m_RigidBodyComponent.velocity = new Vector3(m_RigidBodyComponent.velocity.x, Mathf.Lerp(m_RigidBodyComponent.velocity.y, 0, Time.deltaTime * 5), m_RigidBodyComponent.velocity.z);
-                    CurrentFlightThrust.y = 110f;
-                }
-                if(Input.GetKey(KeyCode.J) && Input.GetKey(KeyCode.L))
+
+                if(InputControls.IsYawDown())
                 {
                     CurrentFlightThrust.y = 410f;
                 }
             }
-            if (!IsBeyondDeadzone_Vertical || IsBeyondDeadzone_Horizontal)
+            if (!IsOutDeadzoneVertical() || IsOutDeadzoneLateral())
             {
                 CurrentFlightThrust.y = 135f;
             }
 
-            if (Input.GetKey(KeyCode.I))
+            if (InputControls.GetVerticalThrustKey(true))
             {
                 CurrentFlightThrust.y = MovementFlightThrust.y; //.lift;
-                if(IsBeyondDeadzone_Horizontal)
+                if(IsOutDeadzoneLateral())
                 {
                     CurrentFlightThrust.y = 500f;
                 }
             }
-            else if (Input.GetKey(KeyCode.K))
+            else if (InputControls.GetVerticalThrustKey(false))
             {
                 CurrentFlightThrust.y = -MovementFlightThrust.y; //.lift; // MovementFlightForces.weight;
             }
@@ -165,7 +231,7 @@ namespace RSToolkit.Space3D
         void ManualLateralMovementControl()
         {
             CurrentFlightThrust.x = Input.GetAxis("Horizontal") * MovementFlightThrust.x;
-            if (IsBeyondDeadzone_Horizontal)
+            if (IsOutDeadzoneLateral())
             {
                 CurrentFlightAxis.roll = Mathf.SmoothDamp(CurrentFlightAxis.roll, -MovementFlightAxis.roll * Input.GetAxis("Horizontal"), ref m_lateralVelocity, 0.1f);
             }
@@ -206,19 +272,19 @@ namespace RSToolkit.Space3D
         Vector3 m_clampedVelocity;
         void ClampForces()
         {
-            if(IsBeyondDeadzone_Vertical && IsBeyondDeadzone_Horizontal)
+            if(IsOutDeadzoneVertical() && IsOutDeadzoneLateral())
             {
                 m_RigidBodyComponent.velocity = Vector3.ClampMagnitude(m_RigidBodyComponent.velocity, Mathf.Lerp(m_RigidBodyComponent.velocity.magnitude, 10.0f, Time.deltaTime * 5f));
             }
-            if (IsBeyondDeadzone_Vertical && !IsBeyondDeadzone_Horizontal)
+            if (IsOutDeadzoneVertical() && !IsOutDeadzoneLateral())
             {
                 m_RigidBodyComponent.velocity = Vector3.ClampMagnitude(m_RigidBodyComponent.velocity, Mathf.Lerp(m_RigidBodyComponent.velocity.magnitude, 10.0f, Time.deltaTime * 5f));
             }
-            if (!IsBeyondDeadzone_Vertical && IsBeyondDeadzone_Horizontal)
+            if (!IsOutDeadzoneVertical() && IsOutDeadzoneLateral())
             {
                 m_RigidBodyComponent.velocity = Vector3.ClampMagnitude(m_RigidBodyComponent.velocity, Mathf.Lerp(m_RigidBodyComponent.velocity.magnitude, 5.0f, Time.deltaTime * 5f));
             }
-            if (!IsBeyondDeadzone_Vertical && IsBeyondDeadzone_Horizontal)
+            if (!IsOutDeadzoneVertical() && IsOutDeadzoneLateral())
             {
                 m_RigidBodyComponent.velocity = Vector3.SmoothDamp(m_RigidBodyComponent.velocity, Vector3.zero, ref m_clampedVelocity, 0.95f);
             }
