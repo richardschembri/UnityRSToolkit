@@ -105,9 +105,15 @@ namespace RSToolkit.Space3D
         private FlightAxis TargetFlightAxis = new FlightAxis();
 
         // Thrust: X = Lateral // Y = Vertical // Z = Forward 
+        [SerializeField]
         public Vector3 DefaultFlightThrust = new Vector3(0f, 98.1f, 0f);
+        [SerializeField]
         public Vector3 MovementFlightThrust = new Vector3(300f, 450f, 250f); // new FlightForces(450f, 0f, 0f, 500f); // 200f negative lift
         public Vector3 CurrentFlightThrust = new Vector3(0f, 0f, 0f);
+
+        //[SerializeField]
+        //private Vector3 TargetFlightThrust = new Vector3();
+
         public float rollVerticalThrust = 281f;
 
         public float verticalInputDeadzone = 0.2f;
@@ -134,13 +140,13 @@ namespace RSToolkit.Space3D
       
         public void ResetAppliedAxis()
         {
-            CurrentFlightAxis = DefaultFlightAxis;
+            CurrentFlightAxis.pitch = DefaultFlightAxis.pitch;
+            CurrentFlightAxis.yaw = DefaultFlightAxis.yaw;
+            CurrentFlightAxis.roll = DefaultFlightAxis.roll;
         }
 
         public void ResetAppliedForces()
         {
-            // CurrentVerticalThrust = DefaultLift;
-            // CurrentForwardThrust = DefaultThrust;
             CurrentFlightThrust.x = DefaultFlightThrust.x;
             CurrentFlightThrust.y = DefaultFlightThrust.y;
             CurrentFlightThrust.z = DefaultFlightThrust.z;
@@ -165,6 +171,11 @@ namespace RSToolkit.Space3D
             }
         }
 
+        void Awake()
+        {
+            ResetAppliedForces();
+        }
+
         void FixedUpdate()
         {
             ManualVerticalThrustControl();
@@ -173,6 +184,7 @@ namespace RSToolkit.Space3D
             ManualYawControl();
             UpdateYaw();
             UpdateRoll();
+            UpdatePitch();
             ClampForces();
 
             m_RigidBodyComponent.AddRelativeForce(CurrentFlightThrust);
@@ -192,7 +204,7 @@ namespace RSToolkit.Space3D
                     m_RigidBodyComponent.velocity = new Vector3(m_RigidBodyComponent.velocity.x, 
                         Mathf.Lerp(m_RigidBodyComponent.velocity.y, 0, Time.deltaTime * 5), m_RigidBodyComponent.velocity.z);
 
-                    CurrentFlightThrust.y = InputControls.IsYawDown()? 110f : rollVerticalThrust;
+                    // CurrentFlightThrust.y = rollVerticalThrust;
                 }
 
                 if(InputControls.IsYawDown())
@@ -226,21 +238,62 @@ namespace RSToolkit.Space3D
         private float m_forwardVelocity;
         void ManualForwardMovementControl()
         {
-            CurrentFlightThrust.z = Input.GetAxis("Vertical") * MovementFlightThrust.z; // .thrust;
-            CurrentFlightAxis.pitch = Mathf.SmoothDamp(CurrentFlightAxis.pitch, MovementFlightAxis.pitch * Input.GetAxis("Vertical"), ref m_forwardVelocity, 0.1f);
+            ApplyForwardThrust(Input.GetAxis("Vertical"));
         }
 
-        private float m_lateralVelocity;
-        void ManualLateralMovementControl()
+        public void ApplyForwardThrust(float percent)
         {
-            CurrentFlightThrust.x = Input.GetAxis("Horizontal") * MovementFlightThrust.x;
-            TargetFlightAxis.roll = 0f;
-            if (IsOutDeadzoneLateral())
+            if(percent > 1f)
             {
-                TargetFlightAxis.roll = -MovementFlightAxis.roll * Input.GetAxis("Horizontal");
+                percent = 1f;
+            }
+            else if( percent < -1f)
+            {
+                percent = -1f;
             }
 
-      
+            CurrentFlightThrust.z = percent * MovementFlightThrust.z;
+            TargetFlightAxis.pitch = MovementFlightAxis.pitch * percent;
+        }
+
+        private void UpdatePitch()
+        {
+            if (CurrentFlightAxis.pitch != TargetFlightAxis.pitch)
+            {
+                CurrentFlightAxis.pitch = Mathf.SmoothDamp(CurrentFlightAxis.pitch, TargetFlightAxis.pitch, ref m_forwardVelocity, 0.1f);
+            }
+        }
+
+
+
+        
+        void ManualLateralMovementControl()
+        {
+            ApplyLateralThrust(Input.GetAxis("Horizontal"));
+
+        }
+
+        public void ApplyLateralThrust(float percent)
+        {
+            if (percent > 1f)
+            {
+                percent = 1f;
+            }
+            else if (percent < -1f)
+            {
+                percent = -1f;
+            }
+
+            CurrentFlightThrust.x = percent * MovementFlightThrust.x;
+            if(Mathf.Abs(percent) > LateralDeadzone)
+            {
+                TargetFlightAxis.roll = MovementFlightAxis.roll * -percent;
+            }
+            else
+            {
+                TargetFlightAxis.roll = 0;
+            }
+            
         }
 
         public void ApplyRoll(bool positive)
@@ -256,7 +309,7 @@ namespace RSToolkit.Space3D
             }
            
         }
-
+        private float m_lateralVelocity;
         private void UpdateRoll()
         {
             if(CurrentFlightAxis.roll != TargetFlightAxis.roll)
@@ -303,19 +356,16 @@ namespace RSToolkit.Space3D
         Vector3 m_clampedVelocity;
         void ClampForces()
         {
-            if(IsOutDeadzoneVertical() && IsOutDeadzoneLateral())
+            if (IsOutDeadzone())
             {
-                m_RigidBodyComponent.velocity = Vector3.ClampMagnitude(m_RigidBodyComponent.velocity, Mathf.Lerp(m_RigidBodyComponent.velocity.magnitude, 10.0f, Time.deltaTime * 5f));
+                float magnitudeLength = 10f;
+                if (!IsOutDeadzoneVertical() && IsOutDeadzoneLateral())
+                {
+                    magnitudeLength = 5f;
+                }
+                m_RigidBodyComponent.velocity = Vector3.ClampMagnitude(m_RigidBodyComponent.velocity, Mathf.Lerp(m_RigidBodyComponent.velocity.magnitude, magnitudeLength, Time.deltaTime * 5f));
             }
-            if (IsOutDeadzoneVertical() && !IsOutDeadzoneLateral())
-            {
-                m_RigidBodyComponent.velocity = Vector3.ClampMagnitude(m_RigidBodyComponent.velocity, Mathf.Lerp(m_RigidBodyComponent.velocity.magnitude, 10.0f, Time.deltaTime * 5f));
-            }
-            if (!IsOutDeadzoneVertical() && IsOutDeadzoneLateral())
-            {
-                m_RigidBodyComponent.velocity = Vector3.ClampMagnitude(m_RigidBodyComponent.velocity, Mathf.Lerp(m_RigidBodyComponent.velocity.magnitude, 5.0f, Time.deltaTime * 5f));
-            }
-            if (!IsOutDeadzoneVertical() && IsOutDeadzoneLateral())
+            else
             {
                 m_RigidBodyComponent.velocity = Vector3.SmoothDamp(m_RigidBodyComponent.velocity, Vector3.zero, ref m_clampedVelocity, 0.95f);
             }
