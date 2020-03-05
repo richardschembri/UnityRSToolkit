@@ -9,8 +9,8 @@ using UnityEngine.Events;
 
 namespace RSToolkit.AI
 {
-    [RequireComponent(typeof(NavMeshNPC))]
-    public class NavMeshNPCVision : MonoBehaviour
+    [RequireComponent(typeof(Bot))]
+    public class BotVision : MonoBehaviour
     {
         public float ViewMagnitude = 10;
         public float SqrViewMagnitude
@@ -21,16 +21,16 @@ namespace RSToolkit.AI
             }
         }
 
-        private NavMeshNPC m_navMeshNPCComponent;
-        public NavMeshNPC NavMeshNPCComponent
+        private Bot m_botComponent;
+        public Bot BotComponent
         {
             get
             {
-                if (m_navMeshNPCComponent == null)
+                if (m_botComponent == null)
                 {
-                    m_navMeshNPCComponent = GetComponent<NavMeshNPC>();
+                    m_botComponent = GetComponent<Bot>();
                 }
-                return m_navMeshNPCComponent;
+                return m_botComponent;
             }
 
         }
@@ -83,7 +83,7 @@ namespace RSToolkit.AI
             var targets = GetTrasnformsWithinSight(refreshList);
             if (newTransformsOnly)
             {
-                targets = targets.Where(t => !NavMeshNPCComponent.NoticedTransforms.Contains(t)).ToArray();
+                targets = targets.Where(t => !BotComponent.NoticedTransforms.Contains(t)).ToArray();
             }
                 
             for (int i = 0; i < targets.Length; i++)

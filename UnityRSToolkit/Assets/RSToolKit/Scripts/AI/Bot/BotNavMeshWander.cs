@@ -5,21 +5,21 @@ using RSToolkit.AI.Helpers;
 
 namespace RSToolkit.AI
 {
-    [RequireComponent(typeof(NavMeshNPC))]
-    public class NavMeshNPCWander : MonoBehaviour
+    [RequireComponent(typeof(BotNavMesh))]
+    public class BotNavMeshWander : MonoBehaviour
     {
         public float wanderRadius = 20f;
 
-        private NavMeshNPC m_navMeshNPCComponent;
-        public NavMeshNPC NavMeshNPCComponent
+        private BotNavMesh m_botNavMeshComponent;
+        public BotNavMesh BotNavMeshComponent
         {
             get
             {
-                if (m_navMeshNPCComponent == null)
+                if (m_botNavMeshComponent == null)
                 {
-                    m_navMeshNPCComponent = GetComponent<NavMeshNPC>();
+                    m_botNavMeshComponent = GetComponent<BotNavMesh>();
                 }
-                return m_navMeshNPCComponent;
+                return m_botNavMeshComponent;
             }
 
         }
@@ -30,21 +30,21 @@ namespace RSToolkit.AI
         {
             get
             {
-                return (NavMeshNPCComponent.NavMeshAgentComponent.destination == LastWanderToPosition
-                    && NavMeshNPCComponent.NavMeshAgentComponent.speed == NavMeshNPCComponent.walkSpeed
-                    && NavMeshNPCComponent.NavMeshAgentComponent.angularSpeed == NavMeshNPCComponent.walkRotationSpeed &&
-                    NavMeshNPCComponent.CurrentSpeed > 0);
+                return (BotNavMeshComponent.NavMeshAgentComponent.destination == LastWanderToPosition
+                    && BotNavMeshComponent.NavMeshAgentComponent.speed == BotNavMeshComponent.walkSpeed
+                    && BotNavMeshComponent.NavMeshAgentComponent.angularSpeed == BotNavMeshComponent.walkRotationSpeed &&
+                    BotNavMeshComponent.CurrentSpeed > 0);
             }
         }
 
 
         public void Wander(float distance)
         {
-            NavMeshNPCComponent.UnFocus();
+            BotNavMeshComponent.BotComponent.UnFocus();
             if (!IsWanderingToPosition)
             {
                 LastWanderToPosition = NavMeshHelpers.RandomNavPosInSphere(transform.position, distance);
-                NavMeshNPCComponent.WalkTo(LastWanderToPosition.Value);
+                BotNavMeshComponent.WalkTo(LastWanderToPosition.Value);
             }
         }
 
@@ -59,9 +59,9 @@ namespace RSToolkit.AI
             var oldColor = UnityEditor.Handles.color;
             UnityEditor.Handles.color = new Color(0f, 0f, 0.75f, .075f);
 
-            UnityEditor.Handles.DrawSolidDisc(NavMeshNPCComponent.transform.position, Vector3.up, wanderRadius);
+            UnityEditor.Handles.DrawSolidDisc(BotNavMeshComponent.transform.position, Vector3.up, wanderRadius);
             UnityEditor.Handles.color = new Color(1f, 1f, 0.008f, 0.55f);
-            UnityEditor.Handles.DrawSolidDisc(NavMeshNPCComponent.NavMeshAgentComponent.destination, Vector3.up, 0.25f);
+            UnityEditor.Handles.DrawSolidDisc(BotNavMeshComponent.NavMeshAgentComponent.destination, Vector3.up, 0.25f);
 
             UnityEditor.Handles.color = oldColor;
 #endif
