@@ -3,8 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace RSToolkit.Helpers
 {
-    public class ProximityHelpers : MonoBehaviour
+    public class ProximityHelpers
     {
+        public enum RayDirection
+        {
+            UP,
+            DOWN,
+            LEFT,
+            RIGHT,
+            FRONT,
+            REAR
+        }
+
         public static Vector3 GetDirection(Transform sourceTransform, Transform targetTransform)
         {
             return targetTransform.position - sourceTransform.position;
