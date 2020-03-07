@@ -182,6 +182,7 @@ namespace RSToolkit.AI.Behaviour
 
         public void StartNode()
         {
+            this.Result = null;
             this.State = NodeState.ACTIVE;
             OnStarted.Invoke();
         }
