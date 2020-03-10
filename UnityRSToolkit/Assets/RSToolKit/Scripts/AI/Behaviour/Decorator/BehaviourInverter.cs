@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace RSToolkit.AI.Behaviour
+namespace RSToolkit.AI.Behaviour.Decorator
 {
     public class BehaviourInverter : BehaviourNode
     {

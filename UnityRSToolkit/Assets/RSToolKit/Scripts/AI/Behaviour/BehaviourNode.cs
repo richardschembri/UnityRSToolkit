@@ -137,6 +137,7 @@ namespace RSToolkit.AI.Behaviour
             }
 
             this.Parent = parent;
+            this.Parent?.AddChild(this);
         }
 
         public void AddChild(BehaviourNode child)
@@ -155,10 +156,12 @@ namespace RSToolkit.AI.Behaviour
                     break;
 
             }
-            
-            child.SetParent(this);
-            m_children.Add(child);
-            OnChildNodeAdded.Invoke(this, child);
+            if (!m_children.Contains(child))
+            {
+                m_children.Add(child);
+                child.SetParent(this);
+                OnChildNodeAdded.Invoke(this, child);
+            } 
         }
 
         protected NodeTimer AddTimer(float time, float randomVariance, int repeat, System.Action timeoutAction)
