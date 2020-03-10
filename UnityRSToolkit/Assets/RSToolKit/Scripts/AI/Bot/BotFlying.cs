@@ -38,46 +38,52 @@ namespace RSToolkit.AI
 
         }
 
-        public void FlyToTarget()
+        public void FlyToPosition(Vector3 position)
         {
-            if (target != null)
-            {
-                var rotation = Quaternion.LookRotation(target.position - transform.position, Vector3.up);
-                Flying3DObjectComponent.YawTo(rotation.eulerAngles.y);
+            var rotation = Quaternion.LookRotation(position - transform.position, Vector3.up);
+            Flying3DObjectComponent.YawTo(rotation.eulerAngles.y);
 
-                if(Mathf.RoundToInt(target.position.y) > Mathf.RoundToInt(transform.position.y))
-                {
-                    Flying3DObjectComponent.ApplyVerticalThrust(true);
-                }
-                if (Mathf.RoundToInt(target.position.y) < Mathf.RoundToInt(transform.position.y))
-                {
-                    Flying3DObjectComponent.ApplyVerticalThrust(false);
-                }
-                if (!BotComponent.IsWithinInteractionDistance())
-                {
-                    Flying3DObjectComponent.ApplyForwardThrust(0.2f);
- 
-                }else if (BotComponent.IsWithinPersonalSpace())
-                {
-                    Flying3DObjectComponent.ApplyForwardThrust(-0.1f);
-                }
+            if (Mathf.RoundToInt(position.y) > Mathf.RoundToInt(transform.position.y))
+            {
+                Flying3DObjectComponent.ApplyVerticalThrust(true);
+            }
+            if (Mathf.RoundToInt(position.y) < Mathf.RoundToInt(transform.position.y))
+            {
+                Flying3DObjectComponent.ApplyVerticalThrust(false);
+            }
+            if (!BotComponent.IsWithinInteractionDistance())
+            {
+                Flying3DObjectComponent.ApplyForwardThrust(0.2f);
 
             }
-
-            
+            else if (BotComponent.IsWithinPersonalSpace())
+            {
+                Flying3DObjectComponent.ApplyForwardThrust(-0.1f);
+            }
         }
 
-
-
-        // Start is called before the first frame update
-        void Start()
+        public void FlyToPosition()
         {
-            
+            if(BotComponent.FocusedOnPosition != null)
+            {
+                FlyToPosition(BotComponent.FocusedOnPosition.Value);
+            }
+        }
+
+        public void FlyToTarget()
+        {
+            if (BotComponent.FocusedOnTransform != null)
+            {
+                FlyToPosition(BotComponent.FocusedOnTransform.position);
+            }           
         }
 
         private void Awake()
         {
-            BotComponent.FocusOnTransform(target);
+            if(target != null)
+            {
+                BotComponent.FocusOnTransform(target);
+            }
         }
 
         // Update is called once per frame

@@ -86,7 +86,8 @@ namespace RSToolkit.AI
         // To Refactor
         public void StepRotateTo(Transform target)
         {
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, target.rotation, NavMeshAgentComponent.angularSpeed * Time.deltaTime);
+            var rotation = Quaternion.LookRotation(target.position - transform.position, Vector3.up);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, rotation, NavMeshAgentComponent.angularSpeed * Time.deltaTime);
         }
 
 

@@ -7,7 +7,7 @@ namespace RSToolkit.AI
 {
     public class Bot : MonoBehaviour
     {
-
+        public bool DebugMode = false;
         private Animator m_animatorComponent;
         public Animator AnimatorComponent
         {
@@ -24,7 +24,7 @@ namespace RSToolkit.AI
         public Transform FocusedOnTransform { get; private set; } = null;
         public Vector3? m_FocusedOnPosition = null;
 
-        public List<Transform> NoticedTransforms { get; private set; } = new List<Transform>();
+        public HashSet<Transform> NoticedTransforms { get; private set; } = new HashSet<Transform>();
         public float forgetTransformTimeout = -1f;
 
         public Vector3? FocusedOnPosition
@@ -80,13 +80,23 @@ namespace RSToolkit.AI
 
         }
 
+        public bool IsWithinInteractionDistance(Vector3 position)
+        {
+            return ProximityHelpers.IsWithinDistance(transform, position, SqrInteractionMagnitude);
+        }
+        public bool IsWithinPersonalSpace(Vector3 position)
+        {
+            return ProximityHelpers.IsWithinDistance(transform, position, SqrInteractionMagnitude * .75f);
+        }
+
         public bool IsWithinInteractionDistance(Transform target)
         {
-            return ProximityHelpers.IsWithinDistance(transform, target, SqrInteractionMagnitude);
+            return IsWithinInteractionDistance(transform.position);
         }
+
         public bool IsWithinPersonalSpace(Transform target)
         {
-            return ProximityHelpers.IsWithinDistance(transform, target, SqrInteractionMagnitude * .75f);
+            return IsWithinPersonalSpace(transform.position);
         }
 
 
@@ -110,8 +120,11 @@ namespace RSToolkit.AI
 
         public bool AttractMyAttention_FromBot(Bot target)
         {
-            return target.GetComponent<Bot>().AttractMyAttention_ToTransform(transform);
-
+            if(target.FocusedOnTransform != transform)
+            {
+                return target.AttractMyAttention_ToTransform(transform);
+            }
+            return true;
         }
 
         public bool AttractMyAttention_FromBot()
@@ -125,13 +138,14 @@ namespace RSToolkit.AI
             FocusedOnPosition = target_position;
         }
 
-        public void NoticeTransform(Transform target)
+        public bool NoticeTransform(Transform target)
         {
             if (!NoticedTransforms.Contains(target))
             {
                 NoticedTransforms.Add(target);
+                return true;
             }
-
+            return false;
         }
 
         public void StartForgetTransform(Transform target)
@@ -141,10 +155,11 @@ namespace RSToolkit.AI
                 StartCoroutine(DelayedForgetTransform(target));
 
             }
+            /*
             else if (forgetTransformTimeout < 0)
             {
                 NoticeTransform(target);
-            }
+            }*/
         }
 
         IEnumerator DelayedForgetTransform(Transform target)
@@ -157,30 +172,47 @@ namespace RSToolkit.AI
 
         public void ForgetTransform(Transform target)
         {
-            NoticedTransforms.Remove(target);
-            if (FocusedOnTransform == target)
+            if (DebugMode)
             {
-                FocusedOnTransform = null;
+                Debug.Log($"{transform.name}.ForgetTransform: {target.name}");
             }
+            NoticedTransforms.Remove(target);
+
         }
 
         public void FocusOnTransform(Transform target)
         {
+            if (DebugMode)
+            {
+                Debug.Log($"{transform.name}.FocusOnTransform: {target.name}");
+            }
             NoticeTransform(target);
             FocusedOnTransform = target;
+
         }
 
-        public void UnFocus()
+        public bool UnFocus()
         {
+            if(FocusedOnTransform == null)
+            {
+                return false;
+            }
+            if (DebugMode)
+            {
+                Debug.Log($"{transform.name}.UnFocus: {FocusedOnTransform.name}");
+            }
             StartForgetTransform(FocusedOnTransform);
-
+            FocusedOnTransform = null;
+            return true;
         }
 
 
-        public bool IsFacing(Transform target)
+         public bool IsFacing(Transform target)
         {
-            return transform.rotation == target.rotation;
+            return transform.rotation == Quaternion.LookRotation(target.position - transform.position, Vector3.up);
+            // return transform.rotation == target.rotation;
         }
+
 
         public bool IsFacing()
         {
@@ -189,6 +221,11 @@ namespace RSToolkit.AI
                 return IsFacing(FocusedOnTransform);
             }
             return false;
+        }
+
+        public bool CanInteractWith(Bot target)
+        {
+            return target.FocusedOnTransform == transform || target.FocusedOnTransform == null && !target.NoticedTransforms.Contains(transform);
         }
 
         private void OnDrawGizmos()

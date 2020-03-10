@@ -232,6 +232,13 @@ namespace RSToolkit.Space3D
             m_RigidBodyComponent.rotation = Quaternion.Euler(CurrentFlightAxis.toVector3()); // new Vector3(CurrentFlightAxis.pitch, CurrentFlightAxis.yaw, m_RigidBodyComponent.rotation.z));
             UpdateForwardThrust();
             UpdateVerticalThrust();
+
+            Debug.Log(m_RigidBodyComponent.velocity);
+        }
+
+        public bool IsMovingHorizontally()
+        {
+            return Mathf.Abs(CurrentFlightThrust.x) > 1 || Mathf.Abs(CurrentFlightThrust.z) > 1;
         }
 
         public (KeyCode, KeyCode) VerticalThrustKeys;
