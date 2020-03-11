@@ -8,7 +8,6 @@ namespace RSToolkit.AI
     [RequireComponent(typeof(BotNavMesh))]
     public class BotWanderNavMesh : BotWander
     {
-  
 
         private BotNavMesh m_botNavMeshComponent;
         public BotNavMesh BotNavMeshComponent
@@ -24,20 +23,19 @@ namespace RSToolkit.AI
 
         }
 
-        public override bool IsWanderingToPosition()
+        public override bool CanWander()
         {
-            return (BotNavMeshComponent.NavMeshAgentComponent.destination == WanderPosition
-                && BotNavMeshComponent.NavMeshAgentComponent.speed == BotNavMeshComponent.walkSpeed
-                && BotNavMeshComponent.NavMeshAgentComponent.angularSpeed == BotNavMeshComponent.walkRotationSpeed &&
-                BotNavMeshComponent.CurrentSpeed > 0);
+            return (BotNavMeshComponent.NavMeshAgentComponent.speed > 0
+                && BotNavMeshComponent.NavMeshAgentComponent.angularSpeed > 0 &&
+                !BotNavMeshComponent.NavMeshAgentComponent.isStopped);
         }
 
-        protected override Vector3 GetNewWanderPosition(float distance)
+        protected override Vector3 GetNewWanderPosition(float radius)
         {
-            return NavMeshHelpers.RandomNavPosInSphere(transform.position, distance);
+            return NavMeshHelpers.RandomNavPosInSphere(transform.position, radius);
         }
 
-        protected override void MoveToWanderPosition()
+        protected override void MoveTowardsWanderPosition()
         {
             BotNavMeshComponent.WalkTo(WanderPosition.Value);
         }

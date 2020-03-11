@@ -138,6 +138,7 @@ namespace RSToolkit.Space3D
         public float LateralDeadzone = 0.2f;
 
         public bool HoverWhenIdle = true;
+        
 
         public bool IsOutDeadzoneVertical()
         {
@@ -206,7 +207,7 @@ namespace RSToolkit.Space3D
                 HoverWhenIdle = !HoverWhenIdle;
             }
         }
-
+        float m_decelerateVelocity;
         void FixedUpdate()
         {
             if (!m_FlightEnabled)
@@ -233,7 +234,7 @@ namespace RSToolkit.Space3D
             UpdateForwardThrust();
             UpdateVerticalThrust();
 
-            Debug.Log(m_RigidBodyComponent.velocity);
+            
         }
 
         public bool IsMovingHorizontally()
@@ -335,6 +336,8 @@ namespace RSToolkit.Space3D
             CurrentFlightThrust.z = percent * MovementFlightThrust.z;
             m_targetFlightAxis.pitch = MovementFlightAxis.pitch * percent;
         }
+
+
 
         private void UpdateForwardThrust()
         {

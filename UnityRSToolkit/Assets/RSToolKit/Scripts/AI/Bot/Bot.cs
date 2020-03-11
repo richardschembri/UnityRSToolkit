@@ -60,6 +60,14 @@ namespace RSToolkit.AI
             }
         }
 
+        public float SqrPersonalSpaceMagnitude
+        {
+            get
+            {
+                return SqrInteractionMagnitude * .75f;
+            }
+        }
+
         public bool IsWithinInteractionDistance()
         {
             if (FocusedOnTransform != null)
@@ -75,6 +83,9 @@ namespace RSToolkit.AI
             if (FocusedOnTransform != null)
             {
                 return IsWithinPersonalSpace(FocusedOnTransform);
+            }else if( FocusedOnPosition != null)
+            {
+                return IsWithinPersonalSpace(FocusedOnPosition.Value);
             }
             return false;
 
@@ -86,7 +97,7 @@ namespace RSToolkit.AI
         }
         public bool IsWithinPersonalSpace(Vector3 position)
         {
-            return ProximityHelpers.IsWithinDistance(transform, position, SqrInteractionMagnitude * .75f);
+            return ProximityHelpers.IsWithinDistance(transform, position, SqrPersonalSpaceMagnitude);
         }
 
         public bool IsWithinInteractionDistance(Transform target)

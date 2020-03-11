@@ -4,6 +4,7 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using UnityEngine;
 
     /// <summary>
     /// EN: Helper class used for random value functions
@@ -80,6 +81,12 @@
             if (digits % 2 == 0)
                 return result;
             return result + rnd.Next(16).ToString("X");
+        }
+
+        public static Vector3 GetRandomPositionWithinCircle(this Transform self, float radius, float offset = 0f)
+        {
+            Vector2 randPos = UnityEngine.Random.insideUnitCircle * (radius - offset);
+            return self.position + new Vector3(randPos.x + offset, self.position.y, randPos.y + offset);
         }
     }
 }

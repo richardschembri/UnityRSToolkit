@@ -38,7 +38,7 @@ namespace RSToolkit.AI
 
         }
 
-        public void FlyToPosition(Vector3 position)
+        public void FlyTowardsPosition(Vector3 position)
         {
             var rotation = Quaternion.LookRotation(position - transform.position, Vector3.up);
             Flying3DObjectComponent.YawTo(rotation.eulerAngles.y);
@@ -66,7 +66,7 @@ namespace RSToolkit.AI
         {
             if(BotComponent.FocusedOnPosition != null)
             {
-                FlyToPosition(BotComponent.FocusedOnPosition.Value);
+                FlyTowardsPosition(BotComponent.FocusedOnPosition.Value);
             }
         }
 
@@ -74,7 +74,7 @@ namespace RSToolkit.AI
         {
             if (BotComponent.FocusedOnTransform != null)
             {
-                FlyToPosition(BotComponent.FocusedOnTransform.position);
+                FlyTowardsPosition(BotComponent.FocusedOnTransform.position);
             }           
         }
 
@@ -89,7 +89,7 @@ namespace RSToolkit.AI
         // Update is called once per frame
         void Update()
         {
-            FlyToTarget();
+            
         }
 
 
