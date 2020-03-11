@@ -86,7 +86,9 @@
         public static Vector3 GetRandomPositionWithinCircle(this Transform self, float radius, float offset = 0f)
         {
             Vector2 randPos = UnityEngine.Random.insideUnitCircle * (radius - offset);
-            return self.position + new Vector3(randPos.x + offset, self.position.y, randPos.y + offset);
+            float new_x = randPos.x + (randPos.x > 0 ? offset : -offset);
+            float new_z = randPos.y + (randPos.y > 0 ? offset : -offset);
+            return self.position + new Vector3(new_x, self.position.y, new_z);
         }
     }
 }

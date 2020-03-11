@@ -42,6 +42,7 @@ namespace RSToolkit.AI
         protected override void Awake()
         {
             base.Awake();
+            default_y = transform.position.y;
             m_fsm.Changed += Fsm_Changed;
             
         }

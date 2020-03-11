@@ -2186,6 +2186,10 @@ GameObject:
   - component: {fileID: 7990845843178055559}
   - component: {fileID: 7990845843178055561}
   - component: {fileID: 7990845843178055558}
+  - component: {fileID: 7990845843178055564}
+  - component: {fileID: 7990845843178055563}
+  - component: {fileID: 7990845843178055562}
+  - component: {fileID: 7990845843178055565}
   m_Layer: 0
   m_Name: HelicopterBot
   m_TagString: Untagged
@@ -2262,7 +2266,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f3bacfbd3c4b724f983c54cd2078f73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  WanderOnStart: 1
+  WanderOnAwake: 1
   waitTime: 3
   randomizeWait: 0
   debugMode: 1
@@ -2314,6 +2318,75 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   DebugMode: 1
+--- !u!114 &7990845843178055562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7990845843178055555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c886171ea977ef6448307c5e61d60b8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AutoLandWhenCloseToGround: 0
+--- !u!114 &7990845843178055563
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7990845843178055555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1633e10d15d4bcf4ab81f048f33d0638, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  walkSpeed: 0.75
+  walkRotationSpeed: 120
+  runSpeed: 5
+  runRotationSpeed: 120
+--- !u!195 &7990845843178055564
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7990845843178055555}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
+--- !u!114 &7990845843178055565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7990845843178055555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4cce5f5470fe7d4ea610c13f5dbf7f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WanderOnAwake: 0
+  waitTime: 3
+  randomizeWait: 0
+  debugMode: 0
+  defaultWanderRadius: 20
+  m_wanderRadius: 20
 --- !u!1 &7990845843570252142
 GameObject:
   m_ObjectHideFlags: 0

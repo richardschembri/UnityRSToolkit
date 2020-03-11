@@ -86,6 +86,26 @@ namespace RSToolkit.AI
             
         }
 
+        IEnumerator m_movingToPosition_TimeOut;
+        void MovingToPosition_Enter()
+        {
+            m_movingToPosition_TimeOut = MovingToPosition_TimeOut();
+            StartCoroutine(m_movingToPosition_TimeOut);
+        }
+        void MovingToPosition_Exit()
+        {
+            StopCoroutine(m_movingToPosition_TimeOut);
+        }
+
+        IEnumerator MovingToPosition_TimeOut()
+        {
+            yield return new WaitForSeconds(5f);
+            if (m_fsm.State == WanderStates.MovingToPosition)
+            {
+                m_fsm.ChangeState(WanderStates.FindNewPosition);
+            }
+        }
+
         void CannotWander_Update()
         {
             if (CanWander())
@@ -110,6 +130,17 @@ namespace RSToolkit.AI
         public bool Wander()
         {
             return Wander(defaultWanderRadius);
+        }
+
+        public bool StopWandering()
+        {
+            if (CurrentState != WanderStates.NotWandering)
+            {
+                m_fsm.ChangeState(WanderStates.NotWandering);
+                return true;
+            }
+
+            return false;
         }
 
         protected abstract void MoveTowardsWanderPosition();
