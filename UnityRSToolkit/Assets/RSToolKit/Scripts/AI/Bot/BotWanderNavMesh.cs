@@ -30,6 +30,17 @@ namespace RSToolkit.AI
                 !BotNavMeshComponent.NavMeshAgentComponent.isStopped);
         }
 
+        public override bool Wander(float radius)
+        {
+            BotNavMeshComponent.NavMeshAgentComponent.stoppingDistance = BotComponent.SqrPersonalSpaceMagnitude;
+            return base.Wander(radius);
+        }
+        public override bool StopWandering()
+        {
+            BotNavMeshComponent.NavMeshAgentComponent.stoppingDistance = 0f;
+            return base.StopWandering();
+        }
+
         protected override Vector3 GetNewWanderPosition(float radius)
         {
             return NavMeshHelpers.RandomNavPosInSphere(transform.position, radius);
@@ -38,6 +49,11 @@ namespace RSToolkit.AI
         protected override void MoveTowardsWanderPosition()
         {
             BotNavMeshComponent.WalkTo(WanderPosition.Value);
+        }
+
+        protected override void Awake()
+        {   
+            base.Awake();
         }
 
     }

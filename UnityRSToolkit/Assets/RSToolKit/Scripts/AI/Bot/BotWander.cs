@@ -15,10 +15,11 @@ namespace RSToolkit.AI
             CannotWander
         }
 
-        public bool WanderOnAwake = false;
+        // public bool WanderOnAwake = false;
         public float waitTime = 0f;
         public bool randomizeWait = false;
         public bool debugMode = false;
+        public float movementTimeout = 5f;
 
         private float GetWaitTime()
         {
@@ -89,9 +90,13 @@ namespace RSToolkit.AI
         IEnumerator m_movingToPosition_TimeOut;
         void MovingToPosition_Enter()
         {
-            m_movingToPosition_TimeOut = MovingToPosition_TimeOut();
-            StartCoroutine(m_movingToPosition_TimeOut);
+            if (movementTimeout > 0)
+            {
+                m_movingToPosition_TimeOut = MovingToPosition_TimeOut();
+                StartCoroutine(m_movingToPosition_TimeOut);
+            }
         }
+
         void MovingToPosition_Exit()
         {
             StopCoroutine(m_movingToPosition_TimeOut);
@@ -99,9 +104,10 @@ namespace RSToolkit.AI
 
         IEnumerator MovingToPosition_TimeOut()
         {
-            yield return new WaitForSeconds(5f);
+            yield return new WaitForSeconds(movementTimeout);
             if (m_fsm.State == WanderStates.MovingToPosition)
             {
+                Debug.Log("Movement timeout!");
                 m_fsm.ChangeState(WanderStates.FindNewPosition);
             }
         }
@@ -114,7 +120,7 @@ namespace RSToolkit.AI
             }
         }
 
-        public bool Wander(float radius)
+        public virtual bool Wander(float radius)
         {
             m_wanderRadius = radius;
             
@@ -132,11 +138,11 @@ namespace RSToolkit.AI
             return Wander(defaultWanderRadius);
         }
 
-        public bool StopWandering()
+        public virtual bool StopWandering()
         {
             if (CurrentState != WanderStates.NotWandering)
             {
-                m_fsm.ChangeState(WanderStates.NotWandering);
+                m_fsm.ChangeState(WanderStates.NotWandering, FiniteStateTransition.Overwrite);
                 return true;
             }
 
@@ -153,12 +159,7 @@ namespace RSToolkit.AI
             if (debugMode)
             {
                 m_fsm.Changed += Fsm_Changed;
-            }
-            if (WanderOnAwake)
-            {
-                m_fsm.ChangeState(WanderStates.FindNewPosition);
-            }
-     
+            }    
         }
 
         private void Fsm_Changed(WanderStates state)

@@ -10,6 +10,7 @@ namespace RSToolkit.AI
     [RequireComponent(typeof(ProximityChecker))]
     public class BotFlyable : MonoBehaviour
     {
+        public FlyableStates StartState = FlyableStates.Flying;
         public enum FlyableStates
         {
             Grounded,
@@ -115,6 +116,16 @@ namespace RSToolkit.AI
             }
         }
 
+        public void AddStateChangedListener(System.Action<FlyableStates> listener)
+        {
+            m_fsm.Changed += listener;
+        }
+
+        public void RemoveStateChangedListener(System.Action<FlyableStates> listener)
+        {
+            m_fsm.Changed -= listener;
+        }
+
         private void ToggleFlight(bool on)
         {
             if (on)
@@ -125,6 +136,7 @@ namespace RSToolkit.AI
             {
                 transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
                 RigidBodyComponent.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+                RigidBodyComponent.velocity = Vector3.zero;
             }
             
 
@@ -185,9 +197,10 @@ namespace RSToolkit.AI
 
         void Landing_Update()
         {
-            if (ProximityCheckerComponent.IsWithinRayDistance() != null && ProximityCheckerComponent.IsWithinRayDistance() < 0.1f)
+            if (ProximityCheckerComponent.IsWithinRayDistance() != null && ProximityCheckerComponent.IsWithinRayDistance() < 0.2f)
             {  
                 m_fsm.ChangeState(FlyableStates.Grounded);
+                
             }
         }
 
@@ -206,7 +219,7 @@ namespace RSToolkit.AI
                     result = true;
                     break;
                 case FlyableStates.Flying:
-                    BotWanderNavMeshComponent.Wander();
+                    BotWanderFlyingComponent?.Wander();
                     result = true;
                     break;
             }
@@ -216,53 +229,40 @@ namespace RSToolkit.AI
 
         public bool StopWandering()
         {
-            bool result = false;
-            switch (CurrentState)
+
+
+            if((CurrentState == FlyableStates.Grounded || CurrentState == FlyableStates.TakingOff) && BotWanderNavMeshComponent != null)
             {
-                case FlyableStates.Grounded:
-                    BotWanderNavMeshComponent?.StopWandering();
-                    result = true;
-                    break;
-                case FlyableStates.Flying:
-                    BotWanderNavMeshComponent.StopWandering();
-                    result = true;
-                    break;
+                return BotWanderNavMeshComponent.StopWandering();
+            }
+            else if((CurrentState == FlyableStates.Flying || CurrentState == FlyableStates.Landing) && BotWanderFlyingComponent != null)
+            {
+                return BotWanderFlyingComponent.StopWandering();
             }
 
-            return result;
+            return false;
+
         }
 
 
         void Awake()
         {
-            m_fsm = FiniteStateMachine<FlyableStates>.Initialize(this);
+            m_fsm = FiniteStateMachine<FlyableStates>.Initialize(this, StartState);
+            m_fsm.Changed += Fsm_Changed;
             // ProximityCheckerComponent.OnProximityEntered.AddListener(OnProximityEntered_Listener);
         }
 
-        private void Update()
+        private void Fsm_Changed(FlyableStates state)
         {
-            if (Input.GetKeyUp(KeyCode.Alpha1))
+            try
             {
-                TakeOff();
+                Debug.Log($"{transform.name} FlyableStates changed from {m_fsm.LastState.ToString()} to {state.ToString()}");
+            }
+            catch (System.Exception ex)
+            {
+                Debug.Log($"{transform.name} FlyableStates changed to {state.ToString()}");
             }
 
-            if (Input.GetKeyUp(KeyCode.Alpha2))
-            {
-                Land(true);
-            }
-
-            if (Input.GetKeyUp(KeyCode.Alpha3))
-            {
-                Land(true);
-            }
         }
-        /*
-        private void OnProximityEntered_Listener()
-        {
-            if (AutoLandWhenCloseToGround)
-            {
-                Land(true);
-            }
-        }*/
     }
 }
