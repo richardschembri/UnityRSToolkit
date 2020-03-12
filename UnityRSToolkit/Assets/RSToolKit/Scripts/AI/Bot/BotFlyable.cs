@@ -244,6 +244,15 @@ namespace RSToolkit.AI
 
         }
 
+        private bool IsBotWandering(BotWander botWander)
+        {
+            return botWander != null && botWander.IsWandering();
+        }
+      
+        public bool IsWandering()
+        {
+            return IsBotWandering(BotWanderNavMeshComponent) || IsBotWandering(BotWanderFlyingComponent);
+        }
 
         void Awake()
         {

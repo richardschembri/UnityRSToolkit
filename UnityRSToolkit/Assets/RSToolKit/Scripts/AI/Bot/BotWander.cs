@@ -175,6 +175,12 @@ namespace RSToolkit.AI
             
         }
 
+        public bool IsWandering()
+        {
+            return CurrentState != BotWander.WanderStates.NotWandering
+                    && CurrentState != BotWander.WanderStates.CannotWander;
+        }
+
         public void OnDrawGizmos()
         {
 #if UNITY_EDITOR

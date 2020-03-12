@@ -32,7 +32,7 @@ namespace RSToolkit.AI
 
         public override bool Wander(float radius)
         {
-            BotNavMeshComponent.NavMeshAgentComponent.stoppingDistance = BotComponent.SqrPersonalSpaceMagnitude;
+            BotNavMeshComponent.NavMeshAgentComponent.stoppingDistance = BotComponent.SqrPersonalSpaceMagnitude *.75f;
             return base.Wander(radius);
         }
         public override bool StopWandering()
