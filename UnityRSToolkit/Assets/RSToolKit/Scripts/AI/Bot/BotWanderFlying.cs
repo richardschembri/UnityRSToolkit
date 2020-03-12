@@ -29,7 +29,7 @@ namespace RSToolkit.AI
 
         protected override void MoveTowardsWanderPosition()
         {
-            BotFlyingComponent.FlyToPosition();
+            BotFlyingComponent.FlyToPosition(false);
         }
 
         protected override Vector3 GetNewWanderPosition(float radius)

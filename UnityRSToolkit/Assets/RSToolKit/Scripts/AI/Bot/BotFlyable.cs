@@ -254,6 +254,26 @@ namespace RSToolkit.AI
             return IsBotWandering(BotWanderNavMeshComponent) || IsBotWandering(BotWanderFlyingComponent);
         }
 
+        public void MoveToFocusedTarget(bool fullspeed = true)
+        {
+            if(CurrentState == FlyableStates.Flying)
+            {
+                BotFlyingComponent.FlyToTarget(fullspeed);
+            }
+            else if(CurrentState == FlyableStates.Grounded)
+            {
+                if (fullspeed)
+                {
+                    BotNavMeshComponent.RunToFocusedTarget();
+                }
+                else
+                {
+                    BotNavMeshComponent.WalkToFocusedTarget();
+                }
+                
+            }
+        }
+
         void Awake()
         {
             m_fsm = FiniteStateMachine<FlyableStates>.Initialize(this, StartState);
