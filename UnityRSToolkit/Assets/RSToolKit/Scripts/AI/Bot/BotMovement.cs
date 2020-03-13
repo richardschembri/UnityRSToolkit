@@ -80,12 +80,13 @@ namespace RSToolkit.AI
             m_FSM.ChangeState(MovementState.MovingToTarget);
         }
 
+        public abstract void RotateTowardsPosition();
+
         bool reachedDestination()
         {
             return (m_stopMovementCondition == StopMovementConditions.WITHIN_PERSONAL_SPACE && BotComponent.IsWithinPersonalSpace())
                 || (m_stopMovementCondition == StopMovementConditions.WITHIN_INTERACTION_DISTANCE && BotComponent.IsWithinInteractionDistance())
-                || (m_stopMovementCondition == StopMovementConditions.AT_POSITION && transform.position == BotComponent.FocusedOnPosition.Value)
-                ;
+                || (m_stopMovementCondition == StopMovementConditions.AT_POSITION && transform.position == BotComponent.FocusedOnPosition.Value);
         }
 
         void MovingToPosition_Update()

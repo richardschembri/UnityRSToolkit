@@ -46,7 +46,13 @@ namespace RSToolkit.AI
             transform.rotation = Quaternion.RotateTowards(transform.rotation, rotation, NavMeshAgentComponent.angularSpeed * Time.deltaTime);
         }
 
-        private void MoveTo(Vector3 destination, float speed, float angularSpeed)
+        public override void RotateTowardsPosition()
+        {
+            var rotation = Quaternion.LookRotation(BotComponent.FocusedOnPosition.Value - transform.position, Vector3.up);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, rotation, NavMeshAgentComponent.angularSpeed* Time.deltaTime);
+        }
+
+    private void MoveTo(Vector3 destination, float speed, float angularSpeed)
         {
             NavMeshAgentComponent.speed = speed;
             NavMeshAgentComponent.angularSpeed = angularSpeed;

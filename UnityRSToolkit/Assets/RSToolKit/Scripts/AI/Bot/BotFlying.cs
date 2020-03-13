@@ -23,10 +23,16 @@ namespace RSToolkit.AI
 
         }
 
-        public override void MoveTowardsPosition(bool fullspeed = true)
+        public override void RotateTowardsPosition()
         {
             var rotation = Quaternion.LookRotation(BotComponent.FocusedOnPosition.Value - transform.position, Vector3.up);
             Flying3DObjectComponent.YawTo(rotation.eulerAngles.y);
+        }
+
+        public override void MoveTowardsPosition(bool fullspeed = true)
+        {
+
+            RotateTowardsPosition();
 
             if (Mathf.RoundToInt(BotComponent.FocusedOnPosition.Value.y) > Mathf.RoundToInt(transform.position.y))
             {
