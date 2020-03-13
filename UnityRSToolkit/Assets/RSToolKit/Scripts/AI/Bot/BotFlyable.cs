@@ -8,9 +8,9 @@ namespace RSToolkit.AI
     [RequireComponent(typeof(BotNavMesh))]
     [RequireComponent(typeof(BotFlying))]
     [RequireComponent(typeof(ProximityChecker))]
-    public class BotFlyable : MonoBehaviour
+    public class BotFlyable : Bot
     {
-        public FlyableStates StartState = FlyableStates.Flying;
+        public bool StartInAir = true;
         public enum FlyableStates
         {
             Grounded,
@@ -106,24 +106,35 @@ namespace RSToolkit.AI
         }
 
 
-        protected FiniteStateMachine<FlyableStates> m_fsm;
+        private FiniteStateMachine<FlyableStates> m_fsm;
+        protected FiniteStateMachine<FlyableStates> m_FSM
+        {
+            get
+            {
+                if(m_fsm == null)
+                {
+                    m_fsm = FiniteStateMachine<FlyableStates>.Initialize(this, StartInAir ? FlyableStates.Flying : FlyableStates.Grounded);
+                }
+                return m_fsm;
+            }
+        }
 
         public FlyableStates CurrentState
         {
             get
             {
-                return m_fsm.State;
+                return m_FSM.State;
             }
         }
 
         public void AddStateChangedListener(System.Action<FlyableStates> listener)
         {
-            m_fsm.Changed += listener;
+            m_FSM.Changed += listener;
         }
 
         public void RemoveStateChangedListener(System.Action<FlyableStates> listener)
         {
-            m_fsm.Changed -= listener;
+            m_FSM.Changed -= listener;
         }
 
         private void ToggleFlight(bool on)
@@ -131,12 +142,16 @@ namespace RSToolkit.AI
             if (on)
             {
                 RigidBodyComponent.constraints = RigidbodyConstraints.None;
+                SetCurrentBotMovement(BotFlyingComponent);
+                SetCurrentBotWander(BotWanderFlyingComponent);
             }
             else
             {
                 transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
                 RigidBodyComponent.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
                 RigidBodyComponent.velocity = Vector3.zero;
+                SetCurrentBotMovement(BotNavMeshComponent);
+                SetCurrentBotWander(BotWanderNavMeshComponent);
             }
             
 
@@ -144,13 +159,14 @@ namespace RSToolkit.AI
             BotNavMeshComponent.enabled = !on;
             BotFlyingComponent.Flying3DObjectComponent.enabled = on;
             BotFlyingComponent.enabled = on;
+            
         }
 
         public bool TakeOff()
         {
             if (CurrentState == FlyableStates.Grounded)
             {
-                m_fsm.ChangeState(FlyableStates.TakingOff);
+                m_FSM.ChangeState(FlyableStates.TakingOff);
                 return true;
             }
 
@@ -173,7 +189,7 @@ namespace RSToolkit.AI
             else
             {
                 BotFlyingComponent.Flying3DObjectComponent.ApplyVerticalThrust(true);
-                m_fsm.ChangeState(FlyableStates.Flying);
+                m_FSM.ChangeState(FlyableStates.Flying);
             }
         }
 
@@ -183,7 +199,7 @@ namespace RSToolkit.AI
             {
                 return false;
             }
-            m_fsm.ChangeState(FlyableStates.Landing);
+            m_FSM.ChangeState(FlyableStates.Landing);
             
             return true;
         }
@@ -198,8 +214,8 @@ namespace RSToolkit.AI
         void Landing_Update()
         {
             if (ProximityCheckerComponent.IsWithinRayDistance() != null && ProximityCheckerComponent.IsWithinRayDistance() < 0.2f)
-            {  
-                m_fsm.ChangeState(FlyableStates.Grounded);
+            {
+                m_FSM.ChangeState(FlyableStates.Grounded);
                 
             }
         }
@@ -209,89 +225,24 @@ namespace RSToolkit.AI
             ToggleFlight(false);
         }
 
-        public bool Wander()
-        {
-            bool result = false;
-            switch (CurrentState)
-            {
-                case FlyableStates.Grounded:
-                    BotWanderNavMeshComponent?.Wander();
-                    result = true;
-                    break;
-                case FlyableStates.Flying:
-                    BotWanderFlyingComponent?.Wander();
-                    result = true;
-                    break;
-            }
-
-            return result;
-        }
-
-        public bool StopWandering()
-        {
-
-
-            if((CurrentState == FlyableStates.Grounded || CurrentState == FlyableStates.TakingOff) && BotWanderNavMeshComponent != null)
-            {
-                return BotWanderNavMeshComponent.StopWandering();
-            }
-            else if((CurrentState == FlyableStates.Flying || CurrentState == FlyableStates.Landing) && BotWanderFlyingComponent != null)
-            {
-                return BotWanderFlyingComponent.StopWandering();
-            }
-
-            return false;
-
-        }
-
-        private bool IsBotWandering(BotWander botWander)
-        {
-            return botWander != null && botWander.IsWandering();
-        }
-      
-        public bool IsWandering()
-        {
-            return IsBotWandering(BotWanderNavMeshComponent) || IsBotWandering(BotWanderFlyingComponent);
-        }
-
-        public void MoveToFocusedTarget(bool fullspeed = true)
-        {
-            if(CurrentState == FlyableStates.Flying)
-            {
-                BotFlyingComponent.FlyToTarget(fullspeed);
-            }
-            else if(CurrentState == FlyableStates.Grounded)
-            {
-                if (fullspeed)
-                {
-                    BotNavMeshComponent.RunToFocusedTarget();
-                }
-                else
-                {
-                    BotNavMeshComponent.WalkToFocusedTarget();
-                }
-                
-            }
-        }
 
         void Awake()
         {
-            m_fsm = FiniteStateMachine<FlyableStates>.Initialize(this, StartState);
-            m_fsm.Changed += Fsm_Changed;
-            // ProximityCheckerComponent.OnProximityEntered.AddListener(OnProximityEntered_Listener);
+            ToggleFlight(true);
+            m_FSM.Changed += Fsm_Changed;
         }
 
         private void Fsm_Changed(FlyableStates state)
         {
             try
             {
-                Debug.Log($"{transform.name} FlyableStates changed from {m_fsm.LastState.ToString()} to {state.ToString()}");
+                Debug.Log($"{transform.name} FlyableStates changed from {m_FSM.LastState.ToString()} to {state.ToString()}");
+
             }
             catch (System.Exception ex)
             {
                 Debug.Log($"{transform.name} FlyableStates changed to {state.ToString()}");
             }
-
         }
     }
 }

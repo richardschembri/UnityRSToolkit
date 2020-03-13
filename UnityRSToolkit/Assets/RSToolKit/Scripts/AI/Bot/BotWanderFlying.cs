@@ -27,11 +27,6 @@ namespace RSToolkit.AI
                 && Mathf.Abs(BotFlyingComponent.Flying3DObjectComponent.MovementFlightThrust.z) > 0f;
         }
 
-        protected override void MoveTowardsWanderPosition()
-        {
-            BotFlyingComponent.FlyToPosition(false);
-        }
-
         protected override Vector3 GetNewWanderPosition(float radius)
         {
             var newPos = transform.GetRandomPositionWithinCircle(radius, BotFlyingComponent.BotComponent.SqrPersonalSpaceMagnitude);
@@ -39,31 +34,7 @@ namespace RSToolkit.AI
             return newPos;
         }
 
-        protected override void Awake()
-        {
-            base.Awake();
-            //DefaultY = transform.position.y;
-            m_fsm.Changed += Fsm_Changed;
-            
-        }
 
-        private void Fsm_Changed(WanderStates state)
-        {
-            /*
-            try
-            {
-                if(m_fsm.LastState == WanderStates.NotWandering)
-                {
-                    default_y = transform.position.y;
-                }
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogError(ex.Message);
-            }
-            */
-
-        }
     }
 
 }

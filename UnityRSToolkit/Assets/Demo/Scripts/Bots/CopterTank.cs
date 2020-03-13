@@ -23,7 +23,7 @@ public class CopterTank : MonoBehaviour
 
     }
 
-    void Start()
+    void Awake()
     {
         BotFlyableComponent.AddStateChangedListener(FlyableStateChanged_Listener);    
     }

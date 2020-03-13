@@ -2,12 +2,80 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace RSToolkit.AI
 {
+    [DisallowMultipleComponent]
     public class Bot : MonoBehaviour
     {
+
+
         public bool DebugMode = false;
+
+        protected BotWander[] m_botWanderComponents;
+        protected BotWander[] m_BotWanderComponents
+        {
+            get
+            {
+                if(m_botWanderComponents == null)
+                {
+                    m_botWanderComponents = GetComponents<BotWander>();
+                }
+                return m_botWanderComponents;
+            }
+            private set
+            {
+                m_botWanderComponents = value;
+            }
+        }
+        protected BotWander m_currentBotWanderComponent;
+
+        protected BotMovement[] m_botMovementComponents;
+        protected BotMovement[] m_BotMovementComponents
+        {
+            get
+            {
+                if (m_botMovementComponents == null)
+                {
+                    m_botMovementComponents = GetComponents<BotMovement>();
+                }
+                return m_botMovementComponents;
+            }
+            private set
+            {
+                m_botMovementComponents = value;
+            }
+        }
+        protected BotMovement m_currenBotMovementComponent;
+
+        protected void SetCurrentBotWander(BotWander b)
+        {
+            if (m_BotWanderComponents.Contains(b))
+            {
+                m_currentBotWanderComponent = b;
+                for(int i = 0; i < m_BotWanderComponents.Length; i++)
+                {
+                    if(m_BotWanderComponents[i] != b)
+                    {
+                        m_BotWanderComponents[i].StopWandering();
+                    }
+                }
+            }
+            else
+            {
+                throw new System.Exception($"{name} does not contain component");
+            }
+        }
+
+        protected void SetCurrentBotMovement(BotMovement b)
+        {
+            if (m_BotMovementComponents.Contains(b))
+            {
+                m_currenBotMovementComponent = b;
+            }
+        }
+
         private Animator m_animatorComponent;
         public Animator AnimatorComponent
         {
@@ -239,10 +307,83 @@ namespace RSToolkit.AI
             return target.FocusedOnTransform == transform || target.FocusedOnTransform == null && !target.NoticedTransforms.Contains(transform);
         }
 
+        public bool Wander()
+        {
+
+           if (m_currentBotWanderComponent.Wander())
+           {
+               return true;
+           }
+
+           return false;
+        }
+
+        public bool StopWandering()
+        {
+            if (m_currentBotWanderComponent.StopWandering())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        protected bool IsWandering()
+        {
+            return m_currentBotWanderComponent.IsWandering();
+        }
+
+        public void MoveTowardsPosition(bool fullspeed = true)
+        {
+            m_currenBotMovementComponent.MoveTowardsPosition(fullspeed);
+        }
+
+        public void MoveTowardsTarget(bool fullspeed = true)
+        {
+            m_currenBotMovementComponent.MoveTowardsTarget(fullspeed);
+        }
+
+        public void MoveToPosition(BotMovement.StopMovementConditions stopMovementCondition, bool fullspeed = true)
+        {
+            m_currenBotMovementComponent.MoveToPosition(stopMovementCondition, fullspeed);
+        }
+
+        public void MoveToTarget(BotMovement.StopMovementConditions stopMovementCondition ,bool fullspeed = true)
+        {
+            m_currenBotMovementComponent.MoveToTarget(stopMovementCondition, fullspeed);
+        }
+
+        public bool StopMoving()
+        {
+            return m_currenBotMovementComponent.StopMoving();
+        }
+
+        public BotMovement.MovementState GetMovementState()
+        {
+            return m_currenBotMovementComponent.CurrentState;
+        }
+
+        void Start()
+        {
+            if (m_BotMovementComponents.Length > 0)
+            {
+                SetCurrentBotMovement(m_BotMovementComponents[0]);
+            }
+
+            if (m_BotWanderComponents.Length > 0)
+            {
+                SetCurrentBotWander(m_BotWanderComponents[0]);
+            }
+        }
+
         private void OnDrawGizmos()
         {
             ProximityHelpers.DrawGizmoProximity(transform, SqrInteractionMagnitude);
-
+            if(FocusedOnPosition != null)
+            {
+                UnityEditor.Handles.color = new Color(1f, 1f, 0.008f, 0.55f);
+                UnityEditor.Handles.DrawSolidDisc(FocusedOnPosition.Value, Vector3.up, 0.25f);
+            }
         }
 
     }

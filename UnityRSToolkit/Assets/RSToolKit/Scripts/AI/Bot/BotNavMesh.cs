@@ -7,9 +7,9 @@ using RSToolkit.AI.Helpers;
 
 namespace RSToolkit.AI
 {
-    [RequireComponent(typeof(Bot))]
+
     [RequireComponent(typeof(NavMeshAgent))]
-    public class BotNavMesh : MonoBehaviour
+    public class BotNavMesh : BotMovement
     {
         public float walkSpeed = 0.75f;
         public float walkRotationSpeed = 120f;
@@ -31,56 +31,12 @@ namespace RSToolkit.AI
 
         }
 
-        private Bot m_botComponent;
-        public Bot BotComponent
-        {
-            get
-            {
-                if (m_botComponent == null)
-                {
-                    m_botComponent = GetComponent<Bot>();
-                }
-                return m_botComponent;
-            }
-
-        }
-
         public float CurrentSpeed
         {
             get
             {
                 return NavMeshHelpers.GetCurrentSpeed(NavMeshAgentComponent);
             }
-        }
-
-        public void WalkTo(Vector3 destination)
-        {
-            MoveTo(destination, walkSpeed, walkRotationSpeed);
-        }
-
-        public bool WalkToFocusedTarget()
-        {
-            if (BotComponent.FocusedOnTransform != null)
-            {
-                WalkTo(BotComponent.FocusedOnTransform.position);
-                return true;
-            }
-            return false;
-        }
-
-        public void RunTo(Vector3 destination)
-        {
-            MoveTo(destination, runSpeed, runRotationSpeed);
-        }
-
-        public bool RunToFocusedTarget()
-        {
-            if (BotComponent.FocusedOnTransform != null)
-            {
-                RunTo(BotComponent.FocusedOnTransform.position);
-                return true;
-            }
-            return false;
         }
 
         // To Refactor
@@ -90,41 +46,45 @@ namespace RSToolkit.AI
             transform.rotation = Quaternion.RotateTowards(transform.rotation, rotation, NavMeshAgentComponent.angularSpeed * Time.deltaTime);
         }
 
-
-        public void MoveTo(Vector3 destination)
-        {
-
-            NavMeshAgentComponent.destination = destination;
-            // Debug.Log(string.Format("Move to spot: [{0}]", destination.ToString()));
-        }
-
-        public void MoveTo()
-        {
-            if (BotComponent.FocusedOnPosition != null)
-            {
-                MoveTo(BotComponent.FocusedOnPosition.Value);
-            }
-        }
-
-        public void MoveTo(Vector3 destination, float speed, float angularSpeed)
+        private void MoveTo(Vector3 destination, float speed, float angularSpeed)
         {
             NavMeshAgentComponent.speed = speed;
             NavMeshAgentComponent.angularSpeed = angularSpeed;
-            MoveTo(destination);
+            NavMeshAgentComponent.destination = destination;
+            NavMeshAgentComponent.stoppingDistance = 0f;
+            switch (m_stopMovementCondition)
+            {
+                case StopMovementConditions.WITHIN_INTERACTION_DISTANCE:
+                    NavMeshAgentComponent.stoppingDistance = BotComponent.SqrInteractionMagnitude * .75f;
+                    break;
+                case StopMovementConditions.WITHIN_PERSONAL_SPACE:
+                    NavMeshAgentComponent.stoppingDistance = BotComponent.SqrPersonalSpaceMagnitude * .75f;
+                    break;
+            }
+            NavMeshAgentComponent.isStopped = false;
         }
 
-
-        private void OnDrawGizmos()
+        public override void MoveTowardsPosition(bool fullspeed = true)
         {
-            NavMeshHelpers.DrawGizmoDestination(NavMeshAgentComponent);
+            if (fullspeed)
+            {
+                MoveTo(BotComponent.FocusedOnPosition.Value, runSpeed, runRotationSpeed);
+            }
+            else
+            {
+                MoveTo(BotComponent.FocusedOnPosition.Value, walkSpeed, walkRotationSpeed);
+            }
         }
-
-
 
         private void Awake()
         {
             NavMeshAgentComponent.speed = walkSpeed;
             NavMeshAgentComponent.angularSpeed = walkRotationSpeed;
+        }
+
+        void NotMoving_Enter()
+        {
+            NavMeshAgentComponent.isStopped = true;
         }
 
     }

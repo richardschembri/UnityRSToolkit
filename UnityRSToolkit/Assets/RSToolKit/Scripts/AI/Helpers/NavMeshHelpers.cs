@@ -13,12 +13,12 @@ namespace RSToolkit.AI.Helpers
             return self.velocity.magnitude / self.speed;
         }
 
-        public static Vector3 RandomNavPosInSphere(Vector3 origin, float radius, int layermask = -1)
+        public static Vector3 RandomNavPosInSphere(Vector3 origin, float radius, float offset = 0f, int layermask = -1)
         {
             var randDirection = Random.insideUnitSphere * radius;
             randDirection += origin;
             NavMeshHit navHit;
-            NavMesh.SamplePosition(randDirection, out navHit, radius, layermask);
+            NavMesh.SamplePosition(randDirection, out navHit, radius - offset, layermask);
             return navHit.position;
         }
 

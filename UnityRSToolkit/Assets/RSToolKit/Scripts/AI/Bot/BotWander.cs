@@ -30,19 +30,30 @@ namespace RSToolkit.AI
             return waitTime;
         }
 
-        protected FiniteStateMachine<WanderStates> m_fsm;
+        private FiniteStateMachine<WanderStates> m_fsm;
+        protected FiniteStateMachine<WanderStates> m_FSM
+        {
+            get
+            {
+                if (m_fsm == null)
+                {
+                    m_fsm = FiniteStateMachine<WanderStates>.Initialize(this, WanderStates.NotWandering);
+                }
+                return m_fsm;
+            }
+        }
 
         public WanderStates CurrentState
         {
             get
             {
-                return m_fsm.State;
+                return m_FSM.State;
             }
         }
 
-        public Vector3? WanderPosition { get; private set; } = null;
+        // public Vector3? WanderPosition { get; private set; } = null;
         public float defaultWanderRadius = 20f;
-        public float m_wanderRadius = 20f;
+        private float m_wanderRadius = 20f;
 
         private Bot m_botComponent;
         public Bot BotComponent
@@ -63,26 +74,21 @@ namespace RSToolkit.AI
 
         IEnumerator FindNewPosition_Enter()
         {
-            yield return new WaitForSeconds(GetWaitTime());
             BotComponent.UnFocus();
-            WanderPosition = GetNewWanderPosition(m_wanderRadius);
-            BotComponent.FocusOnPosition(WanderPosition.Value);
-            m_fsm.ChangeState(WanderStates.MovingToPosition);
+            yield return new WaitForSeconds(GetWaitTime());
+            BotComponent.FocusOnPosition(GetNewWanderPosition(m_wanderRadius));
+            m_FSM.ChangeState(WanderStates.MovingToPosition);
         }
 
         void MovingToPosition_Update()
         {
             if (!CanWander())
             {
-                m_fsm.ChangeState(WanderStates.CannotWander, FiniteStateTransition.Overwrite);
+                m_FSM.ChangeState(WanderStates.CannotWander, FiniteStateTransition.Overwrite);
             }
-            else if (!BotComponent.IsWithinPersonalSpace())
+            else if (BotComponent.GetMovementState() == BotMovement.MovementState.NotMoving)
             {
-                MoveTowardsWanderPosition();
-            }
-            else
-            {
-                m_fsm.ChangeState(WanderStates.FindNewPosition);
+                m_FSM.ChangeState(WanderStates.FindNewPosition);
             }
             
         }
@@ -93,6 +99,7 @@ namespace RSToolkit.AI
             if (movementTimeout > 0)
             {
                 m_movingToPosition_TimeOut = MovingToPosition_TimeOut();
+                BotComponent.MoveToPosition(BotMovement.StopMovementConditions.WITHIN_PERSONAL_SPACE, false);
                 StartCoroutine(m_movingToPosition_TimeOut);
             }
         }
@@ -105,10 +112,10 @@ namespace RSToolkit.AI
         IEnumerator MovingToPosition_TimeOut()
         {
             yield return new WaitForSeconds(movementTimeout);
-            if (m_fsm.State == WanderStates.MovingToPosition)
+            if (m_FSM.State == WanderStates.MovingToPosition)
             {
                 Debug.Log("Movement timeout!");
-                m_fsm.ChangeState(WanderStates.FindNewPosition);
+                m_FSM.ChangeState(WanderStates.FindNewPosition);
             }
         }
 
@@ -116,17 +123,17 @@ namespace RSToolkit.AI
         {
             if (CanWander())
             {
-                m_fsm.ChangeState(WanderStates.FindNewPosition);
+                m_FSM.ChangeState(WanderStates.FindNewPosition);
             }
         }
 
-        public virtual bool Wander(float radius)
+        public bool Wander(float radius)
         {
             m_wanderRadius = radius;
             
             if (CurrentState == WanderStates.NotWandering)
             {
-                m_fsm.ChangeState(WanderStates.FindNewPosition);
+                m_FSM.ChangeState(WanderStates.FindNewPosition);
                 return true;
             }
 
@@ -138,27 +145,25 @@ namespace RSToolkit.AI
             return Wander(defaultWanderRadius);
         }
 
-        public virtual bool StopWandering()
+        public bool StopWandering()
         {
             if (CurrentState != WanderStates.NotWandering)
             {
-                m_fsm.ChangeState(WanderStates.NotWandering, FiniteStateTransition.Overwrite);
+                BotComponent.StopMoving();
+                m_FSM.ChangeState(WanderStates.NotWandering, FiniteStateTransition.Overwrite);
                 return true;
             }
 
             return false;
         }
 
-        protected abstract void MoveTowardsWanderPosition();
-
         protected abstract Vector3 GetNewWanderPosition(float radius);
 
         protected virtual void Awake()
         {
-            m_fsm = FiniteStateMachine<WanderStates>.Initialize(this,WanderStates.NotWandering);
             if (debugMode)
             {
-                m_fsm.Changed += Fsm_Changed;
+                m_FSM.Changed += Fsm_Changed;
             }    
         }
 
@@ -166,7 +171,7 @@ namespace RSToolkit.AI
         {
             try
             {
-                Debug.Log($"{transform.name} WanderStates changed from {m_fsm.LastState.ToString()} to {state.ToString()}");
+                Debug.Log($"{transform.name} WanderStates changed from {m_FSM.LastState.ToString()} to {state.ToString()}");
             }
             catch(System.Exception ex)
             {
@@ -188,12 +193,6 @@ namespace RSToolkit.AI
             UnityEditor.Handles.color = new Color(0f, 0f, 0.75f, .075f);
 
             UnityEditor.Handles.DrawSolidDisc(transform.position, Vector3.up, defaultWanderRadius);
-
-            if(WanderPosition != null)
-            {
-                UnityEditor.Handles.color = new Color(1f, 1f, 0.008f, 0.55f);
-                UnityEditor.Handles.DrawSolidDisc(WanderPosition.Value, Vector3.up, 0.25f);
-            }
             
             UnityEditor.Handles.color = oldColor;
 #endif

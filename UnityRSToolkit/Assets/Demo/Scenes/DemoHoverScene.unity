@@ -3032,16 +3032,15 @@ GameObject:
   m_Component:
   - component: {fileID: 7990845843178055554}
   - component: {fileID: 7990845843178055556}
+  - component: {fileID: 7990845843178055566}
   - component: {fileID: 7990845843178055557}
-  - component: {fileID: 7990845843178055560}
+  - component: {fileID: 7990845843178055562}
   - component: {fileID: 7990845843178055559}
-  - component: {fileID: 7990845843178055561}
-  - component: {fileID: 7990845843178055558}
   - component: {fileID: 7990845843178055564}
   - component: {fileID: 7990845843178055563}
-  - component: {fileID: 7990845843178055562}
+  - component: {fileID: 7990845843178055561}
+  - component: {fileID: 7990845843178055558}
   - component: {fileID: 7990845843178055565}
-  - component: {fileID: 7990845843178055566}
   m_Layer: 0
   m_Name: CopterTankBot
   m_TagString: Untagged
@@ -3123,7 +3122,7 @@ MonoBehaviour:
   debugMode: 1
   movementTimeout: 5
   defaultWanderRadius: 20
-  m_wanderRadius: 20
+  DefaultY: 5
 --- !u!114 &7990845843178055559
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3136,22 +3135,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab0ecd98afa41ca498cfe7c135c82fa7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 1756604931}
---- !u!114 &7990845843178055560
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7990845843178055555}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd1af5391dda59848aaa2f85c252e0d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DebugMode: 0
-  forgetTransformTimeout: -1
-  interactionMagnitude: 2.75
 --- !u!114 &7990845843178055561
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3182,7 +3165,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c886171ea977ef6448307c5e61d60b8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartState: 3
+  DebugMode: 0
+  forgetTransformTimeout: -1
+  interactionMagnitude: 1.75
+  StartInAir: 1
   AutoLandWhenCloseToGround: 0
 --- !u!114 &7990845843178055563
 MonoBehaviour:
@@ -3238,8 +3224,7 @@ MonoBehaviour:
   randomizeWait: 0
   debugMode: 1
   movementTimeout: 10
-  defaultWanderRadius: 20
-  m_wanderRadius: 20
+  defaultWanderRadius: 10
 --- !u!114 &7990845843178055566
 MonoBehaviour:
   m_ObjectHideFlags: 0
