@@ -147,9 +147,9 @@ namespace RSToolkit.AI
             }
             else
             {
-                transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
                 RigidBodyComponent.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
                 RigidBodyComponent.velocity = Vector3.zero;
+                transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
                 SetCurrentBotMovement(BotNavMeshComponent);
                 SetCurrentBotWander(BotWanderNavMeshComponent);
             }

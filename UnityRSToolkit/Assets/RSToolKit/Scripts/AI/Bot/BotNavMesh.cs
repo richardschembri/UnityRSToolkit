@@ -53,22 +53,22 @@ namespace RSToolkit.AI
         }
 
     private void MoveTo(Vector3 destination, float speed, float angularSpeed)
+    {
+        NavMeshAgentComponent.speed = speed;
+        NavMeshAgentComponent.angularSpeed = angularSpeed;
+        NavMeshAgentComponent.destination = destination;
+        NavMeshAgentComponent.stoppingDistance = 0f;
+        switch (m_stopMovementCondition)
         {
-            NavMeshAgentComponent.speed = speed;
-            NavMeshAgentComponent.angularSpeed = angularSpeed;
-            NavMeshAgentComponent.destination = destination;
-            NavMeshAgentComponent.stoppingDistance = 0f;
-            switch (m_stopMovementCondition)
-            {
-                case StopMovementConditions.WITHIN_INTERACTION_DISTANCE:
-                    NavMeshAgentComponent.stoppingDistance = BotComponent.SqrInteractionMagnitude * .75f;
-                    break;
-                case StopMovementConditions.WITHIN_PERSONAL_SPACE:
-                    NavMeshAgentComponent.stoppingDistance = BotComponent.SqrPersonalSpaceMagnitude * .75f;
-                    break;
-            }
-            NavMeshAgentComponent.isStopped = false;
+            case StopMovementConditions.WITHIN_INTERACTION_DISTANCE:
+                NavMeshAgentComponent.stoppingDistance = BotComponent.SqrInteractionMagnitude * .75f;
+                break;
+            case StopMovementConditions.WITHIN_PERSONAL_SPACE:
+                NavMeshAgentComponent.stoppingDistance = BotComponent.SqrPersonalSpaceMagnitude * .75f;
+                break;
         }
+        NavMeshAgentComponent.isStopped = false;
+    }
 
         public override void MoveTowardsPosition(bool fullspeed = true)
         {
@@ -86,6 +86,7 @@ namespace RSToolkit.AI
         {
             NavMeshAgentComponent.speed = walkSpeed;
             NavMeshAgentComponent.angularSpeed = walkRotationSpeed;
+            NavMeshAgentComponent.radius = BotComponent.SqrPersonalSpaceMagnitude;
         }
 
         void NotMoving_Enter()
