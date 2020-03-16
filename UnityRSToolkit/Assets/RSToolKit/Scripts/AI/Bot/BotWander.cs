@@ -100,6 +100,10 @@ namespace RSToolkit.AI
             {
                 m_movingToPosition_TimeOut = MovingToPosition_TimeOut();
                 BotComponent.MoveToPosition(BotMovement.StopMovementConditions.WITHIN_PERSONAL_SPACE, false);
+                if (debugMode)
+                {
+                    Debug.Log($"Wandering to {BotComponent.FocusedOnPosition.ToString()}");
+                }
                 StartCoroutine(m_movingToPosition_TimeOut);
             }
         }

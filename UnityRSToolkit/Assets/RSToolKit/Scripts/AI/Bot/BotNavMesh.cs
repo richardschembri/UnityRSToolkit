@@ -39,12 +39,7 @@ namespace RSToolkit.AI
             }
         }
 
-        // To Refactor
-        public void StepRotateTo(Transform target)
-        {
-            var rotation = Quaternion.LookRotation(target.position - transform.position, Vector3.up);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, rotation, NavMeshAgentComponent.angularSpeed * Time.deltaTime);
-        }
+
 
         public override void RotateTowardsPosition()
         {
@@ -52,23 +47,23 @@ namespace RSToolkit.AI
             transform.rotation = Quaternion.RotateTowards(transform.rotation, rotation, NavMeshAgentComponent.angularSpeed* Time.deltaTime);
         }
 
-    private void MoveTo(Vector3 destination, float speed, float angularSpeed)
-    {
-        NavMeshAgentComponent.speed = speed;
-        NavMeshAgentComponent.angularSpeed = angularSpeed;
-        NavMeshAgentComponent.destination = destination;
-        NavMeshAgentComponent.stoppingDistance = 0f;
-        switch (m_stopMovementCondition)
+        private void MoveTo(Vector3 destination, float speed, float angularSpeed)
         {
-            case StopMovementConditions.WITHIN_INTERACTION_DISTANCE:
-                NavMeshAgentComponent.stoppingDistance = BotComponent.SqrInteractionMagnitude * .75f;
-                break;
-            case StopMovementConditions.WITHIN_PERSONAL_SPACE:
-                NavMeshAgentComponent.stoppingDistance = BotComponent.SqrPersonalSpaceMagnitude * .75f;
-                break;
+            NavMeshAgentComponent.speed = speed;
+            NavMeshAgentComponent.angularSpeed = angularSpeed;
+            NavMeshAgentComponent.destination = destination;
+            NavMeshAgentComponent.stoppingDistance = 0f;
+            switch (m_stopMovementCondition)
+            {
+                case StopMovementConditions.WITHIN_INTERACTION_DISTANCE:
+                    NavMeshAgentComponent.stoppingDistance = BotComponent.SqrInteractionMagnitude * .75f;
+                    break;
+                case StopMovementConditions.WITHIN_PERSONAL_SPACE:
+                    NavMeshAgentComponent.stoppingDistance = BotComponent.SqrPersonalSpaceMagnitude * .75f;
+                    break;
+            }
+            NavMeshAgentComponent.isStopped = false;
         }
-        NavMeshAgentComponent.isStopped = false;
-    }
 
         public override void MoveTowardsPosition(bool fullspeed = true)
         {
@@ -91,7 +86,10 @@ namespace RSToolkit.AI
 
         void NotMoving_Enter()
         {
-            NavMeshAgentComponent.isStopped = true;
+            if (NavMeshAgentComponent.isOnNavMesh)
+            {
+                NavMeshAgentComponent.isStopped = true;
+            }
         }
 
     }

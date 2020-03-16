@@ -328,7 +328,7 @@ namespace RSToolkit.AI
             return false;
         }
 
-        protected bool IsWandering()
+        public bool IsWandering()
         {
             return m_currentBotWanderComponent.IsWandering();
         }
@@ -351,6 +351,11 @@ namespace RSToolkit.AI
         public void MoveToTarget(BotMovement.StopMovementConditions stopMovementCondition ,bool fullspeed = true)
         {
             m_currenBotMovementComponent.MoveToTarget(stopMovementCondition, fullspeed);
+        }
+
+        public void RotateTowardsPosition()
+        {
+            m_currenBotMovementComponent.RotateTowardsPosition();
         }
 
         public bool StopMoving()
