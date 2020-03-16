@@ -130,8 +130,12 @@ namespace RSToolkit.AI
         public bool Wander(float radius)
         {
             m_wanderRadius = radius;
-            
-            if (CurrentState == WanderStates.NotWandering)
+
+            if (!CanWander())
+            {
+                m_FSM.ChangeState(WanderStates.CannotWander);
+            }
+            else if (CurrentState == WanderStates.NotWandering)
             {
                 m_FSM.ChangeState(WanderStates.FindNewPosition);
                 return true;

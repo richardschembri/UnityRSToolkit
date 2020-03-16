@@ -26,8 +26,8 @@ namespace RSToolkit.AI
         public override bool CanWander()
         {
             return (BotNavMeshComponent.NavMeshAgentComponent.speed > 0
-                && BotNavMeshComponent.NavMeshAgentComponent.angularSpeed > 0 &&
-                !BotNavMeshComponent.NavMeshAgentComponent.isStopped);
+                && BotNavMeshComponent.NavMeshAgentComponent.angularSpeed > 0); // &&
+                //!BotNavMeshComponent.NavMeshAgentComponent.isStopped);
         }
 
         protected override Vector3 GetNewWanderPosition(float radius)

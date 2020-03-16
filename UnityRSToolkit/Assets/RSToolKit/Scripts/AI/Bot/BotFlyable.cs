@@ -195,7 +195,7 @@ namespace RSToolkit.AI
 
         public bool Land(bool checkForGround = true)
         {
-            if (checkForGround && ProximityCheckerComponent.IsWithinRayDistance() == null)
+            if (CurrentState != FlyableStates.Flying || (checkForGround && ProximityCheckerComponent.IsWithinRayDistance() == null))
             {
                 return false;
             }
