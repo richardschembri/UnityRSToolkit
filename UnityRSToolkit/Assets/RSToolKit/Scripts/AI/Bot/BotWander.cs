@@ -23,6 +23,11 @@ namespace RSToolkit.AI
 
         private float GetWaitTime()
         {
+            if(m_FSM.LastState == WanderStates.NotWandering || m_FSM.LastState == WanderStates.CannotWander)
+            {
+                return 0.1f;
+            }
+
             if (randomizeWait)
             {
                 return RandomHelpers.RandomFloatWithinRange(0f, waitTime);

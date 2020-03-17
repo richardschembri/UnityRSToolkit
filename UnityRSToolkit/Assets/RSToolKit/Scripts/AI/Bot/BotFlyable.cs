@@ -225,6 +225,10 @@ namespace RSToolkit.AI
             ToggleFlight(false);
         }
 
+        public bool CanMove()
+        {
+            return CurrentState == FlyableStates.Flying || CurrentState == FlyableStates.Grounded;
+        }
 
         void Awake()
         {
