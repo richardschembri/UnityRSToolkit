@@ -158,11 +158,14 @@ namespace RSToolkit.AI
             return Wander(defaultWanderRadius);
         }
 
-        public bool StopWandering()
+        public bool StopWandering(bool stopMoving = false)
         {
             if (CurrentState != WanderStates.NotWandering)
             {
-                BotComponent.StopMoving();
+                if (stopMoving)
+                {
+                    BotComponent.StopMoving();
+                }            
                 m_FSM.ChangeState(WanderStates.NotWandering, FiniteStateTransition.Overwrite);
                 return true;
             }

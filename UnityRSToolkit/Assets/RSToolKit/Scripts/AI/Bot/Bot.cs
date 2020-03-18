@@ -58,7 +58,7 @@ namespace RSToolkit.AI
                 {
                     if(m_BotWanderComponents[i] != b)
                     {
-                        m_BotWanderComponents[i].StopWandering();
+                        m_BotWanderComponents[i].StopWandering(true);
                     }
                 }
             }
@@ -288,8 +288,8 @@ namespace RSToolkit.AI
 
          public bool IsFacing(Transform target)
         {
-            return transform.rotation == Quaternion.LookRotation(target.position - transform.position, Vector3.up);
-            // return transform.rotation == target.rotation;
+            return Mathf.Round(transform.rotation.eulerAngles.y * 10) == Mathf.Round(Quaternion.LookRotation(target.position - transform.position, Vector3.up).eulerAngles.y * 10);
+            // return transform.rotation == Quaternion.LookRotation(target.position - transform.position, Vector3.up);
         }
 
 
@@ -318,9 +318,9 @@ namespace RSToolkit.AI
            return false;
         }
 
-        public bool StopWandering()
+        public bool StopWandering(bool stopMoving = false)
         {
-            if (m_currentBotWanderComponent.StopWandering())
+            if (m_currentBotWanderComponent.StopWandering(stopMoving))
             {
                 return true;
             }
@@ -368,7 +368,7 @@ namespace RSToolkit.AI
             return m_currenBotMovementComponent.CurrentState;
         }
 
-        void Start()
+        protected virtual void Awake()
         {
             if (m_BotMovementComponents.Length > 0)
             {

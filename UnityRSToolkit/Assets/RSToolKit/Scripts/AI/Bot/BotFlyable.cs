@@ -225,14 +225,19 @@ namespace RSToolkit.AI
             ToggleFlight(false);
         }
 
+        void Flying_Enter()
+        {
+            ToggleFlight(true);
+        }
+
         public bool CanMove()
         {
             return CurrentState == FlyableStates.Flying || CurrentState == FlyableStates.Grounded;
         }
 
-        void Awake()
+        protected override void Awake()
         {
-            ToggleFlight(true);
+            base.Awake();
             m_FSM.Changed += Fsm_Changed;
         }
 
