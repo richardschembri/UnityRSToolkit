@@ -53,7 +53,20 @@ public class CopterTank : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.Alpha4))
         {
-            BotFlyableComponent.Wander();
+            if (BotFlyableComponent.IsWandering())
+            {
+                BotFlyableComponent.StopWandering();
+            }
+            else
+            {
+                BotFlyableComponent.Wander();
+            }
+            
+        }
+
+        if (Input.GetKeyUp(KeyCode.Alpha5))
+        {
+            BotFlyableComponent.BotNavMeshComponent.MoveToClosestEdge();
         }
     }
 }

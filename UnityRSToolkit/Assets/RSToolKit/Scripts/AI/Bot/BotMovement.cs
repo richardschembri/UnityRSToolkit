@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+
 namespace RSToolkit.AI
 {
     public abstract class BotMovement : MonoBehaviour
@@ -59,6 +61,9 @@ namespace RSToolkit.AI
 
         }
 
+        public class OnDestinationReachedEvent : UnityEvent<Vector3> { }
+        public OnDestinationReachedEvent OnDestinationReached = new OnDestinationReachedEvent();
+
         public abstract void MoveTowardsPosition(bool fullspeed = true);
         public void MoveTowardsTarget(bool fullspeed = true)
         {
@@ -93,6 +98,11 @@ namespace RSToolkit.AI
         {
             if(BotComponent.FocusedOnPosition == null || reachedDestination())
             {
+                if(BotComponent.FocusedOnPosition != null)
+                {
+                    OnDestinationReached.Invoke(BotComponent.FocusedOnPosition.Value);
+                }
+                
                 m_FSM.ChangeState(MovementState.NotMoving);
             }
             else

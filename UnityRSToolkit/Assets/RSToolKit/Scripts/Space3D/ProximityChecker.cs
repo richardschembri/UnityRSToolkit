@@ -20,10 +20,12 @@ namespace RSToolkit.Space3D
         public float RayDistance = 0.5f;
         public RayDirectionEnum RayDirection = RayDirectionEnum.DOWN;
         public LayerMask LayerMask;
+        public bool IsTrigger = true;
         public bool DebugMode;
 
         public UnityEvent OnProximityEntered { get; private set; } = new UnityEvent();
         bool proximityEnteredTriggered = false;
+        Color m_rayColor = Color.green;
         private Vector3 GetRayDirectionVector()
         {
             switch (RayDirection)
@@ -47,13 +49,13 @@ namespace RSToolkit.Space3D
         public float? IsWithinRayDistance()
         {
             RaycastHit hit;
-            Color rayColor = Color.green;
+            
             float? hitDistance = null;
             if(Physics.Raycast(transform.position, GetRayDirectionVector(), out hit, RayDistance, LayerMask, QueryTriggerInteraction.Ignore))
             {
-                rayColor = Color.red;
+                m_rayColor = Color.red;
                 hitDistance = hit.distance;
-                if (!proximityEnteredTriggered)
+                if (IsTrigger && !proximityEnteredTriggered)
                 {
                     proximityEnteredTriggered = true;
                     OnProximityEntered.Invoke();
@@ -63,10 +65,7 @@ namespace RSToolkit.Space3D
             {
                 proximityEnteredTriggered = false;
             }
-            if (DebugMode)
-            {
-                Debug.DrawLine(transform.position, transform.TransformPoint(GetRayDirectionVector() * RayDistance), rayColor);
-            }
+
             
             return hitDistance;
         }
@@ -74,7 +73,22 @@ namespace RSToolkit.Space3D
         // Update is called once per frame
         void Update()
         {
-            IsWithinRayDistance();
+            if (IsTrigger)
+            {
+                IsWithinRayDistance();
+            }
+            
         }
+
+#if UNITY_EDITOR
+        void OnDrawGizmos()
+        {
+            if (DebugMode)
+            {
+                Debug.DrawLine(transform.position, transform.TransformPoint(GetRayDirectionVector() * RayDistance), m_rayColor);
+            }
+        }
+#endif
+
     }
 }

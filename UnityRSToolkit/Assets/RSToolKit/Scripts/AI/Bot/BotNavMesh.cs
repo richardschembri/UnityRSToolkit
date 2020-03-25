@@ -77,6 +77,15 @@ namespace RSToolkit.AI
             }
         }
 
+        public void MoveToClosestEdge(bool fullspeed = true)
+        {
+            NavMeshHit hit;
+            NavMeshAgentComponent.FindClosestEdge(out hit);
+            BotComponent.UnFocus();
+            BotComponent.FocusOnPosition(hit.position);
+            MoveTowardsPosition(fullspeed);
+        }
+
         private void Awake()
         {
             NavMeshAgentComponent.speed = walkSpeed;

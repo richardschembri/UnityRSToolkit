@@ -19,7 +19,6 @@ namespace RSToolkit.AI
             Flying
         }
 
-        public bool AutoLandWhenCloseToGround = false;
         private BotNavMesh m_botNavMeshComponent;
         public BotNavMesh BotNavMeshComponent
         {
@@ -147,7 +146,7 @@ namespace RSToolkit.AI
             }
             else
             {
-                RigidBodyComponent.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+                RigidBodyComponent.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
                 RigidBodyComponent.velocity = Vector3.zero;
                 transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
                 SetCurrentBotMovement(BotNavMeshComponent);
