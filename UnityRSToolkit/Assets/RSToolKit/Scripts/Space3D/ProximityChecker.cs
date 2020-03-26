@@ -45,13 +45,18 @@ namespace RSToolkit.Space3D
             }
             return Vector3.zero;
         }
-
+// To Refactor
         public float? IsWithinRayDistance()
         {
             RaycastHit hit;
-            
+            return IsWithinRayDistance(out hit);
+        }
+
+        public float? IsWithinRayDistance(out RaycastHit hit)
+        {
+
             float? hitDistance = null;
-            if(Physics.Raycast(transform.position, GetRayDirectionVector(), out hit, RayDistance, LayerMask, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(transform.position, GetRayDirectionVector(), out hit, RayDistance, LayerMask, QueryTriggerInteraction.Ignore))
             {
                 m_rayColor = Color.red;
                 hitDistance = hit.distance;
@@ -66,7 +71,7 @@ namespace RSToolkit.Space3D
                 proximityEnteredTriggered = false;
             }
 
-            
+
             return hitDistance;
         }
 

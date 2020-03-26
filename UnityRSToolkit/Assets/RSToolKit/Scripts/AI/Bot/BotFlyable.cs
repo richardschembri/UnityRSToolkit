@@ -19,6 +19,7 @@ namespace RSToolkit.AI
             Flying
         }
 
+
         private BotNavMesh m_botNavMeshComponent;
         public BotNavMesh BotNavMeshComponent
         {

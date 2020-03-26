@@ -10,6 +10,14 @@ namespace RSToolkit.AI
     public class Bot : MonoBehaviour
     {
 
+        public enum InteractionStates
+        {
+            NotInteracting,
+            Interactor,
+            Interactee
+        }
+
+        public InteractionStates CurrentInteractionState = InteractionStates.NotInteracting;
 
         public bool DebugMode = false;
 
@@ -86,6 +94,19 @@ namespace RSToolkit.AI
                     m_animatorComponent = GetComponent<Animator>();
                 }
                 return m_animatorComponent;
+            }
+        }
+
+        private Collider m_colliderComponent;
+        public Collider ColliderComponent
+        {
+            get
+            {
+                if(m_colliderComponent == null)
+                {
+                    m_colliderComponent = GetComponent<Collider>();
+                }
+                return m_colliderComponent;
             }
         }
 
@@ -179,13 +200,13 @@ namespace RSToolkit.AI
         }
 
 
-        public bool AttractMyAttention_ToTransform(Transform target)
+        public bool AttractMyAttention_ToTransform(Transform target, InteractionStates interactionState = InteractionStates.Interactor)
         {
 
             if (IsWithinInteractionDistance(target))
             {
                 FocusOnTransform(target);
-
+                CurrentInteractionState = interactionState;
                 return true;
             }
             return false;
@@ -201,7 +222,7 @@ namespace RSToolkit.AI
         {
             if(target.FocusedOnTransform != transform)
             {
-                return target.AttractMyAttention_ToTransform(transform);
+                return target.AttractMyAttention_ToTransform(transform, InteractionStates.Interactee);
             }
             return true;
         }
@@ -282,6 +303,7 @@ namespace RSToolkit.AI
             }
             StartForgetTransform(FocusedOnTransform);
             FocusedOnTransform = null;
+            CurrentInteractionState = InteractionStates.NotInteracting;
             return true;
         }
 

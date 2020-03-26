@@ -79,6 +79,7 @@ namespace RSToolkit.AI
 
         IEnumerator FindNewPosition_Enter()
         {
+            
             BotComponent.UnFocus();
             yield return new WaitForSeconds(GetWaitTime());
             BotComponent.FocusOnPosition(GetNewWanderPosition(m_wanderRadius));

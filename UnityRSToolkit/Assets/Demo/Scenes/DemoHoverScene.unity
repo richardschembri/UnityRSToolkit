@@ -146,7 +146,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 46413269}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.01, z: 1.3}
+  m_LocalPosition: {x: 0, y: 0.01, z: 1.75}
   m_LocalScale: {x: 1.6666665, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7990845843178055554}
@@ -3350,7 +3350,6 @@ MonoBehaviour:
   forgetTransformTimeout: -1
   interactionMagnitude: 1.75
   StartInAir: 1
-  AutoLandWhenCloseToGround: 0
 --- !u!114 &7990845843178055563
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3367,6 +3366,7 @@ MonoBehaviour:
   walkRotationSpeed: 120
   runSpeed: 5
   runRotationSpeed: 120
+  JumpProximityChecker: {fileID: 46413271}
 --- !u!195 &7990845843178055564
 NavMeshAgent:
   m_ObjectHideFlags: 0

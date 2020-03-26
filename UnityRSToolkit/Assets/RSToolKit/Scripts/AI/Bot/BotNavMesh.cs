@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using RSToolkit.Helpers;
 using RSToolkit.AI.Helpers;
+using RSToolkit.Space3D;
 
 namespace RSToolkit.AI
 {
@@ -30,6 +31,8 @@ namespace RSToolkit.AI
             }
 
         }
+
+        public ProximityChecker JumpProximityChecker;
 
         public float CurrentSpeed
         {
@@ -84,6 +87,26 @@ namespace RSToolkit.AI
             BotComponent.UnFocus();
             BotComponent.FocusOnPosition(hit.position);
             MoveTowardsPosition(fullspeed);
+        }
+
+        public bool JumpOffLedge()
+        {
+            RaycastHit rayhit;
+            
+            if(JumpProximityChecker.IsWithinRayDistance(out rayhit) != null)
+            {
+                var jumpPath = new NavMeshPath();
+                NavMesh.CalculatePath(transform.position, rayhit.point, NavMesh.AllAreas, jumpPath);
+                if(jumpPath.status == NavMeshPathStatus.PathComplete)
+                {
+                    Debug.Log(jumpPath.corners);
+                    BotComponent.UnFocus();
+                    BotComponent.FocusOnPosition(rayhit.point);
+                    MoveTowardsPosition(true);
+                    return true;
+                }
+            }
+            return false;
         }
 
         private void Awake()

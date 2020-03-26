@@ -68,5 +68,9 @@ public class CopterTank : MonoBehaviour
         {
             BotFlyableComponent.BotNavMeshComponent.MoveToClosestEdge();
         }
+        if (Input.GetKeyUp(KeyCode.Alpha6))
+        {
+            BotFlyableComponent.BotNavMeshComponent.JumpOffLedge();
+        }
     }
 }
