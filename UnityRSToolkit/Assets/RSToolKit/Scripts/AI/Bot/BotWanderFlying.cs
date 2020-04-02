@@ -43,10 +43,11 @@ namespace RSToolkit.AI
             var newPos = transform.GetRandomPositionWithinCircle(radius, BotFlyingComponent.BotComponent.SqrPersonalSpaceMagnitude);
             newPos = new Vector3(newPos.x, DefaultY, newPos.z);
 
-            m_wanderray.direction = newPos - transform.position;
-            m_wanderray.origin = BotFlyingComponent.BotComponent.ColliderComponent.ClosestPoint(newPos) + m_wanderray.direction.normalized * 0.05f;
+            //m_wanderray.direction = newPos - transform.position;
+            //m_wanderray.origin = BotFlyingComponent.BotComponent.ColliderComponent.ClosestPoint(newPos) + m_wanderray.direction.normalized * 0.05f;
 
-            if (Physics.Raycast(m_wanderray, out m_wanderhit))
+            //if (Physics.Raycast(m_wanderray, out m_wanderhit))
+            if (BotFlyingComponent.BotComponent.ColliderComponent.RaycastFromOutsideBounds(ref m_wanderray, out m_wanderhit, newPos))
             {
                 if (debugMode)
                 {
