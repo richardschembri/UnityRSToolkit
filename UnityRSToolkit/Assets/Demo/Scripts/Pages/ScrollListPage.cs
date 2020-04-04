@@ -37,16 +37,22 @@ public class ScrollListPage : UIPage
        VerticalListBox.OnShiftMostVertical.AddListener(ShiftTest);
     }
 
-    public void AddButtons(){
+    public void AddButtonsVertical(){
        for(int i = 0; i < 5; i++){
            var vb = VerticalListBox.AddListItem().GetComponent<Button>();
            vb.name = string.Format("Button {0}", VerticalListBox.listItemSpawner.SpawnedGameObjects.Count);
            vb.GetComponentInChildren<Text>().text = vb.name;
-
-           var hb = HorizontalListBox.AddListItem().GetComponent<Button>();
-           hb.name = string.Format("Button {0}", HorizontalListBox.listItemSpawner.SpawnedGameObjects.Count);
-           hb.GetComponentInChildren<Text>().text = hb.name;
        }
+    }
+
+    public void AddButtonsHorizontal()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            var hb = HorizontalListBox.AddListItem().GetComponent<Button>();
+            hb.name = string.Format("Button {0}", HorizontalListBox.listItemSpawner.SpawnedGameObjects.Count);
+            hb.GetComponentInChildren<Text>().text = hb.name;
+        }
     }
 
     void ShiftTest(RectTransform li, RectTransformHelpers.VerticalPosition horpos){
