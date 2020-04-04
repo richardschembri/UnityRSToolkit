@@ -51,7 +51,7 @@ namespace RSToolkit.AI
                 return GetNewWanderPosition(radius);
             }
 
-            if (BotFlyingComponent.BotComponent.ColliderComponent.LinecastFromOutsideBounds(out m_wanderhit, newPos)) //.RaycastFromOutsideBounds(ref m_wanderray, out m_wanderhit, newPos))
+            if (BotFlyingComponent.BotComponent.ColliderComponent.LinecastFromOutsideBounds(out m_wanderhit, newPos))
             {
                
                 if (debugMode)
