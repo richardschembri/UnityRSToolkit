@@ -69,12 +69,16 @@ namespace RSToolkit.Helpers
             return false;
         }
 
-        public static void DrawGizmoProximity(Transform transform, float radius)
+        public static void DrawGizmoProximity(Transform transform, float radius, bool isWithinProximity)
         {
 #if UNITY_EDITOR
             var oldColor = UnityEditor.Handles.color;
+            /*
             UnityEditor.Handles.color = new Color(0.5f, 0f, 1f, 0.5f); // Color.blue;
             UnityEditor.Handles.DrawSolidDisc(transform.position, Vector3.up, radius);
+            */
+            UnityEditor.Handles.color = isWithinProximity ? Color.red : Color.blue;
+            UnityEditor.Handles.DrawWireDisc(transform.position, Vector3.up, radius);
             UnityEditor.Handles.color = oldColor;
 #endif 
         }

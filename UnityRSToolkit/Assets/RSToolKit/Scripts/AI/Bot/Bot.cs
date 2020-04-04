@@ -405,11 +405,22 @@ namespace RSToolkit.AI
 
         private void OnDrawGizmos()
         {
-            ProximityHelpers.DrawGizmoProximity(transform, SqrInteractionMagnitude);
+            if (!DebugMode)
+            {
+                return;
+            }
+            ProximityHelpers.DrawGizmoProximity(transform, SqrInteractionMagnitude, IsWithinInteractionDistance());
             if(FocusedOnPosition != null)
             {
                 UnityEditor.Handles.color = new Color(1f, 1f, 0.008f, 0.55f);
                 UnityEditor.Handles.DrawSolidDisc(FocusedOnPosition.Value, Vector3.up, 0.25f);
+            }
+            if(FocusedOnTransform != null)
+            {
+                var oldColor = UnityEditor.Handles.color;
+                UnityEditor.Handles.color = IsWithinInteractionDistance() ? Color.red : Color.white;
+                UnityEditor.Handles.DrawLine(transform.position, FocusedOnTransform.position);
+                UnityEditor.Handles.color = oldColor;
             }
         }
 

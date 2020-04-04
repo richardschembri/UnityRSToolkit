@@ -24,5 +24,12 @@ namespace RSToolkit.Helpers
             source.SetRayFromOutsideBoundsTowards(ref ray, position);
             return Physics.Raycast(ray, out hit);
         }
+
+        public static bool LinecastFromOutsideBounds(this Collider source, out RaycastHit hit, Vector3 position)
+        {
+            var direction = (position - source.transform.position).normalized;
+            return Physics.Linecast(source.ClosestPoint(position) + direction.normalized * 0.05f, position, out hit);
+        }
+
     }
 }

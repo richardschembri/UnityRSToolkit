@@ -209,8 +209,9 @@ namespace RSToolkit.AI
             var oldColor = UnityEditor.Handles.color;
             UnityEditor.Handles.color = new Color(0f, 0f, 0.75f, .075f);
 
-            UnityEditor.Handles.DrawSolidDisc(transform.position, Vector3.up, defaultWanderRadius);
-            
+            // UnityEditor.Handles.DrawSolidDisc(transform.position, Vector3.up, m_wanderRadius);
+            UnityEditor.Handles.DrawWireDisc(transform.position, Vector3.up, defaultWanderRadius); //m_wanderRadius);
+
             UnityEditor.Handles.color = oldColor;
 #endif
         }

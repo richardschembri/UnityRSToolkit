@@ -47,10 +47,11 @@ namespace RSToolkit.AI
 
             if (AboveSurface && !Physics.Raycast(newPos, Vector3.down, Mathf.Infinity))
             {
+                Debug.Log("Not above surface");
                 return GetNewWanderPosition(radius);
             }
 
-            if (BotFlyingComponent.BotComponent.ColliderComponent.RaycastFromOutsideBounds(ref m_wanderray, out m_wanderhit, newPos))
+            if (BotFlyingComponent.BotComponent.ColliderComponent.LinecastFromOutsideBounds(out m_wanderhit, newPos)) //.RaycastFromOutsideBounds(ref m_wanderray, out m_wanderhit, newPos))
             {
                
                 if (debugMode)
@@ -58,7 +59,7 @@ namespace RSToolkit.AI
                     Debug.Log($"Wander position is behind {m_wanderhit.transform.name}");
                 }
 
-
+            
                 if (Vector3.Distance(transform.position, m_wanderhit.point) * 0.75f >= BotFlyingComponent.BotComponent.SqrPersonalSpaceMagnitude)
                 {
                     newPos = Vector3.Lerp(transform.position, m_wanderhit.point, 0.75f);
@@ -77,3 +78,4 @@ namespace RSToolkit.AI
     }
 
 }
+ 

@@ -31,7 +31,7 @@ namespace RSToolkit.AI.Helpers
             }
             var oldColor = UnityEditor.Handles.color;
             UnityEditor.Handles.color = new Color(1f, 1f, 0.008f, 0.55f);
-            UnityEditor.Handles.DrawSolidDisc(agent.destination, Vector3.up, 0.25f);
+            UnityEditor.Handles .DrawWireDisc(agent.destination, Vector3.up, 0.25f);
 
             UnityEditor.Handles.color = oldColor;
 #endif

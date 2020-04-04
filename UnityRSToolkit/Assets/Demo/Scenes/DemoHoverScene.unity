@@ -582,7 +582,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh14752
+  m_Name: pb_Mesh14778
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -3207,7 +3207,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7990845843178055555}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 42.28, y: 7.198, z: -20.9}
+  m_LocalPosition: {x: 33.27, y: 7.198, z: -20.9}
   m_LocalScale: {x: 0.6, y: 1, z: 1}
   m_Children:
   - {fileID: 46413270}
@@ -3317,8 +3317,9 @@ MonoBehaviour:
   randomizeWait: 0
   debugMode: 1
   movementTimeout: 5
-  defaultWanderRadius: 20
+  defaultWanderRadius: 10
   DefaultY: 5
+  AboveSurface: 1
 --- !u!114 &7990845843178055559
 MonoBehaviour:
   m_ObjectHideFlags: 0
