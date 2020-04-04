@@ -34,7 +34,7 @@ A simple toolkit for the Unity Engine. Controls / Components are designed to be 
     * Preview Image
     * Display Image
 
-* ** Dynamic Layout **(Layout that changes according to resolution)
+* **Dynamic Layout** (Layout that changes according to resolution)
     * Position
     * Scale
     * Size
