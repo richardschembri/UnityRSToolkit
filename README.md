@@ -12,6 +12,7 @@ A simple toolkit for the Unity Engine. Controls / Components are designed to be 
     * Dynamic header
     * Dynamic audio system
     * Dynamic background
+    * UnityEditor Control
     > Each component is independent from one another for the sake of modularity.
 
 * **Popup**
@@ -20,12 +21,45 @@ A simple toolkit for the Unity Engine. Controls / Components are designed to be 
 
 * **Scroll List**
     * Occlusion culling
+    * Infinite Scroll
 
-## Todo
-### UI
-* Unity editor interface
-* Popup system
-* Dynamic Listbox
+* **List Box**
+    * Switchable modes (View, Select, Edit, Delete)
+
+* **Image Digits**
+    * Single Digit
+    * Multiple Digits
+
+* **Images**
+    * Preview Image
+    * Display Image
+
+* ** Dynamic Layout **(Layout that changes according to resolution)
+    * Position
+    * Scale
+    * Size
+    * Font
+    * Image/RawImage
+    * Sprite/Texture
+* **Slide to unlock**
+### 3D
+* **Flying Object**
+    * Pitch/Yaw/Roll controls
+    * Horizontal/Vertical thrust controls
+    * Auto stabilization
+    * Land/Take off functionality
+    * Chase camera
+
+### AI
+* **Wander Functionality**
+    * NavMesh Wander
+    * Flying Wander
+* **Vision**
+* **Interaction Functionality**
+* **Finite State Machine integration**
+
+## To Do
+* Behaviour Tree
 
 ## Third Part Assets
 Motorcycle Photo by Gijs Coolen from [Pexels](https://www.pexels.com/photo/selective-focus-photo-of-parked-blue-and-black-cafe-racer-motorcycle-2549941/)
