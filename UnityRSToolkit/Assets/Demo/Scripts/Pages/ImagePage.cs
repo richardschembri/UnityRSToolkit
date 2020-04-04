@@ -30,10 +30,4 @@ public class ImagePage : UIPage
     {
         
     }
-
-    protected override void onNavigatedTo(UIPage page, bool keepCache){
-        Debug.Log("Navigated To");
-        var s = displayImage.RectTransformComponent.GetScaleToMatch(scaleCompare);
-        displayImage.RectTransformComponent.localScale = s;
-    }
 }
