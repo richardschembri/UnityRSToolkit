@@ -93,11 +93,12 @@ namespace RSToolkit.AI
 
             return targets;
         }
-
+#if UNITY_EDITOR
         // Draw the line of sight representation within the scene window
         public void OnDrawGizmos()
         {
             ProximityHelpers.DrawGizmoLineOfSight(transform, FieldOfViewAngle, ViewMagnitude, IsWithinSight());
         }
+#endif
     }
 }

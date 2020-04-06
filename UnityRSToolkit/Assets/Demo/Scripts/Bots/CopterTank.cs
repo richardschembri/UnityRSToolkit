@@ -30,7 +30,7 @@ public class CopterTank : MonoBehaviour
 
     private void FlyableStateChanged_Listener(BotFlyable.FlyableStates state)
     {
-        TankParts.SetActive(state == BotFlyable.FlyableStates.Grounded);
+        TankParts.SetActive(state == BotFlyable.FlyableStates.NotFlying);
         HelicopterParts.SetActive(!TankParts.activeSelf);
     }
 

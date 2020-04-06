@@ -34,12 +34,12 @@ namespace RSToolkit.AI
 
         public ProximityChecker JumpProximityChecker;
 
-        public float CurrentSpeed
+        public override float CurrentSpeed
         {
             get
             {
                 return NavMeshHelpers.GetCurrentSpeed(NavMeshAgentComponent);
-            }
+            } 
         }
 
 

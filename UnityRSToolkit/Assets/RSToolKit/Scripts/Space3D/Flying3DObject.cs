@@ -195,6 +195,14 @@ namespace RSToolkit.Space3D
             }
         }
 
+        public float CurrentSpeed
+        {
+            get
+            {
+                return m_RigidBodyComponent.velocity.magnitude;
+            }
+        }
+
         void Awake()
         {
             ResetAppliedForces();

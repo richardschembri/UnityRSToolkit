@@ -403,6 +403,7 @@ namespace RSToolkit.AI
             }
         }
 
+#if UNITY_EDITOR
         private void OnDrawGizmos()
         {
             if (!DebugMode)
@@ -423,6 +424,6 @@ namespace RSToolkit.AI
                 UnityEditor.Handles.color = oldColor;
             }
         }
-
+#endif
     }
 }

@@ -23,6 +23,14 @@ namespace RSToolkit.AI
 
         }
 
+        public override float CurrentSpeed
+        {
+            get
+            {
+                return Flying3DObjectComponent.CurrentSpeed;
+            }
+        }
+
         public override void RotateTowardsPosition()
         {
             var rotation = Quaternion.LookRotation(BotComponent.FocusedOnPosition.Value - transform.position, Vector3.up);

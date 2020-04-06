@@ -20,11 +20,14 @@ namespace RSToolkit.Space3D
         public float RayDistance = 0.5f;
         public RayDirectionEnum RayDirection = RayDirectionEnum.DOWN;
         public LayerMask LayerMask;
+
         public bool IsTrigger = true;
         public bool DebugMode;
 
         public UnityEvent OnProximityEntered { get; private set; } = new UnityEvent();
+        public UnityEvent OnTouchingEntered { get; private set; } = new UnityEvent();
         bool proximityEnteredTriggered = false;
+        bool touchEnteredTriggered = false;
         Color m_rayColor = Color.green;
         private Vector3 GetRayDirectionVector()
         {
@@ -45,6 +48,25 @@ namespace RSToolkit.Space3D
             }
             return Vector3.zero;
         }
+
+        public bool IsTouching()
+        {
+            bool result = IsWithinRayDistance() != null && IsWithinRayDistance() < 0.2f;
+            if(result)
+            {
+                if(IsTrigger && !touchEnteredTriggered)
+                {
+                    OnTouchingEntered.Invoke();
+                    touchEnteredTriggered = true;
+                }
+            }
+            else
+            {
+                touchEnteredTriggered = false;
+            }
+            return result;
+        }
+
 // To Refactor
         public float? IsWithinRayDistance()
         {
@@ -60,6 +82,7 @@ namespace RSToolkit.Space3D
             {
                 m_rayColor = Color.red;
                 hitDistance = hit.distance;
+
                 if (IsTrigger && !proximityEnteredTriggered)
                 {
                     proximityEnteredTriggered = true;
@@ -80,7 +103,7 @@ namespace RSToolkit.Space3D
         {
             if (IsTrigger)
             {
-                IsWithinRayDistance();
+                IsTouching(); //IsWithinRayDistance();
             }
             
         }

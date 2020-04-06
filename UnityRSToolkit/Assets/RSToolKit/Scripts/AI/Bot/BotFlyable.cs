@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using RSToolkit.Animation;
 
 namespace RSToolkit.AI
 {
@@ -13,7 +14,7 @@ namespace RSToolkit.AI
         public bool StartInAir = true;
         public enum FlyableStates
         {
-            Grounded,
+            NotFlying,
             Landing,
             TakingOff,
             Flying
@@ -75,20 +76,6 @@ namespace RSToolkit.AI
             }
         }
 
-        private ProximityChecker m_proximityCheckerComponent;
-        public ProximityChecker ProximityCheckerComponent
-        {
-            get
-            {
-                if (m_proximityCheckerComponent == null)
-                {
-                    m_proximityCheckerComponent = GetComponent<ProximityChecker>();
-                }
-
-                return m_proximityCheckerComponent;
-            }
-
-        }
 
         private Rigidbody m_rigidBodyComponent;
         public Rigidbody RigidBodyComponent
@@ -113,7 +100,7 @@ namespace RSToolkit.AI
             {
                 if(m_fsm == null)
                 {
-                    m_fsm = FiniteStateMachine<FlyableStates>.Initialize(this, StartInAir ? FlyableStates.Flying : FlyableStates.Grounded);
+                    m_fsm = FiniteStateMachine<FlyableStates>.Initialize(this, StartInAir ? FlyableStates.Flying : FlyableStates.NotFlying);
                 }
                 return m_fsm;
             }
@@ -164,7 +151,7 @@ namespace RSToolkit.AI
 
         public bool TakeOff()
         {
-            if (CurrentState == FlyableStates.Grounded)
+            if (CurrentState == FlyableStates.NotFlying)
             {
                 m_FSM.ChangeState(FlyableStates.TakingOff);
                 return true;
@@ -182,7 +169,7 @@ namespace RSToolkit.AI
 
         void TakingOff_Update()
         {
-            if(ProximityCheckerComponent.IsWithinRayDistance() != null)
+            if(BotFlyingComponent.IsCloseToGround())
             {
                 BotFlyingComponent.Flying3DObjectComponent.ApplyVerticalThrust(true);
             }
@@ -195,7 +182,7 @@ namespace RSToolkit.AI
 
         public bool Land(bool checkForGround = true)
         {
-            if (CurrentState != FlyableStates.Flying || (checkForGround && ProximityCheckerComponent.IsWithinRayDistance() == null))
+            if (CurrentState != FlyableStates.Flying || (checkForGround && BotFlyingComponent.IsCloseToGround()))
             {
                 return false;
             }
@@ -213,16 +200,23 @@ namespace RSToolkit.AI
 
         void Landing_Update()
         {
-            if (ProximityCheckerComponent.IsWithinRayDistance() != null && ProximityCheckerComponent.IsWithinRayDistance() < 0.2f)
+            if (BotFlyingComponent.IsCloseToGround())
             {
-                m_FSM.ChangeState(FlyableStates.Grounded);
+                m_FSM.ChangeState(FlyableStates.NotFlying);
                 
             }
         }
 
-        void Grounded_Enter()
+        void NotFlying_Enter()
         {
             ToggleFlight(false);
+            CharacterAnimParams.TrySetIsGrounded(AnimatorComponent, true);
+        }
+
+        void NotFlying_Exit()
+        {
+            ToggleFlight(false);
+            CharacterAnimParams.TrySetIsGrounded(AnimatorComponent, false);
         }
 
         void Flying_Enter()
@@ -232,7 +226,7 @@ namespace RSToolkit.AI
 
         public bool CanMove()
         {
-            return CurrentState == FlyableStates.Flying || CurrentState == FlyableStates.Grounded;
+            return CurrentState == FlyableStates.Flying || CurrentState == FlyableStates.NotFlying;
         }
 
         protected override void Awake()

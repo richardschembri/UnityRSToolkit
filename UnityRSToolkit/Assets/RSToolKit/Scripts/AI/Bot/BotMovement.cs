@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using RSToolkit.Animation;
+using RSToolkit.Space3D;
 
 namespace RSToolkit.AI
 {
+
     public abstract class BotMovement : MonoBehaviour
     {
 
@@ -61,8 +64,35 @@ namespace RSToolkit.AI
 
         }
 
+        private ProximityChecker m_proximityCheckerComponent;
+        public ProximityChecker GroundProximityCheckerComponent
+        {
+            get
+            {
+                if (m_proximityCheckerComponent == null)
+                {
+                    m_proximityCheckerComponent = GetComponent<ProximityChecker>();
+                }
+
+                return m_proximityCheckerComponent;
+            }
+
+        }
+
+        public bool IsCloseToGround()
+        {
+            return GroundProximityCheckerComponent.IsWithinRayDistance() != null;
+        }
+
+        public bool IsGrounded()
+        {
+            return GroundProximityCheckerComponent.IsTouching();
+        }
+
         public class OnDestinationReachedEvent : UnityEvent<Vector3> { }
         public OnDestinationReachedEvent OnDestinationReached = new OnDestinationReachedEvent();
+
+        public abstract float CurrentSpeed { get; }
 
         public abstract void MoveTowardsPosition(bool fullspeed = true);
         public void MoveTowardsTarget(bool fullspeed = true)
@@ -109,6 +139,7 @@ namespace RSToolkit.AI
             {
                 MoveTowardsPosition(m_fullspeed);
             }
+            CharacterAnimParams.TrySetSpeed(BotComponent.AnimatorComponent, CurrentSpeed);
         }
 
         void MovingToTarget_Update()

@@ -8,6 +8,7 @@ namespace RSToolkit.AI.Helpers
 
     public static class NavMeshHelpers
     {
+        // Might use only velovity magnitude instead
         public static float GetCurrentSpeed(this NavMeshAgent self)
         {
             return self.velocity.magnitude / self.speed;
