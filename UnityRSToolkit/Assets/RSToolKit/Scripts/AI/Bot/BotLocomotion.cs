@@ -8,10 +8,10 @@ using RSToolkit.Space3D;
 namespace RSToolkit.AI
 {
 
-    public abstract class BotMovement : MonoBehaviour
+    public abstract class BotLocomotion : MonoBehaviour
     {
 
-        public enum MovementState
+        public enum LocomotionState
         {
             NotMoving,
             MovingToPosition,
@@ -26,20 +26,20 @@ namespace RSToolkit.AI
             WITHIN_INTERACTION_DISTANCE,   
         }
 
-        protected FiniteStateMachine<MovementState> m_fsm;
-        protected FiniteStateMachine<MovementState> m_FSM
+        protected FiniteStateMachine<LocomotionState> m_fsm;
+        protected FiniteStateMachine<LocomotionState> m_FSM
         {
             get
             {
                 if (m_fsm == null)
                 {
-                    m_fsm = FiniteStateMachine<MovementState>.Initialize(this, MovementState.NotMoving);
+                    m_fsm = FiniteStateMachine<LocomotionState>.Initialize(this, LocomotionState.NotMoving);
                 }
                 return m_fsm;
             }
         }
 
-        public MovementState CurrentState
+        public LocomotionState CurrentState
         {
             get
             {
@@ -105,14 +105,14 @@ namespace RSToolkit.AI
         {
             m_stopMovementCondition = stopMovementCondition;
             m_fullspeed = fullspeed;
-            m_FSM.ChangeState(MovementState.MovingToPosition);
+            m_FSM.ChangeState(LocomotionState.MovingToPosition);
         }
 
         public void MoveToTarget(StopMovementConditions stopMovementCondition, bool fullspeed = true)
         {
             m_stopMovementCondition = stopMovementCondition;
             m_fullspeed = fullspeed;
-            m_FSM.ChangeState(MovementState.MovingToTarget);
+            m_FSM.ChangeState(LocomotionState.MovingToTarget);
         }
 
         public abstract void RotateTowardsPosition();
@@ -124,7 +124,7 @@ namespace RSToolkit.AI
                 || (m_stopMovementCondition == StopMovementConditions.AT_POSITION && transform.position == BotComponent.FocusedOnPosition.Value);
         }
 
-        void MovingToPosition_Update()
+        protected virtual void MovingToPosition_Update()
         {
             if(BotComponent.FocusedOnPosition == null || reachedDestination())
             {
@@ -133,7 +133,7 @@ namespace RSToolkit.AI
                     OnDestinationReached.Invoke(BotComponent.FocusedOnPosition.Value);
                 }
                 
-                m_FSM.ChangeState(MovementState.NotMoving);
+                m_FSM.ChangeState(LocomotionState.NotMoving);
             }
             else
             {
@@ -142,11 +142,11 @@ namespace RSToolkit.AI
             CharacterAnimParams.TrySetSpeed(BotComponent.AnimatorComponent, CurrentSpeed);
         }
 
-        void MovingToTarget_Update()
+        protected virtual void MovingToTarget_Update()
         {
             if (BotComponent.FocusedOnPosition == null || reachedDestination())
             {
-                m_FSM.ChangeState(MovementState.NotMoving);
+                m_FSM.ChangeState(LocomotionState.NotMoving);
             }
             else
             {
@@ -156,9 +156,9 @@ namespace RSToolkit.AI
 
         public bool StopMoving()
         {
-            if(CurrentState != MovementState.NotMoving)
+            if(CurrentState != LocomotionState.NotMoving)
             {
-                m_FSM.ChangeState(MovementState.NotMoving);
+                m_FSM.ChangeState(LocomotionState.NotMoving);
             }
             return false;
         }

@@ -39,14 +39,14 @@ namespace RSToolkit.AI
         }
         protected BotWander m_currentBotWanderComponent;
 
-        protected BotMovement[] m_botMovementComponents;
-        protected BotMovement[] m_BotMovementComponents
+        protected BotLocomotion[] m_botMovementComponents;
+        protected BotLocomotion[] m_BotMovementComponents
         {
             get
             {
                 if (m_botMovementComponents == null)
                 {
-                    m_botMovementComponents = GetComponents<BotMovement>();
+                    m_botMovementComponents = GetComponents<BotLocomotion>();
                 }
                 return m_botMovementComponents;
             }
@@ -55,7 +55,7 @@ namespace RSToolkit.AI
                 m_botMovementComponents = value;
             }
         }
-        protected BotMovement m_currenBotMovementComponent;
+        protected BotLocomotion m_currenBotMovementComponent;
 
         protected void SetCurrentBotWander(BotWander b)
         {
@@ -76,7 +76,7 @@ namespace RSToolkit.AI
             }
         }
 
-        protected void SetCurrentBotMovement(BotMovement b)
+        protected void SetCurrentBotMovement(BotLocomotion b)
         {
             if (m_BotMovementComponents.Contains(b))
             {
@@ -365,12 +365,12 @@ namespace RSToolkit.AI
             m_currenBotMovementComponent.MoveTowardsTarget(fullspeed);
         }
 
-        public void MoveToPosition(BotMovement.StopMovementConditions stopMovementCondition, bool fullspeed = true)
+        public void MoveToPosition(BotLocomotion.StopMovementConditions stopMovementCondition, bool fullspeed = true)
         {
             m_currenBotMovementComponent.MoveToPosition(stopMovementCondition, fullspeed);
         }
 
-        public void MoveToTarget(BotMovement.StopMovementConditions stopMovementCondition ,bool fullspeed = true)
+        public void MoveToTarget(BotLocomotion.StopMovementConditions stopMovementCondition ,bool fullspeed = true)
         {
             m_currenBotMovementComponent.MoveToTarget(stopMovementCondition, fullspeed);
         }
@@ -385,7 +385,7 @@ namespace RSToolkit.AI
             return m_currenBotMovementComponent.StopMoving();
         }
 
-        public BotMovement.MovementState GetMovementState()
+        public BotLocomotion.LocomotionState GetMovementState()
         {
             return m_currenBotMovementComponent.CurrentState;
         }

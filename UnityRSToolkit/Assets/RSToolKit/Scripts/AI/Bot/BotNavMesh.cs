@@ -10,7 +10,7 @@ namespace RSToolkit.AI
 {
 
     [RequireComponent(typeof(NavMeshAgent))]
-    public class BotNavMesh : BotMovement
+    public class BotNavMesh : BotLocomotion
     {
         public float walkSpeed = 0.75f;
         public float walkRotationSpeed = 120f;
@@ -109,11 +109,38 @@ namespace RSToolkit.AI
             return false;
         }
 
+
         private void Awake()
         {
             NavMeshAgentComponent.speed = walkSpeed;
             NavMeshAgentComponent.angularSpeed = walkRotationSpeed;
             NavMeshAgentComponent.radius = BotComponent.SqrPersonalSpaceMagnitude;
+        }
+
+        protected virtual void OffMeshLinkUpdate(NavMeshHelpers.OffMeshLinkPosition linkposition)
+        {
+
+        }
+
+        private NavMeshHelpers.OffMeshLinkPosition m_linkposition;
+        private void CheckUpdateOffMeshLinkPosition()
+        {
+            m_linkposition = NavMeshAgentComponent.GetOffMeshLinkPosition();
+            if( m_linkposition != NavMeshHelpers.OffMeshLinkPosition.Off)
+            {
+                OffMeshLinkUpdate(m_linkposition);
+            }
+        }
+
+        protected override void MovingToPosition_Update()
+        {
+            base.MovingToPosition_Update();
+            //NavMeshHelpers.
+        }
+
+        private void CheckLinkArea()
+        {
+
         }
 
         void NotMoving_Enter()

@@ -8,6 +8,13 @@ namespace RSToolkit.AI.Helpers
 
     public static class NavMeshHelpers
     {
+        public enum OffMeshLinkPosition
+        {
+            Off,
+            Start,
+            Mid,
+            End
+        }
         // Might use only velovity magnitude instead
         public static float GetCurrentSpeed(this NavMeshAgent self)
         {
@@ -21,6 +28,26 @@ namespace RSToolkit.AI.Helpers
             NavMeshHit navHit;
             NavMesh.SamplePosition(randDirection, out navHit, radius - offset, areamask);
             return navHit.position;
+        }
+
+        public static OffMeshLinkPosition GetOffMeshLinkPosition(this NavMeshAgent agent, float startend_proximity = 0.25f)
+        {
+            if (!agent.isOnOffMeshLink)
+            {
+                return OffMeshLinkPosition.Off;
+            }else if(Vector3.Distance(agent.transform.position, agent.currentOffMeshLinkData.startPos) 
+                    < startend_proximity)
+            {
+                return OffMeshLinkPosition.Start;
+            }else if(Vector3.Distance(agent.transform.position, agent.currentOffMeshLinkData.endPos)
+                    < startend_proximity)
+            {
+                return OffMeshLinkPosition.End;
+            }
+            else
+            {
+                return OffMeshLinkPosition.Mid;
+            }
         }
 
         public static void DrawGizmoDestination(NavMeshAgent agent)

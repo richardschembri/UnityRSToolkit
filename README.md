@@ -62,8 +62,8 @@ A simple toolkit for the Unity Engine. Controls / Components are designed to be 
 * Behaviour Tree
 
 ## Third Part Assets
-Motorcycle Photo by Gijs Coolen from [Pexels](https://www.pexels.com/photo/selective-focus-photo-of-parked-blue-and-black-cafe-racer-motorcycle-2549941/)
-
+* Motorcycle Photo by Gijs Coolen from [Pexels](https://www.pexels.com/photo/selective-focus-photo-of-parked-blue-and-black-cafe-racer-motorcycle-2549941/)
+* Various 3D Models: [Quaternius](http://www.quaternius.com/index.html)
 
 ## License
 

@@ -7,7 +7,7 @@ namespace RSToolkit.AI
 {
     [RequireComponent(typeof(Bot))]
     [RequireComponent(typeof(Flying3DObject))]
-    public class BotFlying : BotMovement
+    public class BotFlying : BotLocomotion
     {
         private Flying3DObject m_flying3DObjectComponent;
         public Flying3DObject Flying3DObjectComponent

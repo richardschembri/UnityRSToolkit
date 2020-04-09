@@ -92,7 +92,7 @@ namespace RSToolkit.AI
             {
                 m_FSM.ChangeState(WanderStates.CannotWander, FiniteStateTransition.Overwrite);
             }
-            else if (BotComponent.GetMovementState() == BotMovement.MovementState.NotMoving)
+            else if (BotComponent.GetMovementState() == BotLocomotion.LocomotionState.NotMoving)
             {
                 m_FSM.ChangeState(WanderStates.FindNewPosition);
             }
@@ -105,7 +105,7 @@ namespace RSToolkit.AI
             if (movementTimeout > 0)
             {
                 m_movingToPosition_TimeOut = MovingToPosition_TimeOut();
-                BotComponent.MoveToPosition(BotMovement.StopMovementConditions.WITHIN_PERSONAL_SPACE, false);
+                BotComponent.MoveToPosition(BotLocomotion.StopMovementConditions.WITHIN_PERSONAL_SPACE, false);
                 if (debugMode)
                 {
                     Debug.Log($"Wandering to {BotComponent.FocusedOnPosition.ToString()}");
