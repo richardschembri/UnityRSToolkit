@@ -18,7 +18,7 @@ namespace RSToolkit.AI
         // public bool WanderOnAwake = false;
         public float waitTime = 0f;
         public bool randomizeWait = false;
-        public bool debugMode = false;
+        public bool DebugMode = false;
         public float movementTimeout = 5f;
 
         private float GetWaitTime()
@@ -106,9 +106,9 @@ namespace RSToolkit.AI
             {
                 m_movingToPosition_TimeOut = MovingToPosition_TimeOut();
                 BotComponent.MoveToPosition(BotLocomotion.StopMovementConditions.WITHIN_PERSONAL_SPACE, false);
-                if (debugMode)
+                if (DebugMode)
                 {
-                    Debug.Log($"Wandering to {BotComponent.FocusedOnPosition.ToString()}");
+                    Debug.Log($"{transform.name} Wandering to {BotComponent.FocusedOnPosition.ToString()}");
                 }
                 StartCoroutine(m_movingToPosition_TimeOut);
             }
@@ -178,7 +178,7 @@ namespace RSToolkit.AI
 
         protected virtual void Awake()
         {
-            if (debugMode)
+            if (DebugMode)
             {
                 m_FSM.Changed += Fsm_Changed;
             }    
@@ -202,14 +202,16 @@ namespace RSToolkit.AI
             return CurrentState != BotWander.WanderStates.NotWandering
                     && CurrentState != BotWander.WanderStates.CannotWander;
         }
-#if UNITY_EDITOR
-        public void OnDrawGizmos()
+
+        protected virtual void OnDrawGizmos()
         {
+#if UNITY_EDITOR
             var oldColor = UnityEditor.Handles.color;
-            UnityEditor.Handles.color = new Color(0f, 0f, 0.75f, .075f);
+            UnityEditor.Handles.color = new Color(1f, 0.45f, 0f); //, .75f);
             UnityEditor.Handles.DrawWireDisc(transform.position, Vector3.up, defaultWanderRadius);
             UnityEditor.Handles.color = oldColor;
-        }
 #endif
+        }
+
     }
 }

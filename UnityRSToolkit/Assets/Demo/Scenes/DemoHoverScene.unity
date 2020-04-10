@@ -469,7 +469,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh14686
+  m_Name: pb_Mesh14688
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -877,7 +877,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh14648
+  m_Name: pb_Mesh14650
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -3713,7 +3713,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh14930
+  m_Name: pb_Mesh14932
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -7430,9 +7430,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waitTime: 3
   randomizeWait: 0
-  debugMode: 1
+  DebugMode: 0
   movementTimeout: 5
-  defaultWanderRadius: 10
+  defaultWanderRadius: 5
   DefaultY: 5
   AboveSurface: 1
 --- !u!114 &7990845843178055559
@@ -7550,7 +7550,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waitTime: 10
   randomizeWait: 0
-  debugMode: 1
+  DebugMode: 0
   movementTimeout: 10
   defaultWanderRadius: 10
 --- !u!114 &7990845843178055566

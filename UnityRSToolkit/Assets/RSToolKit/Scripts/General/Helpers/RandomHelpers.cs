@@ -86,8 +86,7 @@
         public static Vector3 GetRandomPositionWithinCircle(this Transform self, float radius, float offset = 0f)
         {
             Vector2 direction = UnityEngine.Random.insideUnitCircle.normalized;
-            var distance = UnityEngine.Random.Range(offset, radius);
-            Debug.Log($"Distance:{distance} From: {self.position} to Position: {new Vector3(direction.x, 0, direction.y) * distance}");
+            var distance = UnityEngine.Random.Range(offset, radius);            
             return self.position +  new Vector3(direction.x, 0, direction.y) * distance;
         }
 

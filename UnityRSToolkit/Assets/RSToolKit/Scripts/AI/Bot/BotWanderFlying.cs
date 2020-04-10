@@ -54,7 +54,7 @@ namespace RSToolkit.AI
             if (BotFlyingComponent.BotComponent.ColliderComponent.LinecastFromOutsideBounds(out m_wanderhit, newPos))
             {
                
-                if (debugMode)
+                if (DebugMode)
                 {
                     Debug.Log($"Wander position is behind {m_wanderhit.transform.name}");
                 }

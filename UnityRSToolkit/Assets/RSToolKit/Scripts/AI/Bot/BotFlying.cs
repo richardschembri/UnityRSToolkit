@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using RSToolkit.Space3D;
+using UnityEngine.AI;
 
 namespace RSToolkit.AI
 {
@@ -58,6 +59,22 @@ namespace RSToolkit.AI
             {
                 Flying3DObjectComponent.ApplyForwardThrust(fullspeed ? -0.5f : 0.1f);
             }
+        }
+
+        public float? IsCloseToSurface()
+        {
+            return GroundProximityCheckerComponent.IsWithinRayDistance();
+        }
+
+        public float? IsCloseToNavMeshSurface()
+        {
+            NavMeshHit hit;
+            return IsCloseToNavMeshSurface(out hit);
+        }
+
+        public float? IsCloseToNavMeshSurface(out NavMeshHit hit)
+        {
+            return GroundProximityCheckerComponent.IsWithinRayDistance(out hit);
         }
 
     }

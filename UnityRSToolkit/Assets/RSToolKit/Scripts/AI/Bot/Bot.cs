@@ -17,7 +17,7 @@ namespace RSToolkit.AI
             Interactee
         }
 
-        public InteractionStates CurrentInteractionState = InteractionStates.NotInteracting;
+        public InteractionStates CurrentInteractionState { get; private set; } = InteractionStates.NotInteracting;
 
         public bool DebugMode = false;
 
@@ -390,6 +390,11 @@ namespace RSToolkit.AI
             return m_currenBotMovementComponent.CurrentState;
         }
 
+        public bool IsMoveable()
+        {
+            return m_currenBotMovementComponent != null;
+        }
+
         protected virtual void Awake()
         {
             if (m_BotMovementComponents.Length > 0)
@@ -403,13 +408,10 @@ namespace RSToolkit.AI
             }
         }
 
-#if UNITY_EDITOR
-        private void OnDrawGizmos()
+
+        void OnDrawGizmos()
         {
-            if (!DebugMode)
-            {
-                return;
-            }
+#if UNITY_EDITOR
             ProximityHelpers.DrawGizmoProximity(transform, SqrInteractionMagnitude, IsWithinInteractionDistance());
             if(FocusedOnPosition != null)
             {
@@ -423,7 +425,8 @@ namespace RSToolkit.AI
                 UnityEditor.Handles.DrawLine(transform.position, FocusedOnTransform.position);
                 UnityEditor.Handles.color = oldColor;
             }
-        }
 #endif
+        }
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Events;
 
 namespace RSToolkit.Space3D
@@ -76,7 +77,6 @@ namespace RSToolkit.Space3D
 
         public float? IsWithinRayDistance(out RaycastHit hit)
         {
-
             float? hitDistance = null;
             if (Physics.Raycast(transform.position, GetRayDirectionVector(), out hit, RayDistance, LayerMask, QueryTriggerInteraction.Ignore))
             {
@@ -93,8 +93,27 @@ namespace RSToolkit.Space3D
             {
                 proximityEnteredTriggered = false;
             }
+            return hitDistance;
+        }
 
+        public float? IsWithinRayDistance(out NavMeshHit hit)
+        {
+            float? hitDistance = null;
+            if (NavMesh.SamplePosition(transform.position, out hit, RayDistance, NavMesh.AllAreas))
+            {
+                m_rayColor = Color.red;
+                hitDistance = hit.distance;
 
+                if (IsTrigger && !proximityEnteredTriggered)
+                {
+                    proximityEnteredTriggered = true;
+                    OnProximityEntered.Invoke();
+                }
+            }
+            else
+            {
+                proximityEnteredTriggered = false;
+            }
             return hitDistance;
         }
 
@@ -108,15 +127,14 @@ namespace RSToolkit.Space3D
             
         }
 
-#if UNITY_EDITOR
+
         void OnDrawGizmos()
         {
-            if (DebugMode)
-            {
-                Debug.DrawLine(transform.position, transform.TransformPoint(GetRayDirectionVector() * RayDistance), m_rayColor);
-            }
-        }
+#if UNITY_EDITOR
+            Debug.DrawLine(transform.position, transform.TransformPoint(GetRayDirectionVector() * RayDistance), m_rayColor);
 #endif
+        }
+
 
     }
 }
