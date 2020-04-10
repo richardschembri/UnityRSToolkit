@@ -13,10 +13,15 @@ namespace RSToolkit.AI
         Object m_waypoint;
         bool m_fullspeed = false;
 
+        void OnEnable()
+        {
+            m_targetBot = (Bot)target;
+        }
+
         public override void OnInspectorGUI()
         {
             DrawDefaultInspector();
-            m_targetBot = (Bot)target;
+            
             if (!m_targetBot.DebugMode || !Application.isPlaying)
             {
                 return;
@@ -35,8 +40,15 @@ namespace RSToolkit.AI
                 GUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Movement State");
                 EditorGUI.BeginDisabledGroup(true);
-                EditorGUILayout.EnumPopup(m_targetBot.GetMovementState());
+                EditorGUILayout.EnumPopup(m_targetBot.GetMovementState());  
                 EditorGUI.EndDisabledGroup();
+                if (m_targetBot.GetMovementState() != BotLocomotion.LocomotionState.NotMoving)
+                {
+                    if (GUILayout.Button("Stop Moving"))
+                    {
+                        m_targetBot.StopMoving();
+                    }
+                }
                 GUILayout.EndHorizontal();
             }
 
