@@ -10,16 +10,18 @@ namespace RSToolkit.AI
     public class BotEditor : Editor
     {
         Bot m_targetBot;
+        Object m_waypoint;
+        bool m_fullspeed = false;
 
         public override void OnInspectorGUI()
         {
             DrawDefaultInspector();
-            
-            if (!Application.isPlaying)
+            m_targetBot = (Bot)target;
+            if (!m_targetBot.DebugMode || !Application.isPlaying)
             {
                 return;
             }
-            m_targetBot = (Bot)target;
+            
             EditorGUILayout.LabelField("Bot States", EditorStyles.boldLabel);
             
             GUILayout.BeginHorizontal();
@@ -52,6 +54,22 @@ namespace RSToolkit.AI
                 {
                     m_targetBot.Wander();
                 }
+            }
+            if (m_targetBot.IsMoveable())
+            {
+                EditorGUILayout.LabelField("Move to Waypoint", EditorStyles.miniBoldLabel);
+                GUILayout.BeginHorizontal();
+                
+                m_waypoint = EditorGUILayout.ObjectField(m_waypoint, typeof(Transform), true);
+                EditorGUI.BeginDisabledGroup(m_waypoint == null);
+                m_fullspeed = EditorGUILayout.Toggle("Full Speed", m_fullspeed);
+                if (GUILayout.Button("Move to"))
+                {
+                    m_targetBot.FocusOnTransform((Transform)m_waypoint);
+                    m_targetBot.MoveToTarget( BotLocomotion.StopMovementConditions.WITHIN_PERSONAL_SPACE, m_fullspeed);
+                }
+                EditorGUI.EndDisabledGroup();
+                GUILayout.EndHorizontal();
             }
         }
     }

@@ -191,12 +191,12 @@ namespace RSToolkit.AI
 
         public bool IsWithinInteractionDistance(Transform target)
         {
-            return IsWithinInteractionDistance(transform.position);
+            return IsWithinInteractionDistance(target.position);
         }
 
         public bool IsWithinPersonalSpace(Transform target)
         {
-            return IsWithinPersonalSpace(transform.position);
+            return IsWithinPersonalSpace(target.position);
         }
 
 
