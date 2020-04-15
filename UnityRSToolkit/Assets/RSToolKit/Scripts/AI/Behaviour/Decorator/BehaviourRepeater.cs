@@ -9,7 +9,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
         uint m_totalLoops = 0;
         uint m_loopCount = 0;
         NodeTimer m_restartChildTimer;
-        public BehaviourRepeater(BehaviourNode child, uint totalLoops): base("Repeater", NodeType.DECORATOR)
+        public BehaviourRepeater(uint totalLoops) : base("Repeater", NodeType.DECORATOR)
         {
             m_totalLoops = totalLoops;
             OnStarted.AddListener(OnStarted_Listener);

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using RSToolkit.Animation;
+using RSToolkit.AI.Helpers;
 
 namespace RSToolkit.AI
 {
@@ -19,7 +20,6 @@ namespace RSToolkit.AI
             TakingOff,
             Flying
         }
-
 
         private BotNavMesh m_botNavMeshComponent;
         public BotNavMesh BotNavMeshComponent
@@ -180,12 +180,16 @@ namespace RSToolkit.AI
             }
         }
 
-        public bool Land(bool checkForGround = true)
+        bool m_freefall = false;
+
+        public bool Land(bool onNavMesh = true, bool freefall = false)
         {
-            if (CurrentState != FlyableStates.Flying || (checkForGround && BotFlyingComponent.IsCloseToGround()))
+            //if (CurrentState != FlyableStates.Flying || (checkForGround && BotFlyingComponent.IsCloseToGround()))
+            if(CurrentState != FlyableStates.Flying || (onNavMesh && !BotNavMeshComponent.NavMeshAgentComponent.IsAboveNavMeshSurface()))
             {
                 return false;
             }
+            m_freefall = freefall;
             m_FSM.ChangeState(FlyableStates.Landing);
             
             return true;
@@ -203,7 +207,11 @@ namespace RSToolkit.AI
             if (BotFlyingComponent.IsCloseToGround())
             {
                 m_FSM.ChangeState(FlyableStates.NotFlying);
-                
+
+            }
+            else if(!m_freefall)
+            {
+                BotFlyingComponent.Flying3DObjectComponent.ApplyVerticalThrust(false);
             }
         }
 

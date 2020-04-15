@@ -92,13 +92,13 @@ namespace RSToolkit.AI
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();    
-            if (!Application.isPlaying)
+
+            m_targetBotFlyable = (BotFlyable)target;
+            if (!m_targetBotFlyable.DebugMode || !Application.isPlaying)
             {
                 return;
             }
-            m_targetBotFlyable = (BotFlyable)target;
 
-            
             GUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Flyable State");
             EditorGUI.BeginDisabledGroup(true);

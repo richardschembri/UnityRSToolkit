@@ -31,5 +31,11 @@ namespace RSToolkit.Helpers
             return Physics.Linecast(source.ClosestPoint(position) + direction.normalized * 0.05f, position, out hit);
         }
 
+        public static bool SpherecastFromOutsideBounds(this Collider source, out RaycastHit hit, Vector3 position, float radius)
+        {
+            var direction = (position - source.transform.position).normalized;
+            return Physics.SphereCast(source.ClosestPoint(position) + direction.normalized * 0.05f, radius, direction, out hit);
+        }
+
     }
 }

@@ -14,6 +14,8 @@ namespace RSToolkit.AI
         private int m_findNewPositionAttempts = 0;
         private const int MAX_FINDNEWPOSITIONATTEMPTS = 20;
         public bool AboveSurface = true;
+        [Tooltip("If 0 or less a linecast will be used")]
+        public float SpherecastRadius = 1f;
 
         public BotFlying BotFlyingComponent
         {
@@ -47,11 +49,12 @@ namespace RSToolkit.AI
 
             if (AboveSurface && !Physics.Raycast(newPos, Vector3.down, Mathf.Infinity))
             {
-                Debug.Log("Not above surface");
+                Debug.Log($"{newPos} Not above surface");
                 return GetNewWanderPosition(radius);
             }
 
-            if (BotFlyingComponent.BotComponent.ColliderComponent.LinecastFromOutsideBounds(out m_wanderhit, newPos))
+            if ((SpherecastRadius <= 0 && BotFlyingComponent.BotComponent.ColliderComponent.LinecastFromOutsideBounds(out m_wanderhit, newPos))
+                || (SpherecastRadius > 0 && BotFlyingComponent.BotComponent.ColliderComponent.SpherecastFromOutsideBounds(out m_wanderhit, newPos, SpherecastRadius)))
             {
                
                 if (DebugMode)

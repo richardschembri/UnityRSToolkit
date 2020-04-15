@@ -38,19 +38,23 @@ namespace RSToolkit.AI.Behaviour.Task
         public BehaviourAction(System.Func<bool> singleFrameFunc) : base("Action", NodeType.TASK)
         {
             m_singleFrameFunc = singleFrameFunc;
+            Init();
         }
         public BehaviourAction(System.Func<bool, ActionResult> multiFrameFunc) : base("Action", NodeType.TASK)
         {
             m_multiFrameFunc = multiFrameFunc;
+            Init();
         }
         public BehaviourAction(System.Func<ActionRequest, ActionResult> multiFrameRequestFunc) : base("Action", NodeType.TASK)
         {
             m_multiFrameRequestFunc = multiFrameRequestFunc;
+            Init();
         }
 
         public BehaviourAction(System.Action action) : base("Action", NodeType.TASK)
         {
             m_singleFrameAction = action;
+            Init();
         }
         #endregion Constructors
 

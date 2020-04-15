@@ -48,6 +48,42 @@ namespace RSToolkit.AI.Helpers
             {
                 return OffMeshLinkPosition.Mid;
             }
+
+        }
+
+        public static bool IsAboveNavMeshSurface(this NavMeshAgent agent, out Vector3 navPosition)
+        {
+            var collider = agent.GetComponent<Collider>();
+            var bottomColliderPoint = collider.ClosestPointOnBounds(agent.transform.position + Vector3.down * ((agent.height / 2f) + 0.1f));
+            RaycastHit rayHit;
+            NavMeshHit navHit;
+            if (Physics.Raycast(bottomColliderPoint, Vector3.down, out rayHit))
+            {
+                if(NavMesh.SamplePosition(rayHit.point, out navHit, 1f, NavMesh.AllAreas))
+                {
+                    navPosition = navHit.position;
+                    return true;
+                }
+            }
+            navPosition = Vector3.zero;
+            return false;
+        }
+
+        public static bool IsAboveNavMeshSurface(this NavMeshAgent agent)
+        {
+            Vector3 navPosition;
+            return agent.IsAboveNavMeshSurface(out navPosition);
+        }
+
+        public static Vector3? TryGetNavPosFromUnderneathCircle(this NavMeshAgent agent, float radius, float attempts)
+        {
+            var collider = agent.GetComponent<Collider>();
+            var bottomColliderPoint = collider.ClosestPointOnBounds(agent.transform.position + Vector3.down * ((agent.height / 2f) + 0.1f));
+
+            RaycastHit rayHit;
+            
+            Physics.Raycast(bottomColliderPoint, Vector3.down, out rayHit);
+            return null;
         }
 
         public static void DrawGizmoDestination(NavMeshAgent agent)

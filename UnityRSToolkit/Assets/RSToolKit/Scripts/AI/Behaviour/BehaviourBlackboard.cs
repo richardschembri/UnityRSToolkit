@@ -169,6 +169,35 @@ namespace RSToolkit.AI.Behaviour
                 }
             }
         }
+        public void RemoveObserver(string key, System.Action<NotificationType, object> observer)
+        {
+            List<System.Action<NotificationType, object>> observers = GetObserverList(this.observers, key);
+            if (!isNotifiyng)
+            {
+                if (observers.Contains(observer))
+                {
+                    observers.Remove(observer);
+                }
+            }
+            else
+            {
+                List<System.Action<NotificationType, object>> removeObservers = GetObserverList(this.removeObservers, key);
+                if (!removeObservers.Contains(observer))
+                {
+                    if (observers.Contains(observer))
+                    {
+                        removeObservers.Add(observer);
+                    }
+                }
+
+                List<System.Action<NotificationType, object>> addObservers = GetObserverList(this.addObservers, key);
+                if (addObservers.Contains(observer))
+                {
+                    addObservers.Remove(observer);
+                }
+            }
+
+        }
 
         public void Update()
         {

@@ -28,6 +28,19 @@ namespace RSToolkit.AI.Behaviour
             TASK
         }
 
+        public enum Operator
+        {
+            IS_SET,
+            IS_NOT_SET,
+            IS_EQUAL,
+            IS_NOT_EQUAL,
+            IS_GREATER_OR_EQUAL,
+            IS_GREATER,
+            IS_SMALLER_OR_EQUAL,
+            IS_SMALLER,
+            ALWAYS_TRUE
+        }
+
         public static float ElipsedTime { get; private set; } = 0f;
         public static void UpdateTime(float deltaTime)
         {
@@ -164,11 +177,17 @@ namespace RSToolkit.AI.Behaviour
             } 
         }
 
+
         protected NodeTimer AddTimer(float time, float randomVariance, int repeat, System.Action timeoutAction)
         {
             var new_timer = new NodeTimer(time, randomVariance, repeat, timeoutAction);
             m_timers.Add(new_timer);
             return new_timer;
+        }
+
+        protected NodeTimer AddTimer(float time, int repeat, System.Action timeoutAction)
+        {
+            return AddTimer(time, 0f, repeat, timeoutAction);
         }
 
         protected void RemoveTimer(NodeTimer to_remove)
