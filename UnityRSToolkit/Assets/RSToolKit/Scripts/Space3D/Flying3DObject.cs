@@ -138,7 +138,7 @@ namespace RSToolkit.Space3D
         public float LateralDeadzone = 0.2f;
 
         public bool HoverWhenIdle = true;
-        
+
 
         public bool IsOutDeadzoneVertical()
         {
@@ -153,7 +153,7 @@ namespace RSToolkit.Space3D
         {
             return IsOutDeadzoneVertical() || IsOutDeadzoneLateral();
         }
-      
+
         public void ResetAppliedAxis()
         {
             CurrentFlightAxis.pitch = DefaultFlightAxis.pitch;
@@ -173,7 +173,7 @@ namespace RSToolkit.Space3D
             {
                 CurrentFlightThrust = Vector3.zero;
             }
-            
+
         }
 
         public void ResetAppliedValues()
@@ -215,6 +215,7 @@ namespace RSToolkit.Space3D
                 HoverWhenIdle = !HoverWhenIdle;
             }
         }
+
         float m_decelerateVelocity;
         void FixedUpdate()
         {
@@ -222,7 +223,7 @@ namespace RSToolkit.Space3D
             {
                 return;
             }
-            
+
             if (ManualControl)
             {
                 ManualVerticalThrustControl();
@@ -241,8 +242,16 @@ namespace RSToolkit.Space3D
             m_RigidBodyComponent.rotation = Quaternion.Euler(CurrentFlightAxis.toVector3()); // new Vector3(CurrentFlightAxis.pitch, CurrentFlightAxis.yaw, m_RigidBodyComponent.rotation.z));
             UpdateForwardThrust();
             UpdateVerticalThrust();
+        }
 
-            
+        public bool HasLateralVelocity()
+        {
+            return m_RigidBodyComponent.velocity.x != 0 || m_RigidBodyComponent.velocity.z != 0;
+        }
+
+        public bool HasVerticalVelocity()
+        {
+            return m_RigidBodyComponent.velocity.y != 0;
         }
 
         public bool IsMovingHorizontally()
@@ -296,7 +305,6 @@ namespace RSToolkit.Space3D
 
         public void ApplyVerticalThrust(bool positive)
         {
-           
             if (positive)
             {
                 CurrentFlightThrust.y = MovementFlightThrust.y; //.lift;
@@ -473,6 +481,10 @@ namespace RSToolkit.Space3D
                     magnitudeLength = 5f;
                 }
                 m_RigidBodyComponent.velocity = Vector3.ClampMagnitude(m_RigidBodyComponent.velocity, Mathf.Lerp(m_RigidBodyComponent.velocity.magnitude, magnitudeLength, Time.deltaTime * 5f));
+            }
+            else if(!ManualControl && CurrentFlightThrust.x == 0f && CurrentFlightThrust.z == 0f)
+            {
+                m_RigidBodyComponent.velocity = Vector3.SmoothDamp(m_RigidBodyComponent.velocity, Vector3.zero, ref m_clampedVelocity, 0.25f);
             }
             else
             {
