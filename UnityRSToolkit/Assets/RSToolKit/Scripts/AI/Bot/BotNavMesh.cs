@@ -143,8 +143,9 @@ namespace RSToolkit.AI
 
         }
 
-        void NotMoving_Enter()
+        protected override void NotMoving_Enter()
         {
+            base.NotMoving_Enter();
             if (NavMeshAgentComponent.isOnNavMesh)
             {
                 NavMeshAgentComponent.isStopped = true;

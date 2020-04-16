@@ -408,6 +408,10 @@ namespace RSToolkit.AI
             }
         }
 
+        protected virtual void Update()
+        {
+
+        }
 
         void OnDrawGizmos()
         {

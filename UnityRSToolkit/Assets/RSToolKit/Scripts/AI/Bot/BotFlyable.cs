@@ -266,6 +266,12 @@ namespace RSToolkit.AI
             m_FSM.Changed += Fsm_Changed;
         }
 
+        protected override void Update()
+        {
+            base.Update();
+            CharacterAnimParams.TrySetSpeed(AnimatorComponent, m_currenBotMovementComponent.CurrentSpeed);
+        }
+
         private void Fsm_Changed(FlyableStates state)
         {
             try
