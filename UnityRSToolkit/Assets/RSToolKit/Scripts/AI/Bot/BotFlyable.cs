@@ -170,14 +170,20 @@ namespace RSToolkit.AI
 
         void TakingOff_Update()
         {
-            if(BotFlyingComponent.IsCloseToGround())
+            if(!BotFlyingComponent.IsFarFromGround()) // IsCloseToGround())
             {
                 BotFlyingComponent.Flying3DObjectComponent.ApplyVerticalThrust(true);       
             }           
             else
-            {                
+            {
+                RigidBodyComponent.Sleep();
                 m_FSM.ChangeState(FlyableStates.Flying);
             }
+        }
+
+        void TakingOff_Exit()
+        {
+            RigidBodyComponent.WakeUp();
         }
 
         bool m_freefall = false;

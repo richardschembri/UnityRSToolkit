@@ -68,6 +68,16 @@ namespace RSToolkit.Space3D
             return result;
         }
 
+        public bool IsBeyondRayDistance(float offsetDistance)
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position, GetRayDirectionVector(), out hit, RayDistance + offsetDistance, LayerMask, QueryTriggerInteraction.Ignore))
+            {
+                return false;
+            }
+            return true;
+        }
+
 // To Refactor
         public float? IsWithinRayDistance()
         {

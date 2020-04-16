@@ -79,6 +79,11 @@ namespace RSToolkit.AI
 
         }
 
+        public bool IsFarFromGround()
+        {            
+            return GroundProximityCheckerComponent.IsBeyondRayDistance(GroundProximityCheckerComponent.RayDistance);
+        }
+
         public bool IsCloseToGround()
         {
             return GroundProximityCheckerComponent.IsWithinRayDistance() != null;
