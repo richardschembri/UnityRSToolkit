@@ -81,7 +81,7 @@ namespace RSToolkit.AI
 
         public bool IsFarFromGround()
         {            
-            return GroundProximityCheckerComponent.IsBeyondRayDistance(GroundProximityCheckerComponent.RayDistance);
+            return GroundProximityCheckerComponent.IsBeyondRayDistance(GroundProximityCheckerComponent.MaxRayDistance);
         }
 
         public bool IsCloseToGround()
@@ -89,9 +89,9 @@ namespace RSToolkit.AI
             return GroundProximityCheckerComponent.IsWithinRayDistance() != null;
         }
 
-        public bool IsGrounded()
+        public bool IsAlmostGrounded()
         {
-            return GroundProximityCheckerComponent.IsTouching();
+            return GroundProximityCheckerComponent.IsAlmostTouching();
         }
 
         public class OnDestinationReachedEvent : UnityEvent<Vector3> { }
@@ -169,6 +169,7 @@ namespace RSToolkit.AI
             if(CurrentState != LocomotionState.NotMoving)
             {
                 m_FSM.ChangeState(LocomotionState.NotMoving);
+                return true;
             }
             return false;
         }

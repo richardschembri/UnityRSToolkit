@@ -17,12 +17,15 @@ namespace RSToolkit.Space3D
             FORWARD,
             BACK
         }
-        
-        public float RayDistance = 0.5f;
+
+        public float MinRayDistance = 0f;
+        public float MaxRayDistance = 0.5f;
+
         public RayDirectionEnum RayDirection = RayDirectionEnum.DOWN;
         public LayerMask LayerMask;
 
         public bool IsTrigger = true;
+        
         public bool DebugMode;
 
         public UnityEvent OnProximityEntered { get; private set; } = new UnityEvent();
@@ -50,9 +53,9 @@ namespace RSToolkit.Space3D
             return Vector3.zero;
         }
 
-        public bool IsTouching()
+        public bool IsAlmostTouching(bool checkForNavMesh = true)
         {
-            bool result = IsWithinRayDistance() != null && IsWithinRayDistance() < 0.2f;
+            bool result = IsWithinRayDistance(checkForNavMesh) != null && IsWithinRayDistance(checkForNavMesh) < 0.2f;
             if(result)
             {
                 if(IsTrigger && !touchEnteredTriggered)
@@ -71,7 +74,7 @@ namespace RSToolkit.Space3D
         public bool IsBeyondRayDistance(float offsetDistance)
         {
             RaycastHit hit;
-            if (Physics.Raycast(transform.position, GetRayDirectionVector(), out hit, RayDistance + offsetDistance, LayerMask, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(transform.position, GetRayDirectionVector(), out hit, MaxRayDistance + offsetDistance, LayerMask, QueryTriggerInteraction.Ignore))
             {
                 return false;
             }
@@ -79,24 +82,41 @@ namespace RSToolkit.Space3D
         }
 
 // To Refactor
-        public float? IsWithinRayDistance()
+        public float? IsWithinRayDistance(bool checkForNavMesh = true)
         {
-            RaycastHit hit;
-            return IsWithinRayDistance(out hit);
+            if (checkForNavMesh)
+            {
+                NavMeshHit navHit;
+                return IsWithinRayDistance(out navHit);
+            }
+            else
+            {
+                RaycastHit rayHit;
+                return IsWithinRayDistance(out rayHit);
+            }
+            
         }
 
         public float? IsWithinRayDistance(out RaycastHit hit)
         {
             float? hitDistance = null;
-            if (Physics.Raycast(transform.position, GetRayDirectionVector(), out hit, RayDistance, LayerMask, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(transform.position, GetRayDirectionVector(), out hit, MaxRayDistance, LayerMask, QueryTriggerInteraction.Ignore))
             {
-                m_rayColor = Color.red;
-                hitDistance = hit.distance;
-
-                if (IsTrigger && !proximityEnteredTriggered)
+                if (hit.distance >= MinRayDistance)
                 {
-                    proximityEnteredTriggered = true;
-                    OnProximityEntered.Invoke();
+                    
+                    hitDistance = hit.distance;
+                    m_rayColor = Color.red;
+
+                    if (IsTrigger && !proximityEnteredTriggered)
+                    {
+                        proximityEnteredTriggered = true;
+                        OnProximityEntered.Invoke();
+                    }
+                }
+                else
+                {
+                    proximityEnteredTriggered = false;
                 }
             }
             else
@@ -109,7 +129,7 @@ namespace RSToolkit.Space3D
         public float? IsWithinRayDistance(out NavMeshHit hit)
         {
             float? hitDistance = null;
-            if (NavMesh.SamplePosition(transform.position, out hit, RayDistance, NavMesh.AllAreas))
+            if (NavMesh.SamplePosition(transform.position, out hit, MaxRayDistance, NavMesh.AllAreas))
             {
                 m_rayColor = Color.red;
                 hitDistance = hit.distance;
@@ -130,10 +150,12 @@ namespace RSToolkit.Space3D
         // Update is called once per frame
         void Update()
         {
+            /*
             if (IsTrigger)
             {
-                IsTouching(); //IsWithinRayDistance();
+                IsAlmostTouching(); //IsWithinRayDistance();
             }
+            */
             
         }
 
@@ -141,7 +163,7 @@ namespace RSToolkit.Space3D
         void OnDrawGizmos()
         {
 #if UNITY_EDITOR
-            Debug.DrawLine(transform.position, transform.TransformPoint(GetRayDirectionVector() * RayDistance), m_rayColor);
+            Debug.DrawLine(transform.position, transform.TransformPoint(GetRayDirectionVector() * MaxRayDistance), m_rayColor);
 #endif
         }
 

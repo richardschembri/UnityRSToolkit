@@ -87,28 +87,33 @@ namespace RSToolkit.AI
             BotComponent.UnFocus();
             BotComponent.FocusOnPosition(hit.position);
             MoveTowardsPosition(fullspeed);
+            MoveToPosition(StopMovementConditions.WITHIN_PERSONAL_SPACE, fullspeed);
         }
 
-        public bool JumpOffLedge()
+        public Vector3? JumpOffLedge(bool fullspeed = false)
         {
             RaycastHit rayhit;
-            
-            if(JumpProximityChecker.IsWithinRayDistance(out rayhit) != null)
+
+            if(CanJumpDown(out rayhit))
+            {
+                BotComponent.UnFocus();
+                BotComponent.FocusOnPosition(rayhit.point);                
+                MoveToPosition(StopMovementConditions.AT_POSITION, fullspeed);
+                return rayhit.point;
+            }
+            return null;
+        }
+
+        public bool CanJumpDown(out RaycastHit rayhit)
+        {
+            if (JumpProximityChecker.IsWithinRayDistance(out rayhit) != null)
             {
                 var jumpPath = new NavMeshPath();
                 NavMesh.CalculatePath(transform.position, rayhit.point, NavMesh.AllAreas, jumpPath);
-                if(jumpPath.status == NavMeshPathStatus.PathComplete)
-                {
-                    Debug.Log(jumpPath.corners);
-                    BotComponent.UnFocus();
-                    BotComponent.FocusOnPosition(rayhit.point);
-                    MoveTowardsPosition(true);
-                    return true;
-                }
+                return jumpPath.status == NavMeshPathStatus.PathComplete;
             }
             return false;
         }
-
 
         private void Awake()
         {
