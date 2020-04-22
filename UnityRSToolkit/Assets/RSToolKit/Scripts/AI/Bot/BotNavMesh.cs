@@ -119,7 +119,7 @@ namespace RSToolkit.AI
         {
             NavMeshAgentComponent.speed = walkSpeed;
             NavMeshAgentComponent.angularSpeed = walkRotationSpeed;
-            NavMeshAgentComponent.radius = BotComponent.SqrPersonalSpaceMagnitude;
+            //NavMeshAgentComponent.radius = BotComponent.SqrPersonalSpaceMagnitude;
         }
 
         protected virtual void OffMeshLinkUpdate(NavMeshHelpers.OffMeshLinkPosition linkposition)

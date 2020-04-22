@@ -124,7 +124,10 @@ namespace RSToolkit.AI
             yield return new WaitForSeconds(movementTimeout);
             if (m_FSM.State == WanderStates.MovingToPosition)
             {
-                Debug.Log("Movement timeout!");
+                if (DebugMode)
+                {
+                    Debug.Log("Movement timeout!");
+                }
                 m_FSM.ChangeState(WanderStates.FindNewPosition);
             }
         }

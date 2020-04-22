@@ -153,7 +153,7 @@ namespace RSToolkit.AI
         {
             get
             {
-                return SqrInteractionMagnitude * .75f;
+                return SqrInteractionMagnitude * .5f;
             }
         }
 
@@ -182,11 +182,14 @@ namespace RSToolkit.AI
 
         public bool IsWithinInteractionDistance(Vector3 position)
         {
-            return ProximityHelpers.IsWithinDistance(transform, position, SqrInteractionMagnitude);
+            //return ProximityHelpers.IsWithinDistance(transform, position, SqrInteractionMagnitude);
+            return ProximityHelpers.IsWithinDistance(ColliderComponent, position, SqrInteractionMagnitude);
         }
+
         public bool IsWithinPersonalSpace(Vector3 position)
         {
-            return ProximityHelpers.IsWithinDistance(transform, position, SqrPersonalSpaceMagnitude);
+            //return ProximityHelpers.IsWithinDistance(transform, position, SqrPersonalSpaceMagnitude);
+            return ProximityHelpers.IsWithinDistance(ColliderComponent, position, SqrPersonalSpaceMagnitude);
         }
 
         public bool IsWithinInteractionDistance(Transform target)
@@ -417,7 +420,8 @@ namespace RSToolkit.AI
         {
 #if UNITY_EDITOR
             ProximityHelpers.DrawGizmoProximity(transform, SqrInteractionMagnitude, IsWithinInteractionDistance());
-            if(FocusedOnPosition != null)
+            
+            if (FocusedOnPosition != null)
             {
                 UnityEditor.Handles.color = new Color(1f, 1f, 0.008f, 0.55f);
                 UnityEditor.Handles.DrawSolidDisc(FocusedOnPosition.Value, Vector3.up, 0.25f);
@@ -429,6 +433,7 @@ namespace RSToolkit.AI
                 UnityEditor.Handles.DrawLine(transform.position, FocusedOnTransform.position);
                 UnityEditor.Handles.color = oldColor;
             }
+            ProximityHelpers.DrawGizmoProximity(transform, SqrPersonalSpaceMagnitude, IsWithinPersonalSpace());
 #endif
         }
 

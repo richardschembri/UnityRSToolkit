@@ -10,17 +10,21 @@ namespace RSToolkit.AI.Behaviour.Decorator.Blackboard
         public object ConditionValue { get; private set; }
         public Operator ConditionOperator { get; private set; }
 
-        public BehaviourBlackboardCondition(BehaviourBlackboard blackboard, string key, Operator conditionoperator, object conditionvalue, StopRule stoprule) : base("BlackboardCondition", blackboard, stoprule)
+        private void Init(string key, Operator conditionoperator, object conditionvalue = null)
         {
             ConditionOperator = conditionoperator;
-            Key = key;            
-            ConditionValue = conditionvalue; 
+            Key = key;
+            ConditionValue = conditionvalue;
+        }
+
+        public BehaviourBlackboardCondition(BehaviourBlackboard blackboard, string key, Operator conditionoperator, object conditionvalue, StopRule stoprule) : base("BlackboardCondition", blackboard, stoprule)
+        {
+            Init(key, conditionoperator, conditionvalue);
         }
 
         public BehaviourBlackboardCondition(BehaviourBlackboard blackboard, string key, Operator conditionoperator, StopRule stoprule) : base("BlackboardCondition", blackboard, stoprule)
         {
-            ConditionOperator = conditionoperator;
-            Key = key;
+            Init(key, conditionoperator);
         }
 
         private void onValueChanged(BehaviourBlackboard.NotificationType notificationtype, object newValue)
@@ -121,6 +125,13 @@ namespace RSToolkit.AI.Behaviour.Decorator.Blackboard
                 default: return false;
             }
         }
+
+#if UNITY_EDITOR
+        protected override void InitDebugTools()
+        {
+            DebugTools = new BehaviourDebugTools(this, $"{Key} {OperatorHelpers.ToSymbolString(ConditionOperator)} {ConditionValue}");
+        }
+#endif
 
         public override string ToString()
         {

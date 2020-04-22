@@ -41,6 +41,34 @@ namespace RSToolkit.AI.Behaviour
             ALWAYS_TRUE
         }
 
+        public static class OperatorHelpers
+        {
+            public static string ToSymbolString(Operator op)
+            {
+                switch (op)
+                {
+                    case Operator.IS_SET:
+                        return "?=";
+                    case Operator.IS_NOT_SET:
+                        return "?!=";
+                    case Operator.IS_EQUAL:
+                        return "==";
+                    case Operator.IS_NOT_EQUAL:
+                        return "!=";
+                    case Operator.IS_GREATER_OR_EQUAL:
+                        return ">=";
+                    case Operator.IS_GREATER:
+                        return ">";
+                    case Operator.IS_SMALLER_OR_EQUAL:
+                        return "<=";
+                    case Operator.IS_SMALLER:
+                        return "<";
+                    default:
+                        return op.ToString();
+                }
+            }
+        }
+
         public static float ElipsedTime { get; private set; } = 0f;
         public static void UpdateTime(float deltaTime)
         {
@@ -225,6 +253,9 @@ namespace RSToolkit.AI.Behaviour
             this.Name = name;
             this.Type = type;
             OnStopped.AddListener(OnStopped_Listener);
+#if UNITY_EDITOR
+            InitDebugTools();
+#endif
         }
 
         private void OnStopped_Listener(bool success)
@@ -279,5 +310,14 @@ namespace RSToolkit.AI.Behaviour
                 Children[i].RequestStopNode();
             }
         }
+
+#if UNITY_EDITOR
+        public BehaviourDebugTools DebugTools { get; protected set; }
+
+        protected virtual void InitDebugTools()
+        {
+            DebugTools = new BehaviourDebugTools(this);
+        }
+#endif
     }
 }

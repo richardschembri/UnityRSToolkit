@@ -8,6 +8,7 @@ namespace RSToolkit.AI.Behaviour.Composite
     {
         public BehaviourSelector(bool isRandom) : base("Selector", isRandom)
         {
+            
         }
 
         protected override void ProcessChildNodeSequence()
@@ -27,6 +28,13 @@ namespace RSToolkit.AI.Behaviour.Composite
                 OnStopped.Invoke(false);
             }
         }
+
+#if UNITY_EDITOR
+        protected override void InitDebugTools()
+        {
+            DebugTools = new BehaviourDebugTools(this, "?");
+        }
+#endif
 
     }
 }

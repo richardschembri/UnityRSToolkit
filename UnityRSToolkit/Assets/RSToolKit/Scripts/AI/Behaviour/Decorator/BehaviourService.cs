@@ -24,6 +24,9 @@ namespace RSToolkit.AI.Behaviour.Decorator
             {
                 m_randomVariation = interval * 0.05f;
             }
+#if UNITY_EDITOR
+            this.DebugTools.GUIlabel = "" + (interval - m_randomVariation) + "..." + (interval + m_randomVariation) + "s";
+#endif
         }
 
         private void Init(System.Action serviceAction)
@@ -32,6 +35,9 @@ namespace RSToolkit.AI.Behaviour.Decorator
             OnStopped.AddListener(OnStopped_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
             m_serviceAction = serviceAction;
+#if UNITY_EDITOR
+            DebugTools.GUIlabel = "every tick";
+#endif
         }
         public BehaviourService(float interval, float randomVariation, System.Action serviceAction) : base("Service", NodeType.DECORATOR)
         {
@@ -39,11 +45,13 @@ namespace RSToolkit.AI.Behaviour.Decorator
         }
         public BehaviourService(float interval, System.Action serviceAction) : base("Service", NodeType.DECORATOR)
         {
-            IntervalInit(interval, null, serviceAction); 
+            IntervalInit(interval, null, serviceAction);
+            
         }
         public BehaviourService(System.Action serviceAction) : base("Service", NodeType.DECORATOR)
         {
             Init(serviceAction);
+            
         }
         private void InvokeServiceActionAtRandomInterval()
         {

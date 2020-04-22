@@ -256,5 +256,29 @@ namespace RSToolkit.AI.Behaviour
             isNotifiyng = false;
         }
 
+#if UNITY_EDITOR
+        public List<string> GetDataKeys(bool recursive = true)
+        {
+            var result = new List<string>();
+            if(recursive && this.Parent != null)
+            {
+                result.AddRange(this.Parent.GetDataKeys(recursive));             
+            }
+            result.AddRange(m_data.Keys);
+            return result;
+        }
+
+
+        public int CountObserverActions()
+        {
+            int result = 0;
+            foreach (string key in observers.Keys)
+            {
+                result += observers[key].Count;
+            }
+            return result;
+        }
+#endif
+
     }
 }

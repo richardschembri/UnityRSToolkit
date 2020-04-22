@@ -27,6 +27,12 @@ namespace RSToolkit.AI.Behaviour.Composite
                 ProcessChildNodeSequence();
             }
         }
+#if UNITY_EDITOR
+        protected override void InitDebugTools()
+        {
+            DebugTools = new BehaviourDebugTools(this, "->");
+        }
+#endif
 
     }
 }

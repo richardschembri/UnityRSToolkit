@@ -21,13 +21,29 @@ namespace RSToolkit.AI.Helpers
             return self.velocity.magnitude / self.speed;
         }
 
-        public static Vector3 RandomNavPosInSphere(Vector3 origin, float radius, float offset = 0f, int areamask = NavMesh.AllAreas)
+        public static bool RandomNavPosInSphere(Vector3 origin, float radius, out Vector3 position ,float offset = 0f, int areamask = NavMesh.AllAreas)
         {
-            var randDirection = Random.insideUnitSphere * radius;
-            randDirection += origin;
-            NavMeshHit navHit;
-            NavMesh.SamplePosition(randDirection, out navHit, radius - offset, areamask);
-            return navHit.position;
+            position = origin + ((offset + (radius * Random.value)) * Random.insideUnitSphere.normalized);
+            NavMeshPath path = new NavMeshPath();
+            NavMesh.CalculatePath(origin, position, areamask, path);
+            if(path.status == NavMeshPathStatus.PathInvalid || Vector3.Distance(origin, position) < offset)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public static bool AttemptRandomNavPosInSphere(Vector3 origin, float radius, out Vector3 position, float offset = 0f, int areamask = NavMesh.AllAreas, int attempts = 100)
+        {
+            position = origin;
+            for(int i = 0; i < attempts; i++)
+            {
+                if(RandomNavPosInSphere(origin, radius, out position, offset, areamask))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public static OffMeshLinkPosition GetOffMeshLinkPosition(this NavMeshAgent agent, float startend_proximity = 0.25f)

@@ -51,7 +51,17 @@ namespace RSToolkit.Helpers
 
         public static bool IsWithinDistance(Transform sourceTransform, Vector3 position, float sqrViewMagnitude)
         {
-            return Vector3.SqrMagnitude(position - sourceTransform.position) < sqrViewMagnitude;
+            return IsWithinDistance(sourceTransform.position, position, sqrViewMagnitude);
+        }
+
+        public static bool IsWithinDistance(Collider sourceCollider, Vector3 position, float sqrViewMagnitude)
+        {
+            return IsWithinDistance(sourceCollider.ClosestPointOnBounds(position), position, sqrViewMagnitude);
+        }
+
+        public static bool IsWithinDistance(Vector3 origin, Vector3 position, float sqrViewMagnitude)
+        {
+            return Vector3.SqrMagnitude(position - origin) < sqrViewMagnitude;
         }
 
         // returns true if targetTransform is in a line of sight of transform
