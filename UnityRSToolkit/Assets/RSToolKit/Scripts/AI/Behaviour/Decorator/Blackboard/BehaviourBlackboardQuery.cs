@@ -10,7 +10,7 @@ namespace RSToolkit.AI.Behaviour.Decorator.Blackboard
         private System.Func<bool> m_query;
         
 
-        public BehaviourBlackboardQuery(BehaviourBlackboard blackboard, string[] observerkeys, StopRule stoprule, System.Func<bool> query) : base("BlackboardQuery", blackboard, stoprule)
+        public BehaviourBlackboardQuery(BehaviourBlackboard blackboard, string[] observerkeys, BehaviourNode decoratee, AbortRule stoprule, System.Func<bool> query) : base("BlackboardQuery", blackboard, decoratee, stoprule)
         {
             m_observerkeys = observerkeys;
             m_query = query;

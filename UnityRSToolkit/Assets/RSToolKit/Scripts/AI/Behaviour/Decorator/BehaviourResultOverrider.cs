@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RSToolkit.AI.Behaviour.Decorator
 {
-    public class BehaviourResultOverrider : BehaviourNode
+    public class BehaviourResultOverrider : BehaviourParentNode
     {
         bool m_result;
         public BehaviourResultOverrider(bool result) : base("ResultOverrider", NodeType.DECORATOR)

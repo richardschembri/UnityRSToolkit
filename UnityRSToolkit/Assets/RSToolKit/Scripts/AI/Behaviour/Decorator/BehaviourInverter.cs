@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RSToolkit.AI.Behaviour.Decorator
 {
-    public class BehaviourInverter : BehaviourNode
+    public class BehaviourInverter : BehaviourParentNode
     {
         public BehaviourInverter(BehaviourNode child) : base("Inverter", NodeType.DECORATOR)
         {

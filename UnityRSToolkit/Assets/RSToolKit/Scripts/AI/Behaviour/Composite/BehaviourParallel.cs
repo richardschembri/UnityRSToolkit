@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace RSToolkit.AI.Behaviour
 {
-    public class BehaviourParallel : BehaviourNode
+    public class BehaviourParallel : BehaviourParentNode
     {
         public enum StopCondition // Policy
         {
@@ -49,6 +49,16 @@ namespace RSToolkit.AI.Behaviour
         private void OnStopped_Listener(bool success)
         {
 
+        }
+
+
+        protected void StartChildren()
+        {
+            // Result = null;
+            for (int i = 0; i < Children.Count; i++)
+            {
+                Children[i].StartNode();
+            }
         }
 
         private void OnStopping_Listener()

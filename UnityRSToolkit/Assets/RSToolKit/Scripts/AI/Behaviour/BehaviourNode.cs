@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
 using UnityEngine.Events;
-using RSToolkit.Helpers;
 
 namespace RSToolkit.AI.Behaviour
 {
-    public abstract class BehaviourNode
+    public class BehaviourNode
     {
         public enum NodeState
         {
@@ -69,13 +68,13 @@ namespace RSToolkit.AI.Behaviour
             }
         }
 
-        public static float ElipsedTime { get; private set; } = 0f;
+        public static float ElapsedTime { get; private set; } = 0f;
         public static void UpdateTime(float deltaTime)
         {
-            ElipsedTime += deltaTime;
+            ElapsedTime += deltaTime;
         }
 
-        protected class NodeTimer
+        public class NodeTimer
         {
             public double TimeOutIn { get; private set; }
 
@@ -98,7 +97,15 @@ namespace RSToolkit.AI.Behaviour
             }
             public void ResetTimeout()
             {
-                TimeOutAt = BehaviourNode.ElipsedTime + TimeOutIn;
+                TimeOutAt = BehaviourNode.ElapsedTime + TimeOutIn;
+            }
+
+            public bool IsActive
+            {
+                get
+                {
+                    return TimeOutAt < BehaviourNode.ElapsedTime;
+                }
             }
 
             public bool Update()
@@ -108,7 +115,7 @@ namespace RSToolkit.AI.Behaviour
                     return false;
                 }
 
-                if(TimeOutAt < BehaviourNode.ElipsedTime)
+                if(IsActive)
                 {
                     TimeoutAction.Invoke();
                     TimeOutCount++;
@@ -122,29 +129,25 @@ namespace RSToolkit.AI.Behaviour
 
         public NodeState State { get; protected set; } = NodeState.INACTIVE;
         public bool? Result { get; private set; } = null;
-        public string Name { get; protected set; }
-
+        //public string Name { get; protected set; }
+        public string Name { get; set; }
         //public BehaviourNode Root { get; set; }
         public NodeType Type { get; private set; }
-        public BehaviourNode Parent { get; private set; }
-        private List<BehaviourNode> m_children = new List<BehaviourNode>();
-        public ReadOnlyCollection<BehaviourNode> Children
+        public BehaviourParentNode Parent { get; private set; }
+        
+        private List<NodeTimer> m_timers = new List<NodeTimer>();
+        public ReadOnlyCollection<NodeTimer> Timers
         {
             get
             {
-                return m_children.AsReadOnly();
+                return m_timers.AsReadOnly();
             }
         }
-        private List<NodeTimer> m_timers = new List<NodeTimer>();
         public UnityEvent OnStarted { get; private set; } = new UnityEvent();
         public UnityEvent OnStopping { get; private set; } = new UnityEvent();
         public class OnStoppedEvent : UnityEvent<bool> { };
         public OnStoppedEvent OnStopped { get; private set; } = new OnStoppedEvent();
-        public class OnChildNodeStoppedEvent : UnityEvent<BehaviourNode, bool> { }
-        public OnChildNodeStoppedEvent OnChildNodeStopped { get; private set; } = new OnChildNodeStoppedEvent();
-        public class OnChildNodeAddRemoveEvent : UnityEvent<BehaviourNode, BehaviourNode> { } // parent, child
-        public OnChildNodeAddRemoveEvent OnChildNodeAdded = new OnChildNodeAddRemoveEvent();
-        public OnChildNodeAddRemoveEvent OnChildNodeRemoved = new OnChildNodeAddRemoveEvent();
+        
 
 
         public BehaviourNode GetRoot()
@@ -163,7 +166,7 @@ namespace RSToolkit.AI.Behaviour
             }
         }
 
-        public void SetParent(BehaviourNode parent)
+        public virtual void SetParent(BehaviourParentNode parent)
         {
             if (parent != null)
             {
@@ -178,33 +181,7 @@ namespace RSToolkit.AI.Behaviour
             }
 
             this.Parent = parent;
-            this.Parent?.AddChild(this);
         }
-
-        public void AddChild(BehaviourNode child)
-        {
-            switch (Type)
-            {
-                case NodeType.TASK:
-                    throw new System.Exception("Tasks don`t have children");
-                    break;
-                case NodeType.ROOT:
-                case NodeType.DECORATOR:
-                    if(Children.Count > 0)
-                    {
-                        throw new System.Exception("Too many children");
-                    }
-                    break;
-
-            }
-            if (!m_children.Contains(child))
-            {
-                m_children.Add(child);
-                child.SetParent(this);
-                OnChildNodeAdded.Invoke(this, child);
-            } 
-        }
-
 
         protected NodeTimer AddTimer(float time, float randomVariance, int repeat, System.Action timeoutAction)
         {
@@ -221,13 +198,6 @@ namespace RSToolkit.AI.Behaviour
         protected void RemoveTimer(NodeTimer to_remove)
         {
             m_timers.Remove(to_remove);
-        }
-
-        public void RemoveChild(BehaviourNode child)
-        {
-            child.SetParent(null);
-            m_children.Remove(child);
-            OnChildNodeRemoved.Invoke(this, child);
         }
 
         public void StartNode()
@@ -273,43 +243,7 @@ namespace RSToolkit.AI.Behaviour
             }
         }
 
-        public void UpdateRecursively()
-        {
-            if (State == NodeState.INACTIVE)
-            {
-                return;
-            }
-            for(int i = 0; i < Children.Count; i++)
-            {
-                if(Children[i].State != NodeState.INACTIVE)
-                {
-                    Children[i].UpdateRecursively();
-                }
-            }
-            Update();
-        }
-        
-        protected void ShuffleChildren()
-        {
-            m_children.Shuffle();            
-        }
 
-        protected void StartChildren()
-        {
-            Result = null;
-            for (int i = 0; i < Children.Count; i++)
-            {
-                Children[i].StartNode();
-            }
-        }
-
-        protected void StopChildren()
-        {
-            for (int i = 0; i < Children.Count; i++)
-            {
-                Children[i].RequestStopNode();
-            }
-        }
 
 #if UNITY_EDITOR
         public BehaviourDebugTools DebugTools { get; protected set; }
@@ -320,4 +254,6 @@ namespace RSToolkit.AI.Behaviour
         }
 #endif
     }
+
+
 }

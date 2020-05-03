@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RSToolkit.AI.Behaviour.Decorator
 {
-    public class BehaviourService : BehaviourNode
+    public class BehaviourService : BehaviourParentNode
     {
         private System.Action m_serviceAction;
 

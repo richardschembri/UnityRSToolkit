@@ -90,5 +90,11 @@
             return self.position +  new Vector3(direction.x, 0, direction.y) * distance;
         }
 
+        public static T GetRandomEnumValue<T>()
+        {
+            var v = Enum.GetValues(typeof(T));
+            return (T)v.GetValue(rnd.Next(v.Length));
+        }
+
     }
 }

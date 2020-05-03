@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 #if UNITY_EDITOR
 namespace RSToolkit.AI.Behaviour
@@ -22,6 +23,76 @@ namespace RSToolkit.AI.Behaviour
         public int StoppedCallCount { get; private set; }
         public string GUIlabel;
         private string m_GUItag;
+
+        public int GetTotalStartCallCount()
+        {
+            int result = StartCallCount;
+            var nodeparent = m_node as BehaviourParentNode;
+            if(nodeparent != null)
+            {
+                for(int i = 0; i < nodeparent.Children.Count; i++)
+                {
+                    result += nodeparent.Children[i].DebugTools.GetTotalStartCallCount();
+                }
+            }
+            return result;
+        }
+
+        public int GetTotalStopCallCount()
+        {
+            int result = StopCallCount;
+            var nodeparent = m_node as BehaviourParentNode;
+            if (nodeparent != null)
+            {
+                for (int i = 0; i < nodeparent.Children.Count; i++)
+                {
+                    result += nodeparent.Children[i].DebugTools.GetTotalStopCallCount();
+                }
+            }
+            return result;
+        }
+
+        public int GetTotalStoppedCallCount()
+        {
+            int result = StoppedCallCount;
+            var nodeparent = m_node as BehaviourParentNode;
+            if (nodeparent != null)
+            {
+                for (int i = 0; i < nodeparent.Children.Count; i++)
+                {
+                    result += nodeparent.Children[i].DebugTools.GetTotalStoppedCallCount();
+                }
+            }
+            return result;
+        }
+
+        public int GetTotalTimers()
+        {
+            int result = m_node.Timers.Count;
+            var nodeparent = m_node as BehaviourParentNode;
+            if (nodeparent != null)
+            {
+                for (int i = 0; i < nodeparent.Children.Count; i++)
+                {
+                    result += nodeparent.Children[i].DebugTools.GetTotalTimers();
+                }
+            }
+            return result;
+        }
+
+        public int GetTotalActiveTimers()
+        {
+            int result = m_node.Timers.Where(t => t.IsActive).Count();
+            var nodeparent = m_node as BehaviourParentNode;
+            if (nodeparent != null)
+            {
+                for (int i = 0; i < nodeparent.Children.Count; i++)
+                {
+                    result += nodeparent.Children[i].DebugTools.GetTotalActiveTimers();
+                }
+            }
+            return result;
+        }
 
         public bool GUIcollapse;
         public string GUItag
@@ -140,6 +211,11 @@ namespace RSToolkit.AI.Behaviour
         {
             float timeElapsed = GetTimeElapsedFromStopRequested();
             return timeElapsed > 0.25f && timeElapsed < 0.1f && m_node.State == BehaviourNode.NodeState.INACTIVE;
+        }
+
+        public void ToggleCollapse()
+        {
+            GUIcollapse = !GUIcollapse;
         }
     }
 }

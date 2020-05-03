@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RSToolkit.AI.Behaviour
 {
-    public class BehaviourRandom : BehaviourNode
+    public class BehaviourRandom : BehaviourParentNode
     {
         private float m_probability;
 

@@ -20,6 +20,7 @@ namespace RSToolkit.AI
         public bool randomizeWait = false;
         public bool DebugMode = false;
         public float movementTimeout = 5f;
+        public bool AutoWander = true;
 
         private float GetWaitTime()
         {
@@ -94,7 +95,8 @@ namespace RSToolkit.AI
             }
             else if (BotComponent.GetMovementState() == BotLocomotion.LocomotionState.NotMoving)
             {
-                m_FSM.ChangeState(WanderStates.FindNewPosition);
+
+                m_FSM.ChangeState(AutoWander ? WanderStates.FindNewPosition : WanderStates.NotWandering);
             }
             
         }

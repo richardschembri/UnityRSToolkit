@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RSToolkit.AI.Behaviour.Decorator
 {
-    public class BehaviourRepeater : BehaviourNode
+    public class BehaviourRepeater : BehaviourParentNode
     {
         uint m_totalLoops = 0;
         uint m_loopCount = 0;

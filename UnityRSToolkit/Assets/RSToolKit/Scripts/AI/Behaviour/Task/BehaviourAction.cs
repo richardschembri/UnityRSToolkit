@@ -7,6 +7,8 @@ namespace RSToolkit.AI.Behaviour.Task
 
     public class BehaviourAction : BehaviourNode
     {
+        private const string NODE_NAME = "Action";
+
         public enum ActionResult
         {
             SUCCESS,
@@ -35,23 +37,23 @@ namespace RSToolkit.AI.Behaviour.Task
             m_actionResult = ActionResult.PROGRESS;
         }
         #region Constructors
-        public BehaviourAction(System.Func<bool> singleFrameFunc) : base("Action", NodeType.TASK)
+        public BehaviourAction(System.Func<bool> singleFrameFunc, string name = NODE_NAME) : base(name, NodeType.TASK)
         {
             m_singleFrameFunc = singleFrameFunc;
             Init();
         }
-        public BehaviourAction(System.Func<bool, ActionResult> multiFrameFunc) : base("Action", NodeType.TASK)
+        public BehaviourAction(System.Func<bool, ActionResult> multiFrameFunc, string name = NODE_NAME) : base(name, NodeType.TASK)
         {
             m_multiFrameFunc = multiFrameFunc;
             Init();
         }
-        public BehaviourAction(System.Func<ActionRequest, ActionResult> multiFrameRequestFunc) : base("Action", NodeType.TASK)
+        public BehaviourAction(System.Func<ActionRequest, ActionResult> multiFrameRequestFunc, string name = NODE_NAME) : base(name, NodeType.TASK)
         {
             m_multiFrameRequestFunc = multiFrameRequestFunc;
             Init();
         }
 
-        public BehaviourAction(System.Action action) : base("Action", NodeType.TASK)
+        public BehaviourAction(System.Action action, string name = NODE_NAME) : base(name, NodeType.TASK)
         {
             m_singleFrameAction = action;
             Init();

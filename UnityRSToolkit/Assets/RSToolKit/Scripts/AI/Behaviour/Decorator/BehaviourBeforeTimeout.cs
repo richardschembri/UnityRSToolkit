@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace RSToolkit.AI.Behaviour
 {
-    public class BehaviourBeforeTimeout : BehaviourNode
+    public class BehaviourBeforeTimeout : BehaviourParentNode
     {
         private float m_limit = 0.0f;
         private float m_randomVariation;

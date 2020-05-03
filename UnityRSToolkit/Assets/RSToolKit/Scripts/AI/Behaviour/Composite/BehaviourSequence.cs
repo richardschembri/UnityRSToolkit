@@ -20,11 +20,11 @@ namespace RSToolkit.AI.Behaviour.Composite
         {
             if (success)
             {
-                OnStopped.Invoke(true);
+                ProcessChildNodeSequence(); 
             }
             else
             {
-                ProcessChildNodeSequence();
+                OnStopped.Invoke(false);
             }
         }
 #if UNITY_EDITOR

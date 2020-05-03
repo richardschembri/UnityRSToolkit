@@ -7,7 +7,7 @@ namespace RSToolkit.AI.Behaviour.Decorator.Blackboard
     public abstract class BehaviourBlackboardObserver : BehaviourObserver
     {
         protected BehaviourBlackboard blackboard;
-        public BehaviourBlackboardObserver(string name, BehaviourBlackboard blackboard, StopRule stopRule) :base(name, stopRule)
+        public BehaviourBlackboardObserver(string name, BehaviourBlackboard blackboard, BehaviourNode decoratee, AbortRule stopRule) :base(name, decoratee, stopRule)
         {
             this.blackboard = blackboard;
         }

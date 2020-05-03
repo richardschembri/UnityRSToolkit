@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RSToolkit.AI.Behaviour
 {
-    public class BehaviourCooldown : BehaviourNode
+    public class BehaviourCooldown : BehaviourParentNode
     {
         private bool m_startAfterChild = false;
         private bool m_resetOnFailiure = false;
@@ -34,13 +34,26 @@ namespace RSToolkit.AI.Behaviour
         }
 
         #region Constructors
+
         public BehaviourCooldown(float cooldownTime, float randomVariation, bool startAfterChild, bool resetOnFailiure, bool failOnCooldown) : base("Cooldown", NodeType.DECORATOR)
         {
             Init(cooldownTime, cooldownTime, startAfterChild, resetOnFailiure, failOnCooldown);
         }
 
+        public BehaviourCooldown(float cooldownTime, BehaviourNode decoratee, float randomVariation, bool startAfterChild, bool resetOnFailiure, bool failOnCooldown) : base("Cooldown", NodeType.DECORATOR)
+        {
+            AddChild(decoratee);
+            Init(cooldownTime, cooldownTime, startAfterChild, resetOnFailiure, failOnCooldown);
+        }
+        
         public BehaviourCooldown(float cooldownTime, bool startAfterChild, bool resetOnFailiure, bool failOnCooldown) : base("Cooldown", NodeType.DECORATOR)
         {
+            Init(cooldownTime, null, startAfterChild, resetOnFailiure, failOnCooldown);
+        }
+
+        public BehaviourCooldown(float cooldownTime, BehaviourNode decoratee, bool startAfterChild, bool resetOnFailiure, bool failOnCooldown) : base("Cooldown", NodeType.DECORATOR)
+        {
+            AddChild(decoratee);
             Init(cooldownTime, null, startAfterChild, resetOnFailiure, failOnCooldown);
         }
 
@@ -49,8 +62,20 @@ namespace RSToolkit.AI.Behaviour
             Init(cooldownTime, randomVariation, startAfterChild, resetOnFailiure);
         }
 
+        public BehaviourCooldown(float cooldownTime, BehaviourNode decoratee, float randomVariation, bool startAfterChild, bool resetOnFailiure) : base("Cooldown", NodeType.DECORATOR)
+        {
+            AddChild(decoratee);
+            Init(cooldownTime, randomVariation, startAfterChild, resetOnFailiure);
+        }
+
         public BehaviourCooldown(float cooldownTime, bool startAfterChild, bool resetOnFailiure) : base("Cooldown", NodeType.DECORATOR)
         {
+            Init(cooldownTime, null, startAfterChild, resetOnFailiure);
+        }
+
+        public BehaviourCooldown(float cooldownTime, BehaviourNode decoratee, bool startAfterChild, bool resetOnFailiure) : base("Cooldown", NodeType.DECORATOR)
+        {
+            AddChild(decoratee);
             Init(cooldownTime, null, startAfterChild, resetOnFailiure);
         }
 
@@ -59,10 +84,23 @@ namespace RSToolkit.AI.Behaviour
             Init(cooldownTime, randomVariation);
         }
 
+        public BehaviourCooldown(float cooldownTime, BehaviourNode decoratee, float randomVariation) : base("Cooldown", NodeType.DECORATOR)
+        {
+            AddChild(decoratee);
+            Init(cooldownTime, randomVariation);
+        }
+
         public BehaviourCooldown(float cooldownTime) : base("Cooldown", NodeType.DECORATOR)
         {
             Init(cooldownTime);
         }
+
+        public BehaviourCooldown(float cooldownTime, BehaviourNode decoratee) : base("Cooldown", NodeType.DECORATOR)
+        {
+            AddChild(decoratee);
+            Init(cooldownTime);
+        }
+
         #endregion Constructors
 
         private void OnTimeout()

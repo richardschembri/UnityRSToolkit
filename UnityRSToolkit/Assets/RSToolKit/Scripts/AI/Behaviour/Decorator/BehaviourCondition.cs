@@ -8,22 +8,27 @@ namespace RSToolkit.AI.Behaviour.Decorator
 {
     public class BehaviourCondition : BehaviourObserver 
     {
+        private const string NODE_NAME = "Condition";
         private Func<bool> m_isConditionMetFunc;
         private float m_checkInterval;
         private float m_checkVariance;
         private NodeTimer m_conditionTimer;
 
-        public BehaviourCondition(Func<bool> isConditionMetFunc) : base("Condition", StopRule.NONE)
+        private void Init(Func<bool> isConditionMetFunc, float checkInterval = 0.0f, float checkVariance = 0.0f)
         {
-            m_isConditionMetFunc = isConditionMetFunc ;
-            m_checkInterval = 0.0f;
-            m_checkVariance = 0.0f;
-        }
-        public BehaviourCondition(Func<bool> isConditionMetFunc, float checkInterval , float checkVariance ) : base("Condition", StopRule.NONE)
-        {
-            m_isConditionMetFunc = isConditionMetFunc ;
+            m_isConditionMetFunc = isConditionMetFunc;
             m_checkInterval = checkInterval;
             m_checkVariance = checkVariance;
+        }
+
+        public BehaviourCondition(Func<bool> isConditionMetFunc, BehaviourNode decoratee, AbortRule abortRule = AbortRule.NONE) : base(NODE_NAME, decoratee, abortRule)
+        {
+            Init(isConditionMetFunc);
+        }
+        
+        public BehaviourCondition(Func<bool> isConditionMetFunc, float checkInterval, float checkVariance, BehaviourNode decoratee, AbortRule abortRule = AbortRule.NONE) : base(NODE_NAME, decoratee, abortRule)
+        {
+            Init(isConditionMetFunc, checkInterval, checkVariance);
         }
 
         protected override void StartObserving()

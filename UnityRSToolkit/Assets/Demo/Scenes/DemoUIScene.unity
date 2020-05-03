@@ -27663,6 +27663,7 @@ GameObject:
   - component: {fileID: 6024927046724291308}
   - component: {fileID: 6024927046724291299}
   - component: {fileID: 6024927046724291300}
+  - component: {fileID: 6024927046724291301}
   m_Layer: 5
   m_Name: UI Page Canvas
   m_TagString: Untagged
@@ -27700,6 +27701,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ExitKey: 27
+--- !u!114 &6024927046724291301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6024927046724291298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f56c4b1748ed4c4aa226bbc85ca26bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TimeoutSeconds: 60
+  OnTimeout:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1072080185}
+        m_MethodName: NavigateTo
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  DebugMode: 0
 --- !u!114 &6024927046724291308
 MonoBehaviour:
   m_ObjectHideFlags: 0

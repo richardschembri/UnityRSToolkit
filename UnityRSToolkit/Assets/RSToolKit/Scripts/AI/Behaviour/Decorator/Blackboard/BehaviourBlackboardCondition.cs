@@ -17,12 +17,12 @@ namespace RSToolkit.AI.Behaviour.Decorator.Blackboard
             ConditionValue = conditionvalue;
         }
 
-        public BehaviourBlackboardCondition(BehaviourBlackboard blackboard, string key, Operator conditionoperator, object conditionvalue, StopRule stoprule) : base("BlackboardCondition", blackboard, stoprule)
+        public BehaviourBlackboardCondition(BehaviourBlackboard blackboard, string key, Operator conditionoperator, object conditionvalue, BehaviourNode decoratee, AbortRule stoprule) : base("BlackboardCondition", blackboard, decoratee, stoprule)
         {
             Init(key, conditionoperator, conditionvalue);
         }
 
-        public BehaviourBlackboardCondition(BehaviourBlackboard blackboard, string key, Operator conditionoperator, StopRule stoprule) : base("BlackboardCondition", blackboard, stoprule)
+        public BehaviourBlackboardCondition(BehaviourBlackboard blackboard, string key, Operator conditionoperator, BehaviourNode decoratee, AbortRule stoprule) : base("BlackboardCondition", blackboard, decoratee, stoprule)
         {
             Init(key, conditionoperator);
         }

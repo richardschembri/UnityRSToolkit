@@ -5,7 +5,7 @@ using RSToolkit.Helpers;
 
 namespace RSToolkit.AI.Behaviour.Composite
 {
-    public abstract class BehaviourSequenceSelectBase : BehaviourNode
+    public abstract class BehaviourSequenceSelectBase : BehaviourParentNode
     {
         private int m_index = -1;
 
@@ -67,13 +67,17 @@ namespace RSToolkit.AI.Behaviour.Composite
         public virtual void StopNextChildInPriorityTo(BehaviourNode child, bool restart_child)
         {
             int next_child_index = Children.IndexOf(child) + 1;
-            if(next_child_index < Children.Count)
+
+            //while(next_child_index < Children.Count)
+            for (int i = next_child_index; i < Children.Count; i++)
             {
-                if(Children[next_child_index].State == NodeState.ACTIVE)
+                if(Children[i].State == NodeState.ACTIVE)
                 {
-                    Children[next_child_index].RequestStopNode();
-                    m_index = restart_child ? next_child_index - 1 : Children.Count;
+                    Children[i].RequestStopNode();
+                    m_index = restart_child ? i - 1 : Children.Count;
+                    return;
                 }
+                
             }
         }
     }

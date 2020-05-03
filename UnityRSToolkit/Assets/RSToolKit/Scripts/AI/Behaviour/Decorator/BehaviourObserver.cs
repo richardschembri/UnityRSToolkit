@@ -5,33 +5,58 @@ using RSToolkit.AI.Behaviour.Composite;
 
 namespace RSToolkit.AI.Behaviour.Decorator
 {
-    public abstract class BehaviourObserver : BehaviourNode
+    public abstract class BehaviourObserver : BehaviourParentNode
     {
-        public enum StopRule
+        public enum AbortRule
         {
+            /// <summary>
+            /// Check it's condition once it is started and will never stop any running nodes
+            /// </summary>
             NONE,
+            /// <summary>
+            /// Check it's condition once it is started and if it is met, it will observe the 
+            /// blackboard for changes. Once the condition is no longer met, it will stop itself 
+            /// allowing the parent composite to proceed with it's next node.
+            /// </summary>
             SELF,
+            /// <summary>
+            /// Check it's condition once it is started and if it's not met, it will observe 
+            /// the blackboard for changes. Once the condition is met, it will stop the 
+            /// lower priority node allowing the parent composite to proceed with it's next node.
+            /// </summary>
             LOWER_PRIORITY,
+            /// <summary>
+            /// Will stop both: self and lower priority nodes
+            /// </summary>
             BOTH,
+            /// <summary>
+            /// Will check it's condition once it is started and if it's not met, it will observe 
+            /// the blackboard for changes. Once the condition is met, it will stop the 
+            /// lower priority node and order the parent composite to restart the Decorator 
+            /// immediately.
+            /// </summary>
             LOWER_PRIORITY_RESTART,
+            /// <summary>
+            /// Will check it's condition once it is started and if it's not met, it will observe 
+            /// the blackboard for changes. Once the condition is met, it will stop the lower priority 
+            /// node and order the parent composite to restart the Decorator immediately. 
+            /// As in BOTH it will also stop itself as soon as the condition is no longer met.
+            /// </summary>
             RESTART
         }
 
         private bool m_isObserving;
-        private StopRule m_stoprule;
-        public BehaviourObserver(string name, StopRule stoprule) : base(name, NodeType.DECORATOR)
+        private AbortRule m_abortRule;
+        private bool m_initParent = false;
+        public BehaviourObserver(string name, BehaviourNode decoratee, AbortRule abortRule) : base(name, NodeType.DECORATOR)
         {
             OnStarted.AddListener(OnStarted_Listener);
             OnStopping.AddListener(OnStopping_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
 
-            if(Parent.Type == NodeType.COMPOSITE)
-            {
-                Parent.OnStopped.AddListener(OnCompositeParentStopped_Listener);
-            }
-
-            m_stoprule = stoprule;
+            m_abortRule = abortRule;
             m_isObserving = false;
+            AddChild(decoratee);
         }
         protected abstract void StartObserving();
 
@@ -40,12 +65,22 @@ namespace RSToolkit.AI.Behaviour.Decorator
         protected abstract bool IsConditionMet();
         private void OnStarted_Listener()
         {
-            if(m_stoprule != StopRule.NONE)
+            // To refactor
+            if (!m_initParent)
             {
-                if (m_isObserving)
+                if (Parent.Type == NodeType.COMPOSITE)
                 {
-                    m_isObserving = false;
-                    StopObserving();
+                    Parent.OnStopped.AddListener(OnCompositeParentStopped_Listener);
+                }
+                m_initParent = true;
+            }
+
+            if(m_abortRule != AbortRule.NONE)
+            {
+                if (!m_isObserving)
+                {
+                    m_isObserving = true;
+                    StartObserving();
                 }
             }
             if (!IsConditionMet())
@@ -64,7 +99,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
         }
         private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
         {
-            if(m_stoprule == StopRule.NONE || m_stoprule == StopRule.SELF)
+            if(m_abortRule == AbortRule.NONE || m_abortRule == AbortRule.SELF)
             {
                 if (m_isObserving)
                 {
@@ -85,7 +120,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
 
         protected void Evaluate()
         {
-            if (m_stoprule == StopRule.LOWER_PRIORITY || m_stoprule == StopRule.BOTH || m_stoprule == StopRule.RESTART || m_stoprule == StopRule.LOWER_PRIORITY_RESTART)
+            if (m_abortRule == AbortRule.LOWER_PRIORITY || m_abortRule == AbortRule.BOTH || m_abortRule == AbortRule.RESTART || m_abortRule == AbortRule.LOWER_PRIORITY_RESTART)
             {
                 BehaviourNode parentNode = this.Parent;
                 BehaviourNode childNode = this;
@@ -94,7 +129,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
                     childNode = Parent;
                     parentNode = parentNode.Parent;
                 }
-                if(m_stoprule == StopRule.RESTART || m_stoprule == StopRule.LOWER_PRIORITY_RESTART)
+                if(m_abortRule == AbortRule.RESTART || m_abortRule == AbortRule.LOWER_PRIORITY_RESTART)
                 {
                     if (m_isObserving)
                     {
@@ -104,7 +139,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
                 }
                 if(parentNode is BehaviourSequenceSelectBase)
                 {
-                    ((BehaviourSequenceSelectBase)parentNode).StopNextChildInPriorityTo(childNode, m_stoprule == StopRule.RESTART || m_stoprule == StopRule.LOWER_PRIORITY_RESTART);
+                    ((BehaviourSequenceSelectBase)parentNode).StopNextChildInPriorityTo(childNode, m_abortRule == AbortRule.RESTART || m_abortRule == AbortRule.LOWER_PRIORITY_RESTART);
                 }else if(parentNode is BehaviourParallel)
                 {
                     ((BehaviourParallel)parentNode).RestartChild(childNode);

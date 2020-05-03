@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace RSToolkit.AI.Behaviour.Decorator
 {
-    public class BehaviourWaitForCondition : BehaviourNode
+    public class BehaviourWaitForCondition : BehaviourParentNode
     {
         private Func<bool> m_isConditionMetFunc;
         private float m_checkInterval;

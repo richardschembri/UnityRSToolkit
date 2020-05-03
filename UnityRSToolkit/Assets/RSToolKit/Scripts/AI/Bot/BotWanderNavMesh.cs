@@ -33,7 +33,7 @@ namespace RSToolkit.AI
         protected override Vector3 GetNewWanderPosition(float radius)
         {
             Vector3 result;
-            NavMeshHelpers.AttemptRandomNavPosInSphere(transform.position, radius, out result, BotNavMeshComponent.BotComponent.SqrPersonalSpaceMagnitude); // .RandomNavPosInSphere(transform.position, radius);
+            NavMeshHelpers.AttemptRandomNavPosInSphere(transform.position, radius, out result, BotNavMeshComponent.BotComponent.SqrInteractionMagnitude); //.SqrPersonalSpaceMagnitude); // .RandomNavPosInSphere(transform.position, radius);
             return result;
         }
 

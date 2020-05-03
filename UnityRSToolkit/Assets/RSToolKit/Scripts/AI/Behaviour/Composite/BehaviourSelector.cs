@@ -21,11 +21,11 @@ namespace RSToolkit.AI.Behaviour.Composite
         {
             if (success)
             {
-                ProcessChildNodeSequence();
+                OnStopped.Invoke(true);
             }
             else
             {
-                OnStopped.Invoke(false);
+                ProcessChildNodeSequence();
             }
         }
 

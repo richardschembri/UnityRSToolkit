@@ -156,7 +156,7 @@ namespace RSToolkit.AI
             {
                 MoveTowardsTarget(m_fullspeed);
             }
-            CharacterAnimParams.TrySetSpeed(BotComponent.AnimatorComponent, CurrentSpeed);
+            
         }
 
         protected virtual void NotMoving_Enter()
@@ -172,6 +172,11 @@ namespace RSToolkit.AI
                 return true;
             }
             return false;
+        }
+
+        protected virtual void Update()
+        {
+            CharacterAnimParams.TrySetSpeed(BotComponent.AnimatorComponent, CurrentSpeed);
         }
 
     }

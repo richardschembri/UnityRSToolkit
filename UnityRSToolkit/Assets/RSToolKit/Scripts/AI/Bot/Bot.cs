@@ -329,7 +329,7 @@ namespace RSToolkit.AI
 
         public bool CanInteractWith(Bot target)
         {
-            return target.FocusedOnTransform == transform || target.FocusedOnTransform == null && !target.NoticedTransforms.Contains(transform);
+            return target.FocusedOnTransform == transform || target.FocusedOnTransform == null; // && !target.NoticedTransforms.Contains(transform);
         }
 
         public bool Wander()
@@ -356,6 +356,11 @@ namespace RSToolkit.AI
         public bool IsWandering()
         {
             return m_currentBotWanderComponent.IsWandering();
+        }
+
+        public BotWander.WanderStates GetWanderState()
+        {
+            return m_currentBotWanderComponent.CurrentState;
         }
 
         public void MoveTowardsPosition(bool fullspeed = true)
