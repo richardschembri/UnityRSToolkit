@@ -153,9 +153,11 @@ namespace RSToolkit.AI.Behaviour
 
             switch (node.Type)
             {
+                /*
                 case BehaviourNode.NodeType.ROOT:
                     NodeColor = ROOT_COLOR;
                     break;
+                    */
                 case BehaviourNode.NodeType.COMPOSITE:
                     NodeColor = COMPOSITE_COLOR;
                     break;
@@ -165,6 +167,10 @@ namespace RSToolkit.AI.Behaviour
                 case BehaviourNode.NodeType.TASK:
                     NodeColor = TASK_COLOR;
                     break;
+            }
+            if(m_node is BehaviourRootNode)
+            {
+                NodeColor = ROOT_COLOR;
             }
 
             node.OnStarted.AddListener(OnStarted_Listener);

@@ -162,7 +162,7 @@ namespace RSToolkit.AI.Behaviour
                 {
                     node.RequestStopNode();
                 }
-                else if (node.Type == BehaviourNode.NodeType.ROOT)
+                else if (node is BehaviourRootNode)
                 {
                     GUI.color = new Color(1f, 1f, 1f, 1f);
                     if (GUILayout.Button("start", EditorStyles.miniButton))

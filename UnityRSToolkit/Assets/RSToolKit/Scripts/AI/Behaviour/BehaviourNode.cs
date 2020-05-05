@@ -18,7 +18,7 @@ namespace RSToolkit.AI.Behaviour
         public enum NodeType
         {
             // Has one single child and is used to start or stop the whole behaviour tree
-            ROOT, 
+            //ROOT, 
             // has multiple children and is used to control which of it's children are executed
             COMPOSITE,
             // always has one child and is used either to modify the result of the child or do something else whilst executing the child.
@@ -93,7 +93,7 @@ namespace RSToolkit.AI.Behaviour
             }
             public void SetTimeoutIn(float timeOutIn, float randomVariance)
             {
-                    TimeOutIn = timeOutIn - randomVariance * 0.5f + randomVariance * UnityEngine.Random.value;
+                TimeOutIn = timeOutIn - randomVariance * 0.5f + randomVariance * UnityEngine.Random.value;
             }
             public void ResetTimeout()
             {
@@ -104,18 +104,23 @@ namespace RSToolkit.AI.Behaviour
             {
                 get
                 {
-                    return TimeOutAt < BehaviourNode.ElapsedTime;
+                    return Repeat == -1 || TimeOutCount <= Repeat;
                 }
+            }
+
+            public bool TimeElapsed()
+            {
+                return BehaviourNode.ElapsedTime >= TimeOutAt;
             }
 
             public bool Update()
             {
-                if(TimeOutCount > Repeat)
+                if(!IsActive)
                 {
                     return false;
                 }
 
-                if(IsActive)
+                if(TimeElapsed())
                 {
                     TimeoutAction.Invoke();
                     TimeOutCount++;
@@ -147,9 +152,8 @@ namespace RSToolkit.AI.Behaviour
         public UnityEvent OnStopping { get; private set; } = new UnityEvent();
         public class OnStoppedEvent : UnityEvent<bool> { };
         public OnStoppedEvent OnStopped { get; private set; } = new OnStoppedEvent();
-        
 
-
+        /*
         public BehaviourNode GetRoot()
         {
             if(Type == NodeType.ROOT)
@@ -165,15 +169,31 @@ namespace RSToolkit.AI.Behaviour
                 return Parent.GetRoot();
             }
         }
+        */
+        public BehaviourRootNode GetRoot()
+        {
+            if (this is BehaviourRootNode)
+            {
+                return this as BehaviourRootNode;
+            }
+            if (Parent == null)
+            {
+                return null;
+            }
+            else if (Parent is BehaviourRootNode)
+            {
+                return Parent as BehaviourRootNode;
+            }
+            else
+            {
+                return Parent.GetRoot();
+            }
+        }
 
         public virtual void SetParent(BehaviourParentNode parent)
         {
             if (parent != null)
             {
-                if (Type == NodeType.ROOT)
-                {
-                    throw new System.Exception("Root nodes cannot have parents");
-                }
                 if (parent.Type == NodeType.TASK)
                 {
                     throw new System.Exception("Tasks don`t have children");
@@ -235,12 +255,17 @@ namespace RSToolkit.AI.Behaviour
             Parent?.OnChildNodeStopped.Invoke(this, success);
         }
 
-        public virtual void Update()
+        public void UpdateTimers()
         {
-            for(int i = 0; i < m_timers.Count; i++)
+            for (int i = 0; i < m_timers.Count; i++)
             {
                 m_timers[i].Update();
             }
+        }
+
+        public virtual void Update()
+        {
+            
         }
 
 

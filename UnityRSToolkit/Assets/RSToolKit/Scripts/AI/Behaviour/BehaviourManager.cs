@@ -11,7 +11,7 @@ namespace RSToolkit.AI.Behaviour
     [DisallowMultipleComponent]
     public class BehaviourManager : MonoBehaviour
     {
-        private List<BehaviourParentNode> m_behaviourtrees = new List<BehaviourParentNode>();
+        private List<BehaviourRootNode> m_behaviourtrees = new List<BehaviourRootNode>();
         private List<BehaviourBlackboard> m_blackboards = new List<BehaviourBlackboard>();
 
         public BehaviourParentNode CurrentTree { get; private set; } = null;
@@ -23,9 +23,9 @@ namespace RSToolkit.AI.Behaviour
             m_behaviourtrees.Add(behaviourtree);
         }*/
 
-        public BehaviourParentNode AddBehaviourTree(string name)
+        public BehaviourRootNode AddBehaviourTree(string name)
         {
-            var behaviourtree = new BehaviourParentNode(name, BehaviourNode.NodeType.ROOT);
+            var behaviourtree = new BehaviourRootNode(name);
             m_behaviourtrees.Add(behaviourtree);
 
             if(CurrentTree == null)
@@ -36,7 +36,7 @@ namespace RSToolkit.AI.Behaviour
             return behaviourtree;
         }
 
-        public void RemoveBehaviourTree(BehaviourParentNode behaviourtree)
+        public void RemoveBehaviourTree(BehaviourRootNode behaviourtree)
         {
             m_behaviourtrees.Remove(behaviourtree);
             if(behaviourtree == CurrentTree)
@@ -66,7 +66,7 @@ namespace RSToolkit.AI.Behaviour
             }
         }
 
-        public bool SetCurrentTree(BehaviourParentNode behaviourtree, bool addIfNotPresent = true)
+        public bool SetCurrentTree(BehaviourRootNode behaviourtree, bool addIfNotPresent = true)
         {
             if (!m_behaviourtrees.Contains(behaviourtree))
             {
@@ -97,6 +97,7 @@ namespace RSToolkit.AI.Behaviour
 
         private void Update()
         {
+            BehaviourNode.UpdateTime(Time.deltaTime);
             CurrentTree?.UpdateRecursively();
             CurrentBlackboard?.Update();
         }

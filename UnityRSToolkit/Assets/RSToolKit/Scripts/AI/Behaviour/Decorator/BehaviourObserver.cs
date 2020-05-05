@@ -120,29 +120,40 @@ namespace RSToolkit.AI.Behaviour.Decorator
 
         protected void Evaluate()
         {
-            if (m_abortRule == AbortRule.LOWER_PRIORITY || m_abortRule == AbortRule.BOTH || m_abortRule == AbortRule.RESTART || m_abortRule == AbortRule.LOWER_PRIORITY_RESTART)
+            if (State == NodeState.ACTIVE && !IsConditionMet())
             {
-                BehaviourNode parentNode = this.Parent;
-                BehaviourNode childNode = this;
-                if(parentNode.Type == NodeType.COMPOSITE)
+                if (m_abortRule == AbortRule.SELF || m_abortRule == AbortRule.BOTH || m_abortRule == AbortRule.RESTART)
                 {
-                    childNode = Parent;
-                    parentNode = parentNode.Parent;
+                    this.RequestStopNode();
                 }
-                if(m_abortRule == AbortRule.RESTART || m_abortRule == AbortRule.LOWER_PRIORITY_RESTART)
+            }
+            else if (State != NodeState.ACTIVE && IsConditionMet())
+            {
+                if (m_abortRule == AbortRule.LOWER_PRIORITY || m_abortRule == AbortRule.BOTH || m_abortRule == AbortRule.RESTART || m_abortRule == AbortRule.LOWER_PRIORITY_RESTART)
                 {
-                    if (m_isObserving)
+                    BehaviourNode parentNode = this.Parent;
+                    BehaviourNode childNode = this;
+                    while(parentNode != null && parentNode.Type != NodeType.COMPOSITE)
                     {
-                        m_isObserving = false;
-                        StopObserving();
+                        childNode = parentNode;
+                        parentNode = parentNode.Parent;
                     }
-                }
-                if(parentNode is BehaviourSequenceSelectBase)
-                {
-                    ((BehaviourSequenceSelectBase)parentNode).StopNextChildInPriorityTo(childNode, m_abortRule == AbortRule.RESTART || m_abortRule == AbortRule.LOWER_PRIORITY_RESTART);
-                }else if(parentNode is BehaviourParallel)
-                {
-                    ((BehaviourParallel)parentNode).RestartChild(childNode);
+                    if (m_abortRule == AbortRule.RESTART || m_abortRule == AbortRule.LOWER_PRIORITY_RESTART)
+                    {
+                        if (m_isObserving)
+                        {
+                            m_isObserving = false;
+                            StopObserving();
+                        }
+                    }
+                    if (parentNode is BehaviourSequenceSelectBase)
+                    {
+                        ((BehaviourSequenceSelectBase)parentNode).StopNextChildInPriorityTo(childNode, m_abortRule == AbortRule.RESTART || m_abortRule == AbortRule.LOWER_PRIORITY_RESTART);
+                    }
+                    else if (parentNode is BehaviourParallel)
+                    {
+                        ((BehaviourParallel)parentNode).RestartChild(childNode);
+                    }
                 }
             }
         }

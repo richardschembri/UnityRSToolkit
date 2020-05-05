@@ -37,7 +37,6 @@ namespace RSToolkit.AI.Behaviour
                 case NodeType.TASK:
                     throw new System.Exception("Tasks don`t have children");
                     break;
-                case NodeType.ROOT:
                 case NodeType.DECORATOR:
                     if (Children.Count > 1)
                     {
@@ -83,6 +82,8 @@ namespace RSToolkit.AI.Behaviour
 
         public bool UpdateRecursively()
         {
+            UpdateTimers();
+            
             if (State == NodeState.INACTIVE)
             {
                 return false;
@@ -90,6 +91,7 @@ namespace RSToolkit.AI.Behaviour
             BehaviourParentNode nodeparent;
             for (int i = 0; i < Children.Count; i++)
             {
+                Children[i].UpdateTimers();
                 if (Children[i].State != NodeState.INACTIVE)
                 {
                     nodeparent = Children[i] as BehaviourParentNode;
