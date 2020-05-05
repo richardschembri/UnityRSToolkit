@@ -47,7 +47,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
 
         private bool m_isObserving;
         private AbortRule m_abortRule;
-        private bool m_initParent = false;
+        //private bool m_initParent = false;
         public BehaviourObserver(string name, BehaviourNode decoratee, AbortRule abortRule) : base(name, NodeType.DECORATOR)
         {
             OnStarted.AddListener(OnStarted_Listener);
@@ -66,6 +66,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
         private void OnStarted_Listener()
         {
             // To refactor
+            /*
             if (!m_initParent)
             {
                 if (Parent.Type == NodeType.COMPOSITE)
@@ -74,6 +75,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
                 }
                 m_initParent = true;
             }
+            */
 
             if(m_abortRule != AbortRule.NONE)
             {
@@ -99,17 +101,15 @@ namespace RSToolkit.AI.Behaviour.Decorator
         }
         private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
         {
-            if(m_abortRule == AbortRule.NONE || m_abortRule == AbortRule.SELF)
+            if((Parent.Type == NodeType.COMPOSITE && Parent.State != NodeState.ACTIVE) 
+                || m_abortRule == AbortRule.NONE || m_abortRule == AbortRule.SELF)
             {
-                if (m_isObserving)
-                {
-                    m_isObserving = false;
-                    StopObserving();
-                }
+                StopActivelyObserving();
             }
             OnStopped.Invoke(success);
         }
-        private void OnCompositeParentStopped_Listener(bool success)
+
+        private void StopActivelyObserving()
         {
             if (m_isObserving)
             {
@@ -117,6 +117,13 @@ namespace RSToolkit.AI.Behaviour.Decorator
                 StopObserving();
             }
         }
+
+        /*
+        private void OnCompositeParentStopped_Listener(bool success)
+        {
+            StopActiveObserver()
+        }
+        */
 
         protected void Evaluate()
         {

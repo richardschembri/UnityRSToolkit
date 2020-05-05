@@ -171,11 +171,11 @@ namespace RSToolkit.AI.Behaviour
                     }
                     GUI.color = new Color(1f, 1f, 1f, 0.3f);
                 }
-
-                // Draw Stats
-                GUILayout.Label((node.DebugTools.StoppedCallCount > 0 ? node.Result.ToString() : "")
-                    + $" | {node.DebugTools.StartCallCount} , {node.DebugTools.StopCallCount} , {node.DebugTools.StoppedCallCount}", m_smallTextStyle);
+              
             }
+            // Draw Stats
+            GUILayout.Label((node.DebugTools.StoppedCallCount > 0 ? node.Result.ToString() : "")
+                + $" | O:{node.DebugTools.StartCallCount} , x:{node.DebugTools.StopCallCount} , X:{node.DebugTools.StoppedCallCount}", m_smallTextStyle);
             EditorGUILayout.EndHorizontal();
 
             // Draw the lines
