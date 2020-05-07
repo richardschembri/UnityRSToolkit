@@ -29,7 +29,8 @@ namespace RSToolkit.AI.Behaviour.Task
         private System.Action m_singleFrameAction = null;
         private bool m_bWasBlocked = false;
 
-        private ActionResult m_actionResult = ActionResult.PROGRESS; 
+        private ActionResult m_actionResult = ActionResult.PROGRESS;
+        private ActionRequest m_actionRequest = ActionRequest.START;
         private void Init()
         {
             OnStarted.AddListener(OnStarted_Listener);
@@ -62,7 +63,14 @@ namespace RSToolkit.AI.Behaviour.Task
 
         private void OnStarted_Listener()
         {
+            m_bWasBlocked = false;
 
+            if (m_multiFrameRequestFunc != null)
+            {
+                m_actionRequest = ActionRequest.START;
+            }
+            
+            /*
             if (m_singleFrameAction != null)
             {
                 m_singleFrameAction .Invoke();
@@ -77,6 +85,74 @@ namespace RSToolkit.AI.Behaviour.Task
                 else if (m_multiFrameRequestFunc != null)
                 {
                     m_actionResult  = m_multiFrameRequestFunc.Invoke(ActionRequest.START);
+                }
+
+                if (m_actionResult == ActionResult.BLOCKED)
+                {
+                    m_bWasBlocked = true;
+                }
+                else if (m_actionResult != ActionResult.PROGRESS)
+                {
+                    OnStopped.Invoke(m_actionResult == ActionResult.SUCCESS);
+                }
+            }
+            else if (m_singleFrameFunc != null)
+            {
+                OnStopped.Invoke(m_singleFrameFunc.Invoke());
+            }
+            */
+        }
+        /*
+        public override void Update()
+        {
+            base.Update();
+            if (m_actionResult != ActionResult.FAILED && m_actionResult != ActionResult.SUCCESS)
+            {
+                if (m_multiFrameFunc != null)
+                {
+                    m_actionResult = m_multiFrameFunc.Invoke(false);
+                    if (m_actionResult != ActionResult.PROGRESS && m_actionResult != ActionResult.BLOCKED)
+                    {
+                        OnStopped.Invoke(m_actionResult == ActionResult.SUCCESS);
+                    }
+                }
+                else if (m_multiFrameRequestFunc != null)
+                {
+                    if (m_actionResult == ActionResult.BLOCKED)
+                    {
+                        m_bWasBlocked = true;
+                    }
+                    else if (m_actionResult == ActionResult.PROGRESS)
+                    {
+                        m_bWasBlocked = false;
+                    }
+                    else
+                    {
+                        OnStopped.Invoke(m_actionResult == ActionResult.SUCCESS);
+                    }
+                }
+            }
+        }
+        */
+
+        public override void Update()
+        {
+            base.Update();
+            if (m_singleFrameAction != null)
+            {
+                m_singleFrameAction.Invoke();
+                OnStopped.Invoke(true);
+            }
+            else if (m_multiFrameFunc != null || m_multiFrameRequestFunc != null)
+            {
+                if (m_multiFrameFunc != null)
+                {
+                    m_actionResult = m_multiFrameFunc.Invoke(false);
+                }
+                else if (m_multiFrameRequestFunc != null)
+                {
+                    m_actionResult = m_multiFrameRequestFunc.Invoke(m_actionRequest);
+                    m_actionRequest = m_bWasBlocked ? ActionRequest.START : ActionRequest.UPDATE;
                 }
 
                 if (m_actionResult == ActionResult.BLOCKED)
@@ -107,36 +183,6 @@ namespace RSToolkit.AI.Behaviour.Task
             OnStopped.Invoke(m_actionResult == ActionResult.SUCCESS);
         }
 
-        public override void Update()
-        {
-            base.Update();
-            if (m_actionResult != ActionResult.FAILED && m_actionResult != ActionResult.SUCCESS)
-            {
-                if (m_multiFrameFunc != null)
-                {
-                    m_actionResult = m_multiFrameFunc .Invoke(false);
-                    if (m_actionResult != ActionResult.PROGRESS && m_actionResult != ActionResult.BLOCKED)
-                    {
-                        OnStopped.Invoke(m_actionResult == ActionResult.SUCCESS);
-                    }
-                }
-                else if (m_multiFrameRequestFunc != null)
-                {
-                    if (m_actionResult == ActionResult.BLOCKED)
-                    {
-                        m_bWasBlocked = true;
-                    }
-                    else if (m_actionResult == ActionResult.PROGRESS)
-                    {
-                        m_bWasBlocked = false;
-                    }
-                    else
-                    {
-                        OnStopped.Invoke(m_actionResult == ActionResult.SUCCESS);
-                    }
-                }
-            }
-        }
     }
 
 }
