@@ -19,6 +19,10 @@ namespace RSToolkit.AI
 
         public InteractionStates CurrentInteractionState { get; private set; } = InteractionStates.NotInteracting;
 
+        public float InteractableCooldown = 0f;
+        private float m_CanInteractFromTime = 0f;
+
+
         public bool DebugMode = false;
 
         protected BotWander[] m_botWanderComponents;
@@ -203,51 +207,74 @@ namespace RSToolkit.AI
             return IsWithinPersonalSpace(target.position);
         }
 
+        private bool ChangeInteractionState(InteractionStates interactionState, bool force)
+        {
+            if(interactionState == InteractionStates.NotInteracting)
+            {
+                CurrentInteractionState = interactionState;
+                m_CanInteractFromTime = Time.time + InteractableCooldown;
+                return true;
+            }
+            else if(force || Time.time > m_CanInteractFromTime)
+            {
+                CurrentInteractionState = interactionState;
+                return true;
+            }
+            return false;
+        }
 
-        public bool AttractMyAttention_ToTransform(Transform target, InteractionStates interactionState = InteractionStates.Interactor)
+        public bool AttractMyAttention_ToTransform(Transform target, bool force, InteractionStates interactionState = InteractionStates.Interactor)
         {
 
             if (IsWithinInteractionDistance(target))
             {
-                FocusOnTransform(target);
-                CurrentInteractionState = interactionState;
-                return true;
+                if (ChangeInteractionState(interactionState, force))
+                {
+                    FocusOnTransform(target);
+                    CurrentInteractionState = interactionState;
+                    return true;
+                }
             }
             return false;
 
         }
 
-        public bool AttractMyAttention_ToBot(Bot target, InteractionStates interactionState = InteractionStates.Interactor)
+
+
+        public bool AttractMyAttention_ToBot(Bot target, bool force, InteractionStates interactionState = InteractionStates.Interactor)
         {
 
             if (IsWithinInteractionDistance(target.transform) || target.IsWithinInteractionDistance(transform))
             {
-                FocusOnTransform(target.transform);
-                CurrentInteractionState = interactionState;
-                return true;
+                if (ChangeInteractionState(interactionState, force))
+                {
+                    FocusOnTransform(target.transform);
+                    CurrentInteractionState = interactionState;
+                    return true;
+                }
             }
             return false;
 
         }
 
-        public bool AttractMyAttention_ToTransform()
+        public bool AttractMyAttention_ToTransform(bool force)
         {
-            return AttractMyAttention_ToTransform(FocusedOnTransform);
+            return AttractMyAttention_ToTransform(FocusedOnTransform, force);
 
         }
 
-        public bool AttractMyAttention_FromBot(Bot target)
+        public bool AttractMyAttention_FromBot(Bot target, bool force)
         {
             if (target.FocusedOnTransform != transform)
             {
-                return target.AttractMyAttention_ToBot(this, InteractionStates.Interactee);
+                return target.AttractMyAttention_ToBot(this, force, InteractionStates.Interactee);
             }
             return true;
         }
 
-        public bool AttractMyAttention_FromBot()
+        public bool AttractMyAttention_FromBot(bool force)
         {
-            return AttractMyAttention_FromBot(FocusedOnTransform.GetComponent<Bot>());
+            return AttractMyAttention_FromBot(FocusedOnTransform.GetComponent<Bot>(), force);
 
         }
 
@@ -342,9 +369,14 @@ namespace RSToolkit.AI
             return false;
         }
 
+        public bool CanInteract()
+        {
+            return Time.time > m_CanInteractFromTime;
+        }
+
         public bool CanInteractWith(Bot target)
         {
-            return target.FocusedOnTransform == transform || (target.FocusedOnTransform == null && !target.NoticedTransforms.Contains(transform));
+            return target.FocusedOnTransform == transform || (target.CanInteract() && target.FocusedOnTransform == null && !target.NoticedTransforms.Contains(transform));
         }
 
         public bool Wander()
@@ -441,17 +473,20 @@ namespace RSToolkit.AI
 #if UNITY_EDITOR
             ProximityHelpers.DrawGizmoProximity(transform, SqrInteractionMagnitude, IsWithinInteractionDistance());
 
-            if (FocusedOnPosition != null)
-            {
-                UnityEditor.Handles.color = new Color(1f, 1f, 0.008f, 0.55f);
-                UnityEditor.Handles.DrawSolidDisc(FocusedOnPosition.Value, Vector3.up, 0.25f);
-            }
+            
             if (FocusedOnTransform != null)
             {
                 var oldColor = UnityEditor.Handles.color;
                 UnityEditor.Handles.color = IsWithinInteractionDistance() ? Color.red : Color.white;
                 UnityEditor.Handles.DrawLine(transform.position, FocusedOnTransform.position);
+                UnityEditor.Handles.color = new Color(1f, 0f, 0f, 0.25f);
+                UnityEditor.Handles.DrawSolidDisc(FocusedOnTransform.position, Vector3.up, 0.25f);
                 UnityEditor.Handles.color = oldColor;
+            }
+            else if (FocusedOnPosition != null)
+            {
+                UnityEditor.Handles.color = new Color(1f, 1f, 0.008f, 0.55f);
+                UnityEditor.Handles.DrawSolidDisc(FocusedOnPosition.Value, Vector3.up, 0.25f);
             }
             ProximityHelpers.DrawGizmoProximity(transform, SqrPersonalSpaceMagnitude, IsWithinPersonalSpace());
 #endif
