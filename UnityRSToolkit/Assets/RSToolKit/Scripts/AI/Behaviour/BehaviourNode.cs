@@ -220,11 +220,16 @@ namespace RSToolkit.AI.Behaviour
             m_timers.Remove(to_remove);
         }
 
-        public void StartNode()
+        public bool StartNode()
         {
+            if(this.State != NodeState.INACTIVE)
+            {
+                return false;
+            }
             this.Result = null;
             this.State = NodeState.ACTIVE;
             OnStarted.Invoke();
+            return true;
         }
 
         public bool RequestStopNode()

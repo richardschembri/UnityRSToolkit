@@ -19,7 +19,7 @@ namespace RSToolkit.AI.Behaviour
             {
                 //Children[0].StartNode();
                 // wait one tick, to prevent endless recursions
-                m_rootTimer = AddTimer(0, 0, Children[0].StartNode);
+                m_rootTimer = AddTimer(0, 0, StartChildNode);
             }
             else
             {
@@ -44,6 +44,11 @@ namespace RSToolkit.AI.Behaviour
         public override void SetParent(BehaviourParentNode parent)
         {
             throw new System.Exception("Root nodes cannot have parents");
+        }
+
+        private void StartChildNode()
+        {
+            Children[0].StartNode();
         }
     }
 }

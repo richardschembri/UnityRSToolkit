@@ -207,12 +207,16 @@ namespace RSToolkit.AI
             return IsWithinPersonalSpace(target.position);
         }
 
+        public void ResetInteractionCooldown(){
+            m_CanInteractFromTime = Time.time + InteractableCooldown;
+        }
+
         private bool ChangeInteractionState(InteractionStates interactionState, bool force)
         {
             if(interactionState == InteractionStates.NotInteracting)
             {
                 CurrentInteractionState = interactionState;
-                m_CanInteractFromTime = Time.time + InteractableCooldown;
+                ResetInteractionCooldown();
                 return true;
             }
             else if(force || Time.time > m_CanInteractFromTime)
@@ -231,7 +235,7 @@ namespace RSToolkit.AI
                 if (ChangeInteractionState(interactionState, force))
                 {
                     FocusOnTransform(target);
-                    CurrentInteractionState = interactionState;
+                    //CurrentInteractionState = interactionState;
                     return true;
                 }
             }
@@ -249,7 +253,7 @@ namespace RSToolkit.AI
                 if (ChangeInteractionState(interactionState, force))
                 {
                     FocusOnTransform(target.transform);
-                    CurrentInteractionState = interactionState;
+                    //CurrentInteractionState = interactionState;
                     return true;
                 }
             }
