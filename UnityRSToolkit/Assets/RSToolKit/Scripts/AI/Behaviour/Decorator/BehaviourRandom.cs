@@ -4,10 +4,17 @@ using UnityEngine;
 
 namespace RSToolkit.AI.Behaviour
 {
+    /// <summary>
+    /// Runs the child node with the given probability chance between 0 and 1
+    /// </summary>
     public class BehaviourRandom : BehaviourParentNode
     {
         private float m_probability;
 
+        /// <summary>
+        /// Runs the child node with the given probability chance between 0 and 1
+        /// </summary>
+        /// <param name="probability">Between 0 and 1</param>
         public BehaviourRandom(float probability) : base("Random", NodeType.DECORATOR)
         {
             m_probability = probability;

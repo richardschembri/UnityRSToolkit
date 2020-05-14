@@ -31,16 +31,30 @@ namespace RSToolkit.AI.Behaviour.Task
             OnStarted.AddListener(OnStarted_Listener);
             OnStopping.AddListener(OnStopping_Listener);
         }
+        #region Constructors
 
+        /// <summary>
+        /// Wait for given seconds with a random variance of 0.05 * seconds.
+        /// </summary>
+        /// <param name="seconds"></param>
+        public BehaviourWait(float seconds) : base("Wait", NodeType.TASK)
+        {
+            Init(seconds, seconds * 0.05f);
+        }
+
+        /// <summary>
+        /// Wait for given seconds with given random varaince.
+        /// </summary>
+        /// <param name="seconds"></param>
+        /// <param name="randomVariance"></param>
         public BehaviourWait(float seconds, float randomVariance) : base("Wait", NodeType.TASK)
         {
             Init(seconds, randomVariance);
         }
 
-        public BehaviourWait(float seconds) : base("Wait", NodeType.TASK)
-        {
-            Init(seconds, seconds * 0.05f);
-        }
+        #endregion Constructors
+
+        #region Events
 
         private void OnStarted_Listener()
         {
@@ -71,6 +85,8 @@ namespace RSToolkit.AI.Behaviour.Task
         {
             OnTimeOut();
         }
+
+        #endregion Events
 
         private void OnTimeOut()
         {

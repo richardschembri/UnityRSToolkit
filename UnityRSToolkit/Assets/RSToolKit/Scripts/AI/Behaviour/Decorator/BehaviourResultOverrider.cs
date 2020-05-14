@@ -4,9 +4,17 @@ using UnityEngine;
 
 namespace RSToolkit.AI.Behaviour.Decorator
 {
+    /// <summary>
+    /// Overrides the child node's result
+    /// </summary>
     public class BehaviourResultOverrider : BehaviourParentNode
     {
         bool m_result;
+
+        /// <summary>
+        /// Overrides the child node's result
+        /// </summary>
+        /// <param name="result">The result to override the child node's result</param>
         public BehaviourResultOverrider(bool result) : base("ResultOverrider", NodeType.DECORATOR)
         {
             m_result = result;
@@ -14,6 +22,8 @@ namespace RSToolkit.AI.Behaviour.Decorator
             OnStopping.AddListener(OnStopping_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
         }
+
+        #region Events
 
         private void OnStarted_Listener()
         {
@@ -29,5 +39,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
         {
             OnStopped.Invoke(m_result);
         }
+
+        #endregion Events
     }
 }

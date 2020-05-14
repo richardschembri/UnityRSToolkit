@@ -263,12 +263,6 @@ namespace RSToolkit.AI.Behaviour
             GUILayout.Toggle(false, "Behaviour Debugger", GUI.skin.FindStyle("LODLevelNotifyText"));
             GUI.color = Color.white;
 
-            if (!Application.isPlaying)
-            {
-                EditorGUILayout.HelpBox("Cannot use this utility in Editor Mode", MessageType.Info);
-                return;
-            }
-
             var newManager = (BehaviourManager)EditorGUILayout.ObjectField("Selected Debugger:", SelectedManager, typeof(BehaviourManager), true);
             if (newManager != SelectedManager)
             {
@@ -279,6 +273,12 @@ namespace RSToolkit.AI.Behaviour
             if (SelectedManager == null)
             {
                 EditorGUILayout.HelpBox("Please select an object", MessageType.Info);
+                return;
+            }
+
+            if (!Application.isPlaying)
+            {
+                EditorGUILayout.HelpBox("Cannot use this utility in Editor Mode", MessageType.Info);
                 return;
             }
             /*

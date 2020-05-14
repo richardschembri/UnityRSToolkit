@@ -4,8 +4,16 @@ using UnityEngine;
 
 namespace RSToolkit.AI.Behaviour.Decorator
 {
+
+    /// <summary>
+    /// Inverts the child node's result
+    /// </summary>
     public class BehaviourInverter : BehaviourParentNode
     {
+        /// <summary>
+        /// Inverts the child node result.
+        /// </summary>
+        /// <param name="child">The child node</param>
         public BehaviourInverter(BehaviourNode child) : base("Inverter", NodeType.DECORATOR)
         {
             AddChild(child);
@@ -13,6 +21,8 @@ namespace RSToolkit.AI.Behaviour.Decorator
             OnStopping.AddListener(OnStopping_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
         }
+
+        #region Events
 
         private void OnStarted_Listener()
         {
@@ -28,5 +38,8 @@ namespace RSToolkit.AI.Behaviour.Decorator
         {
             OnStopped.Invoke(!success);
         }
+
+        #endregion Events
+
     }
 }

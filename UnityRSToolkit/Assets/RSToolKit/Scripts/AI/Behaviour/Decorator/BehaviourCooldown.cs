@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace RSToolkit.AI.Behaviour
 {
+    /// <summary>
+    /// Run the child node immediately, but only if last execution wasn't at least past cooldownTime.
+    /// </summary>
     public class BehaviourCooldown : BehaviourParentNode
     {
         private bool m_startAfterChild = false;
@@ -13,6 +16,7 @@ namespace RSToolkit.AI.Behaviour
         private float m_randomVariation = 0.05f;
         private bool m_isReady = true;
         NodeTimer m_timeoutTimer;
+
         private void Init(float cooldownTime, float? randomVariation = null, bool startAfterChild = false, bool resetOnFailiure = false, bool failOnCooldown = false)
         {
 
@@ -35,66 +39,149 @@ namespace RSToolkit.AI.Behaviour
 
         #region Constructors
 
+        /// <summary>
+        /// Run child node immediately, but only if last execution wasn't at least past cooldownTime.
+        /// </summary>
+        /// <param name="cooldownTime">The cooldown time</param>
+        /// <param name="randomVariation">The random variation to the cooldown time</param>
+        /// <param name="startAfterChild">Start the cooldown after the child node stops</param>
+        /// <param name="resetOnFailiure">If true, the cooldown will be reset if the child node fails.</param>
+        /// <param name="failOnCooldown">If true, fail instead of wait in case the cooldown is still active</param>
         public BehaviourCooldown(float cooldownTime, float randomVariation, bool startAfterChild, bool resetOnFailiure, bool failOnCooldown) : base("Cooldown", NodeType.DECORATOR)
         {
             Init(cooldownTime, cooldownTime, startAfterChild, resetOnFailiure, failOnCooldown);
         }
 
+        /// <summary>
+        /// Run child node immediately, but only if last execution wasn't at least past cooldownTime.
+        /// </summary>
+        /// <param name="cooldownTime">The cooldown time</param>
+        /// <param name="decoratee">The child node</param>
+        /// <param name="randomVariation">The random variation to the cooldown time</param>
+        /// <param name="startAfterChild">Start the cooldown after the child node stops</param>
+        /// <param name="resetOnFailiure">If true, the cooldown will be reset if the child node fails.</param>
+        /// <param name="failOnCooldown">If true, fail instead of wait in case the cooldown is still active</param>
         public BehaviourCooldown(float cooldownTime, BehaviourNode decoratee, float randomVariation, bool startAfterChild, bool resetOnFailiure, bool failOnCooldown) : base("Cooldown", NodeType.DECORATOR)
         {
             AddChild(decoratee);
             Init(cooldownTime, cooldownTime, startAfterChild, resetOnFailiure, failOnCooldown);
         }
-        
+
+        /// <summary>
+        /// Run child node immediately, but only if last execution wasn't at least past cooldownTime.
+        /// </summary>
+        /// <param name="cooldownTime">The cooldown time</param>
+        /// <param name="startAfterChild">Start the cooldown after the child node stops</param>
+        /// <param name="resetOnFailiure">If true, the cooldown will be reset if the child node fails.</param>
+        /// <param name="failOnCooldown">If true, fail instead of wait in case the cooldown is still active</param>
         public BehaviourCooldown(float cooldownTime, bool startAfterChild, bool resetOnFailiure, bool failOnCooldown) : base("Cooldown", NodeType.DECORATOR)
         {
             Init(cooldownTime, null, startAfterChild, resetOnFailiure, failOnCooldown);
         }
 
+        /// <summary>
+        /// Run child node immediately, but only if last execution wasn't at least past cooldownTime.
+        /// </summary>
+        /// <summary>
+        /// Run child node immediately, but only if last execution wasn't at least past cooldownTime.
+        /// </summary>
+        /// <param name="cooldownTime">The cooldown time</param>
+        /// <param name="decoratee">The child node</param>
+        /// <param name="startAfterChild">Start the cooldown after the child node stops</param>
+        /// <param name="resetOnFailiure">If true, the cooldown will be reset if the child node fails</param>
+        /// <param name="failOnCooldown">If true, fail instead of wait in case the cooldown is still active</param>
         public BehaviourCooldown(float cooldownTime, BehaviourNode decoratee, bool startAfterChild, bool resetOnFailiure, bool failOnCooldown) : base("Cooldown", NodeType.DECORATOR)
         {
             AddChild(decoratee);
             Init(cooldownTime, null, startAfterChild, resetOnFailiure, failOnCooldown);
         }
 
+        /// <summary>
+        /// Run child node immediately, but only if last execution wasn't at least past cooldownTime.
+        /// </summary>
+        /// <param name="cooldownTime">The cooldown time</param>
+        /// <param name="randomVariation">The random variation to the cooldown time</param>
+        /// <param name="startAfterChild">Start the cooldown after the child node stops</param>
+        /// <param name="resetOnFailiure">If true, the cooldown will be reset if the child node fails</param>
         public BehaviourCooldown(float cooldownTime, float randomVariation, bool startAfterChild, bool resetOnFailiure) : base("Cooldown", NodeType.DECORATOR)
         {
             Init(cooldownTime, randomVariation, startAfterChild, resetOnFailiure);
         }
 
+        /// <summary>
+        /// Run child node immediately, but only if last execution wasn't at least past cooldownTime.
+        /// </summary>
+        /// <param name="cooldownTime">The cooldown time</param>
+        /// <param name="decoratee">The child node</param>
+        /// <param name="randomVariation">The random variation to the cooldown time</param>
+        /// <param name="startAfterChild">Start the cooldown after the child node stops</param>
+        /// <param name="resetOnFailiure">If true, the cooldown will be reset if the child node fails</param>
         public BehaviourCooldown(float cooldownTime, BehaviourNode decoratee, float randomVariation, bool startAfterChild, bool resetOnFailiure) : base("Cooldown", NodeType.DECORATOR)
         {
             AddChild(decoratee);
             Init(cooldownTime, randomVariation, startAfterChild, resetOnFailiure);
         }
 
+        /// <summary>
+        /// Run child node immediately, but only if last execution wasn't at least past cooldownTime.
+        /// </summary>
+        /// <param name="cooldownTime">The cooldown time</param>
+        /// <param name="startAfterChild">Start the cooldown after the child node stops</param>
+        /// <param name="resetOnFailiure">If true, the cooldown will be reset if the child node fails</param>
         public BehaviourCooldown(float cooldownTime, bool startAfterChild, bool resetOnFailiure) : base("Cooldown", NodeType.DECORATOR)
         {
             Init(cooldownTime, null, startAfterChild, resetOnFailiure);
         }
 
+        /// <summary>
+        /// Run child node immediately, but only if last execution wasn't at least past cooldownTime.
+        /// </summary>
+        /// <param name="cooldownTime">The cooldown time</param>
+        /// <param name="decoratee">The child node</param>
+        /// <param name="startAfterChild">Start the cooldown after the child node stops</param>
+        /// <param name="resetOnFailiure">If true, the cooldown will be reset if the child node fails</param>
         public BehaviourCooldown(float cooldownTime, BehaviourNode decoratee, bool startAfterChild, bool resetOnFailiure) : base("Cooldown", NodeType.DECORATOR)
         {
             AddChild(decoratee);
             Init(cooldownTime, null, startAfterChild, resetOnFailiure);
         }
 
+        /// <summary>
+        /// Run child node immediately, but only if last execution wasn't at least past cooldownTime.
+        /// </summary>
+        /// <param name="cooldownTime">The cooldown time</param>
+        /// <param name="randomVariation">The random variation to the cooldown time</param>
         public BehaviourCooldown(float cooldownTime, float randomVariation) : base("Cooldown", NodeType.DECORATOR)
         {
             Init(cooldownTime, randomVariation);
         }
 
+        /// <summary>
+        /// Run child node immediately, but only if last execution wasn't at least past cooldownTime.
+        /// </summary>
+        /// <param name="cooldownTime">The cooldown time</param>
+        /// <param name="decoratee">The child node</param>
+        /// <param name="randomVariation">The random variation to the cooldown time</param>
         public BehaviourCooldown(float cooldownTime, BehaviourNode decoratee, float randomVariation) : base("Cooldown", NodeType.DECORATOR)
         {
             AddChild(decoratee);
             Init(cooldownTime, randomVariation);
         }
 
+        /// <summary>
+        /// Run child node immediately, but only if last execution wasn't at least past cooldownTime.
+        /// </summary>
+        /// <param name="cooldownTime">The cooldown time</param>
         public BehaviourCooldown(float cooldownTime) : base("Cooldown", NodeType.DECORATOR)
         {
             Init(cooldownTime);
         }
 
+        /// <summary>
+        /// Run child node immediately, but only if last execution wasn't at least past cooldownTime.
+        /// </summary>
+        /// <param name="cooldownTime">The cooldown time</param>
+        /// <param name="decoratee">The child node</param>
         public BehaviourCooldown(float cooldownTime, BehaviourNode decoratee) : base("Cooldown", NodeType.DECORATOR)
         {
             AddChild(decoratee);
@@ -103,18 +190,7 @@ namespace RSToolkit.AI.Behaviour
 
         #endregion Constructors
 
-        private void OnTimeout()
-        {
-            if (State == NodeState.ACTIVE && Children[0].State != NodeState.ACTIVE)
-            {
-                AddTimer(m_cooldownTime, m_randomVariation, 0, OnTimeout);
-                Children[0].StartNode();
-            }
-            else
-            {
-                m_isReady = true;
-            }
-        }
+        #region Events
 
         private void OnStarted_Listener()
         {
@@ -161,6 +237,21 @@ namespace RSToolkit.AI.Behaviour
                 AddTimer(m_cooldownTime, m_randomVariation, 0, OnTimeout);
             }
             OnStopped.Invoke(success);
+        }
+
+        #endregion Events
+
+        private void OnTimeout()
+        {
+            if (State == NodeState.ACTIVE && Children[0].State != NodeState.ACTIVE)
+            {
+                AddTimer(m_cooldownTime, m_randomVariation, 0, OnTimeout);
+                Children[0].StartNode();
+            }
+            else
+            {
+                m_isReady = true;
+            }
         }
     }
 }

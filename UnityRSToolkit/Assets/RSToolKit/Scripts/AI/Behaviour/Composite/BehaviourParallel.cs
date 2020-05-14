@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace RSToolkit.AI.Behaviour
 {
+    /// <summary>
+    /// Run child nodes in parallel
+    /// </summary>
     public class BehaviourParallel : BehaviourParentNode
     {
         public enum StopCondition // Policy
@@ -28,37 +31,32 @@ namespace RSToolkit.AI.Behaviour
         private bool m_stoppedByChildren;
         bool m_success;
 
+        /// <summary>
+        /// Run child nodes in parallel
+        /// </summary>
+        /// <param name="successStopCondition">
+        /// How many children should return success before parallel stops with success
+        /// </param>
+        /// <param name="failureStopCondition">
+        /// How many children should return failure before parallel stops with failure
+        /// </param>
         public BehaviourParallel(StopCondition successStopCondition, StopCondition failureStopCondition) : base("Parallel", NodeType.COMPOSITE)
         {
             m_successStopCondition = successStopCondition;
             m_failureStopCondition = failureStopCondition;
 
             OnStarted.AddListener(OnStarted_Listener);
-            OnStopped.AddListener(OnStopped_Listener);
             OnStopping.AddListener(OnStopping_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
         }
 
+        #region Events
         private void OnStarted_Listener()
         {
             m_stoppedByChildren = false;
             m_succeededCount = 0;
             m_failedCount = 0;
             StartChildren();
-        }
-        private void OnStopped_Listener(bool success)
-        {
-
-        }
-
-
-        protected void StartChildren()
-        {
-            // Result = null;
-            for (int i = 0; i < Children.Count; i++)
-            {
-                Children[i].StartNode();
-            }
         }
 
         private void OnStopping_Listener()
@@ -106,6 +104,16 @@ namespace RSToolkit.AI.Behaviour
                         
                     }
                 }
+            }
+        }
+        #endregion Events
+
+        protected void StartChildren()
+        {
+            // Result = null;
+            for (int i = 0; i < Children.Count; i++)
+            {
+                Children[i].StartNode();
             }
         }
 

@@ -4,12 +4,21 @@ using UnityEngine;
 
 namespace RSToolkit.AI.Behaviour.Decorator
 {
+    /// <summary>
+    /// Repeatedly runs it's child node
+    /// </summary>
     public class BehaviourRepeater : BehaviourParentNode
     {
-        uint m_totalLoops = 0;
-        uint m_loopCount = 0;
+        int m_totalLoops = -1;
+        int m_loopCount = 0;
+
         NodeTimer m_restartChildTimer;
-        public BehaviourRepeater(uint totalLoops) : base("Repeater", NodeType.DECORATOR)
+
+        /// <summary>
+        /// Repeated runs it's child node
+        /// </summary>
+        /// <param name="totalLoops">The amount of times the child node is looped. If -1 it will loop indefinately unless stopped manually.</param>
+        public BehaviourRepeater(int totalLoops = -1) : base("Repeater", NodeType.DECORATOR)
         {
             m_totalLoops = totalLoops;
             OnStarted.AddListener(OnStarted_Listener);
@@ -17,10 +26,12 @@ namespace RSToolkit.AI.Behaviour.Decorator
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
         }
 
+        #region Events
+
         private void OnStarted_Listener()
         {
             RemoveTimer(m_restartChildTimer);
-            if(m_totalLoops > 0)
+            if(m_totalLoops >= 0)
             {
                 m_loopCount = 0;
                 Children[0].StartNode();
@@ -49,7 +60,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
         {
             if (success)
             {
-                if(State == NodeState.STOPPING || (m_totalLoops > 0 && ++m_loopCount >= m_totalLoops))
+                if(State == NodeState.STOPPING || (m_totalLoops >= 0 && ++m_loopCount >= m_totalLoops))
                 {
             
                     OnStopped.Invoke(true);
@@ -64,6 +75,8 @@ namespace RSToolkit.AI.Behaviour.Decorator
                 OnStopped.Invoke(false);
             }
         }
+
+        #endregion Events
 
         protected void RestartChild()
         {

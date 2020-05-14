@@ -4,14 +4,24 @@ using UnityEngine;
 
 namespace RSToolkit.AI.Behaviour
 {
+
+    /// <summary>
+    /// The root node of a tree
+    /// </summary>
     public class BehaviourRootNode : BehaviourParentNode
     {
         private NodeTimer m_rootTimer;
+        /// <summary>
+        /// The root node of a tree
+        /// </summary>
+        /// <param name="name"></param>
         public BehaviourRootNode(string name = "Root") : base(name, NodeType.DECORATOR)
         {
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
             OnStopped.AddListener(OnStopped_Listener);
         }
+
+        #region Events
 
         private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
         {
@@ -39,6 +49,8 @@ namespace RSToolkit.AI.Behaviour
                 RemoveTimer(m_rootTimer);
             }
         }
+
+        #endregion Events
 
         // To Refactor
         public override void SetParent(BehaviourParentNode parent)

@@ -4,6 +4,11 @@ using UnityEngine;
 
 namespace RSToolkit.AI.Behaviour.Decorator.Blackboard
 {
+    /// <summary>
+    /// Execute the child node only if the Blackboard's key matches the op / value condition. 
+    /// If stopsOnChange is not NONE, the node will observe the Blackboard for changes and stop 
+    /// execution of running nodes based on the stopsOnChange stops rules.
+    /// </summary>
     public class BehaviourBlackboardCondition : BehaviourBlackboardObserver
     {
         public string Key { get; private set; }
@@ -17,15 +22,36 @@ namespace RSToolkit.AI.Behaviour.Decorator.Blackboard
             ConditionValue = conditionvalue;
         }
 
+        #region Constructors
+
+        /// <summary>
+        /// Execute the child node only if the Blackboard's key matches the op / value condition.
+        /// </summary>
+        /// <param name="blackboard">The blackboard that holds the value to check and checks the condition</param>
+        /// <param name="key">The key of the value</param>
+        /// <param name="conditionoperator">The operator used to check the value</param>
+        /// <param name="conditionvalue"></param>
+        /// <param name="decoratee">The child node</param>
+        /// <param name="stoprule">Stop execution of running nodes based on the rule</param>
         public BehaviourBlackboardCondition(BehaviourBlackboard blackboard, string key, Operator conditionoperator, object conditionvalue, BehaviourNode decoratee, AbortRule stoprule) : base("BlackboardCondition", blackboard, decoratee, stoprule)
         {
             Init(key, conditionoperator, conditionvalue);
         }
 
+        /// <summary>
+        /// Execute the child node only if the Blackboard's key matches the op / value condition.
+        /// </summary>
+        /// <param name="blackboard">The blackboard that holds the value to check and checks the condition</param>
+        /// <param name="key">The key of the value</param>
+        /// <param name="conditionoperator">The operator used to check the value</param>
+        /// <param name="decoratee">The child node</param>
+        /// <param name="stoprule"></param>
         public BehaviourBlackboardCondition(BehaviourBlackboard blackboard, string key, Operator conditionoperator, BehaviourNode decoratee, AbortRule stoprule) : base("BlackboardCondition", blackboard, decoratee, stoprule)
         {
             Init(key, conditionoperator);
         }
+
+        #endregion Constructors
 
         private void onValueChanged(BehaviourBlackboard.NotificationType notificationtype, object newValue)
         {

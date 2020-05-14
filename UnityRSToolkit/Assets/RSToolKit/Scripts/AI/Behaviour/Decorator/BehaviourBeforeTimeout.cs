@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace RSToolkit.AI.Behaviour
 {
+    /// <summary>
+    /// Run the given decoratee. If the decoratee doesn't finish within the limit, the execution fails. 
+    /// </summary>
     public class BehaviourBeforeTimeout : BehaviourParentNode
     {
         private float m_limit = 0.0f;
@@ -30,33 +33,42 @@ namespace RSToolkit.AI.Behaviour
             }
             m_waitForChildButFailOnLimitReached = waitForChildButFailOnLimitReached;
         }
+
         #region Constructors
+
+        /// <summary>
+        /// If waitForChildButFailOnLimitReached is true, it will wait for the decoratee to finish but still fail.
+        /// </summary>
+        /// <param name="limit">The timeout limit</param>
+        /// <param name="waitForChildButFailOnLimitReached">If is true, it will wait for the decoratee to finish but still fail.</param>
         public BehaviourBeforeTimeout(float limit, bool waitForChildButFailOnLimitReached) : base("BeforeTimeout", NodeType.DECORATOR)
         {
             Init(limit, null, waitForChildButFailOnLimitReached);
         }
+
+
+        /// <summary>
+        /// If waitForChildButFailOnLimitReached is true, it will wait for the decoratee to finish but still fail.
+        /// </summary>
+        /// <param name="limit">The timeout limit</param>
+        /// <param name="randomVariation">The random variance to the timeout limit</param>
+        /// <param name="waitForChildButFailOnLimitReached">If is true, it will wait for the decoratee to finish but still fail.</param>
         public BehaviourBeforeTimeout(float limit, float randomVariation, bool waitForChildButFailOnLimitReached) : base("BeforeTimeout", NodeType.DECORATOR)
         {
             Init(limit, randomVariation, waitForChildButFailOnLimitReached);
         }
+
         #endregion Constructors
-        private void OnTimeout()
-        {
-            if (!m_waitForChildButFailOnLimitReached)
-            {
-                Children[0].RequestStopNode();
-            }
-            else
-            {
-                m_isLimitReached = true;
-            }
-        }
+
+        #region Events
+
         private void OnStarted_Listener()
         {
             m_isLimitReached = false;
             AddTimer(m_limit, m_randomVariation, 0, OnTimeout);
             Children[0].StartNode();
         }
+
         private void OnStopping_Listener()
         {
             RemoveTimer(m_timeoutTimer);
@@ -69,6 +81,7 @@ namespace RSToolkit.AI.Behaviour
                 OnStopped.Invoke(false);
             }
         }
+
         private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
         {
             RemoveTimer(m_timeoutTimer);
@@ -81,5 +94,20 @@ namespace RSToolkit.AI.Behaviour
                 OnStopped.Invoke(success);
             }
         }
+
+        #endregion Events
+
+        private void OnTimeout()
+        {
+            if (!m_waitForChildButFailOnLimitReached)
+            {
+                Children[0].RequestStopNode();
+            }
+            else
+            {
+                m_isLimitReached = true;
+            }
+        }
+
     }
 }
