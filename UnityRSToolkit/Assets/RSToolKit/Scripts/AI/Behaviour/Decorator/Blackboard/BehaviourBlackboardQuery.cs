@@ -5,7 +5,7 @@ using UnityEngine;
 namespace RSToolkit.AI.Behaviour.Decorator.Blackboard
 {
     /// <summary>
-    /// BlackboardCondition allows to check only one key, this one will observe multiple blackboard keys and evaluate 
+    /// BlackboardCondition allows to check only one key, BlackboardQuery will observe multiple blackboard keys and evaluate 
     /// the given query function as soon as one of the value's changes, allowing you to do arbitrary queries on the blackboard. 
     /// </summary>
     public class BehaviourBlackboardQuery : BehaviourBlackboardObserver
