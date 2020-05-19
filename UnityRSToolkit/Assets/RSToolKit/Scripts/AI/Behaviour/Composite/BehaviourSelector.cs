@@ -26,6 +26,11 @@ namespace RSToolkit.AI.Behaviour.Composite
 
         protected override void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
         {
+            if(State == NodeState.INACTIVE)
+            {
+                return;
+            }
+
             if (success)
             {
                 OnStopped.Invoke(true);

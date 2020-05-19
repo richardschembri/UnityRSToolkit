@@ -162,17 +162,18 @@ namespace RSToolkit.AI.Behaviour
                 {
                     node.RequestStopNode();
                 }
-                else if (node is BehaviourRootNode)
-                {
-                    GUI.color = new Color(1f, 1f, 1f, 1f);
-                    if (GUILayout.Button("start", EditorStyles.miniButton))
-                    {
-                        node.StartNode();
-                    }
-                    GUI.color = new Color(1f, 1f, 1f, 0.3f);
-                }
-              
             }
+            else if (node is BehaviourRootNode && node.State == BehaviourNode.NodeState.INACTIVE)
+            {
+                GUI.color = new Color(1f, 1f, 1f, 1f);
+                if (GUILayout.Button("start", EditorStyles.miniButton))
+                {
+                    node.StartNode();
+                    
+                }
+                GUI.color = new Color(1f, 1f, 1f, 0.3f);
+            }
+
             // Draw Stats
             GUILayout.Label((node.DebugTools.StoppedCallCount > 0 ? node.Result.ToString() : "")
                 + $" | O:{node.DebugTools.StartCallCount} , x:{node.DebugTools.StopCallCount} , X:{node.DebugTools.StoppedCallCount}", m_smallTextStyle);

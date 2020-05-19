@@ -18,10 +18,17 @@ namespace RSToolkit.AI.Behaviour
         public BehaviourRootNode(string name = "Root") : base(name, NodeType.DECORATOR)
         {
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
-            OnStopped.AddListener(OnStopped_Listener);
+            //OnStopped.AddListener(OnStopped_Listener);
+            OnStopping.AddListener(OnStopping_Listener);
+            OnStarted.AddListener(OnStarted_Listener);
         }
 
         #region Events
+
+        private void OnStarted_Listener()
+        {
+            StartChildNode();
+        }
 
         private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
         {
@@ -38,7 +45,8 @@ namespace RSToolkit.AI.Behaviour
             }
         }
 
-        private void OnStopped_Listener(bool success)
+        //private void OnStopped_Listener(bool success)
+        private void OnStopping_Listener()
         {
             if (this.Children[0].State == NodeState.ACTIVE)
             {
@@ -48,6 +56,7 @@ namespace RSToolkit.AI.Behaviour
             {
                 RemoveTimer(m_rootTimer);
             }
+            OnStopped.Invoke(true);
         }
 
         #endregion Events

@@ -89,7 +89,7 @@ namespace RSToolkit.AI.Behaviour
             if (CurrentTree != null && CurrentTree.Children.Any())
             {
                 CurrentTree.StartNode();                
-                CurrentTree.Children[0].StartNode();                
+                //CurrentTree.Children[0].StartNode();                
                 return true;
             }
             return false;

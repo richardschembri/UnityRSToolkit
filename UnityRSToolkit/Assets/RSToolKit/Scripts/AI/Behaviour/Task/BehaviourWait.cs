@@ -7,8 +7,8 @@ namespace RSToolkit.AI.Behaviour.Task
     // Blackboard
     public class BehaviourWait : BehaviourNode
     {
-        private System.Func<float> function = null;
-        private float m_seconds = -1f;
+
+        public float WaitSeconds { get; private set; } = 0f;
         private float randomVariance;
         private NodeTimer m_waitTimout;
 
@@ -26,7 +26,7 @@ namespace RSToolkit.AI.Behaviour.Task
 
         public void Init(float seconds, float randomVariance)
         {
-            this.m_seconds = seconds;
+            this.WaitSeconds = seconds;
             this.randomVariance = randomVariance;
             OnStarted.AddListener(OnStarted_Listener);
             OnStopping.AddListener(OnStopping_Listener);
@@ -58,14 +58,8 @@ namespace RSToolkit.AI.Behaviour.Task
 
         private void OnStarted_Listener()
         {
-            float seconds = m_seconds;
-            if(seconds < 0)
-            {
-                if(this.function != null)
-                {
-                    seconds = this.function();
-                }
-            }
+            float seconds = WaitSeconds;
+
             if(seconds < 0)
             {
                 seconds = 0;
