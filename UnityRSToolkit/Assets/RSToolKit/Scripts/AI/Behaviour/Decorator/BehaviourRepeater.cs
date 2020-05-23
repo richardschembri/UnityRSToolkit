@@ -31,15 +31,8 @@ namespace RSToolkit.AI.Behaviour.Decorator
         private void OnStarted_Listener()
         {
             RemoveTimer(m_restartChildTimer);
-            if(m_totalLoops >= 0)
-            {
-                m_loopCount = 0;
-                Children[0].StartNode();
-            }
-            else
-            {
-                OnStopped.Invoke(true);
-            }
+            m_loopCount = 0;
+            Children[0].StartNode();
         }
 
         private void OnStopping_Listener()
@@ -52,7 +45,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
             }
             else
             {
-                OnStopped.Invoke(false);
+                OnStopped.Invoke(m_totalLoops == -1);
             }
         }
 

@@ -174,6 +174,12 @@ namespace RSToolkit.AI
             return false;
         }
 
+        protected virtual void Awake()
+        {
+            m_botComponent = GetComponent<Bot>();
+            m_fsm = FiniteStateMachine<LocomotionState>.Initialize(this, LocomotionState.NotMoving);
+        }
+
         protected virtual void Update()
         {
             CharacterAnimParams.TrySetSpeed(BotComponent.AnimatorComponent, CurrentSpeed);

@@ -66,7 +66,7 @@ namespace RSToolkit.AI.Behaviour
             }
         }
 
-        public bool SetCurrentTree(BehaviourRootNode behaviourtree, bool addIfNotPresent = true)
+        public bool SetCurrentTree(BehaviourRootNode behaviourtree, bool stopCurrentTree, bool addIfNotPresent = true)
         {
             if (!m_behaviourtrees.Contains(behaviourtree))
             {
@@ -79,6 +79,12 @@ namespace RSToolkit.AI.Behaviour
                     return false;
                 }
             }
+
+            if (stopCurrentTree && CurrentTree != null)
+            {
+                CurrentTree.RequestStopNode();
+            }
+
             CurrentTree = behaviourtree;
             return true;
         }
