@@ -48,7 +48,7 @@ namespace RSToolkit.AI.Behaviour
             m_defaultColor = EditorGUIUtility.isProSkin ? Color.white : Color.black;
         }
 
-        [MenuItem("Window/RSToolkit/BehaviourTree")]
+        [MenuItem("RSToolkit/BehaviourTree")]
         public static void ShowWindow()
         {
             BehaviourEditorWindow window = (BehaviourEditorWindow)EditorWindow.GetWindow(typeof(BehaviourEditorWindow), false, "Behaviour Tree");

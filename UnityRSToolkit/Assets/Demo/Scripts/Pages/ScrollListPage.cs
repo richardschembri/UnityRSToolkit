@@ -40,7 +40,7 @@ public class ScrollListPage : UIPage
     public void AddButtonsVertical(){
        for(int i = 0; i < 5; i++){
            var vb = VerticalListBox.AddListItem().GetComponent<Button>();
-           vb.name = string.Format("Button {0}", VerticalListBox.listItemSpawner.SpawnedGameObjects.Count);
+           vb.name = string.Format("Button {0}", VerticalListBox.ListItemSpawner.SpawnedGameObjects.Count);
            vb.GetComponentInChildren<Text>().text = vb.name;
        }
     }
@@ -50,7 +50,7 @@ public class ScrollListPage : UIPage
         for (int i = 0; i < 5; i++)
         {
             var hb = HorizontalListBox.AddListItem().GetComponent<Button>();
-            hb.name = string.Format("Button {0}", HorizontalListBox.listItemSpawner.SpawnedGameObjects.Count);
+            hb.name = string.Format("Button {0}", HorizontalListBox.ListItemSpawner.SpawnedGameObjects.Count);
             hb.GetComponentInChildren<Text>().text = hb.name;
         }
     }

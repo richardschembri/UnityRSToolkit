@@ -61,7 +61,7 @@
 
 
        private Spawner m_ListItemSpawner;
-       public Spawner listItemSpawner { 
+       public Spawner ListItemSpawner { 
            get { 
                if(m_ListItemSpawner == null){
                    m_ListItemSpawner = ContentRectTransform.GetComponent<Spawner>();
@@ -76,21 +76,21 @@
        public class OnShiftMostVerticalEvent : UnityEvent<RectTransform, RectTransformHelpers.VerticalPosition>{}
        public OnShiftMostVerticalEvent OnShiftMostVertical = new OnShiftMostVerticalEvent();
        public virtual GameObject AddListItem(){
-            if(listItemSpawner == null){
+            if(ListItemSpawner == null){
                 return null;
             }
-            var result = listItemSpawner.SpawnAndGetGameObject();
+            var result = ListItemSpawner.SpawnAndGetGameObject();
             Refresh();
             return result;
        }
 
        public void ClearSpawnedListItems(){
-            listItemSpawner.DestroyAllSpawns();
+            ListItemSpawner.DestroyAllSpawns();
             Refresh();
        }
 
        public int VisibleSpawnedListItemCount(){
-           return listItemSpawner.SpawnedGameObjects.Where(li => li.gameObject.activeSelf).Count();
+           return ListItemSpawner.SpawnedGameObjects.Where(li => li.gameObject.activeSelf).Count();
        }
 
        public void Refresh(){
@@ -131,7 +131,7 @@
             }
 
         }
-        protected void Awake(){
+        protected virtual void Awake(){
             if(!m_init){
                 m_init = true;
 
@@ -140,7 +140,7 @@
                 SetLayout();
             }
         }
-        void Update(){
+        protected virtual void Update(){
             if (m_culling_countdown > 0){
                 m_culling_countdown--;
             }else if(m_culling_countdown == 0){

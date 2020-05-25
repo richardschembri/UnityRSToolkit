@@ -41,3 +41,6 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Prompts
+    uniqueID: 1627627451
+    locked: 0

@@ -28,7 +28,7 @@
            }
        } 
         public UIEditableListBoxItem[] GetListBoxItems(){
-            return listItemSpawner.SpawnedGameObjects
+            return ListItemSpawner.SpawnedGameObjects
                     .Select(li => li.GetComponent<UIEditableListBoxItem>()).ToArray();
         }
 
@@ -37,8 +37,8 @@
         }
 
         public bool HasAllToggledListItems(bool on = true){
-            if(listItemSpawner.SpawnedGameObjects.Any()){
-                return listItemSpawner.SpawnedGameObjects.Count == GetToggledListItems(on).Length;
+            if(ListItemSpawner.SpawnedGameObjects.Any()){
+                return ListItemSpawner.SpawnedGameObjects.Count == GetToggledListItems(on).Length;
             }
             return false;
         }
@@ -51,16 +51,16 @@
            return AddEditableListItem(orderIndex)?.gameObject ?? null;
        }
         public UIEditableListBoxItem AddEditableListItem(int? orderIndex = null){
-            if(listItemSpawner == null){
+            if(ListItemSpawner == null){
                 return null;
             }
-            var li = listItemSpawner.SpawnAndGetGameObject();
+            var li = ListItemSpawner.SpawnAndGetGameObject();
 
             UIEditableListBoxItem result = null;
             if(li != null){
                 // Refresh();
                 result = li.GetComponent<UIEditableListBoxItem>();
-                result.OrderIndex = orderIndex ?? listItemSpawner.SpawnedGameObjects.Count;
+                result.OrderIndex = orderIndex ?? ListItemSpawner.SpawnedGameObjects.Count;
             }
             Refresh();
             return result;
