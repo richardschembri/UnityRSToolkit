@@ -91,7 +91,7 @@
         public struct RectTransformPosition{
             public HorizontalPosition horizontalPostion;
             public VerticalPosition verticalPostion;
-            public bool isInside;
+            //public bool isInside;
         }
         public static RectTransformPosition PositionWithinBounds(this RectTransform self, RectTransform target){
             return  PositionWithinBounds(self, target, Vector2.zero, Vector2.zero);
@@ -113,7 +113,7 @@
             RectTransformPosition rtp;
             rtp.horizontalPostion = HorizontalPosition.WITHIN;
             rtp.verticalPostion = VerticalPosition.WITHIN;
-            rtp.isInside = true;
+            //rtp.isInside = true;
 
             var selfEdges = self.GetEdges();
             var targetEdges = target.GetEdges();
@@ -133,12 +133,17 @@
             
             return rtp;
         }
+
+        
+
         public static bool HasWithinBounds(this RectTransform self, RectTransform target){
 
             var rtp = self.PositionWithinBounds(target);
             return rtp.horizontalPostion == HorizontalPosition.WITHIN && rtp.verticalPostion == VerticalPosition.WITHIN;
             
         }
+
+
 
         public static Vector2 GetResizeByWidth(this RectTransform self, float width){
             var resizePercent = MathHelpers.GetValuePercent(width, self.sizeDelta.x);

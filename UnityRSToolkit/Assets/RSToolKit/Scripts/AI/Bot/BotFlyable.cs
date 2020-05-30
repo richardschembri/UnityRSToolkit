@@ -22,6 +22,24 @@ namespace RSToolkit.AI
             Flying
         }
 
+        public override void ToggleComponentsForNetwork(bool owner)
+        {
+            base.ToggleComponentsForNetwork(owner);
+            if (!owner)
+            {
+                m_currentBotWanderComponent.enabled = false;
+                m_currentBotMovementComponent.enabled = false;
+                m_currentBotMovementComponent.GroundProximityCheckerComponent.enabled = false;
+                BotNavMeshComponent.NavMeshAgentComponent.enabled = false;
+                BotFlyingComponent.Flying3DObjectComponent.enabled = false;
+            }
+            else
+            {
+                m_currentBotMovementComponent.GroundProximityCheckerComponent.enabled = true;
+                ToggleFlight(CurrentState != FlyableStates.NotFlying);
+            }
+        }
+
         private BotNavMesh m_botNavMeshComponent;
         public BotNavMesh BotNavMeshComponent
         {
@@ -99,10 +117,7 @@ namespace RSToolkit.AI
         {
             get
             {
-                if(m_fsm == null)
-                {
-                    m_fsm = FiniteStateMachine<FlyableStates>.Initialize(this, StartInAir ? FlyableStates.Flying : FlyableStates.NotFlying);
-                }
+                InitFSM();
                 return m_fsm;
             }
         }
@@ -128,7 +143,7 @@ namespace RSToolkit.AI
         private void ToggleFlight(bool on)
         {
             if (on)
-            {
+            {              
                 RigidBodyComponent.constraints = RigidbodyConstraints.None;
                 SetCurrentBotMovement(BotFlyingComponent);
                 SetCurrentBotWander(BotWanderFlyingComponent);
@@ -142,7 +157,6 @@ namespace RSToolkit.AI
                 SetCurrentBotWander(BotWanderNavMeshComponent);
             }
             
-
             BotNavMeshComponent.NavMeshAgentComponent.enabled = !on;
             BotNavMeshComponent.enabled = !on;
             BotFlyingComponent.Flying3DObjectComponent.enabled = on;
@@ -260,16 +274,25 @@ namespace RSToolkit.AI
             return CurrentState == FlyableStates.Flying || CurrentState == FlyableStates.NotFlying;
         }
 
+        private void InitFSM()
+        {
+            if (m_fsm == null)
+            {
+                m_fsm = FiniteStateMachine<FlyableStates>.Initialize(this, StartInAir ? FlyableStates.Flying : FlyableStates.NotFlying);
+                m_fsm.Changed += Fsm_Changed;
+            }
+        }
+
         protected override void Awake()
         {
             base.Awake();
-            m_FSM.Changed += Fsm_Changed;
+            InitFSM();
         }
 
         protected override void Update()
         {
             base.Update();
-            CharacterAnimParams.TrySetSpeed(AnimatorComponent, m_currenBotMovementComponent.CurrentSpeed);
+            CharacterAnimParams.TrySetSpeed(AnimatorComponent, m_currentBotMovementComponent.CurrentSpeed);
         }
 
         private void Fsm_Changed(FlyableStates state)

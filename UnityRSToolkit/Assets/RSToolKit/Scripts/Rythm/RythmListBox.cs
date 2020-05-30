@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace RSToolkit.Rythm
 {
     public class RythmListBox : UIListBox
-    {
+    {       
         public float tempo = 5f;
 
         public float BeatsPerSecond
@@ -19,8 +19,27 @@ namespace RSToolkit.Rythm
             }
         }
 
-        public bool AutoStart = false;
-        public bool HasStarted { get; private set; }
+        public bool HasStarted { get; private set; } = false;
+
+        public RythmManager ParentRythmManager { get; private set; }
+
+        public RythmHitArea HitArea { get { return ParentRythmManager.HitAreaComponent; } }
+
+        protected override void Awake()
+        {
+            base.Awake();
+            ParentRythmManager = GetComponent<RythmManager>();
+        }
+
+        protected override void Update()
+        {
+            base.Update();
+            if (!HasStarted)
+            {
+                return;
+            }
+            ScrollRectComponent.content.anchoredPosition = new Vector2(0f, ScrollRectComponent.content.anchoredPosition.y + BeatsPerSecond);
+        }
 
         public void StartScrolling()
         {
@@ -32,29 +51,22 @@ namespace RSToolkit.Rythm
             HasStarted = false;
         }
 
-        protected override void Awake()
+        public void SpawnPrompts(bool clearItems = true)
         {
-            base.Awake();
-            if (AutoStart)
+            if (clearItems)
             {
-                StartScrolling();
+                ClearSpawnedListItems();
             }
-            //OnShiftMostVertical.AddListener()
-        }
-
-        protected override void Update()
-        {
-            base.Update();
-            ScrollRectComponent.content.anchoredPosition = new Vector2(0f, ScrollRectComponent.content.anchoredPosition.y + BeatsPerSecond);
-        }
-
-        public void SpawnPrompts()
-        {
-            ClearSpawnedListItems();
+            
             for(int i = 0; i < 10; i++)
             {
                 AddListItem();
             }
+        }
+
+        public bool HasPrompts()
+        {
+            return ListItemSpawner.SpawnedGameObjects.Count > 0;
         }
 
         private void OnShiftMostVertical_Listener(RectTransform toPlace, RectTransformHelpers.VerticalPosition verticalPosition)

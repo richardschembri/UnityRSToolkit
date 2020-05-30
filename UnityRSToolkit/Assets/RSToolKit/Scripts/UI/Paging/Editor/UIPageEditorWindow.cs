@@ -22,7 +22,7 @@
             }
         }
 
-        [MenuItem("RSToolKit/UI Page Editor Window")]
+        [MenuItem("RSToolkit/UI Page Editor Window")]
         public static void Init()
         {
             var window = GetWindow(typeof(UIPageEditorWindow), false, "UI Page Editor Window");

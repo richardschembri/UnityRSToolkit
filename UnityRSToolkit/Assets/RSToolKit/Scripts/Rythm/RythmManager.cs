@@ -1,29 +1,57 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+using RSToolkit.Controls;
 
 namespace RSToolkit.Rythm
 {
     public class RythmManager : MonoBehaviour
     {
+        public RythmHitArea HitAreaComponent { get; private set; }
 
-        public RectTransform HitArea;
-        public RythmListBox[] RythmScrollers;
+        public RythmListBox[] RythmScrollers { get; private set; }
 
         // Start is called before the first frame update
         void Awake()
         {
-            for(int i = 0; i < RythmScrollers.Length; i++)
+            RythmScrollers = GetComponentsInChildren<RythmListBox>();
+            HitAreaComponent = GetComponentInChildren<RythmHitArea>();
+        }
+
+        public bool HasStarted()
+        {
+            return RythmScrollers.Any(rs => rs.HasStarted);
+        }
+
+        public bool HasPrompts()
+        {
+            return RythmScrollers.Any(rs => rs.HasPrompts());
+        }
+
+        public void StartRythm()
+        {
+            for (int i = 0; i < RythmScrollers.Length; i++)
             {
-                RythmScrollers[i].SpawnPrompts();
                 RythmScrollers[i].StartScrolling();
             }
         }
 
-        // Update is called once per frame
-        void Update()
+        public void StopRythm()
         {
-
+            for (int i = 0; i < RythmScrollers.Length; i++)
+            {
+                RythmScrollers[i].StopScrolling();
+            }
         }
+
+        public void SpawnPrompts(bool clearItems = true)
+        {
+            for (int i = 0; i < RythmScrollers.Length; i++)
+            {
+                RythmScrollers[i].SpawnPrompts(clearItems);             
+            }
+        }
+
     }
 }

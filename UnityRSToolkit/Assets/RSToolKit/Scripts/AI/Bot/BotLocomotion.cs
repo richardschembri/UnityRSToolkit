@@ -10,7 +10,7 @@ namespace RSToolkit.AI
 
     public abstract class BotLocomotion : MonoBehaviour
     {
-
+        public bool DebugMode = false;
         public enum LocomotionState
         {
             NotMoving,
@@ -31,11 +31,16 @@ namespace RSToolkit.AI
         {
             get
             {
-                if (m_fsm == null)
-                {
-                    m_fsm = FiniteStateMachine<LocomotionState>.Initialize(this, LocomotionState.NotMoving);
-                }
+                InitFSM();
                 return m_fsm;
+            }
+        }
+
+        private void InitFSM(bool force = false)
+        {
+            if (m_fsm == null || force)
+            {
+                m_fsm = FiniteStateMachine<LocomotionState>.Initialize(this, LocomotionState.NotMoving);
             }
         }
 
@@ -50,6 +55,7 @@ namespace RSToolkit.AI
         private bool m_fullspeed = true;
         protected StopMovementConditions m_stopMovementCondition { get; private set; }
 
+        #region Components
         private Bot m_botComponent;
         public Bot BotComponent
         {
@@ -78,6 +84,7 @@ namespace RSToolkit.AI
             }
 
         }
+        #endregion Components
 
         public bool IsFarFromGround()
         {            
@@ -174,16 +181,18 @@ namespace RSToolkit.AI
             return false;
         }
 
+        #region MonoBehaviour Functions
         protected virtual void Awake()
         {
             m_botComponent = GetComponent<Bot>();
-            m_fsm = FiniteStateMachine<LocomotionState>.Initialize(this, LocomotionState.NotMoving);
         }
 
         protected virtual void Update()
         {
             CharacterAnimParams.TrySetSpeed(BotComponent.AnimatorComponent, CurrentSpeed);
         }
+        #endregion MonoBehaviour Functions
+
 
     }
 }

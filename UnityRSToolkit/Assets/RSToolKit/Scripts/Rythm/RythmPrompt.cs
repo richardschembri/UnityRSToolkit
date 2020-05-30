@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using RSToolkit.Helpers;
 
 namespace RSToolkit.Rythm
 {
@@ -9,17 +10,14 @@ namespace RSToolkit.Rythm
     {
         
         public KeyCode promptKey;
+        public RythmListBox ParentRythmListBox { get; private set; }
+        public RectTransform RectTransformComponent { get; private set; }
+        public RythmHitArea HitArea { get { return ParentRythmListBox.HitArea; } }
 
-        // Start is called before the first frame update
-        void Start()
+        void Awake()
         {
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
+            ParentRythmListBox = this.GetComponentInParent<RythmListBox>();
+            RectTransformComponent = GetComponent<RectTransform>();
         }
 
     }

@@ -91,7 +91,7 @@ namespace RSToolkit.AI
         BotFlyable m_targetBotFlyable;
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();    
+            base.OnInspectorGUI();
 
             m_targetBotFlyable = (BotFlyable)target;
             if (!m_targetBotFlyable.DebugMode || !Application.isPlaying)

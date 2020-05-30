@@ -55,7 +55,7 @@ namespace RSToolkit.AI
             {
                 Flying3DObjectComponent.ApplyForwardThrust(fullspeed ? 1f : 0.2f);
             }
-            else if (BotComponent.IsWithinPersonalSpace())
+            else if (!BotComponent.IsWithinPersonalSpace())
             {
                 Flying3DObjectComponent.ApplyForwardThrust(fullspeed ? -0.5f : 0.1f);
             }

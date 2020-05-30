@@ -169,7 +169,7 @@ namespace RSToolkit.AI.Behaviour
                 if (GUILayout.Button("start", EditorStyles.miniButton))
                 {
                     node.StartNode();
-                    
+
                 }
                 GUI.color = new Color(1f, 1f, 1f, 0.3f);
             }
@@ -282,12 +282,11 @@ namespace RSToolkit.AI.Behaviour
                 EditorGUILayout.HelpBox("Cannot use this utility in Editor Mode", MessageType.Info);
                 return;
             }
-            /*
-            else if (SelectedManager. == null)
+            else if (!SelectedManager.isActiveAndEnabled)
             {
-                EditorGUILayout.HelpBox("BehavorTree is null", MessageType.Info);
+                EditorGUILayout.HelpBox("BehaviourManager is disabled", MessageType.Info);
                 return;
-            }*/
+            }
 
             m_scrollPosition = EditorGUILayout.BeginScrollView(m_scrollPosition);
             GUILayout.BeginHorizontal();

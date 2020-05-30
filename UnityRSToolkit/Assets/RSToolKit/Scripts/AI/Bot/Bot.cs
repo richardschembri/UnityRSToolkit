@@ -25,6 +25,37 @@ namespace RSToolkit.AI
 
         public bool DebugMode = false;
 
+        public virtual void ToggleComponentsForNetwork(bool owner)
+        {
+            if (!owner)
+            {
+                FSMRunnerComponent.enabled = false;
+                m_currentBotWanderComponent.enabled = false;
+                m_currentBotMovementComponent.enabled = false;
+                m_currentBotMovementComponent.GroundProximityCheckerComponent.enabled = false;
+            }
+            else
+            {
+                m_currentBotMovementComponent.GroundProximityCheckerComponent.enabled = true;
+                m_currentBotMovementComponent.enabled = true;
+                m_currentBotWanderComponent.enabled = true;
+                FSMRunnerComponent.enabled = true;
+            }
+        }
+
+        protected FiniteStateMachineRunner m_fsmRunnerComponent;
+        protected FiniteStateMachineRunner FSMRunnerComponent
+        {
+            get
+            {
+                if (m_fsmRunnerComponent == null)
+                {
+                    m_fsmRunnerComponent = GetComponent<FiniteStateMachineRunner>();
+                }
+                return m_fsmRunnerComponent;
+            }
+        }
+
         protected BotWander[] m_botWanderComponents;
         protected BotWander[] m_BotWanderComponents
         {
@@ -59,7 +90,7 @@ namespace RSToolkit.AI
                 m_botMovementComponents = value;
             }
         }
-        protected BotLocomotion m_currenBotMovementComponent;
+        protected BotLocomotion m_currentBotMovementComponent;
 
         protected void SetCurrentBotWander(BotWander b)
         {
@@ -84,7 +115,7 @@ namespace RSToolkit.AI
         {
             if (m_BotMovementComponents.Contains(b))
             {
-                m_currenBotMovementComponent = b;
+                m_currentBotMovementComponent = b;
             }
         }
 
@@ -120,6 +151,7 @@ namespace RSToolkit.AI
         public HashSet<Transform> NoticedTransforms { get; private set; } = new HashSet<Transform>();
         public float forgetTransformTimeout = -1f;
 
+        #region Interaction/Focus
         public Vector3? FocusedOnPosition
         {
             get
@@ -207,19 +239,20 @@ namespace RSToolkit.AI
             return IsWithinPersonalSpace(target.position);
         }
 
-        public void ResetInteractionCooldown(){
+        public void ResetInteractionCooldown()
+        {
             m_CanInteractFromTime = Time.time + InteractableCooldown;
         }
 
         private bool ChangeInteractionState(InteractionStates interactionState, bool force)
         {
-            if(interactionState == InteractionStates.NotInteracting)
+            if (interactionState == InteractionStates.NotInteracting)
             {
                 CurrentInteractionState = interactionState;
                 ResetInteractionCooldown();
                 return true;
             }
-            else if(force || Time.time > m_CanInteractFromTime)
+            else if (force || Time.time > m_CanInteractFromTime)
             {
                 CurrentInteractionState = interactionState;
                 return true;
@@ -230,7 +263,7 @@ namespace RSToolkit.AI
         public bool AttractMyAttention_ToTransform(Transform target, bool force, InteractionStates interactionState = InteractionStates.Interactor)
         {
 
-            if (IsWithinInteractionDistance(target))
+            if (IsWithinInteractionDistance(target) || force)
             {
                 if (ChangeInteractionState(interactionState, force))
                 {
@@ -243,12 +276,10 @@ namespace RSToolkit.AI
 
         }
 
-
-
         public bool AttractMyAttention_ToBot(Bot target, bool force, InteractionStates interactionState = InteractionStates.Interactor)
         {
 
-            if (IsWithinInteractionDistance(target.transform) || target.IsWithinInteractionDistance(transform))
+            if (IsWithinInteractionDistance(target.transform) || target.IsWithinInteractionDistance(transform) || force)
             {
                 if (ChangeInteractionState(interactionState, force))
                 {
@@ -382,7 +413,9 @@ namespace RSToolkit.AI
         {
             return target.FocusedOnTransform == transform || (target.CanInteract() && target.FocusedOnTransform == null && !target.NoticedTransforms.Contains(transform));
         }
+        #endregion Interaction/Focus
 
+        #region Wander
         public bool Wander()
         {
 
@@ -413,55 +446,59 @@ namespace RSToolkit.AI
         {
             return m_currentBotWanderComponent.CurrentState;
         }
+        #endregion Wander
 
+        #region Locomotion
         public void MoveTowardsPosition(bool fullspeed = true)
         {
-            m_currenBotMovementComponent.MoveTowardsPosition(fullspeed);
+            m_currentBotMovementComponent.MoveTowardsPosition(fullspeed);
         }
 
         public void MoveTowardsTarget(bool fullspeed = true)
         {
-            m_currenBotMovementComponent.MoveTowardsTarget(fullspeed);
+            m_currentBotMovementComponent.MoveTowardsTarget(fullspeed);
         }
 
         public void MoveToPosition(BotLocomotion.StopMovementConditions stopMovementCondition, bool fullspeed = true)
         {
-            m_currenBotMovementComponent.MoveToPosition(stopMovementCondition, fullspeed);
+            m_currentBotMovementComponent.MoveToPosition(stopMovementCondition, fullspeed);
         }
 
         public void MoveToTarget(BotLocomotion.StopMovementConditions stopMovementCondition, bool fullspeed = true)
         {
-            m_currenBotMovementComponent.MoveToTarget(stopMovementCondition, fullspeed);
+            m_currentBotMovementComponent.MoveToTarget(stopMovementCondition, fullspeed);
         }
 
         public void RotateTowardsPosition()
         {
-            m_currenBotMovementComponent.RotateTowardsPosition();
+            m_currentBotMovementComponent.RotateTowardsPosition();
         }
 
         public bool StopMoving()
         {
-            return m_currenBotMovementComponent.StopMoving();
+            return m_currentBotMovementComponent.StopMoving();
         }
 
         public BotLocomotion.LocomotionState GetMovementState()
         {
-            return m_currenBotMovementComponent.CurrentState;
+            return m_currentBotMovementComponent.CurrentState;
         }
 
         public bool IsMoveable()
         {
-            return m_currenBotMovementComponent != null;
+            return m_currentBotMovementComponent != null;
         }
+        #endregion Locomotion
 
+        #region MonoBehaviour Functions
         protected virtual void Awake()
         {
-            if (m_BotMovementComponents.Length > 0)
+            if (m_BotMovementComponents.Length > 0 && m_currentBotMovementComponent == null)
             {
                 SetCurrentBotMovement(m_BotMovementComponents[0]);
             }
 
-            if (m_BotWanderComponents.Length > 0)
+            if (m_BotWanderComponents.Length > 0 && m_currentBotWanderComponent == null)
             {
                 SetCurrentBotWander(m_BotWanderComponents[0]);
             }
@@ -477,7 +514,6 @@ namespace RSToolkit.AI
 #if UNITY_EDITOR
             ProximityHelpers.DrawGizmoProximity(transform, SqrInteractionMagnitude, IsWithinInteractionDistance());
 
-            
             if (FocusedOnTransform != null)
             {
                 var oldColor = UnityEditor.Handles.color;
@@ -495,6 +531,7 @@ namespace RSToolkit.AI
             ProximityHelpers.DrawGizmoProximity(transform, SqrPersonalSpaceMagnitude, IsWithinPersonalSpace());
 #endif
         }
+        #endregion MonoBehaviour Functions
 
     }
 }
