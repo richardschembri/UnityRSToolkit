@@ -4,19 +4,17 @@ using UnityEngine;
 
 namespace RSToolkit.Rythm
 {
+
     [DisallowMultipleComponent]
     public class RythmHitArea : MonoBehaviour
     {
+
+        public RectTransform RectTransformComponent { get; private set; }
+
         // Start is called before the first frame update
-        void Start()
+        void Awake()
         {
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
+            RectTransformComponent = GetComponent<RectTransform>();
         }
 
 

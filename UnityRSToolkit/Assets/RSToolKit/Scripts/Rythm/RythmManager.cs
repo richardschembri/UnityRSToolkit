@@ -12,11 +12,24 @@ namespace RSToolkit.Rythm
 
         public RythmListBox[] RythmScrollers { get; private set; }
 
+        [SerializeField]
+        private bool AutoSpawn = true;
+        [SerializeField]
+        private bool AutoStart = true;
+
         // Start is called before the first frame update
         void Awake()
         {
-            RythmScrollers = GetComponentsInChildren<RythmListBox>();
             HitAreaComponent = GetComponentInChildren<RythmHitArea>();
+            RythmScrollers = GetComponentsInChildren<RythmListBox>();
+            if (AutoSpawn)
+            {
+                SpawnPrompts();
+            }
+            if (AutoStart)
+            {
+                StartRythm();
+            }
         }
 
         public bool HasStarted()
@@ -47,10 +60,21 @@ namespace RSToolkit.Rythm
 
         public void SpawnPrompts(bool clearItems = true)
         {
+            RythmPrompt[] rythmPrompts;
             for (int i = 0; i < RythmScrollers.Length; i++)
             {
-                RythmScrollers[i].SpawnPrompts(clearItems);             
+                rythmPrompts = RythmScrollers[i].SpawnPrompts(clearItems);    
+                
+                for(int j = 0; j < rythmPrompts.Length; j++)
+                {
+                    rythmPrompts[j].OnRythmPrompted.AddListener(OnRythmPrompted_Listener);
+                }
             }
+        }
+
+        private void OnRythmPrompted_Listener(RythmPrompt prompt, float overlap)
+        {
+            Debug.Log($"Overlap: {prompt.name} [{overlap}]");
         }
 
     }

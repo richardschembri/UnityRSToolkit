@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 94012083}
   - component: {fileID: 94012087}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: Rythm Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -234,6 +234,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88e924b408fa9d4418df8bf89b006bfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AutoSpawn: 1
+  AutoStart: 1
 --- !u!1 &126782878
 GameObject:
   m_ObjectHideFlags: 0
@@ -1659,6 +1661,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1741004639}
     m_Modifications:
+    - target: {fileID: 4818360663381265953, guid: 913e8ca6e1afb7048ab76d790252bf6b,
+        type: 3}
+      propertyPath: promptKey
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 4818360663381266014, guid: 913e8ca6e1afb7048ab76d790252bf6b,
         type: 3}
       propertyPath: m_Name
@@ -2286,6 +2293,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1741004639}
     m_Modifications:
+    - target: {fileID: 4818360663381265953, guid: 913e8ca6e1afb7048ab76d790252bf6b,
+        type: 3}
+      propertyPath: promptKey
+      value: 97
+      objectReference: {fileID: 0}
     - target: {fileID: 4818360663381266014, guid: 913e8ca6e1afb7048ab76d790252bf6b,
         type: 3}
       propertyPath: m_Name

@@ -8,7 +8,9 @@ using UnityEngine.UI;
 namespace RSToolkit.Rythm
 {
     public class RythmListBox : UIListBox
-    {       
+    {
+        public KeyCode promptKey;
+
         public float tempo = 5f;
 
         public float BeatsPerSecond
@@ -21,14 +23,24 @@ namespace RSToolkit.Rythm
 
         public bool HasStarted { get; private set; } = false;
 
-        public RythmManager ParentRythmManager { get; private set; }
+        public RythmManager m_parentRythmManager;
+        public RythmManager ParentRythmManager
+        {
+            get
+            {
+                if(m_parentRythmManager == null)
+                {
+                    m_parentRythmManager = GetComponentInParent<RythmManager>();
+                }
+                return m_parentRythmManager;
+            }
+        }
 
         public RythmHitArea HitArea { get { return ParentRythmManager.HitAreaComponent; } }
 
         protected override void Awake()
         {
             base.Awake();
-            ParentRythmManager = GetComponent<RythmManager>();
         }
 
         protected override void Update()
@@ -51,17 +63,23 @@ namespace RSToolkit.Rythm
             HasStarted = false;
         }
 
-        public void SpawnPrompts(bool clearItems = true)
+        public RythmPrompt[] SpawnPrompts(bool clearItems = true)
         {
             if (clearItems)
             {
                 ClearSpawnedListItems();
             }
-            
-            for(int i = 0; i < 10; i++)
+
+            var rythmPrompts = new RythmPrompt[10];
+            for(int i = 0; i < rythmPrompts.Length; i++)
             {
-                AddListItem();
+                rythmPrompts[i] = AddListItem().GetComponent<RythmPrompt>();
+                rythmPrompts[i].name = $"Rythm Prompt {i}";
+                rythmPrompts[i].SetPrompt(promptKey);
+                rythmPrompts[i].SetPromptText($"{promptKey.ToString()} {i}");
             }
+
+            return rythmPrompts;
         }
 
         public bool HasPrompts()
@@ -71,12 +89,8 @@ namespace RSToolkit.Rythm
 
         private void OnShiftMostVertical_Listener(RectTransform toPlace, RectTransformHelpers.VerticalPosition verticalPosition)
         {
-            SetPrompt(toPlace.GetComponent<RythmPrompt>());
+            toPlace.GetComponent<RythmPrompt>().SetPrompt(promptKey);
         }
 
-        private void SetPrompt(RythmPrompt rythmPrompt)
-        {
-
-        }
     }
 }
