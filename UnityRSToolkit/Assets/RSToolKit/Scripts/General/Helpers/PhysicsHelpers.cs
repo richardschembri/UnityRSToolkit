@@ -19,10 +19,10 @@ namespace RSToolkit.Helpers
             ray.origin = source.ClosestPoint(position) + ray.direction.normalized * 0.05f;
         }
 
-        public static bool RaycastFromOutsideBounds(this Collider source, ref Ray ray, out RaycastHit hit, Vector3 position)
+        public static bool RaycastFromOutsideBounds(this Collider source, ref Ray ray, out RaycastHit hit, Vector3 position, float maxDistance = Mathf.Infinity)
         {
             source.SetRayFromOutsideBoundsTowards(ref ray, position);
-            return Physics.Raycast(ray, out hit);
+            return Physics.Raycast(ray, out hit, maxDistance);
         }
 
         public static bool LinecastFromOutsideBounds(this Collider source, out RaycastHit hit, Vector3 position)

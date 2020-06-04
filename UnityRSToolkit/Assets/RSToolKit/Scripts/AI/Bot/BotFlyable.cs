@@ -27,9 +27,6 @@ namespace RSToolkit.AI
             base.ToggleComponentsForNetwork(owner);
             if (!owner)
             {
-                m_currentBotWanderComponent.enabled = false;
-                m_currentBotMovementComponent.enabled = false;
-                m_currentBotMovementComponent.GroundProximityCheckerComponent.enabled = false;
                 BotNavMeshComponent.NavMeshAgentComponent.enabled = false;
                 BotFlyingComponent.Flying3DObjectComponent.enabled = false;
             }

@@ -69,13 +69,30 @@ namespace RSToolkit.AI.Helpers
 
         public static bool IsAboveNavMeshSurface(this NavMeshAgent agent, out Vector3 navPosition)
         {
-            var collider = agent.GetComponent<Collider>();
-            var bottomColliderPoint = collider.ClosestPointOnBounds(agent.transform.position + Vector3.down * ((agent.height / 2f) + 0.1f));
             RaycastHit rayHit;
+            return agent.IsAboveNavMeshSurface(out navPosition, out rayHit);
+        }
+
+        public static bool IsAboveNavMeshSurface(this NavMeshAgent agent, Collider collider, out Vector3 navPosition)
+        {
+            RaycastHit rayHit;
+            return agent.IsAboveNavMeshSurface(collider, out navPosition, out rayHit);
+        }
+
+        public static bool IsAboveNavMeshSurface(this NavMeshAgent agent, out Vector3 navPosition, out RaycastHit rayHit)
+        {
+            var collider = agent.GetComponent<Collider>();
+            return agent.IsAboveNavMeshSurface(collider, out navPosition, out rayHit);
+        }
+
+        public static bool IsAboveNavMeshSurface(this NavMeshAgent agent, Collider collider, out Vector3 navPosition, out RaycastHit rayHit)
+        {           
+            var bottomColliderPoint = collider.ClosestPointOnBounds(agent.transform.position + Vector3.down * ((agent.height / 2f) + 0.1f));
+
             NavMeshHit navHit;
             if (Physics.Raycast(bottomColliderPoint, Vector3.down, out rayHit))
             {
-                if(NavMesh.SamplePosition(rayHit.point, out navHit, 1f, NavMesh.AllAreas))
+                if (NavMesh.SamplePosition(rayHit.point, out navHit, 1f, NavMesh.AllAreas))
                 {
                     navPosition = navHit.position;
                     return true;
