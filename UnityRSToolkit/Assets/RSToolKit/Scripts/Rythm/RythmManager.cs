@@ -12,10 +12,14 @@ namespace RSToolkit.Rythm
 
         public RythmListBox[] RythmScrollers { get; private set; }
 
+        public RythmFactory Factory {get; private set;}
+
         [SerializeField]
         private bool AutoSpawn = true;
         [SerializeField]
         private bool AutoStart = true;
+
+        public float tempo = 150f;
 
         // Start is called before the first frame update
         void Awake()
@@ -64,6 +68,7 @@ namespace RSToolkit.Rythm
             for (int i = 0; i < RythmScrollers.Length; i++)
             {
                 rythmPrompts = RythmScrollers[i].SpawnPrompts(clearItems);    
+                RythmScrollers[i].tempo = tempo;
                 
                 for(int j = 0; j < rythmPrompts.Length; j++)
                 {
@@ -75,6 +80,10 @@ namespace RSToolkit.Rythm
         private void OnRythmPrompted_Listener(RythmPrompt prompt, float overlap)
         {
             Debug.Log($"Overlap: {prompt.name} [{overlap}]");
+        }
+
+        public void Initialize<T>(Dictionary<T, string> PromptMaps, T[][] prompts){
+            Factory = new RythmFactory<T>(PromptMaps, prompts);
         }
 
     }

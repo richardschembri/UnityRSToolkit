@@ -16,15 +16,12 @@ namespace RSToolkit.AI
         Overwrite,
     }
 
-
     public interface IFiniteStateMachine
     {
         MonoBehaviour Component { get; }
         FiniteStateMapping CurrentStateMap { get; }
         bool IsInTransition { get; }
     }
-
-
 
     public class FiniteStateMachine<T> : IFiniteStateMachine where T : struct, IConvertible, IComparable
     {
