@@ -48,6 +48,7 @@ namespace RSToolkit.AI
         {
             if(!refresh && m_tagLookOutForTransforms.Any())
             {
+                m_tagLookOutForTransforms = m_tagLookOutForTransforms.Where(t => t != null).ToList();
                 return m_tagLookOutForTransforms;
             }
 

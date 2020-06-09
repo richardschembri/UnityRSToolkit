@@ -14,6 +14,7 @@ namespace RSToolkit.AI
         public enum LocomotionState
         {
             NotMoving,
+            CannotMove,
             MovingToPosition,
             MovingToTarget
         }
@@ -113,18 +114,30 @@ namespace RSToolkit.AI
             MoveTowardsPosition(fullspeed);
         }
 
-        public void MoveToPosition(StopMovementConditions stopMovementCondition, bool fullspeed = true)
+        public bool MoveToPosition(StopMovementConditions stopMovementCondition, bool fullspeed = true)
         {
+            if (!CanMove())
+            {
+                return false;
+            }
             m_stopMovementCondition = stopMovementCondition;
             m_fullspeed = fullspeed;
             m_FSM.ChangeState(LocomotionState.MovingToPosition);
+
+            return true;
         }
 
-        public void MoveToTarget(StopMovementConditions stopMovementCondition, bool fullspeed = true)
+        public bool MoveToTarget(StopMovementConditions stopMovementCondition, bool fullspeed = true)
         {
+            if (!CanMove())
+            {
+                return false;
+            }
             m_stopMovementCondition = stopMovementCondition;
             m_fullspeed = fullspeed;
             m_FSM.ChangeState(LocomotionState.MovingToTarget);
+
+            return true;
         }
 
         public abstract void RotateTowardsPosition();
@@ -136,9 +149,19 @@ namespace RSToolkit.AI
                 || (m_stopMovementCondition == StopMovementConditions.AT_POSITION && transform.position == BotComponent.FocusedOnPosition.Value);
         }
 
+
+        public bool IsNotFocusedOrReachedDestination()
+        {
+            return BotComponent.FocusedOnPosition == null || reachedDestination();
+        }
+
         protected virtual void MovingToPosition_Update()
         {
-            if(BotComponent.FocusedOnPosition == null || reachedDestination())
+            if (!CanMove())
+            {
+                m_FSM.ChangeState(LocomotionState.CannotMove);
+            }
+            else if(IsNotFocusedOrReachedDestination())
             {
                 if(BotComponent.FocusedOnPosition != null)
                 {
@@ -155,7 +178,11 @@ namespace RSToolkit.AI
 
         protected virtual void MovingToTarget_Update()
         {
-            if (BotComponent.FocusedOnPosition == null || reachedDestination())
+            if (!CanMove())
+            {
+                m_FSM.ChangeState(LocomotionState.CannotMove);
+            }
+            else if (IsNotFocusedOrReachedDestination())
             {
                 m_FSM.ChangeState(LocomotionState.NotMoving);
             }
@@ -166,11 +193,22 @@ namespace RSToolkit.AI
             
         }
 
-        protected virtual void NotMoving_Enter()
+        protected virtual void CannotMove_Update()
         {
-            
+            if (CanMove())
+            {
+                m_FSM.ChangeState(LocomotionState.NotMoving);
+            }
         }
 
+        protected virtual void NotMoving_Enter()
+        {
+            if (!CanMove())
+            {
+                m_FSM.ChangeState(LocomotionState.CannotMove);
+            }
+        }
+        
         public bool StopMoving()
         {
             if(CurrentState != LocomotionState.NotMoving)
@@ -179,6 +217,11 @@ namespace RSToolkit.AI
                 return true;
             }
             return false;
+        }
+
+        protected virtual bool CanMove()
+        {
+            return true;
         }
 
         #region MonoBehaviour Functions

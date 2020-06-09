@@ -52,20 +52,34 @@ namespace RSToolkit.AI
 
         private void MoveTo(Vector3 destination, float speed, float angularSpeed)
         {
-            NavMeshAgentComponent.speed = speed;
-            NavMeshAgentComponent.angularSpeed = angularSpeed;
-            NavMeshAgentComponent.destination = destination;
-            NavMeshAgentComponent.stoppingDistance = 0f;
-            switch (m_stopMovementCondition)
+            try
             {
-                case StopMovementConditions.WITHIN_INTERACTION_DISTANCE:
-                    NavMeshAgentComponent.stoppingDistance = BotComponent.SqrInteractionMagnitude * .75f;
-                    break;
-                case StopMovementConditions.WITHIN_PERSONAL_SPACE:
-                    NavMeshAgentComponent.stoppingDistance = BotComponent.SqrPersonalSpaceMagnitude * .75f;
-                    break;
+
+
+                NavMeshAgentComponent.speed = speed;
+                NavMeshAgentComponent.angularSpeed = angularSpeed;
+                NavMeshAgentComponent.destination = destination;
+                NavMeshAgentComponent.stoppingDistance = 0f;
+                switch (m_stopMovementCondition)
+                {
+                    case StopMovementConditions.WITHIN_INTERACTION_DISTANCE:
+                        NavMeshAgentComponent.stoppingDistance = BotComponent.SqrInteractionMagnitude * .75f;
+                        break;
+                    case StopMovementConditions.WITHIN_PERSONAL_SPACE:
+                        NavMeshAgentComponent.stoppingDistance = BotComponent.SqrPersonalSpaceMagnitude * .75f;
+                        break;
+                }
+                NavMeshAgentComponent.isStopped = false;
+
             }
-            NavMeshAgentComponent.isStopped = false;
+            catch (System.Exception ex)
+            {
+                if (DebugMode)
+                {
+                    Debug.LogError($"Locomotion Error: {ex.Message}");
+                }
+                m_FSM.ChangeState(LocomotionState.CannotMove);
+            }
         }
 
         public override void MoveTowardsPosition(bool fullspeed = true)
@@ -115,8 +129,9 @@ namespace RSToolkit.AI
             return false;
         }
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             NavMeshAgentComponent.speed = walkSpeed;
             NavMeshAgentComponent.angularSpeed = walkRotationSpeed;
             //NavMeshAgentComponent.radius = BotComponent.SqrPersonalSpaceMagnitude;
@@ -155,6 +170,14 @@ namespace RSToolkit.AI
             {
                 NavMeshAgentComponent.isStopped = true;
             }
+        }
+
+
+        protected override bool CanMove()
+        {
+            return (NavMeshAgentComponent.speed > 0
+                && NavMeshAgentComponent.angularSpeed > 0
+                && isActiveAndEnabled);
         }
 
     }

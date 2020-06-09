@@ -110,7 +110,11 @@ namespace RSToolkit.AI
             if (movementTimeout > 0)
             {
                 m_movingToPosition_TimeOut = MovingToPosition_TimeOut();
-                BotComponent.MoveToPosition(BotLocomotion.StopMovementConditions.WITHIN_PERSONAL_SPACE, false);
+                if(!BotComponent.MoveToPosition(BotLocomotion.StopMovementConditions.WITHIN_PERSONAL_SPACE, false))
+                {
+                    m_FSM.ChangeState(WanderStates.CannotWander);
+                    return;
+                }
                 if (DebugMode)
                 {
                     Debug.Log($"{transform.name} Wandering to {BotComponent.FocusedOnPosition.ToString()}");

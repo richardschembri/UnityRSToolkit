@@ -12,7 +12,7 @@ namespace RSToolkit.Rythm
 
         public RythmListBox[] RythmScrollers { get; private set; }
 
-        public RythmFactory Factory {get; private set;}
+        //public RythmFactory Factory {get; private set;}
 
         [SerializeField]
         private bool AutoSpawn = true;
@@ -83,7 +83,7 @@ namespace RSToolkit.Rythm
         }
 
         public void Initialize<T>(Dictionary<T, string> PromptMaps, T[][] prompts){
-            Factory = new RythmFactory<T>(PromptMaps, prompts);
+            //Factory = new RythmFactory<T>(PromptMaps, prompts);
         }
 
     }

@@ -411,7 +411,11 @@ namespace RSToolkit.AI
 
         public bool CanInteractWith(Bot target)
         {
-            return target.FocusedOnTransform == transform || (target.CanInteract() && target.FocusedOnTransform == null && !target.NoticedTransforms.Contains(transform));
+            return target != null && (
+                target.FocusedOnTransform == transform 
+                || (target.CanInteract() && target.FocusedOnTransform == null 
+                        && !target.NoticedTransforms.Contains(transform))
+            );
         }
         #endregion Interaction/Focus
 
@@ -459,14 +463,14 @@ namespace RSToolkit.AI
             m_currentBotMovementComponent.MoveTowardsTarget(fullspeed);
         }
 
-        public void MoveToPosition(BotLocomotion.StopMovementConditions stopMovementCondition, bool fullspeed = true)
+        public bool MoveToPosition(BotLocomotion.StopMovementConditions stopMovementCondition, bool fullspeed = true)
         {
-            m_currentBotMovementComponent.MoveToPosition(stopMovementCondition, fullspeed);
+            return m_currentBotMovementComponent.MoveToPosition(stopMovementCondition, fullspeed);
         }
 
-        public void MoveToTarget(BotLocomotion.StopMovementConditions stopMovementCondition, bool fullspeed = true)
+        public bool MoveToTarget(BotLocomotion.StopMovementConditions stopMovementCondition, bool fullspeed = true)
         {
-            m_currentBotMovementComponent.MoveToTarget(stopMovementCondition, fullspeed);
+            return m_currentBotMovementComponent.MoveToTarget(stopMovementCondition, fullspeed);
         }
 
         public void RotateTowardsPosition()

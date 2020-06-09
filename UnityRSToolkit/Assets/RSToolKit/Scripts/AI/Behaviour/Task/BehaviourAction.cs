@@ -20,8 +20,9 @@ namespace RSToolkit.AI.Behaviour.Task
         public enum ActionRequest
         {
             START,
-            UPDATE,
-            CANCEL
+            UPDATE,            
+            CANCEL,
+            SKIP
         }
 
         private System.Func<bool> m_singleFrameFunc = null;
@@ -29,6 +30,7 @@ namespace RSToolkit.AI.Behaviour.Task
         private System.Func<ActionRequest, ActionResult> m_multiFrameRequestFunc = null;
         private System.Action m_singleFrameAction = null;
         private bool m_bWasBlocked = false;
+        private bool m_skipping = false;
 
         private ActionResult m_actionResult = ActionResult.PROGRESS;
         private ActionRequest m_actionRequest = ActionRequest.START;
@@ -89,8 +91,9 @@ namespace RSToolkit.AI.Behaviour.Task
         /// 
         /// The ActionRequest will give you a state information: 
         /// - START: First tick the action or BLOCKED was returned in the last tick.
-        /// - UPDATE: PROGRESS returned in the last tick. 
+        /// - UPDATE: PROGRESS returned in the last tick.
         /// - CANCEL: the action should be canceled and return SUCCESS or FAILED.
+        /// - SKIP: invoked by RequestSkipAction. The action should be skipped and return SUCCESS or FAILED. 
         /// </summary>
         /// <param name="multiFrameRequestFunc"></param>
         /// <param name="name"></param>
@@ -138,11 +141,18 @@ namespace RSToolkit.AI.Behaviour.Task
             }
         }
 
+        public void RequestSkipAction()
+        {
+            m_skipping = true;
+            RequestStopNode();
+        }
+
         #region Events
 
         private void OnStarted_Listener()
         {
             m_bWasBlocked = false;
+            m_skipping = false;
 
             if (m_multiFrameRequestFunc != null)
             {
@@ -158,7 +168,7 @@ namespace RSToolkit.AI.Behaviour.Task
             }
             else if (m_multiFrameRequestFunc != null)
             {
-                m_actionResult = m_multiFrameRequestFunc.Invoke(ActionRequest.CANCEL);
+                m_actionResult = m_multiFrameRequestFunc.Invoke(m_skipping ? ActionRequest.SKIP : ActionRequest.CANCEL);
             }
             OnStopped.Invoke(m_actionResult == ActionResult.SUCCESS);
         }
