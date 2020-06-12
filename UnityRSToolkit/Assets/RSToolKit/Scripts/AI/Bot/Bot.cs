@@ -453,6 +453,15 @@ namespace RSToolkit.AI
         #endregion Wander
 
         #region Locomotion
+
+        public float GetCurrentSpeed
+        {
+            get
+            {
+                return m_currentBotMovementComponent.CurrentSpeed;
+            }
+        }
+
         public void MoveTowardsPosition(bool fullspeed = true)
         {
             m_currentBotMovementComponent.MoveTowardsPosition(fullspeed);
