@@ -454,7 +454,7 @@ namespace RSToolkit.AI
 
         #region Locomotion
 
-        public float GetCurrentSpeed
+        public float CurrentSpeed
         {
             get
             {
