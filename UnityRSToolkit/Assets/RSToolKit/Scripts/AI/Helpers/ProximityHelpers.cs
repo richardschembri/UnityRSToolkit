@@ -31,7 +31,7 @@ namespace RSToolkit.Helpers
             {
                 return true;
 
-                return IsInLineOfSight(sourceTransform, targetTransform, GetDirection(sourceTransform, targetTransform));
+                // return IsInLineOfSight(sourceTransform, targetTransform, GetDirection(sourceTransform, targetTransform));
             }
 
             return false;

@@ -12,7 +12,6 @@
     [AddComponentMenu("RSToolKit/Controls/UIEditableListBoxItem")]
     public class UIEditableListBoxItem : Selectable, IPointerClickHandler, ISubmitHandler
     {
-        bool SelectableItem = false;
 
         int m_orderIndex;
         public int OrderIndex {get{return m_orderIndex;} set{m_orderIndex = value;}}

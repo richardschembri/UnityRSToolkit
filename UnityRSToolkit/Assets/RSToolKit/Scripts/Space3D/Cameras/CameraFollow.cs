@@ -7,7 +7,7 @@ namespace RSToolkit.Space3D.Cameras
     public class CameraFollow : MonoBehaviour
     {
         [SerializeField]
-        private Transform target;
+        private Transform target = null;
         
         private Vector3 m_velocity;
         public Vector3 TrailPosition = new Vector3(0,1,-3);

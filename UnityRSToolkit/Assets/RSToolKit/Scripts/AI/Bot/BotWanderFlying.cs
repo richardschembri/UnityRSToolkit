@@ -33,7 +33,7 @@ namespace RSToolkit.AI
             return Mathf.Abs(BotFlyingComponent.Flying3DObjectComponent.MovementFlightThrust.x) > 0f
                 && Mathf.Abs(BotFlyingComponent.Flying3DObjectComponent.MovementFlightThrust.z) > 0f;
         }
-        Ray m_wanderray = new Ray();
+
         RaycastHit m_wanderhit;
 
         protected override Vector3 GetNewWanderPosition(float radius)

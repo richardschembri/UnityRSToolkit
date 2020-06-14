@@ -36,7 +36,6 @@ namespace RSToolkit.AI.Behaviour
             {
                 case NodeType.TASK:
                     throw new System.Exception("Tasks don`t have children");
-                    break;
                 case NodeType.DECORATOR:
                     if (Children.Count > 1)
                     {
