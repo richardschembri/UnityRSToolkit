@@ -80,9 +80,9 @@ namespace RSToolkit.AI.Behaviour
                 }
             }
 
-            if (stopCurrentTree && CurrentTree != null)
+            if (stopCurrentTree)
             {
-                CurrentTree.RequestStopNode();
+                RequestStopTree();
             }
 
             CurrentTree = behaviourtree;
@@ -97,6 +97,15 @@ namespace RSToolkit.AI.Behaviour
                 CurrentTree.StartNode();                
                 //CurrentTree.Children[0].StartNode();                
                 return true;
+            }
+            return false;
+        }
+
+        public bool RequestStopTree()
+        {
+            if(CurrentTree != null)
+            {
+                return CurrentTree.RequestStopNode();
             }
             return false;
         }

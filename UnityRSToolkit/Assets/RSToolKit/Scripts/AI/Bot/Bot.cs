@@ -501,6 +501,11 @@ namespace RSToolkit.AI
         {
             return m_currentBotMovementComponent != null;
         }
+
+        public void AnimateLocomotion()
+        {
+            m_currentBotMovementComponent.Animate();
+        }
         #endregion Locomotion
 
         #region MonoBehaviour Functions

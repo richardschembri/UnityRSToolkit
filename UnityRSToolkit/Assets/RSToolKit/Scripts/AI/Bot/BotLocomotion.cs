@@ -224,6 +224,11 @@ namespace RSToolkit.AI
             return true;
         }
 
+        public void Animate()
+        {
+            CharacterAnimParams.TrySetSpeed(BotComponent.AnimatorComponent, CurrentSpeed);
+        }
+
         #region MonoBehaviour Functions
         protected virtual void Awake()
         {
@@ -232,7 +237,7 @@ namespace RSToolkit.AI
 
         protected virtual void Update()
         {
-            CharacterAnimParams.TrySetSpeed(BotComponent.AnimatorComponent, CurrentSpeed);
+            Animate();
         }
         #endregion MonoBehaviour Functions
 
