@@ -29,6 +29,7 @@ namespace RSToolkit.AI.Behaviour.Task
             this.WaitSeconds = seconds;
             this.randomVariance = randomVariance;
             OnStarted.AddListener(OnStarted_Listener);
+            OnStartedSilent.AddListener(OnStartedSilent_Listener);
             OnStopping.AddListener(OnStopping_Listener);
         }
         #region Constructors
@@ -56,15 +57,15 @@ namespace RSToolkit.AI.Behaviour.Task
 
         #region Events
 
-        private void OnStarted_Listener()
+        private void OnStarted_Common()
         {
             float seconds = WaitSeconds;
 
-            if(seconds < 0)
+            if (seconds < 0)
             {
                 seconds = 0;
             }
-            if(randomVariance >= 0f)
+            if (randomVariance >= 0f)
             {
                 m_waitTimout = AddTimer(seconds, randomVariance, 0, OnTimeOut);
             }
@@ -74,6 +75,15 @@ namespace RSToolkit.AI.Behaviour.Task
             }
         }
 
+        private void OnStarted_Listener()
+        {
+            OnStarted_Common();
+        }
+
+        private void OnStartedSilent_Listener()
+        {
+            OnStarted_Common();
+        }
 
         private void OnStopping_Listener()
         {

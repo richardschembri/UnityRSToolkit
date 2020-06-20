@@ -9,8 +9,9 @@ namespace RSToolkit.AI.Behaviour.Decorator
     /// </summary>
     public class BehaviourRepeater : BehaviourParentNode
     {
-        int m_totalLoops = -1;
-        int m_loopCount = 0;
+        private bool m_loopCountSkip = false;
+        public int TotalLoops { get; private set; }  = -1;
+        public int LoopCount { get; private set; } = 0;
 
         NodeTimer m_restartChildTimer;
 
@@ -20,19 +21,45 @@ namespace RSToolkit.AI.Behaviour.Decorator
         /// <param name="totalLoops">The amount of times the child node is looped. If -1 it will loop indefinately unless stopped manually.</param>
         public BehaviourRepeater(int totalLoops = -1) : base("Repeater", NodeType.DECORATOR)
         {
-            m_totalLoops = totalLoops;
+            TotalLoops = totalLoops;
             OnStarted.AddListener(OnStarted_Listener);
+            OnStartedSilent.AddListener(OnStartedSilent_Listener);
             OnStopping.AddListener(OnStopping_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
         }
 
+        public bool StartNode(int loopCount, bool silent = false)
+        {
+            LoopCount = loopCount;
+            m_loopCountSkip = true;
+            return StartNode(silent);
+        }
+
         #region Events
+
+        private void OnStarted_Common()
+        {
+            RemoveTimer(m_restartChildTimer);
+
+            if (!m_loopCountSkip)
+            {
+                LoopCount = 0;
+            }
+            else
+            {
+                m_loopCountSkip = false;
+            }
+        }
 
         private void OnStarted_Listener()
         {
-            RemoveTimer(m_restartChildTimer);
-            m_loopCount = 0;
+            OnStarted_Common();
             Children[0].StartNode();
+        }
+
+        private void OnStartedSilent_Listener()
+        {
+            OnStarted_Common();
         }
 
         private void OnStopping_Listener()
@@ -45,7 +72,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
             }
             else
             {
-                OnStopped.Invoke(m_totalLoops == -1);
+                OnStopped.Invoke(TotalLoops == -1);
             }
         }
 
@@ -53,7 +80,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
         {
             if (success)
             {
-                if(State == NodeState.STOPPING || (m_totalLoops >= 0 && ++m_loopCount >= m_totalLoops))
+                if(State == NodeState.STOPPING || (TotalLoops >= 0 && ++LoopCount >= TotalLoops))
                 {
             
                     OnStopped.Invoke(true);

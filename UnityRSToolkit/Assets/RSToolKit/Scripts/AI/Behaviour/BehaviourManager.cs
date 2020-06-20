@@ -17,6 +17,11 @@ namespace RSToolkit.AI.Behaviour
         public BehaviourParentNode CurrentTree { get; private set; } = null;
         public BehaviourBlackboard CurrentBlackboard { get; private set; } = null;
 
+        /// <summary>
+        /// Used for when the Behaviour Tree is mimicking another tree (ex: network peer)
+        /// </summary>
+        public bool Silent { get; private set; } = false;
+
         /*
         public void AddBehaviourTree(BehaviourNode behaviourtree)
         {
@@ -89,12 +94,17 @@ namespace RSToolkit.AI.Behaviour
             return true;
         }
 
-        // To Refactor
-        public bool StartTree()
+        /// <summary>
+        /// Starts the current behaviour tree
+        /// </summary>
+        /// <param name="silent">If true will not invoke the OnStarted event</param>
+        /// <returns>If node successfully started</returns>
+        public bool StartTree(bool silent = false)
         {
             if (CurrentTree != null && CurrentTree.Children.Any())
             {
-                CurrentTree.StartNode();                
+                CurrentTree.StartNode(silent);
+                Silent = silent;
                 //CurrentTree.Children[0].StartNode();                
                 return true;
             }
@@ -113,6 +123,10 @@ namespace RSToolkit.AI.Behaviour
         private void Update()
         {
             BehaviourNode.UpdateTime(Time.deltaTime);
+            if (Silent)
+            {
+                return;
+            }
             CurrentTree?.UpdateRecursively();
             CurrentBlackboard?.Update();
         }

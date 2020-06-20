@@ -19,6 +19,7 @@ namespace RSToolkit.AI.Behaviour
         private void Init(float limit, float? randomVariation, bool waitForChildButFailOnLimitReached)
         {
             OnStarted.AddListener(OnStarted_Listener);
+            OnStartedSilent.AddListener(OnStartedSilent_Listener);
             OnStopping.AddListener(OnStopping_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
 
@@ -62,11 +63,21 @@ namespace RSToolkit.AI.Behaviour
 
         #region Events
 
-        private void OnStarted_Listener()
+        private void OnStarted_Common()
         {
             m_isLimitReached = false;
             AddTimer(m_limit, m_randomVariation, 0, OnTimeout);
+        }
+
+        private void OnStarted_Listener()
+        {
+            OnStarted_Common();
             Children[0].StartNode();
+        }
+
+        private void OnStartedSilent_Listener()
+        {
+            OnStarted_Common();
         }
 
         private void OnStopping_Listener()

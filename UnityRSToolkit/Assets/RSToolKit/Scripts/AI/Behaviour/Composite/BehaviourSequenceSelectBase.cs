@@ -14,6 +14,7 @@ namespace RSToolkit.AI.Behaviour.Composite
         {
             IsRandom = isRandom;
             OnStarted.AddListener(OnStarted_Listener);
+            OnStartedSilent.AddListener(OnStartedSilent_Listener);
             OnStopping.AddListener(OnStopping_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
         }
@@ -47,14 +48,25 @@ namespace RSToolkit.AI.Behaviour.Composite
         {
             m_index = -1;
         }
-        protected virtual void OnStarted_Listener()
+
+        private void OnStarted_Common()
         {
             ResetIndex();
             if (IsRandom)
             {
                 ShuffleChildren();
             }
+        }
+
+        protected virtual void OnStarted_Listener()
+        {
+            OnStarted_Common();
             ProcessChildNodeSequence();
+        }
+
+        protected virtual void OnStartedSilent_Listener()
+        {
+            OnStarted_Common();
         }
 
         private void OnStopping_Listener()

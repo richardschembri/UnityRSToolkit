@@ -37,6 +37,7 @@ namespace RSToolkit.AI.Behaviour.Task
         private void Init()
         {
             OnStarted.AddListener(OnStarted_Listener);
+            OnStartedSilent.AddListener(OnStartedSilent_Listener);
             OnStopping.AddListener(OnStopping_Listener);
             m_actionResult = ActionResult.PROGRESS;
         }
@@ -148,8 +149,7 @@ namespace RSToolkit.AI.Behaviour.Task
         }
 
         #region Events
-
-        private void OnStarted_Listener()
+        private void OnStarted_Common()
         {
             m_bWasBlocked = false;
             m_skipping = false;
@@ -158,6 +158,16 @@ namespace RSToolkit.AI.Behaviour.Task
             {
                 m_actionRequest = ActionRequest.START;
             }
+        }
+
+        private void OnStarted_Listener()
+        {
+            OnStarted_Common();
+        }
+
+        private void OnStartedSilent_Listener()
+        {
+            OnStarted_Common();
         }
 
         private void OnStopping_Listener()

@@ -46,17 +46,29 @@ namespace RSToolkit.AI.Behaviour
             m_failureStopCondition = failureStopCondition;
 
             OnStarted.AddListener(OnStarted_Listener);
+            OnStartedSilent.AddListener(OnStartedSilent_Listener);
             OnStopping.AddListener(OnStopping_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
+            OnChildNodeStoppedSilent.AddListener(OnChildNodeStoppedSilent_Listener);
         }
 
         #region Events
-        private void OnStarted_Listener()
+        private void OnStarted_Common()
         {
             m_stoppedByChildren = false;
             m_succeededCount = 0;
-            m_failedCount = 0;
+            m_failedCount = 0;            
+        }
+
+        private void OnStarted_Listener()
+        {
+            OnStarted_Common();
             StartChildren();
+        }
+
+        private void OnStartedSilent_Listener()
+        {
+            OnStarted_Common();
         }
 
         private void OnStopping_Listener()
@@ -64,7 +76,8 @@ namespace RSToolkit.AI.Behaviour
             StopChildren();
         }
 
-        private void OnChildNodeStopped_Listener(BehaviourNode child, bool child_success)
+
+        private void OnChildNodeStopped_Common(BehaviourNode child, bool child_success, bool silent)
         {
             int child_count = Children.Count();
             if (child_success)
@@ -73,7 +86,7 @@ namespace RSToolkit.AI.Behaviour
                 bool allChildrenStarted = RunningChildrenCount + m_succeededCount + m_failedCount == child_count;
                 if (allChildrenStarted)
                 {
-                    if(RunningChildrenCount == 0)
+                    if (RunningChildrenCount == 0)
                     {
                         if (m_failureStopCondition == StopCondition.ONE_CHILD && m_failedCount > 0)
                         {
@@ -91,21 +104,39 @@ namespace RSToolkit.AI.Behaviour
                         {
                             m_success = false;
                         }
-                        OnStopped.Invoke(m_success);
-                    }else if (!m_stoppedByChildren)
+                        if (!silent)
+                        {
+                            OnStopped.Invoke(m_success);
+                        }
+                    }
+                    else if (!m_stoppedByChildren)
                     {
-                        if(m_failureStopCondition == StopCondition.ONE_CHILD && m_failedCount > 0)
+                        if (m_failureStopCondition == StopCondition.ONE_CHILD && m_failedCount > 0)
                         {
                             m_success = false;
                             m_stoppedByChildren = true;
-                            StopChildren();
+                            if (!silent){
+                                StopChildren();
+                            }
+                            
                         }
 
-                        
+
                     }
                 }
             }
         }
+
+        private void OnChildNodeStopped_Listener(BehaviourNode child, bool child_success)
+        {
+            OnChildNodeStopped_Common(child, child_success, false);
+        }
+
+        private void OnChildNodeStoppedSilent_Listener(BehaviourNode child, bool child_success)
+        {
+            OnChildNodeStopped_Common(child, child_success, true);
+        }
+
         #endregion Events
 
         protected void StartChildren()

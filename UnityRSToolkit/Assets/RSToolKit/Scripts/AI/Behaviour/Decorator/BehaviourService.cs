@@ -35,6 +35,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
         private void Init(System.Action serviceAction)
         {
             OnStarted.AddListener(OnStarted_Listener);
+            OnStartedSilent.AddListener(OnStartedSilent_Listener);
             OnStopping.AddListener(OnStopping_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
             m_serviceAction = serviceAction;
@@ -81,9 +82,9 @@ namespace RSToolkit.AI.Behaviour.Decorator
 
         #region Events
 
-        private void OnStarted_Listener()
+        private void OnStarted_Common()
         {
-            if(m_interval <= 0f)
+            if (m_interval <= 0f)
             {
                 // AddUpdateObserver
                 m_serviceTimer = AddTimer(0f, 0f, -1, m_serviceAction);
@@ -97,9 +98,20 @@ namespace RSToolkit.AI.Behaviour.Decorator
             {
                 InvokeServiceActionAtRandomInterval();
             }
+        }
+
+        private void OnStarted_Listener()
+        {
+            OnStarted_Common();
             Children[0].StartNode();
         }
-       
+
+        private void OnStartedSilent_Listener()
+        {
+            OnStarted_Common();
+        }
+
+
         private void OnStopping_Listener()
         {
             Children[0].RequestStopNode();

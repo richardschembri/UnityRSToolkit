@@ -69,6 +69,12 @@ namespace RSToolkit.AI.Behaviour
         }
 
         public static float ElapsedTime { get; private set; } = 0f;
+
+        public static void OverrideElapsedTime(float elapsedTime)
+        {
+            ElapsedTime = elapsedTime;
+        }
+
         public static void UpdateTime(float deltaTime)
         {
             ElapsedTime += deltaTime;
@@ -149,10 +155,11 @@ namespace RSToolkit.AI.Behaviour
             }
         }
         public UnityEvent OnStarted { get; private set; } = new UnityEvent();
+        public UnityEvent OnStartedSilent { get; private set; } = new UnityEvent();
         public UnityEvent OnStopping { get; private set; } = new UnityEvent();
         public class OnStoppedEvent : UnityEvent<bool> { };
         public OnStoppedEvent OnStopped { get; private set; } = new OnStoppedEvent();
-
+        public OnStoppedEvent OnStoppedSilent { get; private set; } = new OnStoppedEvent();
         /*
         public BehaviourNode GetRoot()
         {
@@ -220,6 +227,7 @@ namespace RSToolkit.AI.Behaviour
             m_timers.Remove(to_remove);
         }
 
+        /*
         public bool StartNode()
         {
             if(this.State != NodeState.INACTIVE)
@@ -231,8 +239,37 @@ namespace RSToolkit.AI.Behaviour
             OnStarted.Invoke();
             return true;
         }
+        */
 
-        public bool RequestStopNode()
+        /// <summary>
+        /// Starts the node
+        /// </summary>
+        /// <param name="silent">If true will not invoke the OnStarted event</param>
+        /// <returns>If node successfully started</returns>
+        public bool StartNode(bool silent = false)
+        {
+            if (this.State != NodeState.INACTIVE || (Parent != null && Parent.State != NodeState.ACTIVE))
+            {
+                return false;
+            }
+            this.Result = null;
+            this.State = NodeState.ACTIVE;
+            if (!silent)
+            {
+                OnStarted.Invoke();
+            }
+            else
+            {
+                OnStartedSilent.Invoke();
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Initiates the stopping process
+        /// </summary>
+        /// <returns>If it successfully initiated the stopping process</returns>
+        public bool RequestStopNode(bool silent = false)
         {
             if (this.State == NodeState.ACTIVE)
             {
@@ -243,11 +280,36 @@ namespace RSToolkit.AI.Behaviour
             return false;
         }
 
+        /// <summary>
+        /// Forces the node to be INACTIVE, bypassing the STOPPING state.
+        /// This is a very dangerous method that can cause unexpected behaviour!
+        /// </summary>
+        /// <param name="success">If the node was successful</param>
+        /// <param name="silent">If true will not invoke the OnStarted event</param>
+        /// <returns></returns>
+        public bool ForceStopNode(bool success, bool silent = false)
+        {
+            if (this.State != NodeState.INACTIVE)
+            {
+                if (!silent)
+                {
+                    OnStopped.Invoke(success);
+                }
+                else
+                {
+                    OnStoppedSilent.Invoke(success);
+                }
+                return true;
+            }
+            return false;
+        }
+
         public BehaviourNode(string name, NodeType type)
         {
             this.Name = name;
             this.Type = type;
             OnStopped.AddListener(OnStopped_Listener);
+            OnStoppedSilent.AddListener(OnStoppedSilent_Listener);
 #if UNITY_EDITOR
             InitDebugTools();
 #endif
@@ -258,6 +320,13 @@ namespace RSToolkit.AI.Behaviour
             this.State = NodeState.INACTIVE;
             this.Result = success;
             Parent?.OnChildNodeStopped.Invoke(this, success);
+        }
+
+        private void OnStoppedSilent_Listener(bool success)
+        {
+            this.State = NodeState.INACTIVE;
+            this.Result = success;
+            Parent?.OnChildNodeStoppedSilent.Invoke(this, success);
         }
 
         public void UpdateTimers()

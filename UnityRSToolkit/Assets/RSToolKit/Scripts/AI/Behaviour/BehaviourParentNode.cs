@@ -12,6 +12,7 @@ namespace RSToolkit.AI.Behaviour
         private List<BehaviourNode> m_children = new List<BehaviourNode>();
         public class OnChildNodeStoppedEvent : UnityEvent<BehaviourNode, bool> { }
         public OnChildNodeStoppedEvent OnChildNodeStopped { get; private set; } = new OnChildNodeStoppedEvent();
+        public OnChildNodeStoppedEvent OnChildNodeStoppedSilent { get; private set; } = new OnChildNodeStoppedEvent();
         public class OnChildNodeAddRemoveEvent : UnityEvent<BehaviourNode, BehaviourNode> { } // parent, child
         public OnChildNodeAddRemoveEvent OnChildNodeAdded = new OnChildNodeAddRemoveEvent();
         public OnChildNodeAddRemoveEvent OnChildNodeRemoved = new OnChildNodeAddRemoveEvent();

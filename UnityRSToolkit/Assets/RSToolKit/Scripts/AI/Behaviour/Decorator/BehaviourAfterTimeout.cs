@@ -21,6 +21,7 @@ namespace RSToolkit.AI.Behaviour
         private void Init(float limit, float? randomVariation = null, bool waitOnFailure = false)
         {
             OnStarted.AddListener(OnStarted_Listener);
+            OnStartedSilent.AddListener(OnStartedSilent_Listener);
             OnStopping.AddListener(OnStopping_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
 
@@ -77,11 +78,23 @@ namespace RSToolkit.AI.Behaviour
         
         #region Events
 
+        private void OnStarted_Common()
+        {
+            RemoveTimer(m_timeoutTimer);
+            m_timeoutTimer = AddTimer(m_limit, m_randomVariation, 0, OnTimeout);
+        }
+
         private void OnStarted_Listener()
         {
-            m_timeoutTimer = AddTimer(m_limit, m_randomVariation, 0, OnTimeout);
+            OnStarted_Common();
             Children[0].StartNode();
         }
+
+        private void OnStartedSilent_Listener()
+        {
+            OnStarted_Common();
+        }
+
         private void OnStopping_Listener()
         {
             RemoveTimer(m_timeoutTimer);

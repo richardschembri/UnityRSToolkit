@@ -24,7 +24,9 @@ namespace RSToolkit.AI.Behaviour.Decorator
         public BehaviourWaitForCondition(Func<bool> isConditionMetFunc, float checkInterval, float randomVariance) : base("WaitForCondition", NodeType.DECORATOR)
         {
             OnStarted.AddListener(OnStarted_Listener);
-            OnStopped.AddListener(OnStopped_Listener);
+
+            OnStopping.AddListener(OnStopping_Listener);
+            OnStoppedSilent.AddListener(OnStoppedSilent_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
 
             m_isConditionMetFunc = isConditionMetFunc ;
@@ -58,7 +60,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
                 Children[0].StartNode();
             }
         }
-        private void OnStopped_Listener(bool success)
+        private void OnStopping_Listener()
         {
             RemoveTimer(m_conditionTimer);
             if(Children[0].State == NodeState.ACTIVE)
@@ -69,6 +71,11 @@ namespace RSToolkit.AI.Behaviour.Decorator
             {
                 OnStopped.Invoke(false);
             }
+        }
+
+        private void OnStoppedSilent_Listener(bool success)
+        {
+            RemoveTimer(m_conditionTimer);
         }
 
         private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
