@@ -38,6 +38,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
             OnStartedSilent.AddListener(OnStartedSilent_Listener);
             OnStopping.AddListener(OnStopping_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
+            OnChildNodeStoppedSilent.AddListener(OnChildNodeStoppedSilent_Listener);
             m_serviceAction = serviceAction;
 #if UNITY_EDITOR
             DebugTools.GUIlabel = "every tick";
@@ -117,6 +118,9 @@ namespace RSToolkit.AI.Behaviour.Decorator
             Children[0].RequestStopNode();
         }
 
+        private void OnChildNodeStopped_Common(BehaviourNode child, bool success){
+            RemoveTimer(m_serviceTimer);
+        }
         private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
         {
             /*
@@ -129,8 +133,13 @@ namespace RSToolkit.AI.Behaviour.Decorator
                 m_serviceAction();
                 AddRandomTimer();
             }*/
-            RemoveTimer(m_serviceTimer);
+            OnChildNodeStopped_Common(child, success);
             OnStopped.Invoke(success);
+        }
+
+        private void OnChildNodeStoppedSilent_Listener(BehaviourNode child, bool success)
+        {
+            OnChildNodeStopped_Common(child, success);
         }
 
         #endregion Events

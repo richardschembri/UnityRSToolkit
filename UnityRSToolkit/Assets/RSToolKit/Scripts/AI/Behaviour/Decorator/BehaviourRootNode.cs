@@ -20,6 +20,7 @@ namespace RSToolkit.AI.Behaviour
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
             //OnStopped.AddListener(OnStopped_Listener);
             OnStopping.AddListener(OnStopping_Listener);
+            OnStoppingSilent.AddListener(OnStoppingSilent_Listener);
             OnStarted.AddListener(OnStarted_Listener);
         }
 
@@ -57,6 +58,15 @@ namespace RSToolkit.AI.Behaviour
                 RemoveTimer(m_rootTimer);
             }
             OnStopped.Invoke(true);
+        }
+
+        private void OnStoppingSilent_Listener(){
+
+            if (this.Children[0].State != NodeState.ACTIVE)
+            {
+            
+                RemoveTimer(m_rootTimer);
+            }
         }
 
         #endregion Events

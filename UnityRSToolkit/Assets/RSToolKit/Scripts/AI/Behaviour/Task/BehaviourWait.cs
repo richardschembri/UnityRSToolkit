@@ -31,6 +31,7 @@ namespace RSToolkit.AI.Behaviour.Task
             OnStarted.AddListener(OnStarted_Listener);
             OnStartedSilent.AddListener(OnStartedSilent_Listener);
             OnStopping.AddListener(OnStopping_Listener);
+            OnStoppingSilent.AddListener(OnStoppingSilent_Listener);
         }
         #region Constructors
 
@@ -88,6 +89,10 @@ namespace RSToolkit.AI.Behaviour.Task
         private void OnStopping_Listener()
         {
             OnTimeOut();
+        }
+
+        private void OnStoppingSilent_Listener(){
+            RemoveTimer(m_waitTimout);
         }
 
         #endregion Events

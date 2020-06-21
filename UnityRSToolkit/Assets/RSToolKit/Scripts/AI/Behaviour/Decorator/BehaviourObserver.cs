@@ -53,6 +53,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
             OnStarted.AddListener(OnStarted_Listener);
             OnStopping.AddListener(OnStopping_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
+            OnChildNodeStoppedSilent.AddListener(OnChildNodeStoppedSilent_Listener);
 
             m_abortRule = abortRule;
             m_isObserving = false;
@@ -99,14 +100,24 @@ namespace RSToolkit.AI.Behaviour.Decorator
         {
             Children[0].StartNode();
         }
-        private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
-        {
+
+        private void OnChildNodeStopped_Common(BehaviourNode child, bool success){
             if((Parent.Type == NodeType.COMPOSITE && Parent.State != NodeState.ACTIVE) 
                 || m_abortRule == AbortRule.NONE || m_abortRule == AbortRule.SELF)
             {
                 StopActivelyObserving();
             }
+        }
+
+        private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
+        {
+            OnChildNodeStopped_Common(child, success);
             OnStopped.Invoke(success);
+        }
+
+        private void OnChildNodeStoppedSilent_Listener(BehaviourNode child, bool success)
+        {
+            OnChildNodeStopped_Common(child, success);
         }
 
         private void StopActivelyObserving()

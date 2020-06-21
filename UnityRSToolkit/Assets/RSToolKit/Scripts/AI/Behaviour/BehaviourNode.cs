@@ -157,6 +157,7 @@ namespace RSToolkit.AI.Behaviour
         public UnityEvent OnStarted { get; private set; } = new UnityEvent();
         public UnityEvent OnStartedSilent { get; private set; } = new UnityEvent();
         public UnityEvent OnStopping { get; private set; } = new UnityEvent();
+        public UnityEvent OnStoppingSilent { get; private set; } = new UnityEvent();
         public class OnStoppedEvent : UnityEvent<bool> { };
         public OnStoppedEvent OnStopped { get; private set; } = new OnStoppedEvent();
         public OnStoppedEvent OnStoppedSilent { get; private set; } = new OnStoppedEvent();
@@ -274,7 +275,11 @@ namespace RSToolkit.AI.Behaviour
             if (this.State == NodeState.ACTIVE)
             {
                 this.State = NodeState.STOPPING;
-                OnStopping.Invoke();
+                if(!silent){
+                    OnStopping.Invoke();
+                }else{
+                    OnStoppingSilent.Invoke();
+                }
                 return true;
             }
             return false;

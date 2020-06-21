@@ -22,7 +22,9 @@ namespace RSToolkit.AI.Behaviour
 
             OnStarted.AddListener(OnStarted_Listener);
             OnStopping.AddListener(OnStopping_Listener);
+            OnStoppingSilent.AddListener(OnStoppingSilent_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
+            OnChildNodeStoppedSilent.AddListener(OnChildNodeStoppedSilent_Listener);
 
             m_startAfterChild = false;
             m_cooldownTime = cooldownTime;
@@ -212,10 +214,15 @@ namespace RSToolkit.AI.Behaviour
             }
         }
 
-        private void OnStopping_Listener()
+        private void OnStopping_Common()
         {
             m_isReady = true;
             RemoveTimer(m_timeoutTimer);
+        }
+
+        private void OnStopping_Listener()
+        {
+            OnStopping_Common();
             if (Children[0].State == NodeState.ACTIVE)
             {
                 Children[0].RequestStopNode();
@@ -225,7 +232,11 @@ namespace RSToolkit.AI.Behaviour
                 OnStopped.Invoke(false);
             }
         }
-        private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
+
+        private void OnStoppingSilent_Listener(){
+            OnStopping_Common();
+        }
+        private void OnChildNodeStopped_Common(BehaviourNode child, bool success)
         {
             if (m_resetOnFailiure && !success)
             {
@@ -236,7 +247,17 @@ namespace RSToolkit.AI.Behaviour
             {
                 AddTimer(m_cooldownTime, m_randomVariation, 0, OnTimeout);
             }
+        }
+
+        private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
+        {
+            OnChildNodeStopped_Common(child, success);
             OnStopped.Invoke(success);
+        }
+
+        private void OnChildNodeStoppedSilent_Listener(BehaviourNode child, bool success)
+        {
+            OnChildNodeStopped_Common(child, success);
         }
 
         #endregion Events
