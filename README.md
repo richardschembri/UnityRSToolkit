@@ -51,12 +51,18 @@ A simple toolkit for the Unity Engine. Controls / Components are designed to be 
     * Chase camera
 
 ### AI
-* **Wander Functionality**
-    * NavMesh Wander
-    * Flying Wander
 * **Vision**
 * **Interaction Functionality**
-* **Finite State Machine integration**
+#### Finite State Machine
+
+* **Flight state machine**
+    * Land/Takeoff/Flying/NotFlying states
+* **Wander state machine**
+    * NavMesh Wander
+    * Flying Wander
+
+#### Behaviour Tree
+* [README found here](/UnityRSToolkit/Assets/RSToolKit/Scripts/AI/Behaviour/README.md)
 
 ## To Do
 * Behaviour Tree

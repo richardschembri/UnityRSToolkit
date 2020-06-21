@@ -1,9 +1,11 @@
 # RSToolkit Behaviour AI
-Started as reimplementation of [NPBehave](https://github.com/meniku/NPBehave) in order to learn how behaviour trees work but morphed it's own beast.
+Started as reimplementation of [NPBehave](https://github.com/meniku/NPBehave) in order to learn how behaviour trees work but morphed into it's own beast.
 
 
 ## Behaviour Manager
 Is the component to be added to the GameObject of which you wish to give behaviours. 
+
+----------
 
 ## Nodes
 
@@ -82,3 +84,13 @@ Runs children sequentially until one fails and fail (succeeds if none of the chi
 Runs child nodes in parallel with stop conditions.
 * **ONE_CHILD:** Stops when 1 child stops.
 * **ALL_CHILDREN:** Stops when all children stop.
+
+----------
+
+## Silent Mode
+You have the ability to Start/RequestStop/ForceStop nodes with a **silent**
+parameter so that the behaviour nodes are executed manually instead of automatically. This is useful for synching up AIs that are in a network enviroment where
+the network host can switch over to other peers.
+
+It may also be used for a controlled way to see a behaviour run for testing
+purposes.
