@@ -174,8 +174,13 @@ namespace RSToolkit.AI.Behaviour
             }
 
             node.OnStarted.AddListener(OnStarted_Listener);
+            node.OnStartedSilent.AddListener(OnStarted_Listener);
+
             node.OnStopping.AddListener(OnStopping_Listener);
+            node.OnStoppingSilent.AddListener(OnStopping_Listener);
+
             node.OnStopped.AddListener(OnStopped_Listener);
+            node.OnStoppedSilent.AddListener(OnStopped_Listener);
             //node.OnStopped.AddListener()
 
         }

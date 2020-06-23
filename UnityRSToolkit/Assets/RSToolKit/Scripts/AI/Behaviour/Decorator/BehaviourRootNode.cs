@@ -11,6 +11,8 @@ namespace RSToolkit.AI.Behaviour
     public class BehaviourRootNode : BehaviourParentNode
     {
         private NodeTimer m_rootTimer;
+        private bool IsSilent = false;
+
         /// <summary>
         /// The root node of a tree
         /// </summary>
@@ -22,13 +24,20 @@ namespace RSToolkit.AI.Behaviour
             OnStopping.AddListener(OnStopping_Listener);
             OnStoppingSilent.AddListener(OnStoppingSilent_Listener);
             OnStarted.AddListener(OnStarted_Listener);
+            OnStartedSilent.AddListener(OnStartedSilent_Listener);
         }
 
         #region Events
 
         private void OnStarted_Listener()
         {
+            IsSilent = false;
             StartChildNode();
+        }
+
+        private void OnStartedSilent_Listener()
+        {
+            IsSilent = true;
         }
 
         private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
@@ -60,11 +69,12 @@ namespace RSToolkit.AI.Behaviour
             OnStopped.Invoke(true);
         }
 
-        private void OnStoppingSilent_Listener(){
+        private void OnStoppingSilent_Listener()
+        {
 
             if (this.Children[0].State != NodeState.ACTIVE)
             {
-            
+
                 RemoveTimer(m_rootTimer);
             }
         }
@@ -80,6 +90,25 @@ namespace RSToolkit.AI.Behaviour
         private void StartChildNode()
         {
             Children[0].StartNode();
+        }
+
+        public override bool UpdateRecursively()
+        {
+            if (IsSilent)
+            {
+                return false;
+            }
+            return base.UpdateRecursively();
+        }
+
+        public void Wake()
+        {
+            IsSilent = false;
+        }
+
+        public void Sleep()
+        {
+            IsSilent = true;
         }
     }
 }

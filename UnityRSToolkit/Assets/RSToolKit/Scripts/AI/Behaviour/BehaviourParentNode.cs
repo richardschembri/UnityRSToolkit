@@ -80,7 +80,7 @@ namespace RSToolkit.AI.Behaviour
             }
         }
 
-        public bool UpdateRecursively()
+        public virtual bool UpdateRecursively()
         {
             UpdateTimers();
             

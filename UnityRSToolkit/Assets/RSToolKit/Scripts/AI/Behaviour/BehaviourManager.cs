@@ -20,7 +20,6 @@ namespace RSToolkit.AI.Behaviour
         /// <summary>
         /// Used for when the Behaviour Tree is mimicking another tree (ex: network peer)
         /// </summary>
-        public bool Silent { get; private set; } = false;
 
         /*
         public void AddBehaviourTree(BehaviourNode behaviourtree)
@@ -104,7 +103,6 @@ namespace RSToolkit.AI.Behaviour
             if (CurrentTree != null && CurrentTree.Children.Any())
             {
                 CurrentTree.StartNode(silent);
-                Silent = silent;
                 //CurrentTree.Children[0].StartNode();                
                 return true;
             }
@@ -123,10 +121,6 @@ namespace RSToolkit.AI.Behaviour
         private void Update()
         {
             BehaviourNode.UpdateTime(Time.deltaTime);
-            if (Silent)
-            {
-                return;
-            }
             CurrentTree?.UpdateRecursively();
             CurrentBlackboard?.Update();
         }

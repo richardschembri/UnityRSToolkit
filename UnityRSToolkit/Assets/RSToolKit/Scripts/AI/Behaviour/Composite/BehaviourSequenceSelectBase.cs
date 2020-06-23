@@ -8,6 +8,7 @@ namespace RSToolkit.AI.Behaviour.Composite
     public abstract class BehaviourSequenceSelectBase : BehaviourParentNode
     {
         private int m_index = -1;
+        //private NodeTimer m_processChildTimer;
 
         public bool IsRandom { get; private set; }
         public BehaviourSequenceSelectBase(string name, bool isRandom) : base(name, NodeType.COMPOSITE)
@@ -56,12 +57,13 @@ namespace RSToolkit.AI.Behaviour.Composite
             {
                 ShuffleChildren();
             }
+            AddTimer(0, 0, ProcessChildNodeSequence);
         }
 
         protected virtual void OnStarted_Listener()
         {
             OnStarted_Common();
-            ProcessChildNodeSequence();
+            
         }
 
         protected virtual void OnStartedSilent_Listener()
