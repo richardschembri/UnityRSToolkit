@@ -266,7 +266,7 @@ namespace RSToolkit.AI.Behaviour
         /// </summary>
         /// <param name="silent">If true will not invoke the OnStarted event</param>
         /// <returns>If node successfully started</returns>
-        public virtual bool StartNode(bool silent = false)
+        public bool StartNode(bool silent = false)
         {
             if (this.State != NodeState.INACTIVE || (Parent != null && Parent.State != NodeState.ACTIVE))
             {
@@ -289,7 +289,7 @@ namespace RSToolkit.AI.Behaviour
         /// Initiates the stopping process
         /// </summary>
         /// <returns>If it successfully initiated the stopping process</returns>
-        public virtual bool RequestStopNode(bool silent = false)
+        public bool RequestStopNode(bool silent = false)
         {
             if (this.State == NodeState.ACTIVE)
             {
@@ -311,13 +311,12 @@ namespace RSToolkit.AI.Behaviour
         /// <param name="success">If the node was successful</param>
         /// <param name="silent">If true will not invoke the OnStarted event</param>
         /// <returns></returns>
-        public virtual bool StopNode(bool success, bool silent = false)
+        public bool StopNode(bool success, bool silent = false)
         {
             if (this.State != NodeState.INACTIVE)
             {
                 this.State = NodeState.INACTIVE;
                 this.Result = success;
-
                 if (!silent)
                 {
                     OnStopped.Invoke(success);

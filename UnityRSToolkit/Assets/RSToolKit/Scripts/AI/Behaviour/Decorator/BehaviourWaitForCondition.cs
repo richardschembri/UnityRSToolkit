@@ -23,10 +23,10 @@ namespace RSToolkit.AI.Behaviour.Decorator
         /// <param name="randomVariance">The interval variance</param>
         public BehaviourWaitForCondition(Func<bool> isConditionMetFunc, float checkInterval, float randomVariance) : base("WaitForCondition", NodeType.DECORATOR)
         {
-            //OnStarted.AddListener(OnStarted_Listener);
+            OnStarted.AddListener(OnStarted_Listener);
 
-            //OnStopping.AddListener(OnStopping_Listener);
-            //OnStoppedSilent.AddListener(OnStoppedSilent_Listener);
+            OnStopping.AddListener(OnStopping_Listener);
+            OnStoppedSilent.AddListener(OnStoppedSilent_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
 
             m_isConditionMetFunc = isConditionMetFunc ;
@@ -49,7 +49,6 @@ namespace RSToolkit.AI.Behaviour.Decorator
 
         #region Events
 
-        /*
         private void OnStarted_Listener()
         {
             if (!m_isConditionMetFunc.Invoke())
@@ -58,11 +57,12 @@ namespace RSToolkit.AI.Behaviour.Decorator
             }
             else
             {
-                Children[0].StartNode();
+                // Children[0].StartNode();
+                RunOnNextTick(()=>{Children[0].StartNode();});
             }
         }
-        */
 
+        /*
         public override bool StartNode(bool silent = false)
         {
             if (base.StartNode(silent))
@@ -82,18 +82,20 @@ namespace RSToolkit.AI.Behaviour.Decorator
             }
             return false;
         }
-        /*
+        */
         private void OnStopping_Listener()
         {
             RemoveTimer(m_conditionTimer);
             if(Children[0].State == NodeState.ACTIVE)
             {
-                Children[0].RequestStopNode();
+                // Children[0].RequestStopNode();
+                RunOnNextTick(()=>{ Children[0].RequestStopNode(); });
             }
             else
             {
                 // OnStopped.Invoke(false);
-                StopNode(false);
+                // StopNode(false);
+                RunOnNextTick(()=>{ StopNode(false); }); 
             }
         }
 
@@ -101,7 +103,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
         {
             RemoveTimer(m_conditionTimer);
         }
-        */
+        /*
         public override bool RequestStopNode(bool silent = false)
         {
             if(base.RequestStopNode(silent)){
@@ -122,17 +124,13 @@ namespace RSToolkit.AI.Behaviour.Decorator
             }
             return false;
         }
+        */
 
         private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
         {
             // OnStopped.Invoke(success);
             // StopNode(success);
-            RunOnNextTick(ProcessChildStopped);
-        }
-
-        private void ProcessChildStopped()
-        {
-            StopNode(Children[0].Result.Value);
+            RunOnNextTick(()=>{StopNode(success);});
         }
 
         #endregion Events

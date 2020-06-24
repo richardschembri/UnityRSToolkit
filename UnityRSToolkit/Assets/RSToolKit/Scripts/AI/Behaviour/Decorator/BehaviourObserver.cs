@@ -50,7 +50,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
         //private bool m_initParent = false;
         public BehaviourObserver(string name, BehaviourNode decoratee, AbortRule abortRule) : base(name, NodeType.DECORATOR)
         {
-            //OnStarted.AddListener(OnStarted_Listener);
+            OnStarted.AddListener(OnStarted_Listener);
             OnStopping.AddListener(OnStopping_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
             OnChildNodeStoppedSilent.AddListener(OnChildNodeStoppedSilent_Listener);
@@ -65,6 +65,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
 
         protected abstract bool IsConditionMet();
 
+        /*
         public override bool StartNode(bool silent = false)
         {
             if (base.StartNode(silent))
@@ -90,8 +91,8 @@ namespace RSToolkit.AI.Behaviour.Decorator
             }
             return false;
         }
+        */
 
-        /*
         private void OnStarted_Listener()
         {
             if(m_abortRule != AbortRule.NONE)
@@ -105,19 +106,33 @@ namespace RSToolkit.AI.Behaviour.Decorator
             if (!IsConditionMet())
             {
                 // OnStopped.Invoke(false);
-                StopNode(false);
+                //StopNode(false);
+                RunOnNextTick(() => { StopNode(false); });
             }
             else
             {
-                Children[0].StartNode();
+                // Children[0].StartNode();
+                RunOnNextTick(() => { Children[0].StartNode(); });
             }
         }
-        */
 
         private void OnStopping_Listener()
         {
-            Children[0].StartNode();
+            // Children[0].RequestStopNode();
+            RunOnNextTick(() => { Children[0].RequestStopNode(); });
         }
+
+        /*
+        public override bool RequestStopNode(bool silent = false){
+            if(base.RequestStopNode(silent)){
+                if(!silent){
+                    Children[0].StartNode();
+                }
+                return true;
+            }
+            return false;
+        }
+        */
 
         private void OnChildNodeStopped_Common(BehaviourNode child, bool success){
             if((Parent.Type == NodeType.COMPOSITE && Parent.State != NodeState.ACTIVE) 
@@ -131,7 +146,8 @@ namespace RSToolkit.AI.Behaviour.Decorator
         {
             OnChildNodeStopped_Common(child, success);
             // OnStopped.Invoke(success);
-            StopNode(success);
+            //StopNode(success);
+            RunOnNextTick(() => {StopNode(success);});
         }
 
         private void OnChildNodeStoppedSilent_Listener(BehaviourNode child, bool success)

@@ -25,18 +25,19 @@ namespace RSToolkit.AI.Behaviour.Decorator
 
         #region Events
 
-        /*
         private void OnStarted_Listener()
         {
-            Children[0].StartNode();
+            // Children[0].StartNode();
+            RunOnNextTick(() => { Children[0].StartNode(); });
         }
 
         private void OnStopping_Listener()
         {
-            Children[0].RequestStopNode();
+            // Children[0].RequestStopNode();
+            RunOnNextTick(() => { Children[0].RequestStopNode(); });
         }
-        */
 
+        /*
         public override bool StartNode(bool silent = false)
         {
             if (base.StartNode(silent))
@@ -62,17 +63,13 @@ namespace RSToolkit.AI.Behaviour.Decorator
             }
             return false;
         }
+        */
 
         private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
         {
             // OnStopped.Invoke(m_result);
             // StopNode(m_result);
-            RunOnNextTick(ProcessChildStopped);
-        }
-
-        private void ProcessChildStopped()
-        {
-            StopNode(m_result);
+            RunOnNextTick(() => {StopNode(m_result);});
         }
 
         #endregion Events

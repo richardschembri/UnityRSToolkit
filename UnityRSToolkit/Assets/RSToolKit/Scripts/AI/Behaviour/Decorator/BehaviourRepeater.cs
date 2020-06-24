@@ -22,10 +22,10 @@ namespace RSToolkit.AI.Behaviour.Decorator
         public BehaviourRepeater(int totalLoops = -1) : base("Repeater", NodeType.DECORATOR)
         {
             TotalLoops = totalLoops;
-            // OnStarted.AddListener(OnStarted_Listener);
-            // OnStartedSilent.AddListener(OnStartedSilent_Listener);
-            // OnStopping.AddListener(OnStopping_Listener);
-            // OnStoppingSilent.AddListener(OnStoppingSilent_Listener);
+            OnStarted.AddListener(OnStarted_Listener);
+            OnStartedSilent.AddListener(OnStartedSilent_Listener);
+            OnStopping.AddListener(OnStopping_Listener);
+            OnStoppingSilent.AddListener(OnStoppingSilent_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
             OnChildNodeStoppedSilent.AddListener(OnChildNodeStoppedSilent_Listener);
         }
@@ -39,7 +39,6 @@ namespace RSToolkit.AI.Behaviour.Decorator
 
         #region Events
 
-        /*
         private void OnStarted_Common()
         {
             RemoveTimer(m_restartChildTimer);
@@ -53,8 +52,8 @@ namespace RSToolkit.AI.Behaviour.Decorator
                 m_loopCountSkip = false;
             }
         }
-        */
 
+        /*
         public override bool StartNode(bool silent = false)
         {
             if(base.StartNode(silent))
@@ -77,12 +76,13 @@ namespace RSToolkit.AI.Behaviour.Decorator
             }
             return false;
         }
+        */
 
-        /*
         private void OnStarted_Listener()
         {
             OnStarted_Common();
-            Children[0].StartNode();
+            // Children[0].StartNode();
+            RunOnNextTick(() => {Children[0].StartNode();});
         }
 
         private void OnStartedSilent_Listener()
@@ -94,8 +94,8 @@ namespace RSToolkit.AI.Behaviour.Decorator
         private void OnStopping_Common(){
             RemoveTimer(m_restartChildTimer);
         }
-        */
 
+        /*
         public override bool RequestStopNode(bool silent = false)
         {
             if (base.RequestStopNode(silent))
@@ -117,31 +117,31 @@ namespace RSToolkit.AI.Behaviour.Decorator
             }
             return false;
         }
+        */
 
-        /*
         private void OnStopping_Listener()
         {
             OnStopping_Common();
             if(Children[0].State == NodeState.ACTIVE)
             {
-                Children[0].RequestStopNode();
+                // Children[0].RequestStopNode();
+                RunOnNextTick(()=> { Children[0].RequestStopNode(); });
             }
             else
             {
                 // OnStopped.Invoke(TotalLoops == -1);
-                StopNode(TotalLoops == -1);
+                // StopNode(TotalLoops == -1);
+                RunOnNextTick(()=> { StopNode(TotalLoops == -1); });
             }
         }
 
         private void OnStoppingSilent_Listener(){
             OnStopping_Common();
         }
-        */
 
 
         private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
         {
-            /*
             if (success)
             {
                 if(State == NodeState.STOPPING || (TotalLoops >= 0 && ++LoopCount >= TotalLoops))
@@ -149,6 +149,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
 
                     // OnStopped.Invoke(true);
                     StopNode(true);
+                    RunOnNextTick(()=> { StopNode(true); });
                 }
                 else
                 {
@@ -158,10 +159,9 @@ namespace RSToolkit.AI.Behaviour.Decorator
             else
             {
                 // OnStopped.Invoke(false);
-                StopNode(false);
+                // StopNode(false);
+                RunOnNextTick(()=> { StopNode(false); });
             }
-            */
-            RunOnNextTick(ProcessChildStopped);
         }
 
         private void OnChildNodeStoppedSilent_Listener(BehaviourNode child, bool success)
@@ -174,28 +174,6 @@ namespace RSToolkit.AI.Behaviour.Decorator
             }
             */
             RunOnNextTick(ProcessChildStoppedSilent);
-        }
-
-        private void ProcessChildStopped()
-        {
-            if (Children[0].Result.Value)
-            {
-                if (State == NodeState.STOPPING || (TotalLoops >= 0 && ++LoopCount >= TotalLoops))
-                {
-
-                    // OnStopped.Invoke(true);
-                    StopNode(true);
-                }
-                else
-                {
-                    m_restartChildTimer = AddTimer(0, 0, 0, RestartChild);
-                }
-            }
-            else
-            {
-                // OnStopped.Invoke(false);
-                StopNode(false);
-            }
         }
 
         private void ProcessChildStoppedSilent()

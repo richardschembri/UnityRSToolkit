@@ -18,31 +18,33 @@ namespace RSToolkit.AI.Behaviour
         public BehaviourRandom(float probability) : base("Random", NodeType.DECORATOR)
         {
             m_probability = probability;
-            // OnStarted.AddListener(OnStarted_Listener);
-            // OnStopping.AddListener(OnStopping_Listener);
+            OnStarted.AddListener(OnStarted_Listener);
+            OnStopping.AddListener(OnStopping_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
         }
 
-        /*
         private void OnStarted_Listener()
         {
             if (UnityEngine.Random.value <= m_probability)
             {
-                Children[0].StartNode();
+                // Children[0].StartNode();
+                RunOnNextTick(()=>{ Children[0].StartNode();});
             }
             else
             {
                 // OnStopped.Invoke(false);
-                StopNode(false);
+                // StopNode(false);
+                RunOnNextTick(()=>{ StopNode(false); });
             }
         }
 
         private void OnStopping_Listener()
         {
-            Children[0].RequestStopNode();
+            // Children[0].RequestStopNode();
+            RunOnNextTick(()=>{ Children[0].RequestStopNode(); });
         }
-        */
 
+        /*
         public override bool StartNode(bool silent = false)
         {
             if (base.StartNode(silent))
@@ -70,17 +72,14 @@ namespace RSToolkit.AI.Behaviour
             }
             return false;
         }
+        */
 
         private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
         {
             // OnStopped.Invoke(success);
             // StopNode(success);
-            RunOnNextTick(ProcessChildStopped);
+            RunOnNextTick(()=>{StopNode(success);});
         }
 
-        private void ProcessChildStopped()
-        {
-            StopNode(Children[0].Result.Value);
-        }
     }
 }

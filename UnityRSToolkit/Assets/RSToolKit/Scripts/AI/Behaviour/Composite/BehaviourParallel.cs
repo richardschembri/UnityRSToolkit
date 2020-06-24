@@ -60,10 +60,24 @@ namespace RSToolkit.AI.Behaviour
             m_failedCount = 0;            
         }
 
+        /*
+        protected override void StartNodeLogic(bool silent = false){
+            m_stoppedByChildren = false;
+            m_succeededCount = 0;
+            m_failedCount = 0;
+            m_stopresult = false;
+            if (!silent)
+            {
+                StartChildren();
+            }
+        }
+        */
+
         private void OnStarted_Listener()
         {
             OnStarted_Common();
-            StartChildren();
+            //StartChildren();
+            RunOnNextTick(StartChildren);
         }
 
         private void OnStartedSilent_Listener()
@@ -75,7 +89,6 @@ namespace RSToolkit.AI.Behaviour
         {
             StopChildren();
         }
-
 
         private void OnChildNodeStopped_Common(BehaviourNode child, bool child_success, bool silent)
         {
@@ -107,7 +120,8 @@ namespace RSToolkit.AI.Behaviour
                         if (!silent)
                         {
                             // OnStopped.Invoke(m_success);
-                            StopNode(m_success);
+                            // StopNode(m_success);
+                            RunOnNextTick(() => { StopNode(m_success); });
                         }
                     }
                     else if (!m_stoppedByChildren)
@@ -117,12 +131,11 @@ namespace RSToolkit.AI.Behaviour
                             m_success = false;
                             m_stoppedByChildren = true;
                             if (!silent){
-                                StopChildren();
+                                // StopChildren();
+                                RunOnNextTick(StopChildren);
                             }
                             
                         }
-
-
                     }
                 }
             }

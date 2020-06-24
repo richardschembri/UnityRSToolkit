@@ -20,23 +20,23 @@ namespace RSToolkit.AI.Behaviour
         public BehaviourRootNode(string name = "Root") : base(name, NodeType.DECORATOR)
         {
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
-            //OnStopped.AddListener(OnStopped_Listener);
-            // OnStopping.AddListener(OnStopping_Listener);
-            // OnStoppingSilent.AddListener(OnStoppingSilent_Listener);
-            //OnStarted.AddListener(OnStarted_Listener);
-            //OnStartedSilent.AddListener(OnStartedSilent_Listener);
+            // OnStopped.AddListener(OnStopped_Listener);
+            OnStopping.AddListener(OnStopping_Listener);
+            OnStoppingSilent.AddListener(OnStoppingSilent_Listener);
+            OnStarted.AddListener(OnStarted_Listener);
+            OnStartedSilent.AddListener(OnStartedSilent_Listener);
         }
 
         #region Events
 
-        /*
         private void OnStarted_Listener()
         {
             IsSilent = false;
-            StartChildNode();
+            // StartChildNode();
+            RunOnNextTick(() => { StartChildNode(); });
         }
-        */
 
+        /*
         public override bool StartNode(bool silent = false)
         {
             if (base.StartNode(silent))
@@ -50,17 +50,15 @@ namespace RSToolkit.AI.Behaviour
             }
             return false;
         }
+        */
 
-        /*
         private void OnStartedSilent_Listener()
         {
             IsSilent = true;
         }
-        */
 
         private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
         {
-            /*
             if (State != NodeState.STOPPING)
             {
                 //Children[0].StartNode();
@@ -71,12 +69,12 @@ namespace RSToolkit.AI.Behaviour
             {
                 //this.blackboard.Disable();
                 // OnStopped.Invoke(success);
-                StopNode(success);
+                // StopNode(success);
+                RunOnNextTick(()=>{ StopNode(success); });
             }
-            */
-            RunOnNextTick(ProcessChildStopped);
         }
 
+/*
         private void ProcessChildStopped()
         {
             if (State != NodeState.STOPPING)
@@ -88,24 +86,26 @@ namespace RSToolkit.AI.Behaviour
                 StopNode(Children[0].Result.Value);
             }
         }
+*/
 
-        /*
         //private void OnStopped_Listener(bool success)
         private void OnStopping_Listener()
         {
             if (this.Children[0].State == NodeState.ACTIVE)
             {
-                this.Children[0].RequestStopNode();
+                // this.Children[0].RequestStopNode();
+                RunOnNextTick(() => { this.Children[0].RequestStopNode(); });
             }
             else
             {
                 RemoveTimer(m_rootTimer);
             }
             // OnStopped.Invoke(true);
-            StopNode(true);
+            // StopNode(true);
+                RunOnNextTick(() => { StopNode(true); });
         }
-        */
 
+        /*
         public override bool RequestStopNode(bool silent = false)
         {
             if (base.RequestStopNode(silent))
@@ -131,7 +131,7 @@ namespace RSToolkit.AI.Behaviour
             }
             return false;
         }
-        /*
+        */
         private void OnStoppingSilent_Listener()
         {
 
@@ -141,7 +141,6 @@ namespace RSToolkit.AI.Behaviour
                 RemoveTimer(m_rootTimer);
             }
         }
-        */
 
         #endregion Events
 

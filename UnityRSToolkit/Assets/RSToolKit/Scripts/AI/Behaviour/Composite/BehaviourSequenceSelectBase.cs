@@ -28,7 +28,7 @@ namespace RSToolkit.AI.Behaviour.Composite
             IsRandom = isRandom;
             OnStarted.AddListener(OnStarted_Listener);
             OnStartedSilent.AddListener(OnStartedSilent_Listener);
-            //OnStopping.AddListener(OnStopping_Listener);
+            OnStopping.AddListener(OnStopping_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
         }
 
@@ -87,31 +87,24 @@ namespace RSToolkit.AI.Behaviour.Composite
             OnStarted_Common();
         }
 
-        /*
         private void OnStopping_Listener()
         {
             Children[m_index].RequestStopNode();
 
         }
-        */
 
-        public override bool RequestStopNode(bool silent = false)
+        /*
+        protected override void StoppingNodeLogic(bool silent = false)
         {
-            if (base.RequestStopNode(silent))
+            if (!silent)
             {
-                if (!silent)
-                {
-                    CurrentChild.RequestStopNode();
-                }
-                return true;
+                CurrentChild.RequestStopNode();
             }
-            return false;
         }
+        */
 
         protected abstract void OnChildNodeStopped_Listener(BehaviourNode child, bool success);
         
-
-        protected abstract void ProcessChildStopped();
 
         public virtual void StopNextChildInPriorityTo(BehaviourNode child, bool restart_child)
         {

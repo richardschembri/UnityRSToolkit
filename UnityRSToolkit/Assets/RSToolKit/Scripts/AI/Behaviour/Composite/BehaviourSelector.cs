@@ -30,27 +30,11 @@ namespace RSToolkit.AI.Behaviour.Composite
             {
                 return;
             }
-            /*
             if (success)
             {
                 // OnStopped.Invoke(true);
-                StopNode(true);
-            }
-            else
-            {
-                ProcessChildNodeSequence();
-            }
-            *
-            */
-            RunOnNextTick(ProcessChildStopped);
-        }
-
-        protected override void ProcessChildStopped()
-        {
-            if (CurrentChild.Result.Value)
-            {
-                // OnStopped.Invoke(true);
-                StopNode(true);
+                // StopNode(true);
+                RunOnNextTick(()=>{ StopNode(true);}) ;
             }
             else
             {

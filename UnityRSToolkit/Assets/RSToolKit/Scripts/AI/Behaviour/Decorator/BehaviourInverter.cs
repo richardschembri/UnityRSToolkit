@@ -17,25 +17,25 @@ namespace RSToolkit.AI.Behaviour.Decorator
         public BehaviourInverter(BehaviourNode child) : base("Inverter", NodeType.DECORATOR)
         {
             AddChild(child);
-            // OnStarted.AddListener(OnStarted_Listener);
-            // OnStopping.AddListener(OnStopping_Listener);
+            OnStarted.AddListener(OnStarted_Listener);
+            OnStopping.AddListener(OnStopping_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
         }
 
         #region Events
-        /*
         private void OnStarted_Listener()
         {
-            Children[0].StartNode();
-            
+            // Children[0].StartNode();
+            RunOnNextTick(()=>{Children[0].StartNode();});
         }
 
         private void OnStopping_Listener()
         {
-            Children[0].RequestStopNode();
+            // Children[0].RequestStopNode();
+            RunOnNextTick(()=>{Children[0].RequestStopNode();});
         }
-        */
 
+        /*
         public override bool StartNode(bool silent = false)
         {
             if (base.StartNode(silent))
@@ -55,18 +55,13 @@ namespace RSToolkit.AI.Behaviour.Decorator
             }
             return false;
         }
+        */
 
         private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
         {
             // OnStopped.Invoke(!success);
             //StopNode(!success);
-            RunOnNextTick(ProcessChildStopped);
-        }
-
-
-        private void ProcessChildStopped()
-        {
-            StopNode(!Children[0].Result.Value);
+            RunOnNextTick(()=>{StopNode(!success);});
         }
 
         #endregion Events
