@@ -113,7 +113,8 @@ namespace RSToolkit.AI.Behaviour.Task
             if (m_singleFrameAction != null)
             {
                 m_singleFrameAction.Invoke();
-                OnStopped.Invoke(true);
+                // OnStopped.Invoke(true);
+                StopNode(true);
             }
             else if (m_multiFrameFunc != null || m_multiFrameRequestFunc != null)
             {
@@ -133,12 +134,14 @@ namespace RSToolkit.AI.Behaviour.Task
                 }
                 else if (m_actionResult != ActionResult.PROGRESS)
                 {
-                    OnStopped.Invoke(m_actionResult == ActionResult.SUCCESS);
+                    // OnStopped.Invoke(m_actionResult == ActionResult.SUCCESS);
+                    StopNode(m_actionResult == ActionResult.SUCCESS);
                 }
             }
             else if (m_singleFrameFunc != null)
             {
-                OnStopped.Invoke(m_singleFrameFunc.Invoke());
+                // OnStopped.Invoke(m_singleFrameFunc.Invoke());
+                StopNode(m_singleFrameFunc.Invoke());
             }
         }
 
@@ -180,7 +183,8 @@ namespace RSToolkit.AI.Behaviour.Task
             {
                 m_actionResult = m_multiFrameRequestFunc.Invoke(m_skipping ? ActionRequest.SKIP : ActionRequest.CANCEL);
             }
-            OnStopped.Invoke(m_actionResult == ActionResult.SUCCESS);
+            // OnStopped.Invoke(m_actionResult == ActionResult.SUCCESS);
+            StopNode(m_actionResult == ActionResult.SUCCESS);
         }
 
         #endregion Events

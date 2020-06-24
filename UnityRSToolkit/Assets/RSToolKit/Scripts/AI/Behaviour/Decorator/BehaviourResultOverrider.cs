@@ -18,13 +18,14 @@ namespace RSToolkit.AI.Behaviour.Decorator
         public BehaviourResultOverrider(bool result) : base("ResultOverrider", NodeType.DECORATOR)
         {
             m_result = result;
-            OnStarted.AddListener(OnStarted_Listener);
-            OnStopping.AddListener(OnStopping_Listener);
+            //OnStarted.AddListener(OnStarted_Listener);
+            //OnStopping.AddListener(OnStopping_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
         }
 
         #region Events
 
+        /*
         private void OnStarted_Listener()
         {
             Children[0].StartNode();
@@ -34,10 +35,44 @@ namespace RSToolkit.AI.Behaviour.Decorator
         {
             Children[0].RequestStopNode();
         }
+        */
+
+        public override bool StartNode(bool silent = false)
+        {
+            if (base.StartNode(silent))
+            {
+                if (!silent)
+                {
+                    Children[0].StartNode();
+                }
+                return true;
+            }
+            return false;
+        }
+
+        public override bool RequestStopNode(bool silent = false)
+        {
+            if(base.RequestStopNode(silent))
+            {
+                if (!silent)
+                {
+                    Children[0].RequestStopNode();
+                }
+                return true;
+            }
+            return false;
+        }
 
         private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
         {
-            OnStopped.Invoke(m_result);
+            // OnStopped.Invoke(m_result);
+            // StopNode(m_result);
+            RunOnNextTick(ProcessChildStopped);
+        }
+
+        private void ProcessChildStopped()
+        {
+            StopNode(m_result);
         }
 
         #endregion Events

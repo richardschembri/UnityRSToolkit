@@ -100,7 +100,8 @@ namespace RSToolkit.AI.Behaviour.Task
         private void OnTimeOut()
         {
             RemoveTimer(m_waitTimout);
-            OnStopped.Invoke(true);
+            // OnStopped.Invoke(true);
+            StopNode(true);
         }
     }
 }

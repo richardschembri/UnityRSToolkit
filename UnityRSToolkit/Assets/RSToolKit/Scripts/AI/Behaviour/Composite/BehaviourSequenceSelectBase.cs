@@ -10,13 +10,25 @@ namespace RSToolkit.AI.Behaviour.Composite
         private int m_index = -1;
         //private NodeTimer m_processChildTimer;
 
+        public BehaviourNode CurrentChild
+        {
+            get
+            {
+                if (m_index >= 0 && m_index < Children.Count)
+                {
+                    return Children[m_index];
+                }
+                return null;
+            }
+        }
+
         public bool IsRandom { get; private set; }
         public BehaviourSequenceSelectBase(string name, bool isRandom) : base(name, NodeType.COMPOSITE)
         {
             IsRandom = isRandom;
             OnStarted.AddListener(OnStarted_Listener);
             OnStartedSilent.AddListener(OnStartedSilent_Listener);
-            OnStopping.AddListener(OnStopping_Listener);
+            //OnStopping.AddListener(OnStopping_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
         }
 
@@ -28,18 +40,21 @@ namespace RSToolkit.AI.Behaviour.Composite
                 {
 
                     // Stopped manually
-                    OnStopped.Invoke(false);
+                    //OnStopped.Invoke(false);
+                    StopNode(false);
                 }
                 else
                 {
                     // Run next child in sequence
-                    Children[m_index].StartNode();
+                    // Children[m_index].StartNode();
+                    CurrentChild.StartNode();
                 }
             }
             else
             {
                 // Finished running all children
-                OnStopped.Invoke(result_on_stop);
+                // OnStopped.Invoke(result_on_stop);
+                StopNode(result_on_stop);
             }
         }
 
@@ -57,7 +72,8 @@ namespace RSToolkit.AI.Behaviour.Composite
             {
                 ShuffleChildren();
             }
-            AddTimer(0, 0, ProcessChildNodeSequence);
+            // AddTimer(0, 0, ProcessChildNodeSequence);
+            RunOnNextTick(ProcessChildNodeSequence);
         }
 
         protected virtual void OnStarted_Listener()
@@ -71,13 +87,32 @@ namespace RSToolkit.AI.Behaviour.Composite
             OnStarted_Common();
         }
 
+        /*
         private void OnStopping_Listener()
         {
             Children[m_index].RequestStopNode();
+
+        }
+        */
+
+        public override bool RequestStopNode(bool silent = false)
+        {
+            if (base.RequestStopNode(silent))
+            {
+                if (!silent)
+                {
+                    CurrentChild.RequestStopNode();
+                }
+                return true;
+            }
+            return false;
         }
 
         protected abstract void OnChildNodeStopped_Listener(BehaviourNode child, bool success);
         
+
+        protected abstract void ProcessChildStopped();
+
         public virtual void StopNextChildInPriorityTo(BehaviourNode child, bool restart_child)
         {
             int next_child_index = Children.IndexOf(child) + 1;

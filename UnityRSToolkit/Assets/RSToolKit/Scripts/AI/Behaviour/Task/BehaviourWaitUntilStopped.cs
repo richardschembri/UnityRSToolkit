@@ -18,7 +18,8 @@ namespace RSToolkit.AI.Behaviour.Task
 
         private void OnStopping_Listener()
         {
-            OnStopped.Invoke(m_waitResult);
+            // OnStopped.Invoke(m_waitResult);
+            StopNode(m_waitResult);
         }
     }
 }

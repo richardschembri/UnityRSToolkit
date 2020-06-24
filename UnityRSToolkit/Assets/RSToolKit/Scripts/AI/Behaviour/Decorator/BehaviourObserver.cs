@@ -50,7 +50,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
         //private bool m_initParent = false;
         public BehaviourObserver(string name, BehaviourNode decoratee, AbortRule abortRule) : base(name, NodeType.DECORATOR)
         {
-            OnStarted.AddListener(OnStarted_Listener);
+            //OnStarted.AddListener(OnStarted_Listener);
             OnStopping.AddListener(OnStopping_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
             OnChildNodeStoppedSilent.AddListener(OnChildNodeStoppedSilent_Listener);
@@ -64,20 +64,36 @@ namespace RSToolkit.AI.Behaviour.Decorator
         protected abstract void StopObserving();
 
         protected abstract bool IsConditionMet();
+
+        public override bool StartNode(bool silent = false)
+        {
+            if (base.StartNode(silent))
+            {
+                if (m_abortRule != AbortRule.NONE)
+                {
+                    if (!m_isObserving)
+                    {
+                        m_isObserving = true;
+                        StartObserving();
+                    }
+                }
+                if (!IsConditionMet())
+                {
+                    // OnStopped.Invoke(false);
+                    StopNode(false);
+                }
+                else
+                {
+                    Children[0].StartNode();
+                }
+                return true;
+            }
+            return false;
+        }
+
+        /*
         private void OnStarted_Listener()
         {
-            // To refactor
-            /*
-            if (!m_initParent)
-            {
-                if (Parent.Type == NodeType.COMPOSITE)
-                {
-                    Parent.OnStopped.AddListener(OnCompositeParentStopped_Listener);
-                }
-                m_initParent = true;
-            }
-            */
-
             if(m_abortRule != AbortRule.NONE)
             {
                 if (!m_isObserving)
@@ -88,13 +104,15 @@ namespace RSToolkit.AI.Behaviour.Decorator
             }
             if (!IsConditionMet())
             {
-                OnStopped.Invoke(false);
+                // OnStopped.Invoke(false);
+                StopNode(false);
             }
             else
             {
                 Children[0].StartNode();
             }
         }
+        */
 
         private void OnStopping_Listener()
         {
@@ -112,7 +130,8 @@ namespace RSToolkit.AI.Behaviour.Decorator
         private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
         {
             OnChildNodeStopped_Common(child, success);
-            OnStopped.Invoke(success);
+            // OnStopped.Invoke(success);
+            StopNode(success);
         }
 
         private void OnChildNodeStoppedSilent_Listener(BehaviourNode child, bool success)

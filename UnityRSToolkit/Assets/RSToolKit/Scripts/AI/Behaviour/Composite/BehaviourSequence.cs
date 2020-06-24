@@ -30,15 +30,33 @@ namespace RSToolkit.AI.Behaviour.Composite
                 return;
             }
 
+            /*
             if (success)
             {
                 ProcessChildNodeSequence(); 
             }
             else
             {
-                OnStopped.Invoke(false);
+                // OnStopped.Invoke(false);
+                StopNode(false);
+            }
+            */
+            RunOnNextTick(ProcessChildStopped);
+        }
+
+        protected override void ProcessChildStopped()
+        {
+            if (CurrentChild.Result.Value)
+            {
+                ProcessChildNodeSequence();
+            }
+            else
+            {
+                // OnStopped.Invoke(false);
+                StopNode(false);
             }
         }
+
 #if UNITY_EDITOR
         protected override void InitDebugTools()
         {

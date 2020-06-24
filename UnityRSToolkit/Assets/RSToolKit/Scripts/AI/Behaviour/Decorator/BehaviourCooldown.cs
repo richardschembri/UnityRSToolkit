@@ -21,8 +21,8 @@ namespace RSToolkit.AI.Behaviour
         {
 
             OnStarted.AddListener(OnStarted_Listener);
-            OnStopping.AddListener(OnStopping_Listener);
-            OnStoppingSilent.AddListener(OnStoppingSilent_Listener);
+            // OnStopping.AddListener(OnStopping_Listener);
+            // OnStoppingSilent.AddListener(OnStoppingSilent_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
             OnChildNodeStoppedSilent.AddListener(OnChildNodeStoppedSilent_Listener);
 
@@ -209,11 +209,13 @@ namespace RSToolkit.AI.Behaviour
             {
                 if (m_failOnCooldown)
                 {
-                    OnStopped.Invoke(false);
+                    // OnStopped.Invoke(false);
+                    StopNode(false);
                 }
             }
         }
 
+        /*
         private void OnStopping_Common()
         {
             m_isReady = true;
@@ -229,13 +231,41 @@ namespace RSToolkit.AI.Behaviour
             }
             else
             {
-                OnStopped.Invoke(false);
+                // OnStopped.Invoke(false);
+                StopNode(false);
             }
         }
 
         private void OnStoppingSilent_Listener(){
             OnStopping_Common();
         }
+        */
+
+
+        public override bool RequestStopNode(bool silent = false)
+        {
+            if (base.RequestStopNode(silent))
+            {
+                m_isReady = true;
+                RemoveTimer(m_timeoutTimer);
+                if (!silent)
+                {
+                    if (Children[0].State == NodeState.ACTIVE)
+                    {
+                        Children[0].RequestStopNode();
+                    }
+                    else
+                    {
+                        // OnStopped.Invoke(false);
+                        StopNode(false);
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+
+        /*
         private void OnChildNodeStopped_Common(BehaviourNode child, bool success)
         {
             if (m_resetOnFailiure && !success)
@@ -248,16 +278,39 @@ namespace RSToolkit.AI.Behaviour
                 AddTimer(m_cooldownTime, m_randomVariation, 0, OnTimeout);
             }
         }
+        */
 
         private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
         {
-            OnChildNodeStopped_Common(child, success);
-            OnStopped.Invoke(success);
+            //OnChildNodeStopped_Common(child, success);
+            // OnStopped.Invoke(success);
+            // StopNode(success);
+            RunOnNextTick(ProcessChildStopped);
         }
 
         private void OnChildNodeStoppedSilent_Listener(BehaviourNode child, bool success)
         {
-            OnChildNodeStopped_Common(child, success);
+            // OnChildNodeStopped_Common(child, success);
+            RunOnNextTick(ProcessChildStoppedSilent);
+        }
+
+        private void ProcessChildStoppedSilent()
+        {
+            if (m_resetOnFailiure && !Children[0].Result.Value)
+            {
+                m_isReady = true;
+                RemoveTimer(m_timeoutTimer);
+            }
+            else if (m_startAfterChild)
+            {
+                AddTimer(m_cooldownTime, m_randomVariation, 0, OnTimeout);
+            }
+        }
+
+        private void ProcessChildStopped()
+        {
+            ProcessChildStoppedSilent();
+            StopNode(Children[0].Result.Value);
         }
 
         #endregion Events

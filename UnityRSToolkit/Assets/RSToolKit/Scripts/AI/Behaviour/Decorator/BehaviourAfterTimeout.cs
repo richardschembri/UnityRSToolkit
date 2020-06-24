@@ -22,8 +22,8 @@ namespace RSToolkit.AI.Behaviour
         {
             OnStarted.AddListener(OnStarted_Listener);
             OnStartedSilent.AddListener(OnStartedSilent_Listener);
-            OnStopping.AddListener(OnStopping_Listener);
-            OnStoppingSilent.AddListener(OnStoppingSilent_Listener);
+            // OnStopping.AddListener(OnStopping_Listener);
+            // OnStoppingSilent.AddListener(OnStoppingSilent_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
             OnChildNodeStoppedSilent.AddListener(OnChildNodeStoppedSilent_Listener);
 
@@ -101,6 +101,31 @@ namespace RSToolkit.AI.Behaviour
         {
             RemoveTimer(m_timeoutTimer);
         }
+
+        public override bool RequestStopNode(bool silent = false)
+        {
+            if (base.RequestStopNode(silent))
+            {
+                RemoveTimer(m_timeoutTimer);
+                if (!silent)
+                {
+                    if (Children[0].State == NodeState.ACTIVE)
+                    {
+                        m_isLimitReached = true;
+                        Children[0].RequestStopNode();
+                    }
+                    else
+                    {
+                        // OnStopped.Invoke(false);
+                        StopNode(false);
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+
+        /*
         private void OnStopping_Listener()
         {
             OnStopping_Common();
@@ -111,22 +136,32 @@ namespace RSToolkit.AI.Behaviour
             }
             else
             {
-                OnStopped.Invoke(false);
+                // OnStopped.Invoke(false);
+                StopNode(false);
             }
         }
 
         private void OnStoppingSilent_Listener(){
             OnStopping_Common();
         }
+        */
 
         private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
         {
             if(m_isLimitReached || (!success && !m_waitOnFailure))
             {
                 RemoveTimer(m_timeoutTimer);
-                OnStopped.Invoke(success);
+                // OnStopped.Invoke(success);
+                // StopNode(success);
+                RunOnNextTick(ProcessChildStopped);
             }
         }
+
+        private void ProcessChildStopped()
+        {
+            StopNode(Children[0].Result.Value);
+        }
+
         private void OnChildNodeStoppedSilent_Listener(BehaviourNode child, bool success)
         {
             if(m_isLimitReached || (!success && !m_waitOnFailure))
@@ -142,7 +177,8 @@ namespace RSToolkit.AI.Behaviour
             m_isLimitReached = true;
             if (Children[0].Result != null)
             {
-                OnStopped.Invoke(Children[0].Result.Value);
+                // OnStopped.Invoke(Children[0].Result.Value);
+                StopNode(Children[0].Result.Value);
             }
         }
     }

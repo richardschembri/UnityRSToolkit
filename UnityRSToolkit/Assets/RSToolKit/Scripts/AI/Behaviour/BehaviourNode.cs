@@ -87,11 +87,13 @@ namespace RSToolkit.AI.Behaviour
             public double TimeOutAt { get; set; } = 0f;
             public int Repeat { get; set; } = 0;
             public int TimeOutCount { get; private set; } = 0;
-            public bool IsFinished { get; set; } = false;
+
+            public bool AutoRemove { get; private set; } = false;
             private System.Action TimeoutAction { get; set; }
 
-            public NodeTimer(float time, float randomVariance, int repeat, System.Action timeoutAction )
+            public NodeTimer(float time, float randomVariance, int repeat, System.Action timeoutAction, bool autoRemove = false )
             {
+                AutoRemove = autoRemove;
                 TimeoutAction = timeoutAction;
                 SetTimeoutIn(time, randomVariance);
                 Repeat = repeat;
@@ -111,6 +113,12 @@ namespace RSToolkit.AI.Behaviour
                 get
                 {
                     return Repeat == -1 || TimeOutCount <= Repeat;
+                }
+            }
+
+            public bool IsFinished {
+                get {
+                    return Repeat > -1 || TimeOutCount > Repeat;
                 }
             }
 
@@ -147,6 +155,7 @@ namespace RSToolkit.AI.Behaviour
         public BehaviourParentNode Parent { get; private set; }
         
         private List<NodeTimer> m_timers = new List<NodeTimer>();
+
         public ReadOnlyCollection<NodeTimer> Timers
         {
             get
@@ -211,16 +220,26 @@ namespace RSToolkit.AI.Behaviour
             this.Parent = parent;
         }
 
-        protected NodeTimer AddTimer(float time, float randomVariance, int repeat, System.Action timeoutAction)
+        protected NodeTimer AddTimer(float time, float randomVariance, int repeat, System.Action timeoutAction, bool autoRemove = false)
         {
-            var new_timer = new NodeTimer(time, randomVariance, repeat, timeoutAction);
+            var new_timer = new NodeTimer(time, randomVariance, repeat, timeoutAction, autoRemove);
             m_timers.Add(new_timer);
             return new_timer;
         }
 
-        protected NodeTimer AddTimer(float time, int repeat, System.Action timeoutAction)
+        protected NodeTimer AddTimer(float time, int repeat, System.Action timeoutAction, bool autoRemove = false)
         {
-            return AddTimer(time, 0f, repeat, timeoutAction);
+            return AddTimer(time, 0f, repeat, timeoutAction, autoRemove);
+        }
+
+        protected void RunOnNextTick(System.Action timeoutAction)
+        {
+            AddTimer(0, 0, timeoutAction, true);
+        }
+
+        protected bool HasTimer(NodeTimer timer)
+        {
+            return m_timers.Contains(timer);
         }
 
         protected void RemoveTimer(NodeTimer to_remove)
@@ -247,7 +266,7 @@ namespace RSToolkit.AI.Behaviour
         /// </summary>
         /// <param name="silent">If true will not invoke the OnStarted event</param>
         /// <returns>If node successfully started</returns>
-        public bool StartNode(bool silent = false)
+        public virtual bool StartNode(bool silent = false)
         {
             if (this.State != NodeState.INACTIVE || (Parent != null && Parent.State != NodeState.ACTIVE))
             {
@@ -270,7 +289,7 @@ namespace RSToolkit.AI.Behaviour
         /// Initiates the stopping process
         /// </summary>
         /// <returns>If it successfully initiated the stopping process</returns>
-        public bool RequestStopNode(bool silent = false)
+        public virtual bool RequestStopNode(bool silent = false)
         {
             if (this.State == NodeState.ACTIVE)
             {
@@ -292,17 +311,22 @@ namespace RSToolkit.AI.Behaviour
         /// <param name="success">If the node was successful</param>
         /// <param name="silent">If true will not invoke the OnStarted event</param>
         /// <returns></returns>
-        public bool ForceStopNode(bool success, bool silent = false)
+        public virtual bool StopNode(bool success, bool silent = false)
         {
             if (this.State != NodeState.INACTIVE)
             {
+                this.State = NodeState.INACTIVE;
+                this.Result = success;
+
                 if (!silent)
                 {
                     OnStopped.Invoke(success);
+                    Parent?.OnChildNodeStopped.Invoke(this, success);
                 }
                 else
                 {
                     OnStoppedSilent.Invoke(success);
+                    Parent?.OnChildNodeStoppedSilent.Invoke(this, success);
                 }
                 return true;
             }
@@ -313,32 +337,44 @@ namespace RSToolkit.AI.Behaviour
         {
             this.Name = name;
             this.Type = type;
+            /*
             OnStopped.AddListener(OnStopped_Listener);
             OnStoppedSilent.AddListener(OnStoppedSilent_Listener);
+            */
 #if UNITY_EDITOR
             InitDebugTools();
 #endif
         }
 
-        private void OnStopped_Listener(bool success)
-        {
-            this.State = NodeState.INACTIVE;
-            this.Result = success;
-            Parent?.OnChildNodeStopped.Invoke(this, success);
-        }
+        /*
+                private void OnStopped_Listener(bool success)
+                {
+                    OnStopped_Common(success);
+                    Parent?.OnChildNodeStopped.Invoke(this, success);
+                }
 
-        private void OnStoppedSilent_Listener(bool success)
-        {
-            this.State = NodeState.INACTIVE;
-            this.Result = success;
-            Parent?.OnChildNodeStoppedSilent.Invoke(this, success);
-        }
-
+                private void OnStoppedSilent_Listener(bool success)
+                {
+                    OnStopped_Common(success);
+                    Parent?.OnChildNodeStoppedSilent.Invoke(this, success);
+                }
+        */
+        int m_timerCount;
         public void UpdateTimers()
         {
+            m_timerCount = m_timers.Count;
             for (int i = 0; i < m_timers.Count; i++)
-            {
-                m_timers[i].Update();
+            {                
+                if(m_timers[i].IsFinished && m_timers[i].AutoRemove)
+                {
+                    m_timers.Remove(m_timers[i]);
+                    i--;
+                    m_timerCount--;
+                }
+                else
+                {
+                    m_timers[i].Update();
+                }
             }
         }
 

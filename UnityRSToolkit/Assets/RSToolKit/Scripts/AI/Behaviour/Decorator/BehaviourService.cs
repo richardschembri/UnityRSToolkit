@@ -34,9 +34,9 @@ namespace RSToolkit.AI.Behaviour.Decorator
 
         private void Init(System.Action serviceAction)
         {
-            OnStarted.AddListener(OnStarted_Listener);
-            OnStartedSilent.AddListener(OnStartedSilent_Listener);
-            OnStopping.AddListener(OnStopping_Listener);
+            // OnStarted.AddListener(OnStarted_Listener);
+            // OnStartedSilent.AddListener(OnStartedSilent_Listener);
+            // OnStopping.AddListener(OnStopping_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
             OnChildNodeStoppedSilent.AddListener(OnChildNodeStoppedSilent_Listener);
             m_serviceAction = serviceAction;
@@ -101,6 +101,34 @@ namespace RSToolkit.AI.Behaviour.Decorator
             }
         }
 
+        public override bool StartNode(bool silent = false)
+        {
+            if (base.StartNode(silent))
+            {
+                if (m_interval <= 0f)
+                {
+                    // AddUpdateObserver
+                    m_serviceTimer = AddTimer(0f, 0f, -1, m_serviceAction);
+
+                }
+                else if (m_randomVariation <= 0f)
+                {
+                    AddRandomTimer();
+                }
+                else
+                {
+                    InvokeServiceActionAtRandomInterval();
+                }
+                if (!silent)
+                {
+                    Children[0].StartNode();
+                }
+                return true;
+            }
+            return false;
+        }
+
+        /*
         private void OnStarted_Listener()
         {
             OnStarted_Common();
@@ -111,11 +139,25 @@ namespace RSToolkit.AI.Behaviour.Decorator
         {
             OnStarted_Common();
         }
-
+        
 
         private void OnStopping_Listener()
         {
             Children[0].RequestStopNode();
+        }
+        */
+
+        public override bool RequestStopNode(bool silent = false)
+        {
+            if (base.RequestStopNode(silent))
+            {
+                if (!silent)
+                {
+                    Children[0].RequestStopNode();
+                }
+                return true;
+            }
+            return false;
         }
 
         private void OnChildNodeStopped_Common(BehaviourNode child, bool success){
@@ -134,12 +176,19 @@ namespace RSToolkit.AI.Behaviour.Decorator
                 AddRandomTimer();
             }*/
             OnChildNodeStopped_Common(child, success);
-            OnStopped.Invoke(success);
+            // OnStopped.Invoke(success);
+            // StopNode(success);
+            RunOnNextTick(ProcessChildStopped);
         }
 
         private void OnChildNodeStoppedSilent_Listener(BehaviourNode child, bool success)
         {
             OnChildNodeStopped_Common(child, success);
+        }
+
+        private void ProcessChildStopped()
+        {
+            StopNode(Children[0].Result.Value);
         }
 
         #endregion Events

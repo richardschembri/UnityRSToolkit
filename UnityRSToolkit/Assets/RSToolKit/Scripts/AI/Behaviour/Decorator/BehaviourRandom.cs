@@ -18,11 +18,12 @@ namespace RSToolkit.AI.Behaviour
         public BehaviourRandom(float probability) : base("Random", NodeType.DECORATOR)
         {
             m_probability = probability;
-            OnStarted.AddListener(OnStarted_Listener);
-            OnStopping.AddListener(OnStopping_Listener);
+            // OnStarted.AddListener(OnStarted_Listener);
+            // OnStopping.AddListener(OnStopping_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
         }
 
+        /*
         private void OnStarted_Listener()
         {
             if (UnityEngine.Random.value <= m_probability)
@@ -31,7 +32,8 @@ namespace RSToolkit.AI.Behaviour
             }
             else
             {
-                OnStopped.Invoke(false);
+                // OnStopped.Invoke(false);
+                StopNode(false);
             }
         }
 
@@ -39,11 +41,46 @@ namespace RSToolkit.AI.Behaviour
         {
             Children[0].RequestStopNode();
         }
+        */
+
+        public override bool StartNode(bool silent = false)
+        {
+            if (base.StartNode(silent))
+            {
+                if (UnityEngine.Random.value <= m_probability)
+                {
+                    Children[0].StartNode();
+                }
+                else
+                {
+                    // OnStopped.Invoke(false);
+                    StopNode(false);
+                }
+                return true;
+            }
+            return false;
+        }
+
+        public override bool RequestStopNode(bool silent = false)
+        {
+            if (base.RequestStopNode(silent))
+            {
+                Children[0].RequestStopNode();
+                return true;
+            }
+            return false;
+        }
 
         private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
         {
+            // OnStopped.Invoke(success);
+            // StopNode(success);
+            RunOnNextTick(ProcessChildStopped);
+        }
 
-            OnStopped.Invoke(success);
+        private void ProcessChildStopped()
+        {
+            StopNode(Children[0].Result.Value);
         }
     }
 }

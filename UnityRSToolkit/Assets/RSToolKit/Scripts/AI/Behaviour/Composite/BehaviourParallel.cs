@@ -106,7 +106,8 @@ namespace RSToolkit.AI.Behaviour
                         }
                         if (!silent)
                         {
-                            OnStopped.Invoke(m_success);
+                            // OnStopped.Invoke(m_success);
+                            StopNode(m_success);
                         }
                     }
                     else if (!m_stoppedByChildren)
