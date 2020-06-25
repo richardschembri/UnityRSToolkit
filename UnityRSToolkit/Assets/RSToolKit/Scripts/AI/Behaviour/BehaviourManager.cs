@@ -14,7 +14,7 @@ namespace RSToolkit.AI.Behaviour
         private List<BehaviourRootNode> m_behaviourtrees = new List<BehaviourRootNode>();
         private List<BehaviourBlackboard> m_blackboards = new List<BehaviourBlackboard>();
 
-        public BehaviourParentNode CurrentTree { get; private set; } = null;
+        public BehaviourRootNode CurrentTree { get; private set; } = null;
         public BehaviourBlackboard CurrentBlackboard { get; private set; } = null;
 
         /// <summary>

@@ -68,6 +68,8 @@ namespace RSToolkit.AI.Behaviour
                     DrawKeyValue("Total Stopped:", debugTools.GetTotalStoppedCallCount().ToString());
                     DrawKeyValue("Active Timers:  ", debugTools.GetTotalActiveTimers().ToString());
                     DrawKeyValue("Timer Pool Size:  ", debugTools.GetTotalTimers().ToString());
+
+                    DrawKeyValue("Is Silent:  ", SelectedManager.CurrentTree.IsSilent.ToString());
                     //DrawKeyValue("Active Update Observers:  ", behaviorTree.Clock.NumUpdateObservers.ToString());
                     //DrawKeyValue("Active Blackboard Observers:  ", behaviorTree.Blackboard.NumObservers.ToString());
                 }

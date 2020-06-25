@@ -11,7 +11,7 @@ namespace RSToolkit.AI.Behaviour
     public class BehaviourRootNode : BehaviourParentNode
     {
         private NodeTimer m_rootTimer;
-        private bool IsSilent = false;
+        public bool IsSilent { get; private set; } = false;
 
         /// <summary>
         /// The root node of a tree
