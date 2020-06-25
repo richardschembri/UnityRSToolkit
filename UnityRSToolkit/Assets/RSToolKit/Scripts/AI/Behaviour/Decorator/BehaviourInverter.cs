@@ -26,13 +26,13 @@ namespace RSToolkit.AI.Behaviour.Decorator
         private void OnStarted_Listener()
         {
             // Children[0].StartNode();
-            RunOnNextTick(()=>{Children[0].StartNode();});
+            StartFirstChildNodeOnNextTick();
         }
 
         private void OnStopping_Listener()
         {
             // Children[0].RequestStopNode();
-            RunOnNextTick(()=>{Children[0].RequestStopNode();});
+            Children[0].RequestStopNodeOnNextTick();
         }
 
         /*
@@ -61,7 +61,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
         {
             // OnStopped.Invoke(!success);
             //StopNode(!success);
-            RunOnNextTick(()=>{StopNode(!success);});
+            StopNodeOnNextTick(!success);
         }
 
         #endregion Events

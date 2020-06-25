@@ -90,13 +90,9 @@ namespace RSToolkit.AI.Behaviour
         {
             OnStarted_Common();
             //Children[0].StartNode();
-            RunOnNextTick(StartChild);
+            
+            StartFirstChildNodeOnNextTick();
         }
-
-        private void StartChild(){
-            Children[0].StartNode();
-        }
-
 
         private void OnStartedSilent_Listener()
         {

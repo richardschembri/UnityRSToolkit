@@ -42,12 +42,14 @@ namespace RSToolkit.AI.Behaviour.Composite
                     // Stopped manually
                     //OnStopped.Invoke(false);
                     StopNode(false);
+                    
                 }
                 else
                 {
                     // Run next child in sequence
                     // Children[m_index].StartNode();
                     CurrentChild.StartNode();
+                    
                 }
             }
             else
@@ -55,6 +57,7 @@ namespace RSToolkit.AI.Behaviour.Composite
                 // Finished running all children
                 // OnStopped.Invoke(result_on_stop);
                 StopNode(result_on_stop);
+                
             }
         }
 

@@ -75,7 +75,8 @@ namespace RSToolkit.AI.Behaviour
         private void OnStarted_Listener()
         {
             OnStarted_Common();
-            Children[0].StartNode();
+            //Children[0].StartNode();
+            StartFirstChildNodeOnNextTick();
         }
 
         private void OnStartedSilent_Listener()
@@ -112,13 +113,13 @@ namespace RSToolkit.AI.Behaviour
             if(Children[0].State == NodeState.ACTIVE)
             {
                 // Children[0].RequestStopNode();
-                RunOnNextTick(()=>{Children[0].RequestStopNode();});
+                Children[0].RequestStopNodeOnNextTick();
             }
             else
             {
                 // OnStopped.Invoke(false);
                 // StopNode(false);
-                RunOnNextTick(()=>{StopNode(false);});
+                StopNodeOnNextTick(false);
             }
         }
 
@@ -138,13 +139,13 @@ namespace RSToolkit.AI.Behaviour
             {
                 // OnStopped.Invoke(false);
                 // StopNode(false);
-                RunOnNextTick(()=>{StopNode(false);});
+                StopNodeOnNextTick(false);
             }
             else
             {
                 // OnStopped.Invoke(success);
                 // StopNode(success);
-                RunOnNextTick(()=>{StopNode(success);});
+                StopNodeOnNextTick(success);
             }
 
         }

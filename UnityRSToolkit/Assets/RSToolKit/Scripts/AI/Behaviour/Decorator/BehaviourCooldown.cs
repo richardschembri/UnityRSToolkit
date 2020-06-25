@@ -204,7 +204,7 @@ namespace RSToolkit.AI.Behaviour
                     m_timeoutTimer = AddTimer(m_cooldownTime, m_randomVariation, 0, OnTimeout);
                 }
                 // Children[0].StartNode();
-                RunOnNextTick(()=> { Children[0].StartNode();});
+                StartFirstChildNodeOnNextTick();
             }
             else
             {
@@ -212,7 +212,7 @@ namespace RSToolkit.AI.Behaviour
                 {
                     // OnStopped.Invoke(false);
                     // StopNode(false);
-                    RunOnNextTick(()=> { StopNode(false);});
+                    StopNodeOnNextTick(false);
                 }
             }
         }
@@ -229,13 +229,13 @@ namespace RSToolkit.AI.Behaviour
             if (Children[0].State == NodeState.ACTIVE)
             {
                 // Children[0].RequestStopNode();
-                RunOnNextTick(()=> { Children[0].RequestStopNode();});
+                Children[0].RequestStopNodeOnNextTick();
             }
             else
             {
                 // OnStopped.Invoke(false);
                 // StopNode(false);
-                RunOnNextTick(()=> { StopNode(false);});
+                StopNodeOnNextTick(false);
             }
         }
 
@@ -286,14 +286,14 @@ namespace RSToolkit.AI.Behaviour
         {
             OnChildNodeStopped_Common(child, success);
             // OnStopped.Invoke(success);
-            RunOnNextTick(() => { StopNode(success); });
+            // StopNode(success);
+            StopNodeOnNextTick(success);
         }
 
         private void OnChildNodeStoppedSilent_Listener(BehaviourNode child, bool success)
         {
             OnChildNodeStopped_Common(child, success);
         }
-
 
         #endregion Events
 
@@ -302,7 +302,8 @@ namespace RSToolkit.AI.Behaviour
             if (State == NodeState.ACTIVE && Children[0].State != NodeState.ACTIVE)
             {
                 AddTimer(m_cooldownTime, m_randomVariation, 0, OnTimeout);
-                Children[0].StartNode();
+                //Children[0].StartNode();
+                StartFirstChildNodeOnNextTick();
             }
             else
             {

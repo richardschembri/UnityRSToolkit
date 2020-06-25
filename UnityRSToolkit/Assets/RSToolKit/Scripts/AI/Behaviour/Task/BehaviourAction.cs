@@ -184,8 +184,9 @@ namespace RSToolkit.AI.Behaviour.Task
                 m_actionResult = m_multiFrameRequestFunc.Invoke(m_skipping ? ActionRequest.SKIP : ActionRequest.CANCEL);
             }
             // OnStopped.Invoke(m_actionResult == ActionResult.SUCCESS);
+
             // StopNode(m_actionResult == ActionResult.SUCCESS);
-            RunOnNextTick(()=>{StopNode(m_actionResult == ActionResult.SUCCESS);});
+            StopNodeOnNextTick(m_actionResult == ActionResult.SUCCESS);            
         }
 
         #endregion Events

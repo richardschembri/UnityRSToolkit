@@ -33,7 +33,7 @@ namespace RSToolkit.AI.Behaviour
         {
             IsSilent = false;
             // StartChildNode();
-            RunOnNextTick(() => { StartChildNode(); });
+            StartFirstChildNodeOnNextTick();
         }
 
         /*
@@ -63,14 +63,15 @@ namespace RSToolkit.AI.Behaviour
             {
                 //Children[0].StartNode();
                 // wait one tick, to prevent endless recursions
-                m_rootTimer = AddTimer(0, 0, StartChildNode);
+                //m_rootTimer = AddTimer(0, 0, StartChildNode);
+                m_rootTimer = StartFirstChildNodeOnNextTick();
             }
             else
             {
                 //this.blackboard.Disable();
                 // OnStopped.Invoke(success);
                 // StopNode(success);
-                RunOnNextTick(()=>{ StopNode(success); });
+                StopNodeOnNextTick(success);
             }
         }
 
@@ -93,8 +94,8 @@ namespace RSToolkit.AI.Behaviour
         {
             if (this.Children[0].State == NodeState.ACTIVE)
             {
-                // this.Children[0].RequestStopNode();
-                RunOnNextTick(() => { this.Children[0].RequestStopNode(); });
+                // this.Children[0].RequestStopNode();                
+                StartFirstChildNodeOnNextTick();
             }
             else
             {
@@ -102,7 +103,7 @@ namespace RSToolkit.AI.Behaviour
             }
             // OnStopped.Invoke(true);
             // StopNode(true);
-                RunOnNextTick(() => { StopNode(true); });
+            StopNodeOnNextTick(true);
         }
 
         /*
@@ -148,11 +149,6 @@ namespace RSToolkit.AI.Behaviour
         public override void SetParent(BehaviourParentNode parent)
         {
             throw new System.Exception("Root nodes cannot have parents");
-        }
-
-        private void StartChildNode()
-        {
-            Children[0].StartNode();
         }
 
         public override bool UpdateRecursively()

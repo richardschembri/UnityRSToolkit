@@ -65,6 +65,15 @@ namespace RSToolkit.AI.Behaviour
       
         }
 
+        public bool StartFirstChildNode()
+        {
+            return Children[0].StartNode();
+        }
+
+        public NodeTimer StartFirstChildNodeOnNextTick()
+        {
+            return RunOnNextTick(() => { StartFirstChildNode(); });
+        }
 
         protected void ShuffleChildren()
         {

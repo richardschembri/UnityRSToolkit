@@ -118,7 +118,7 @@ namespace RSToolkit.AI.Behaviour
 
             public bool IsFinished {
                 get {
-                    return Repeat > -1 || TimeOutCount > Repeat;
+                    return Repeat > -1 && TimeOutCount > Repeat;
                 }
             }
 
@@ -232,9 +232,9 @@ namespace RSToolkit.AI.Behaviour
             return AddTimer(time, 0f, repeat, timeoutAction, autoRemove);
         }
 
-        protected void RunOnNextTick(System.Action timeoutAction)
+        protected NodeTimer RunOnNextTick(System.Action timeoutAction)
         {
-            AddTimer(0, 0, timeoutAction, true);
+            return AddTimer(0, 0, timeoutAction, true);
         }
 
         protected bool HasTimer(NodeTimer timer)
@@ -285,6 +285,11 @@ namespace RSToolkit.AI.Behaviour
             return true;
         }
 
+        public NodeTimer StartNodeOnNextTick(bool silent = false)
+        {
+            return RunOnNextTick(()=> { StartNode(silent); });
+        }
+
         /// <summary>
         /// Initiates the stopping process
         /// </summary>
@@ -302,6 +307,11 @@ namespace RSToolkit.AI.Behaviour
                 return true;
             }
             return false;
+        }
+
+        public NodeTimer RequestStopNodeOnNextTick(bool silent = false)
+        {
+            return RunOnNextTick(() => { RequestStopNode(silent); });
         }
 
         /// <summary>
@@ -330,6 +340,11 @@ namespace RSToolkit.AI.Behaviour
                 return true;
             }
             return false;
+        }
+
+        public NodeTimer StopNodeOnNextTick(bool success, bool silent = false)
+        {
+            return RunOnNextTick(() => { StopNode(success, silent); });
         }
 
         public BehaviourNode(string name, NodeType type)

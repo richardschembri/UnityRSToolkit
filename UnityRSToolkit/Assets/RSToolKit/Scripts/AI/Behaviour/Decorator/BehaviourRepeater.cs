@@ -82,7 +82,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
         {
             OnStarted_Common();
             // Children[0].StartNode();
-            RunOnNextTick(() => {Children[0].StartNode();});
+            StartFirstChildNodeOnNextTick();
         }
 
         private void OnStartedSilent_Listener()
@@ -125,13 +125,13 @@ namespace RSToolkit.AI.Behaviour.Decorator
             if(Children[0].State == NodeState.ACTIVE)
             {
                 // Children[0].RequestStopNode();
-                RunOnNextTick(()=> { Children[0].RequestStopNode(); });
+                Children[0].RequestStopNodeOnNextTick();
             }
             else
             {
                 // OnStopped.Invoke(TotalLoops == -1);
                 // StopNode(TotalLoops == -1);
-                RunOnNextTick(()=> { StopNode(TotalLoops == -1); });
+                StopNodeOnNextTick(TotalLoops == -1);
             }
         }
 
@@ -148,8 +148,8 @@ namespace RSToolkit.AI.Behaviour.Decorator
                 {
 
                     // OnStopped.Invoke(true);
-                    StopNode(true);
-                    RunOnNextTick(()=> { StopNode(true); });
+                    // StopNode(true);
+                    StopNodeOnNextTick(true);
                 }
                 else
                 {
@@ -160,30 +160,19 @@ namespace RSToolkit.AI.Behaviour.Decorator
             {
                 // OnStopped.Invoke(false);
                 // StopNode(false);
-                RunOnNextTick(()=> { StopNode(false); });
+                StopNodeOnNextTick(false);
             }
         }
 
         private void OnChildNodeStoppedSilent_Listener(BehaviourNode child, bool success)
         {
-            /*
             if (success 
                     && !(State == NodeState.STOPPING || (TotalLoops >= 0 && ++LoopCount >= TotalLoops)))
             {
                 m_restartChildTimer = AddTimer(0, 0, 0, RestartChild);
             }
-            */
-            RunOnNextTick(ProcessChildStoppedSilent);
         }
 
-        private void ProcessChildStoppedSilent()
-        {
-            if (Children[0].Result.Value
-                    && !(State == NodeState.STOPPING || (TotalLoops >= 0 && ++LoopCount >= TotalLoops)))
-            {
-                m_restartChildTimer = AddTimer(0, 0, 0, RestartChild);
-            }
-        }
         #endregion Events
 
         protected void RestartChild()

@@ -134,7 +134,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
         {
             OnStarted_Common();
             // Children[0].StartNode();
-            RunOnNextTick(()=>{Children[0].StartNode();});
+            StartFirstChildNodeOnNextTick();
         }
 
         private void OnStartedSilent_Listener()
@@ -146,7 +146,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
         private void OnStopping_Listener()
         {
             // Children[0].RequestStopNode();
-            RunOnNextTick(()=>{Children[0].RequestStopNode();});
+            Children[0].RequestStopNodeOnNextTick();
         }
 
         /*
@@ -182,7 +182,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
             OnChildNodeStopped_Common(child, success);
             // OnStopped.Invoke(success);
             // StopNode(success);
-            RunOnNextTick(()=> {StopNode(success);});
+            StopNodeOnNextTick(success);
         }
 
         private void OnChildNodeStoppedSilent_Listener(BehaviourNode child, bool success)

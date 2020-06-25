@@ -28,20 +28,20 @@ namespace RSToolkit.AI.Behaviour
             if (UnityEngine.Random.value <= m_probability)
             {
                 // Children[0].StartNode();
-                RunOnNextTick(()=>{ Children[0].StartNode();});
+                StartFirstChildNodeOnNextTick();
             }
             else
             {
                 // OnStopped.Invoke(false);
                 // StopNode(false);
-                RunOnNextTick(()=>{ StopNode(false); });
+                StopNodeOnNextTick(false);
             }
         }
 
         private void OnStopping_Listener()
         {
             // Children[0].RequestStopNode();
-            RunOnNextTick(()=>{ Children[0].RequestStopNode(); });
+            Children[0].RequestStopNodeOnNextTick();
         }
 
         /*
@@ -78,7 +78,7 @@ namespace RSToolkit.AI.Behaviour
         {
             // OnStopped.Invoke(success);
             // StopNode(success);
-            RunOnNextTick(()=>{StopNode(success);});
+            StopNodeOnNextTick(success);
         }
 
     }

@@ -32,13 +32,15 @@ namespace RSToolkit.AI.Behaviour.Composite
 
             if (success)
             {
-                ProcessChildNodeSequence(); 
+                //ProcessChildNodeSequence();
+                RunOnNextTick(ProcessChildNodeSequence);
             }
             else
             {
                 // OnStopped.Invoke(false);
                 // StopNode(false);
-                RunOnNextTick(()=> { StopNode(false); });
+
+                StopNodeOnNextTick(false);
             }
         }
 

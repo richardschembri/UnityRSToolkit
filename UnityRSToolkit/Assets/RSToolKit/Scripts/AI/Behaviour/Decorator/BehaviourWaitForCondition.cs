@@ -58,7 +58,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
             else
             {
                 // Children[0].StartNode();
-                RunOnNextTick(()=>{Children[0].StartNode();});
+                StartFirstChildNodeOnNextTick();
             }
         }
 
@@ -89,13 +89,13 @@ namespace RSToolkit.AI.Behaviour.Decorator
             if(Children[0].State == NodeState.ACTIVE)
             {
                 // Children[0].RequestStopNode();
-                RunOnNextTick(()=>{ Children[0].RequestStopNode(); });
+                Children[0].RequestStopNodeOnNextTick();
             }
             else
             {
                 // OnStopped.Invoke(false);
                 // StopNode(false);
-                RunOnNextTick(()=>{ StopNode(false); }); 
+                StopNodeOnNextTick(false);
             }
         }
 
@@ -130,7 +130,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
         {
             // OnStopped.Invoke(success);
             // StopNode(success);
-            RunOnNextTick(()=>{StopNode(success);});
+            StopNodeOnNextTick(success);
         }
 
         #endregion Events
