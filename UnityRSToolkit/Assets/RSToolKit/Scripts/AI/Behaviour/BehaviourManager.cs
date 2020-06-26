@@ -17,6 +17,9 @@ namespace RSToolkit.AI.Behaviour
         public BehaviourRootNode CurrentTree { get; private set; } = null;
         public BehaviourBlackboard CurrentBlackboard { get; private set; } = null;
 
+        public bool StoppingTree { get; private set; } = false;
+        public bool StartingTree { get; private set; } = false;
+        public bool StartingTreeSilent { get; private set; } = false;
         /// <summary>
         /// Used for when the Behaviour Tree is mimicking another tree (ex: network peer)
         /// </summary>
@@ -26,6 +29,12 @@ namespace RSToolkit.AI.Behaviour
         {
             m_behaviourtrees.Add(behaviourtree);
         }*/
+
+        private void AddBehaviourTree(BehaviourRootNode behaviourtree)
+        {
+            m_behaviourtrees.Add(behaviourtree);
+            behaviourtree.OnStopped.AddListener(BehaviourtreeOnStopped_Listener);
+        }
 
         public BehaviourRootNode AddBehaviourTree(string name)
         {
@@ -48,6 +57,8 @@ namespace RSToolkit.AI.Behaviour
                 CurrentTree = m_behaviourtrees.FirstOrDefault();
             }
         }
+
+        
 
         public BehaviourBlackboard AddBlackboard()
         {
@@ -86,6 +97,7 @@ namespace RSToolkit.AI.Behaviour
 
             if (stopCurrentTree)
             {
+                StoppingTree = true;
                 RequestStopTree();
             }
 
@@ -102,7 +114,21 @@ namespace RSToolkit.AI.Behaviour
         {
             if (CurrentTree != null && CurrentTree.Children.Any())
             {
-                CurrentTree.StartNode(silent);
+                if (!StoppingTree)
+                {
+                    CurrentTree.StartNode(silent);
+                }
+                else
+                {
+                    if (silent)
+                    {
+                        StartingTreeSilent = true;
+                    }
+                    else
+                    {
+                        StartingTree = true;
+                    }
+                }               
                 //CurrentTree.Children[0].StartNode();                
                 return true;
             }
@@ -116,6 +142,17 @@ namespace RSToolkit.AI.Behaviour
                 return CurrentTree.RequestStopNode();
             }
             return false;
+        }
+
+        private void BehaviourtreeOnStopped_Listener(bool success)
+        {
+            if (StartingTree)
+            {
+                CurrentTree.StartNode(false);
+            }else if (StartingTreeSilent)
+            {
+                CurrentTree.StartNode(true);
+            }
         }
 
         private void Update()

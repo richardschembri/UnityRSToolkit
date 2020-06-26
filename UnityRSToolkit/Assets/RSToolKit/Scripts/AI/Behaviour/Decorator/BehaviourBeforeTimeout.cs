@@ -69,7 +69,7 @@ namespace RSToolkit.AI.Behaviour
         private void OnStarted_Common()
         {
             m_isLimitReached = false;
-            AddTimer(m_limit, m_randomVariation, 0, OnTimeout);
+            m_timeoutTimer = AddTimer(m_limit, m_randomVariation, 0, OnTimeout);
         }
 
         private void OnStarted_Listener()
