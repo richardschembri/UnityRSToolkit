@@ -97,8 +97,11 @@ namespace RSToolkit.AI.Behaviour
 
             if (stopCurrentTree)
             {
-                StoppingTree = true;
-                RequestStopTree();
+                
+                if (RequestStopTree())
+                {
+                    StoppingTree = true;
+                }
             }
 
             CurrentTree = behaviourtree;
