@@ -75,19 +75,19 @@ namespace RSToolkit.AI.Behaviour
             }
         }
 
-/*
-        private void ProcessChildStopped()
-        {
-            if (State != NodeState.STOPPING)
-            {
-                m_rootTimer = AddTimer(0, 0, StartChildNode);
-            }
-            else
-            {
-                StopNode(Children[0].Result.Value);
-            }
-        }
-*/
+        /*
+                private void ProcessChildStopped()
+                {
+                    if (State != NodeState.STOPPING)
+                    {
+                        m_rootTimer = AddTimer(0, 0, StartChildNode);
+                    }
+                    else
+                    {
+                        StopNode(Children[0].Result.Value);
+                    }
+                }
+        */
 
         //private void OnStopped_Listener(bool success)
         private void OnStopping_Listener()
@@ -95,15 +95,18 @@ namespace RSToolkit.AI.Behaviour
             if (this.Children[0].State == NodeState.ACTIVE)
             {
                 // this.Children[0].RequestStopNode();                
-                StartFirstChildNodeOnNextTick();
+                //StartFirstChildNodeOnNextTick();
+                StopChildren();
+                
             }
             else
             {
                 RemoveTimer(m_rootTimer);
+                StopNodeOnNextTick(true);
             }
             // OnStopped.Invoke(true);
             // StopNode(true);
-            StopNodeOnNextTick(true);
+            // StopNodeOnNextTick(true);
         }
 
         /*
