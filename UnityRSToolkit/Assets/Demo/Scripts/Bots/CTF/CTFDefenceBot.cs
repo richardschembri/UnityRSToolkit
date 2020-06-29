@@ -11,36 +11,61 @@ using RSToolkit.AI;
 namespace Demo.CTF{
     public class CTFDefenceBot : CTFBot
     {
+        [SerializeField]
+        private Transform[] m_waypoints;
+
         public struct DefendFlagNotTakenBehaviours{
             public BehaviourSelector MainSelector;
-            public BehaviourAction DoSeek;
+            public BehaviourAction DoSeekStartingPosition ;
             public BehaviourCondition IsWithinSight;
             public BehaviourAction DoDefend;
         }
 
         public struct DefendFlagTakenBehaviours{
-            public BehaviourSequence MainSequence;
-            public BehaviourInverter IsFlagCapturedInverter;
-            public BehaviourCondition IsFlagCaptured;
+            public BehaviourCondition IsFlagNotCaptured;
             public BehaviourAction DoSeekEnemy;
         }
 
-        public DefendFlagNotTakenBehaviours CTFFlagNotTakenBehaviours; 
-        public DefendFlagTakenBehaviours CTFFlagTakenBehaviours; 
+        public struct PatrolFlagTakenBehaviours{
+            public BehaviourSequence PatrolSequence;
+            public BehaviourAction DoPatrol;
+            public BehaviourAction DoSeekFlag;
+        }
+
+        public DefendFlagNotTakenBehaviours CTFDefendFlagNotTakenBehaviours; 
+        public DefendFlagTakenBehaviours CTFDefendFlagTakenBehaviours; 
+        public PatrolFlagTakenBehaviours CTFPatrolFlagTakenBehaviours; 
 
         protected override void InitFlagNotTakenBehaviours(){
-            CTFFlagNotTakenBehaviours.MainSelector = new BehaviourSelector(false);
+            CTFDefendFlagNotTakenBehaviours.MainSelector = new BehaviourSelector(false);
 
-            CTFFlagNotTakenBehaviours.DoDefend = new BehaviourAction(DoDefendAction, "Do Defend");
-            CTFFlagNotTakenBehaviours.IsWithinSight = new BehaviourCondition(IsWithinSight, CTFFlagNotTakenBehaviours.DoDefend);
-            CTFFlagNotTakenBehaviours.MainSelector.AddChild(CTFFlagNotTakenBehaviours.IsWithinSight);
+            CTFDefendFlagNotTakenBehaviours.DoDefend = new BehaviourAction(DoDefendAction, "Do Defend");
+            CTFDefendFlagNotTakenBehaviours.IsWithinSight = new BehaviourCondition(IsWithinSight, CTFDefendFlagNotTakenBehaviours.DoDefend);
+            CTFDefendFlagNotTakenBehaviours.MainSelector.AddChild(CTFDefendFlagNotTakenBehaviours.IsWithinSight);
 
-            CTFFlagNotTakenBehaviours.DoSeek = new BehaviourAction(DoSeekAction, "Do Seek");
+            CTFDefendFlagNotTakenBehaviours.DoSeekStartingPosition = new BehaviourAction(DoSeekAction, "Do Seek");
         }
         protected override void InitFlagTakenBehaviours(){
-            CTFFlagTakenBehaviours.MainSequence = new BehaviourSequence(false);
+            if(m_waypoints.Length > 0){
+                InitPatrolFlagTakenBehaviours();
+            }else{
+                InitDefendFlagTakenBehaviours();
+            }
+        }
+        protected void InitDefendFlagTakenBehaviours(){
+            CTFDefendFlagTakenBehaviours.DoSeekEnemy = new BehaviourAction(DoSeekEnemyAction, "Do Seek Enemy");
+            CTFDefendFlagTakenBehaviours.IsFlagNotCaptured = new BehaviourCondition(IsFlagNotCapturedCondition, CTFDefendFlagTakenBehaviours.DoSeekEnemy);
+        }
+        
+        protected bool IsFlagNotCapturedCondition(){
+            return false;
         }
 
+        protected void InitPatrolFlagTakenBehaviours(){
+            CTFPatrolFlagTakenBehaviours.PatrolSequence = new BehaviourSequence(false);
+            CTFPatrolFlagTakenBehaviours.DoPatrol = new BehaviourAction(DoPatrolAction, "Do Patrol Action");
+            CTFPatrolFlagTakenBehaviours.DoSeekFlag = new BehaviourAction(DoSeekAction, "Do Seek Action");
+        }
         private BehaviourAction.ActionResult DoDefendAction(bool cancel)
         {
             if(cancel){
@@ -49,7 +74,21 @@ namespace Demo.CTF{
             }
             return BehaviourAction.ActionResult.PROGRESS;
         }
+        private BehaviourAction.ActionResult DoPatrolAction(bool cancel)
+        {
+            if(cancel){
+                return BehaviourAction.ActionResult.FAILED;
+            }
+            return BehaviourAction.ActionResult.PROGRESS;
+        }
 
+        private BehaviourAction.ActionResult DoSeekEnemyAction(bool cancel)
+        {
+            if(cancel){
+                return BehaviourAction.ActionResult.FAILED;
+            }
+            return BehaviourAction.ActionResult.PROGRESS;
+        }
         // Start is called before the first frame update
         void Start()
         {

@@ -71,5 +71,16 @@
             int pos = Array.IndexOf(transforms, target.transform);
             return (pos > -1);
         }
+
+        public static Vector3 GetClosestTransform(this Transform source, Transform[] transforms){
+            float distance = Mathf.Infinity;
+            Transform result;
+            for(int i = 0; i < transforms.Length; i++){
+                if ((distance = Vector3.Magnitude(source.position - transforms[i].position)) < distance) {
+                    result = transforms[i];
+                }
+            }
+            return result;
+        }
     }
 }

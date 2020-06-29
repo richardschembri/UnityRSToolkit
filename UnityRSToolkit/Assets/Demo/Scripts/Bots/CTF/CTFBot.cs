@@ -13,10 +13,6 @@ namespace Demo.CTF{
     [RequireComponent(typeof(BotVision))]
     public abstract class CTFBot : MonoBehaviour
     {
-        [SerializeField]
-        private bool m_isOffense;
-        public bool IsOffense {get {return m_isOffense;}}
-
         private Vector3 m_startPosition;
         private Quaternion m_startRotation;
 

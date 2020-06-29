@@ -11,11 +11,22 @@ namespace Demo.CTF{
     public class CTFOffenceBot : CTFBot 
     {
 
-        public struct DefendFlagNotTakenBehaviours{
-            public BehaviourSequence MainSequence;
-            public BehaviourInverter IsFlagCapturedInverter;
-            public BehaviourCondition IsFlagCaptured;
+        public struct OffenceFlagNotTakenBehaviours{
+            public BehaviourSelector MainSelector;
+            public BehaviourCondition IsEnemyNotWithinDistance;
             public BehaviourAction DoSeekFlag;
+            public BehaviourAction DoFlee;
+        }
+        public struct OffenceFlagTakenBehaviours{
+            public BehaviourSelector MainSelector;
+            public BehaviourCondition HasFlag;            
+            public BehaviourSequence TakeFlagToCapturePointSequence;
+            public BehaviourAction DoTakeCelebrate;
+            public BehaviourCondition IsFlagNotCaptured;            
+            public BehaviourSequence SeekFlagSequence;
+            public BehaviourAction DoSeekFlag;
+            public BehaviourAction DoSeekCelebrate;
+
         }
         protected override void InitFlagNotTakenBehaviours(){
         }
