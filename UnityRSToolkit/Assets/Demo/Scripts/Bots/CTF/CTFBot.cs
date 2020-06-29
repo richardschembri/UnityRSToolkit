@@ -11,7 +11,7 @@ namespace Demo.CTF{
     [RequireComponent(typeof(Bot))]
     [RequireComponent(typeof(BotNavMesh))]
     [RequireComponent(typeof(BotVision))]
-    public class CTFBot : MonoBehaviour
+    public abstract class CTFBot : MonoBehaviour
     {
         [SerializeField]
         private bool m_isOffense;
@@ -21,42 +21,20 @@ namespace Demo.CTF{
         private Quaternion m_startRotation;
 
         private BehaviourManager m_behaviourManagerComponent;
-        private Bot m_botComponent;
-        private BotVision m_botVisionComponent;
-        private BotNavMesh m_botNavMeshComponent;
+        protected Bot m_botComponent;
+        protected BotVision m_botVisionComponent;
+        protected BotNavMesh m_botNavMeshComponent;
 
         public bool HasFlag {get;set;}
 
-        public struct DefendFlagNotTakenBehaviours{
-            public BehaviourSelector MainSelector;
-            public BehaviourAction DoSeek;
-            public BehaviourCondition IsWithinSight;
-            public BehaviourAction DoDefend;
+        protected abstract void InitFlagNotTakenBehaviours();
+        protected abstract void InitFlagTakenBehaviours();
+        protected virtual void InitBehaviours(){
+            InitFlagNotTakenBehaviours();
+            InitFlagTakenBehaviours();
         }
 
-        public struct DefendFlagTakenBehaviours{
-            public BehaviourSequence MainSequence;
-            public BehaviourInverter IsFlagCapturedInverter;
-            public BehaviourCondition IsFlagCaptured;
-            public BehaviourAction DoSeek;
-        }
-
-        public DefendFlagNotTakenBehaviours CTFDefendFlagNotTakenBehaviours; 
-        public DefendFlagTakenBehaviours CTFDefendFlagTakenBehaviours; 
-        private void InitDefendBehaviours(){
-            CTFDefendFlagNotTakenBehaviours.MainSelector = new BehaviourSelector(false);
-
-            CTFDefendFlagNotTakenBehaviours.DoDefend = new BehaviourAction(DoDefendAction, "Do Defend");
-            CTFDefendFlagNotTakenBehaviours.IsWithinSight = new BehaviourCondition(IsWithinSight, CTFDefendFlagNotTakenBehaviours.DoDefend);
-            CTFDefendFlagNotTakenBehaviours.MainSelector.AddChild(CTFDefendFlagNotTakenBehaviours.IsWithinSight);
-
-            CTFDefendFlagNotTakenBehaviours.DoSeek = new BehaviourAction(DoSeekAction, "Do Seek");
-
-            //CTFDefendFlagTakenBehaviours.MainSequence = 
-            //CTFDefendFlagNotTakenBehaviours.MainSelector = new BehaviourSelector(false);
-        }
-
-        private bool IsWithinSight(){
+        protected bool IsWithinSight(){
             if(m_botVisionComponent.IsWithinSight()){
                 
                 m_botComponent.FocusOnTransform(
@@ -67,11 +45,11 @@ namespace Demo.CTF{
             return false;
         }
 
-        private void DoSeekOnStarted_Listener(){
+        protected virtual void DoSeekOnStarted_Listener(){
             m_botComponent.MoveToTarget(BotLocomotion.StopMovementConditions.WITHIN_PERSONAL_SPACE);
         }
         
-        private BehaviourAction.ActionResult DoSeekAction(bool cancel){
+        protected virtual BehaviourAction.ActionResult DoSeekAction(bool cancel){
             if(cancel){
                 m_botComponent.StopMoving();
                 return BehaviourAction.ActionResult.FAILED;
@@ -82,18 +60,10 @@ namespace Demo.CTF{
             return BehaviourAction.ActionResult.PROGRESS;
         }
 
-        private BehaviourAction.ActionResult DoDefendAction(bool cancel)
-        {
-            if(cancel){
-                m_botComponent.StopMoving();
-                return BehaviourAction.ActionResult.FAILED;
-            }
-            return BehaviourAction.ActionResult.PROGRESS;
-        }
 
         #region Mono Functions
         // Start is called before the first frame update
-        void Awake()
+        protected virtual void Awake()
         {
             m_botComponent = GetComponent<Bot>();
             m_behaviourManagerComponent = GetComponent<BehaviourManager>();
