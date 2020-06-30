@@ -6,13 +6,17 @@ using RSToolkit.AI.Behaviour.Composite;
 using RSToolkit.AI.Behaviour.Task;
 using RSToolkit.AI.Behaviour.Decorator;
 using RSToolkit.AI;
-
+using RSToolkit.Helpers;
+using System;
 
 namespace Demo.CTF{
     public class CTFDefenceBot : CTFBot
     {
         [SerializeField]
         private Transform[] m_waypoints;
+        private int m_waypointIndex = 0;
+
+        public Bot TargetEnemyBot {get; private set;}
 
         public struct DefendFlagNotTakenBehaviours{
             public BehaviourSelector MainSelector;
@@ -64,6 +68,7 @@ namespace Demo.CTF{
         protected void InitPatrolFlagTakenBehaviours(){
             CTFPatrolFlagTakenBehaviours.PatrolSequence = new BehaviourSequence(false);
             CTFPatrolFlagTakenBehaviours.DoPatrol = new BehaviourAction(DoPatrolAction, "Do Patrol Action");
+            CTFPatrolFlagTakenBehaviours.DoPatrol.OnStarted.AddListener(DoPatrol_OnStarted);
             CTFPatrolFlagTakenBehaviours.DoSeekFlag = new BehaviourAction(DoSeekAction, "Do Seek Action");
         }
         private BehaviourAction.ActionResult DoDefendAction(bool cancel)
@@ -74,11 +79,25 @@ namespace Demo.CTF{
             }
             return BehaviourAction.ActionResult.PROGRESS;
         }
+
+        private void MoveToWaypoint(){
+            m_botComponent.FocusOnTransform(m_waypoints[m_waypointIndex]);
+            m_botComponent.MoveToTarget(BotLocomotion.StopMovementConditions.WITHIN_PERSONAL_SPACE, false);
+        }
+
+        private void DoPatrol_OnStarted(){
+            m_waypointIndex = Array.IndexOf(m_waypoints, transform.GetClosestTransform(m_waypoints));
+            MoveToWaypoint();
+        }
         private BehaviourAction.ActionResult DoPatrolAction(bool cancel)
         {
             if(cancel){
                 return BehaviourAction.ActionResult.FAILED;
             }
+            if(m_botVisionComponent.IsWithinSight()){
+
+            }
+
             return BehaviourAction.ActionResult.PROGRESS;
         }
 

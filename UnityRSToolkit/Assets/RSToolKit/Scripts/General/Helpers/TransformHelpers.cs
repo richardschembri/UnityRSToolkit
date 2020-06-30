@@ -1,12 +1,12 @@
-﻿namespace RSToolkit.Helpers
-{
-
+﻿
     using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
     using System.Linq;
     using System;
 
+namespace RSToolkit.Helpers
+{
     public static class TransformHelpers
     {
         public static T[] GetTopLevelChildren<T>(this Transform self){
@@ -72,9 +72,9 @@
             return (pos > -1);
         }
 
-        public static Vector3 GetClosestTransform(this Transform source, Transform[] transforms){
+        public static Transform GetClosestTransform(this Transform source, Transform[] transforms){
             float distance = Mathf.Infinity;
-            Transform result;
+            Transform result = transforms[0];
             for(int i = 0; i < transforms.Length; i++){
                 if ((distance = Vector3.Magnitude(source.position - transforms[i].position)) < distance) {
                     result = transforms[i];
