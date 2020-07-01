@@ -85,22 +85,27 @@ namespace Demo.CTF{
             m_botComponent.MoveToTarget(BotLocomotion.StopMovementConditions.WITHIN_PERSONAL_SPACE, false);
         }
 
+#region Patrol
         private void DoPatrol_OnStarted(){
             m_waypointIndex = Array.IndexOf(m_waypoints, transform.GetClosestTransform(m_waypoints));
             MoveToWaypoint();
         }
+
         private BehaviourAction.ActionResult DoPatrolAction(bool cancel)
         {
             if(cancel){
                 return BehaviourAction.ActionResult.FAILED;
             }
             if(m_botVisionComponent.IsWithinSight()){
-
+                //m_botComponent.FocusOnTransform(m_botVisionComponent.GetTagLookOutForTransforms())
+                return BehaviourAction.ActionResult.SUCCESS;
             }
 
             return BehaviourAction.ActionResult.PROGRESS;
         }
+#endregion Patrol
 
+#region Seek Enemy
         private BehaviourAction.ActionResult DoSeekEnemyAction(bool cancel)
         {
             if(cancel){
@@ -108,6 +113,9 @@ namespace Demo.CTF{
             }
             return BehaviourAction.ActionResult.PROGRESS;
         }
+#endregion Seek Enemy
+
+
         // Start is called before the first frame update
         void Start()
         {
