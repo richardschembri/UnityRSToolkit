@@ -443,7 +443,7 @@ namespace RSToolkit.AI
 
         public bool IsWandering()
         {
-            return m_currentBotWanderComponent.IsWandering();
+            return m_currentBotWanderComponent!= null && m_currentBotWanderComponent.IsWandering();
         }
 
         public BotWander.WanderStates GetWanderState()

@@ -9,6 +9,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
     /// </summary>
     public class BehaviourRepeater : BehaviourParentNode
     {
+        private const string NODE_NAME = "Repeater";
         private bool m_loopCountSkip = false;
         public int TotalLoops { get; private set; }  = -1;
         public int LoopCount { get; private set; } = 0;
@@ -19,7 +20,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
         /// Repeated runs it's child node
         /// </summary>
         /// <param name="totalLoops">The amount of times the child node is looped. If -1 it will loop indefinately unless stopped manually.</param>
-        public BehaviourRepeater(int totalLoops = -1) : base("Repeater", NodeType.DECORATOR)
+        public BehaviourRepeater(int totalLoops = -1) : base(NODE_NAME, NodeType.DECORATOR)
         {
             TotalLoops = totalLoops;
             OnStarted.AddListener(OnStarted_Listener);
@@ -53,31 +54,6 @@ namespace RSToolkit.AI.Behaviour.Decorator
             }
         }
 
-        /*
-        public override bool StartNode(bool silent = false)
-        {
-            if(base.StartNode(silent))
-            {
-                RemoveTimer(m_restartChildTimer);
-
-                if (!m_loopCountSkip)
-                {
-                    LoopCount = 0;
-                }
-                else
-                {
-                    m_loopCountSkip = false;
-                }
-                if (!silent)
-                {
-                    Children[0].StartNode();
-                }
-                return true;
-            }
-            return false;
-        }
-        */
-
         private void OnStarted_Listener()
         {
             OnStarted_Common();
@@ -95,42 +71,15 @@ namespace RSToolkit.AI.Behaviour.Decorator
             RemoveTimer(m_restartChildTimer);
         }
 
-        /*
-        public override bool RequestStopNode(bool silent = false)
-        {
-            if (base.RequestStopNode(silent))
-            {
-                RemoveTimer(m_restartChildTimer);
-                if (!silent)
-                {
-                    if (Children[0].State == NodeState.ACTIVE)
-                    {
-                        Children[0].RequestStopNode();
-                    }
-                    else
-                    {
-                        // OnStopped.Invoke(TotalLoops == -1);
-                        StopNode(TotalLoops == -1);
-                    }
-                }
-                return true;
-            }
-            return false;
-        }
-        */
-
         private void OnStopping_Listener()
         {
             OnStopping_Common();
             if(Children[0].State == NodeState.ACTIVE)
             {
-                // Children[0].RequestStopNode();
                 Children[0].RequestStopNodeOnNextTick();
             }
             else
             {
-                // OnStopped.Invoke(TotalLoops == -1);
-                // StopNode(TotalLoops == -1);
                 StopNodeOnNextTick(TotalLoops == -1);
             }
         }
@@ -146,9 +95,6 @@ namespace RSToolkit.AI.Behaviour.Decorator
             {
                 if(State == NodeState.STOPPING || (TotalLoops >= 0 && ++LoopCount >= TotalLoops))
                 {
-
-                    // OnStopped.Invoke(true);
-                    // StopNode(true);
                     StopNodeOnNextTick(true);
                 }
                 else
@@ -158,8 +104,6 @@ namespace RSToolkit.AI.Behaviour.Decorator
             }
             else
             {
-                // OnStopped.Invoke(false);
-                // StopNode(false);
                 StopNodeOnNextTick(false);
             }
         }

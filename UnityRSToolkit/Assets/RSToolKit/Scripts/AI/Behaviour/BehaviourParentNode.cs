@@ -36,17 +36,22 @@ namespace RSToolkit.AI.Behaviour
             switch (Type)
             {
                 case NodeType.TASK:
-                    throw new System.Exception("Tasks don`t have children");
+                    throw new System.Exception($"Failed to add {child.Name}. Tasks don`t have children");
                 case NodeType.DECORATOR:
                     if (Children.Count > 1)
                     {
-                        throw new System.Exception("Too many children");
+                        throw new System.Exception($"Failed to add {child.Name} to {Name}. Too many children");
                     }
                     break;
 
             }
+            
             if (!m_children.Contains(child))
             {
+                if (child.Parent != null)
+                {
+                    throw new System.Exception($"Adding child to {Name} failed. {child.Name} already has parent {child.Parent.Name}");
+                }
                 m_children.Add(child);
                 child.SetParent(this);
                 OnChildNodeAdded.Invoke(this, child);

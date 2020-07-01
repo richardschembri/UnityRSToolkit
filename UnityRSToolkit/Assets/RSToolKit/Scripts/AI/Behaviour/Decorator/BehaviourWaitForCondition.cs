@@ -53,7 +53,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
         {
             if (!m_isConditionMetFunc.Invoke())
             {
-                AddTimer(m_checkInterval, m_checkVariance, -1, checkCondition);
+                m_conditionTimer = AddTimer(m_checkInterval, m_checkVariance, -1, checkCondition);
             }
             else
             {
