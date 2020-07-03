@@ -46,14 +46,14 @@ namespace RSToolkit.AI
         private List<Transform> m_tagLookOutForTransforms = new List<Transform>();
         public List<Transform> GetTagLookOutForTransforms(bool refresh = false)
         {
-            if(!refresh && m_tagLookOutForTransforms.Any())
+            if (!refresh && m_tagLookOutForTransforms.Any())
             {
                 m_tagLookOutForTransforms = m_tagLookOutForTransforms.Where(t => t != null).ToList();
                 return m_tagLookOutForTransforms;
             }
 
             m_tagLookOutForTransforms = new List<Transform>();
-            for(int i = 0; i < LookOutForTags.Length; i++)
+            for (int i = 0; i < LookOutForTags.Length; i++)
             {
                 m_tagLookOutForTransforms.AddRange(GameObject.FindGameObjectsWithTag(LookOutForTags[i])
                             .Select(go => go.transform));
@@ -62,9 +62,9 @@ namespace RSToolkit.AI
             return m_tagLookOutForTransforms;
         }
 
-        public List<Transform > GetAllLookOutForTransforms(bool refresh = false)
+        public IEnumerable<Transform> GetAllLookOutForTransforms(bool refresh = false)
         {
-            return GetTagLookOutForTransforms(refresh).Union(LookOutForTransforms).ToList();
+            return GetTagLookOutForTransforms(refresh).Union(LookOutForTransforms);
         }
 
         private Func<Transform, bool> isWithinSightLambda => (Transform t) => ProximityHelpers.IsWithinSight(transform, t, FieldOfViewAngle, SqrViewMagnitude);
@@ -74,25 +74,50 @@ namespace RSToolkit.AI
             return LookOutForTransforms.Any(isWithinSightLambda);
         }
 
-        public Transform[] GetTrasnformsWithinSight(bool refreshList = false)
+        public IEnumerable<Transform> GetTrasnformsWithinSight(bool refreshList = false)
         {
-            return GetAllLookOutForTransforms(refreshList).Where(isWithinSightLambda).ToArray();
+            return GetAllLookOutForTransforms(refreshList).Where(isWithinSightLambda);
+        }
+
+        public IEnumerable<Transform> GetTrasnformsWithinSightWithTag(string tag, bool refreshList = false)
+        {
+            return GetAllLookOutForTransforms(refreshList).Where(isWithinSightLambda).Where(t => t.tag == tag);
+        }
+
+        private Transform[] DoLookoutFor(bool newTransformsOnly = true, bool refreshList = false, string tag = "")
+        {
+            IEnumerable<Transform> targets;
+            if (string.IsNullOrEmpty(tag))
+            {
+                targets = GetTrasnformsWithinSight(refreshList);
+            }
+            else
+            {
+                targets = GetTrasnformsWithinSightWithTag(tag, refreshList);
+            }
+
+            Transform[] result = new Transform[0];
+            if (newTransformsOnly)
+            {
+                result = targets.Where(t => !BotComponent.NoticedTransforms.Contains(t)).ToArray();
+            }
+
+            for (int i = 0; i < result.Length; i++)
+            {
+                OnTransformSeen.Invoke(result[i]);
+            }
+
+            return result;
         }
 
         public Transform[] DoLookoutFor(bool newTransformsOnly = true, bool refreshList = false)
         {
-            var targets = GetTrasnformsWithinSight(refreshList);
-            if (newTransformsOnly)
-            {
-                targets = targets.Where(t => !BotComponent.NoticedTransforms.Contains(t)).ToArray();
-            }
-                
-            for (int i = 0; i < targets.Length; i++)
-            {
-                OnTransformSeen.Invoke(targets[i]);
-            }
+            return DoLookoutFor(newTransformsOnly, refreshList);
+        }
 
-            return targets;
+        public Transform[] DoLookoutForTag(string tag, bool newTransformsOnly = true, bool refreshList = false)
+        {
+            return DoLookoutFor(newTransformsOnly, refreshList, tag);
         }
 
         // Draw the line of sight representation within the scene window
