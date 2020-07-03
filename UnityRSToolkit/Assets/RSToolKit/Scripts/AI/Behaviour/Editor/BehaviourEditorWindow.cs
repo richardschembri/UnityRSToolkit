@@ -55,6 +55,21 @@ namespace RSToolkit.AI.Behaviour
             window.Show();
         }
 
+        private void DrawLegends()
+        {
+            EditorGUILayout.BeginVertical();
+            {
+                GUILayout.Label("Legends:", EditorStyles.boldLabel);
+
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                {
+                    GUILayout.Label("O: Started, x: Stopping, X: Stopped, T: Timers", m_smallTextStyle);
+                }
+                EditorGUILayout.EndVertical();
+            }
+            EditorGUILayout.EndVertical();
+        }
+
         private void DrawStats(BehaviourDebugTools debugTools)
         {
             EditorGUILayout.BeginVertical();
@@ -127,8 +142,10 @@ namespace RSToolkit.AI.Behaviour
             EditorGUILayout.EndHorizontal();
         }
 
-        private void DrawNode(BehaviourNode node, int depth, bool connected)
+        //private void DrawNode(BehaviourNode node, int depth, bool connected, bool last = false)
+        private void DrawNode(BehaviourNode node, string asciiIndent, bool connected, bool last = false)
         {
+
             float stopRequestedTime = Mathf.Lerp(0.85f, 0.25f, 2.0f * (Time.time - node.DebugTools.StopRequestAt));
             float stoppedTime = Mathf.Lerp(0.85f, 0.25f, 2.0f * (Time.time - node.DebugTools.LastStoppedAt));
             float alpha = node.State == BehaviourNode.NodeState.INACTIVE ? Mathf.Max(0.35f, Mathf.Pow(stoppedTime, 1.5f)) : 1.0f;
@@ -143,14 +160,15 @@ namespace RSToolkit.AI.Behaviour
             string label = node.DebugTools.GUIlabel;
 
             GUI.backgroundColor = node.DebugTools.NodeColor;
-            tagStyle.padding.left = depth * 10;
+            //tagStyle.padding.left = last ? depth * 10 : (depth - 1) * 10;
             if (!drawLabel)
             {
-                GUILayout.Label(node.DebugTools.GUItag, tagStyle);
+                GUILayout.Label($"{asciiIndent}+- {node.DebugTools.GUItag}", tagStyle);
             }
             else
             {
-                GUILayout.Label($"({node.DebugTools.GUItag}) {node.DebugTools.GUIlabel}", tagStyle);
+                GUILayout.Label($"{asciiIndent}+- ({node.DebugTools.GUItag}) {node.DebugTools.GUIlabel}", tagStyle);
+
                 // Reset background color
                 GUI.backgroundColor = Color.white;
             }
@@ -178,7 +196,7 @@ namespace RSToolkit.AI.Behaviour
 
             // Draw Stats
             GUILayout.Label((node.DebugTools.StoppedCallCount > 0 ? node.Result.ToString() : "")
-                + $" | O:{node.DebugTools.StartCallCount} , x:{node.DebugTools.StopCallCount} , X:{node.DebugTools.StoppedCallCount}", m_smallTextStyle);
+                + $" [O:{node.DebugTools.StartCallCount}][x:{node.DebugTools.StopCallCount}][X:{node.DebugTools.StoppedCallCount}][T:{node.Timers.Count}]", m_smallTextStyle);
             EditorGUILayout.EndHorizontal();
 
             // Draw the lines
@@ -192,10 +210,14 @@ namespace RSToolkit.AI.Behaviour
                 Handles.DrawLine(new Vector2(rect.xMin - 5, midY), new Vector2(rect.xMin, midY));
                 Handles.EndGUI();
             }
+
+
         }
 
-        private void DrawNodeTree(BehaviourNode node, int depth = 0, bool firstNode = true, float lastYPos = 0f)
+        //private void DrawNodeTree(BehaviourNode node, int depth = 0, bool firstNode = true, float lastYPos = 0f, bool last = false)
+        private void DrawNodeTree(BehaviourNode node, string asciiIndent, bool firstNode = true, float lastYPos = 0f, bool last = true)
         {
+
             GUI.color = (node.State == BehaviourNode.NodeState.ACTIVE) ? m_activeColor : m_inactiveColor;
             if (node.Parent?.Type == BehaviourNode.NodeType.DECORATOR)
             {
@@ -204,7 +226,9 @@ namespace RSToolkit.AI.Behaviour
 
             bool isConnected = node.Type != BehaviourNode.NodeType.DECORATOR || (node.Type == BehaviourNode.NodeType.DECORATOR && node.DebugTools.GUIcollapse);
 
-            DrawNode(node, depth, isConnected);
+            //DrawNode(node, depth, isConnected, last);
+            DrawNode(node, asciiIndent, isConnected, last);
+            asciiIndent += last ? "   " : "|  ";  // "--" : "|-";
             var lastrect = GUILayoutUtility.GetLastRect();
 
             if (firstNode)
@@ -235,19 +259,24 @@ namespace RSToolkit.AI.Behaviour
             Handles.DrawLine(new Vector2(lastrect.xMin - 5, lastYPos + 4), new Vector2(lastrect.xMin - 5, lineY));
             Handles.EndGUI();
 
-            //if (node.Type == BehaviourNode.NodeType.DECORATOR) depth++;
-            if (node.Type != BehaviourNode.NodeType.TASK) depth++;
+            //if (node.Type != BehaviourNode.NodeType.TASK) depth++;
 
             if (node.Type != BehaviourNode.NodeType.DECORATOR) EditorGUILayout.BeginVertical(m_nestedBoxStyle);
+
             if (nodeparent != null && nodeparent.Children.Count > 0 && !node.DebugTools.GUIcollapse)
             {
                 lastYPos = lastrect.yMin + 16; // Set new Line position
-
+                //string childasciiIndent = asciiIndent;
                 for (int i = 0; i < nodeparent.Children.Count; i++)
                 {
-                    DrawNodeTree(nodeparent.Children[i], depth, i == 0, lastYPos);
+                    //DrawNodeTree(nodeparent.Children[i], depth, i == 0, lastYPos, i == nodeparent.Children.Count - 1);
+                    //DrawNodeTree(nodeparent.Children[i], ref childasciiIndent, i == 0, lastYPos, i == nodeparent.Children.Count - 1);
+                    DrawNodeTree(nodeparent.Children[i], asciiIndent, i == 0, lastYPos, i == nodeparent.Children.Count - 1);
+                    //childasciiIndent = asciiIndent;
                 }
+
             }
+
 
             if (node.Type != BehaviourNode.NodeType.DECORATOR) EditorGUILayout.EndVertical();
         }
@@ -304,10 +333,11 @@ namespace RSToolkit.AI.Behaviour
                 Time.timeScale = EditorGUILayout.Slider(Time.timeScale, 0.0f, 2.0f);
                 GUILayout.EndHorizontal();
             }
-
-            DrawNodeTree(SelectedManager.CurrentTree);
+            string indent = "";
+            DrawNodeTree(SelectedManager.CurrentTree, indent);
             GUILayout.Space(10);
-
+            DrawLegends();
+            GUILayout.Space(10);
             EditorGUILayout.EndScrollView();
 
             Repaint();

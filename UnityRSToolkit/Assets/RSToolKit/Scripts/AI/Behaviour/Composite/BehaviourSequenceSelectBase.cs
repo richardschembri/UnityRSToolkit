@@ -75,14 +75,12 @@ namespace RSToolkit.AI.Behaviour.Composite
             {
                 ShuffleChildren();
             }
-            // AddTimer(0, 0, ProcessChildNodeSequence);
-            RunOnNextTick(ProcessChildNodeSequence);
         }
 
         protected virtual void OnStarted_Listener()
         {
             OnStarted_Common();
-            
+            RunOnNextTick(ProcessChildNodeSequence);
         }
 
         protected virtual void OnStartedSilent_Listener()

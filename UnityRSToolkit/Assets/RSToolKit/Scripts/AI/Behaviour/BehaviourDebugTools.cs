@@ -28,9 +28,9 @@ namespace RSToolkit.AI.Behaviour
         {
             int result = StartCallCount;
             var nodeparent = m_node as BehaviourParentNode;
-            if(nodeparent != null)
+            if (nodeparent != null)
             {
-                for(int i = 0; i < nodeparent.Children.Count; i++)
+                for (int i = 0; i < nodeparent.Children.Count; i++)
                 {
                     result += nodeparent.Children[i].DebugTools.GetTotalStartCallCount();
                 }
@@ -99,15 +99,11 @@ namespace RSToolkit.AI.Behaviour
         {
             get
             {
-                if (GUIcollapse)
+                if (string.IsNullOrEmpty(m_GUItag))
                 {
-                    return "...";
+                    return GUIcollapse ? $"{m_node.Name} ..." : m_node.Name;
                 }
-                else if (string.IsNullOrEmpty(m_GUItag))
-                {
-                    return m_node.Name;
-                }
-                return m_GUItag;
+                return GUIcollapse ? $"{m_GUItag} ..." : m_GUItag;
             }
             set
             {
@@ -168,7 +164,7 @@ namespace RSToolkit.AI.Behaviour
                     NodeColor = TASK_COLOR;
                     break;
             }
-            if(m_node is BehaviourRootNode)
+            if (m_node is BehaviourRootNode)
             {
                 NodeColor = ROOT_COLOR;
             }
