@@ -101,9 +101,21 @@ namespace RSToolkit.AI.Behaviour
             {
                 if (string.IsNullOrEmpty(m_GUItag))
                 {
-                    return GUIcollapse ? $"{m_node.Name} ..." : m_node.Name;
+                    if (GUIcollapse)
+                    {
+                        var nodeparent = m_node as BehaviourParentNode;
+                        return $"{m_node.Name} [{nodeparent.Children.Count}]";
+                    }
+
+                    return m_node.Name;
+
                 }
-                return GUIcollapse ? $"{m_GUItag} ..." : m_GUItag;
+                if (GUIcollapse)
+                {
+                    var nodeparent = m_node as BehaviourParentNode;
+                    return $"{m_GUItag} [{nodeparent.Children.Count}]";
+                }
+                return m_GUItag;
             }
             set
             {
