@@ -6,6 +6,7 @@ using RSToolkit.AI.Behaviour.Composite;
 using RSToolkit.AI.Behaviour.Task;
 using RSToolkit.AI.Behaviour.Decorator;
 using RSToolkit.AI;
+using RSToolkit.Helpers;
 
 namespace Demo.CTF{
     [RequireComponent(typeof(Bot))]
@@ -16,12 +17,14 @@ namespace Demo.CTF{
         private Vector3 m_startPosition;
         private Quaternion m_startRotation;
 
-        private BehaviourManager m_behaviourManagerComponent;
+        protected BehaviourManager m_behaviourManagerComponent;
         protected Bot m_botComponent;
         protected BotVision m_botVisionComponent;
         protected BotNavMesh m_botNavMeshComponent;
 
-        public bool HasFlag {get;set;}
+        protected GameObject m_FlagHolder;
+
+        public bool HasFlag {get {return m_FlagHolder.transform.childCount > 0;}}
 
         protected abstract void InitFlagNotTakenBehaviours();
         protected abstract void InitFlagTakenBehaviours();
@@ -30,16 +33,7 @@ namespace Demo.CTF{
             InitFlagTakenBehaviours();
         }
 
-        protected bool IsWithinSight(){
-            if(m_botVisionComponent.IsWithinSight()){
-                
-                m_botComponent.FocusOnTransform(
-                    m_botVisionComponent.
-                    GetTrasnformsWithinSight(false)[0]);
-                return true;
-            }
-            return false;
-        }
+        protected abstract bool IsWithinSight();
 
         protected virtual void DoSeekOnStarted_Listener(){
             m_botComponent.MoveToTarget(BotLocomotion.StopMovementConditions.WITHIN_PERSONAL_SPACE);
@@ -56,15 +50,21 @@ namespace Demo.CTF{
             return BehaviourAction.ActionResult.PROGRESS;
         }
 
+        public abstract void SwitchToTree_FlagTaken();
+
+        public abstract void SwitchToTree_FlagNotTaken();
+
+        public void HoldFlag()
 
         #region Mono Functions
         // Start is called before the first frame update
         protected virtual void Awake()
         {
             m_botComponent = GetComponent<Bot>();
-            m_behaviourManagerComponent = GetComponent<BehaviourManager>();
+            m_behaviourManagerComponent  = GetComponent<BehaviourManager>();
             m_botVisionComponent = GetComponent<BotVision>();
             m_botNavMeshComponent = GetComponent<BotNavMesh>();
+            m_FlagHolder = gameObject.GetChild("Flag Holder");
             m_startPosition = transform.position;
             m_startRotation = transform.rotation;
         }

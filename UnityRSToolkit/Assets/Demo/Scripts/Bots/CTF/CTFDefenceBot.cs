@@ -16,39 +16,49 @@ namespace Demo.CTF{
         private Transform[] m_waypoints;
         private int m_waypointIndex = 0;
 
-        public Bot TargetEnemyBot {get; private set;}
+        public CTFBot TargetEnemyBot {get; private set;}
+
+#region Behaviour Structs
 
         public struct DefendFlagNotTakenBehaviours{
+            public BehaviourRootNode Root;
             public BehaviourSelector MainSelector;
             public BehaviourAction DoSeekStartingPosition ;
             public BehaviourCondition IsWithinSight;
             public BehaviourAction DoDefend;
         }
 
-        public struct DefendFlagTakenBehaviours{
-            public BehaviourCondition IsFlagNotCaptured;
-            public BehaviourAction DoSeekEnemy;
-        }
-
-        public struct PatrolFlagTakenBehaviours{
+        public struct PatrolFlagNotTakenBehaviours{
+            public BehaviourRootNode Root;
             public BehaviourSequence PatrolSequence;
             public BehaviourAction DoPatrol;
             public BehaviourAction DoSeekFlag;
         }
 
-        public DefendFlagNotTakenBehaviours CTFDefendFlagNotTakenBehaviours; 
-        public DefendFlagTakenBehaviours CTFDefendFlagTakenBehaviours; 
-        public PatrolFlagTakenBehaviours CTFPatrolFlagTakenBehaviours; 
+        public struct DefendFlagTakenBehaviours{
+            public BehaviourRootNode Root;
+            public BehaviourCondition IsFlagNotCaptured;
+            public BehaviourAction DoSeekEnemy;
+        }
+
+#endregion Behaviour Structs
+
+#region Init Behaviours
+        public DefendFlagNotTakenBehaviours CTFDefend_FlagNotTakenBehaviours; 
+        public DefendFlagTakenBehaviours CTFDefend_FlagTakenBehaviours; 
+        public PatrolFlagNotTakenBehaviours CTFPatrol_FlagNotTakenBehaviours; 
 
         protected override void InitFlagNotTakenBehaviours(){
-            CTFDefendFlagNotTakenBehaviours.MainSelector = new BehaviourSelector(false);
+            CTFDefend_FlagNotTakenBehaviours.Root = new BehaviourRootNode("Flag Not Taken");
+            CTFDefend_FlagNotTakenBehaviours.MainSelector = new BehaviourSelector(false);
 
-            CTFDefendFlagNotTakenBehaviours.DoDefend = new BehaviourAction(DoDefendAction, "Do Defend");
-            CTFDefendFlagNotTakenBehaviours.IsWithinSight = new BehaviourCondition(IsWithinSight, CTFDefendFlagNotTakenBehaviours.DoDefend);
-            CTFDefendFlagNotTakenBehaviours.MainSelector.AddChild(CTFDefendFlagNotTakenBehaviours.IsWithinSight);
+            CTFDefend_FlagNotTakenBehaviours.DoDefend = new BehaviourAction(DoDefend, "Do Defend");
+            CTFDefend_FlagNotTakenBehaviours.IsWithinSight = new BehaviourCondition(IsWithinSight, CTFDefend_FlagNotTakenBehaviours.DoDefend);
+            CTFDefend_FlagNotTakenBehaviours.MainSelector.AddChild(CTFDefend_FlagNotTakenBehaviours.IsWithinSight);
 
-            CTFDefendFlagNotTakenBehaviours.DoSeekStartingPosition = new BehaviourAction(DoSeekAction, "Do Seek");
+            CTFDefend_FlagNotTakenBehaviours.DoSeekStartingPosition = new BehaviourAction(DoSeekAction, "Do Seek");
         }
+
         protected override void InitFlagTakenBehaviours(){
             if(m_waypoints.Length > 0){
                 InitPatrolFlagTakenBehaviours();
@@ -57,21 +67,38 @@ namespace Demo.CTF{
             }
         }
         protected void InitDefendFlagTakenBehaviours(){
-            CTFDefendFlagTakenBehaviours.DoSeekEnemy = new BehaviourAction(DoSeekEnemyAction, "Do Seek Enemy");
-            CTFDefendFlagTakenBehaviours.IsFlagNotCaptured = new BehaviourCondition(IsFlagNotCapturedCondition, CTFDefendFlagTakenBehaviours.DoSeekEnemy);
+            CTFDefend_FlagTakenBehaviours.DoSeekEnemy = new BehaviourAction(DoSeekEnemy, "Do Seek Enemy");
+            CTFDefend_FlagTakenBehaviours.IsFlagNotCaptured = new BehaviourCondition(IsFlagNotCapturedCondition, CTFDefend_FlagTakenBehaviours.DoSeekEnemy);
+        }
+
+        protected void InitPatrolFlagTakenBehaviours(){
+            CTFPatrol_FlagNotTakenBehaviours.PatrolSequence = new BehaviourSequence(false);
+            CTFPatrol_FlagNotTakenBehaviours.DoPatrol = new BehaviourAction(DoPatrol, "Do Patrol Action");
+            CTFPatrol_FlagNotTakenBehaviours.DoPatrol.OnStarted.AddListener(DoPatrol_OnStarted);
+            CTFPatrol_FlagNotTakenBehaviours.DoSeekFlag = new BehaviourAction(DoSeekAction, "Do Seek Action");
+        }
+#endregion Init Behaviours
+        public override void SwitchToTree_FlagTaken(){
+            m_behaviourManagerComponent.SetCurrentTree(CTFDefend_FlagTakenBehaviours.Root, true);
+        }
+
+        public override void SwitchToTree_FlagNotTaken(){
+            if(m_waypoints.Length > 0){
+                m_behaviourManagerComponent.SetCurrentTree(CTFPatrol_FlagNotTakenBehaviours.Root, true);
+            }else{
+                m_behaviourManagerComponent.SetCurrentTree(CTFDefend_FlagNotTakenBehaviours.Root, true);
+            }
+        }
+
+        protected override bool IsWithinSight(){
+            return m_botVisionComponent.IsWithinSight(CTFGameManager.TAG_OFFENCE);
         }
         
         protected bool IsFlagNotCapturedCondition(){
             return false;
         }
-
-        protected void InitPatrolFlagTakenBehaviours(){
-            CTFPatrolFlagTakenBehaviours.PatrolSequence = new BehaviourSequence(false);
-            CTFPatrolFlagTakenBehaviours.DoPatrol = new BehaviourAction(DoPatrolAction, "Do Patrol Action");
-            CTFPatrolFlagTakenBehaviours.DoPatrol.OnStarted.AddListener(DoPatrol_OnStarted);
-            CTFPatrolFlagTakenBehaviours.DoSeekFlag = new BehaviourAction(DoSeekAction, "Do Seek Action");
-        }
-        private BehaviourAction.ActionResult DoDefendAction(bool cancel)
+        
+        private BehaviourAction.ActionResult DoDefend(bool cancel)
         {
             if(cancel){
                 m_botComponent.StopMoving();
@@ -91,13 +118,13 @@ namespace Demo.CTF{
             MoveToWaypoint();
         }
 
-        private BehaviourAction.ActionResult DoPatrolAction(bool cancel)
+        private BehaviourAction.ActionResult DoPatrol(bool cancel)
         {
             if(cancel){
                 return BehaviourAction.ActionResult.FAILED;
             }
-            if(m_botVisionComponent.IsWithinSight()){
-                //m_botComponent.FocusOnTransform(m_botVisionComponent.GetTagLookOutForTransforms())
+            if(IsWithinSight()){
+                TargetEnemyBot = m_botVisionComponent.DoLookoutFor(false, false, CTFGameManager.TAG_OFFENCE)[0].GetComponent<CTFBot>();
                 return BehaviourAction.ActionResult.SUCCESS;
             }
 
@@ -106,7 +133,7 @@ namespace Demo.CTF{
 #endregion Patrol
 
 #region Seek Enemy
-        private BehaviourAction.ActionResult DoSeekEnemyAction(bool cancel)
+        private BehaviourAction.ActionResult DoSeekEnemy(bool cancel)
         {
             if(cancel){
                 return BehaviourAction.ActionResult.FAILED;

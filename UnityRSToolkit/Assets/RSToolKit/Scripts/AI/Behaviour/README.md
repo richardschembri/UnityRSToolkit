@@ -1,4 +1,8 @@
-# RSToolkit Behaviour AI
+```
+ __   __      __   ___                   __        __
+|__) /__`    |__) |__  |__|  /\  \  / | /  \ |  | |__)
+|  \ .__/    |__) |___ |  | /~~\  \/  | \__/ \__/ |  \
+```
 Started as reimplementation of [NPBehave](https://github.com/meniku/NPBehave) in order to learn how behaviour trees work but morphed into it's own beast.
 
 
