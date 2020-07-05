@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using RSToolkit;
+using System.Linq;
 
 namespace Demo.CTF{
     public class CTFGameManager : SingletonMonoBehaviour<CTFGameManager>
@@ -10,6 +11,54 @@ namespace Demo.CTF{
         public const string TAG_DEFENCE = "Defence";
         public const string TAG_FLAG = "Flag";
         public Transform BotsContainer;
+        public CTFBot[] Bots{get; private set;} 
+
+        public Vector3 FlagStartPosition {get; private set;}
+        public Quaternion FlagStartRotation {get; private set;}
+
+        public Transform Flag {get; private set;}
+
+        [SerializeField]
+        private Transform m_level;
+        public Transform Level {get{return m_level;}}
+
+#region Reset
+        private void ResetFlag(){
+           Flag.parent = Level; 
+           Flag.position = FlagStartPosition;
+           Flag.rotation = FlagStartRotation;
+        }
+
+        public void ResetGame(){
+            ResetFlag();
+        }
+#endregion Reset
+
+        public bool IsFlagTaken(){
+            return Bots.Any(b => b.HasFlag);
+        }
+
+        public bool GiveFlagToBot(CTFBot bot){
+           if(IsFlagTaken()){
+               return false;
+           }
+            Flag.parent = bot.FlagHolder.transform;
+            Flag.localPosition = Vector3.zero;
+           return true;
+        }
+
+        public void StartGame(){
+
+        }
+
+        #region Mono Functions
+        protected override void Awake(){
+            base.Awake();
+            Bots = BotsContainer.GetComponentsInChildren<CTFBot>();
+            Flag = GameObject.FindGameObjectWithTag(TAG_FLAG).transform;
+            FlagStartPosition = Flag.position;
+            FlagStartRotation = Flag.rotation;
+        }
         // Start is called before the first frame update
         void Start()
         {
@@ -21,5 +70,6 @@ namespace Demo.CTF{
         {
             
         }
+        #endregion Mono Functions
     }
 }

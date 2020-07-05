@@ -57,6 +57,10 @@ namespace Demo.CTF{
             CTFOffence_FlagTakenBehaviours.Root = new BehaviourRootNode("Flag Taken");
             CTFOffence_FlagTakenBehaviours.MainSelector = new BehaviourSelector(false);
         }
+        protected override BehaviourRootNode GetDefaultTree(){
+            return CTFOffence_FlagNotTakenBehaviours.Root;
+        }
+        #region Mono Functions
         // Start is called before the first frame update
         void Start()
         {
@@ -68,5 +72,6 @@ namespace Demo.CTF{
         {
             
         }
+        #endregion Mono Functions
     }
 }
