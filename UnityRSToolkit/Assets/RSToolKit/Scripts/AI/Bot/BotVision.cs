@@ -84,9 +84,19 @@ namespace RSToolkit.AI
             return GetAllLookOutForTransforms().Any(t => IsWithinSight(t, tag));
         }
 
+        public virtual bool IsWithinSight<T>(string tag = "") where T: MonoBehaviour
+        {
+            return GetAllLookOutForTransforms().Any(t => IsWithinSight(t, tag) && t.GetComponent<T>() != null);
+        }
+
         public IEnumerable<Transform> GetTransformsWithinSight(bool refreshList = false, string tag = "")
         {
             return GetAllLookOutForTransforms(refreshList).Where(t => IsWithinSight(t, tag));
+        }
+
+        public IEnumerable<T> GetWithinSight<T>(bool refreshList = false, string tag = "") where T : MonoBehaviour
+        {
+            return GetAllLookOutForTransforms(refreshList).Where(t => IsWithinSight(t, tag) && t.GetComponent<T>() != null).Select(t => t.GetComponent<T>()); ;
         }
 
         public Transform[] DoLookoutFor(bool newTransformsOnly = true, bool refreshList = false, string tag = "")
@@ -104,6 +114,26 @@ namespace RSToolkit.AI
             for (int i = 0; i < result.Length; i++)
             {
                 OnTransformSeen.Invoke(result[i]);
+            }
+
+            return result;
+        }
+
+        public T[] DoLookoutFor<T>(bool newTransformsOnly = true, bool refreshList = false, string tag = "") where T : MonoBehaviour
+        {
+            IEnumerable<T> targets;
+            targets = GetWithinSight<T>(refreshList, tag);
+
+            T[] result = new T[0];
+
+            if (newTransformsOnly)
+            {
+                result = targets.Where(t => !BotComponent.NoticedTransforms.Contains(t.transform)).Cast<T>().ToArray();
+            }
+
+            for (int i = 0; i < result.Length; i++)
+            {
+                OnTransformSeen.Invoke(result[i].transform);
             }
 
             return result;
