@@ -177,7 +177,8 @@ namespace RSToolkit.AI.Behaviour
 
         private void Update()
         {
-            BehaviourNode.UpdateTime(Time.deltaTime);
+            // BehaviourNode.UpdateTime(Time.deltaTime);
+            BehaviourNode.OverrideElapsedTime(Time.time);
             CurrentTree?.UpdateRecursively();
             CurrentBlackboard?.Update();
         }

@@ -75,10 +75,12 @@ namespace RSToolkit.AI.Behaviour
             ElapsedTime = elapsedTime;
         }
 
+        /*
         public static void UpdateTime(float deltaTime)
         {
             ElapsedTime += deltaTime;
         }
+        */
 
         public class NodeTimer
         {
