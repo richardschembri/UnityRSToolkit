@@ -6,6 +6,7 @@ using RSToolkit.AI.Behaviour.Composite;
 using RSToolkit.AI.Behaviour.Task;
 using RSToolkit.AI.Behaviour.Decorator;
 using RSToolkit.AI;
+using RSToolkit.AI.Locomotion;
 using RSToolkit.Helpers;
 using UnityEngine.Events;
 

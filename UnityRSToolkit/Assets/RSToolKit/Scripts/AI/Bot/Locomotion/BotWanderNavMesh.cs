@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using RSToolkit.AI.Helpers;
 
-namespace RSToolkit.AI
+namespace RSToolkit.AI.Locomotion
 {
     [RequireComponent(typeof(BotNavMesh))]
     public class BotWanderNavMesh : BotWander

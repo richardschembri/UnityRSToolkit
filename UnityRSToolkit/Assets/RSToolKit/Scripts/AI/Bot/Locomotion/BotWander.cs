@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using RSToolkit.Helpers;
-namespace RSToolkit.AI
+namespace RSToolkit.AI.Locomotion
 {
     [RequireComponent(typeof(Bot))]
     public abstract class BotWander : MonoBehaviour

@@ -150,15 +150,8 @@ namespace RSToolkit.Space3D
         // Update is called once per frame
         void Update()
         {
-            /*
-            if (IsTrigger)
-            {
-                IsAlmostTouching(); //IsWithinRayDistance();
-            }
-            */
             
         }
-
 
         void OnDrawGizmos()
         {

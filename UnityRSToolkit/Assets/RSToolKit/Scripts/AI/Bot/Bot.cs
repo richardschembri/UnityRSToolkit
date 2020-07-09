@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using RSToolkit.AI.Locomotion;
 
 namespace RSToolkit.AI
 {
@@ -25,6 +26,7 @@ namespace RSToolkit.AI
 
         public bool DebugMode = false;
 
+
         public virtual void ToggleComponentsForNetwork(bool owner)
         {
             if (!owner)
@@ -42,6 +44,8 @@ namespace RSToolkit.AI
                 FSMRunnerComponent.enabled = true;
             }
         }
+
+        #region Components
 
         protected FiniteStateMachineRunner m_fsmRunnerComponent;
         protected FiniteStateMachineRunner FSMRunnerComponent
@@ -92,6 +96,34 @@ namespace RSToolkit.AI
         }
         protected BotLocomotion m_currentBotMovementComponent;
 
+        private Animator m_animatorComponent;
+        public Animator AnimatorComponent
+        {
+            get
+            {
+                if (m_animatorComponent == null)
+                {
+                    m_animatorComponent = GetComponent<Animator>();
+                }
+                return m_animatorComponent;
+            }
+        }
+
+        private Collider m_colliderComponent;
+        public Collider ColliderComponent
+        {
+            get
+            {
+                if (m_colliderComponent == null)
+                {
+                    m_colliderComponent = GetComponent<Collider>();
+                }
+                return m_colliderComponent;
+            }
+        }
+
+        #endregion Components
+
         protected void SetCurrentBotWander(BotWander b)
         {
             if (m_BotWanderComponents.Contains(b))
@@ -119,31 +151,6 @@ namespace RSToolkit.AI
             }
         }
 
-        private Animator m_animatorComponent;
-        public Animator AnimatorComponent
-        {
-            get
-            {
-                if (m_animatorComponent == null)
-                {
-                    m_animatorComponent = GetComponent<Animator>();
-                }
-                return m_animatorComponent;
-            }
-        }
-
-        private Collider m_colliderComponent;
-        public Collider ColliderComponent
-        {
-            get
-            {
-                if (m_colliderComponent == null)
-                {
-                    m_colliderComponent = GetComponent<Collider>();
-                }
-                return m_colliderComponent;
-            }
-        }
 
         public Transform FocusedOnTransform { get; private set; } = null;
         public Vector3? m_FocusedOnPosition = null;

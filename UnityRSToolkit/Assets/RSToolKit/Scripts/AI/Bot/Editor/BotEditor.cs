@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using RSToolkit.AI.Locomotion;
 
 namespace RSToolkit.AI
 {

@@ -5,7 +5,7 @@ using UnityEngine.Events;
 using RSToolkit.Animation;
 using RSToolkit.Space3D;
 
-namespace RSToolkit.AI
+namespace RSToolkit.AI.Locomotion
 {
 
     public abstract class BotLocomotion : MonoBehaviour

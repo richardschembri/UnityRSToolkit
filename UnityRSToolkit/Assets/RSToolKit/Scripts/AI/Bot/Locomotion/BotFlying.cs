@@ -4,7 +4,7 @@ using UnityEngine;
 using RSToolkit.Space3D;
 using UnityEngine.AI;
 
-namespace RSToolkit.AI
+namespace RSToolkit.AI.Locomotion
 {
     [RequireComponent(typeof(Bot))]
     [RequireComponent(typeof(Flying3DObject))]

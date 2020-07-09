@@ -4,7 +4,7 @@ using UnityEngine;
 using RSToolkit.Helpers;
 using System.Linq;
 
-namespace RSToolkit.AI
+namespace RSToolkit.AI.Locomotion
 {
     [RequireComponent(typeof(BotFlying))]
     public class BotWanderFlying : BotWander

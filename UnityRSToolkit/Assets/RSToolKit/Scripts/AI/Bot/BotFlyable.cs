@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using RSToolkit.Animation;
 using RSToolkit.AI.Helpers;
+using RSToolkit.AI.Locomotion;
 using UnityEngine.AI;
 
 namespace RSToolkit.AI
@@ -14,6 +15,8 @@ namespace RSToolkit.AI
     public class BotFlyable : Bot
     {
         public bool StartInAir = true;
+        bool m_freefall = false;
+
         public enum FlyableStates
         {
             NotFlying,
@@ -22,20 +25,15 @@ namespace RSToolkit.AI
             Flying
         }
 
-        public override void ToggleComponentsForNetwork(bool owner)
+        public FlyableStates CurrentState
         {
-            base.ToggleComponentsForNetwork(owner);
-            if (!owner)
+            get
             {
-                BotNavMeshComponent.NavMeshAgentComponent.enabled = false;
-                BotFlyingComponent.Flying3DObjectComponent.enabled = false;
-            }
-            else
-            {
-                m_currentBotMovementComponent.GroundProximityCheckerComponent.enabled = true;
-                ToggleFlight(CurrentState != FlyableStates.NotFlying);
+                return m_FSM.State;
             }
         }
+
+        #region Components
 
         private BotNavMesh m_botNavMeshComponent;
         public BotNavMesh BotNavMeshComponent
@@ -119,22 +117,21 @@ namespace RSToolkit.AI
             }
         }
 
-        public FlyableStates CurrentState
+        #endregion Components
+
+        public override void ToggleComponentsForNetwork(bool owner)
         {
-            get
+            base.ToggleComponentsForNetwork(owner);
+            if (!owner)
             {
-                return m_FSM.State;
+                BotNavMeshComponent.NavMeshAgentComponent.enabled = false;
+                BotFlyingComponent.Flying3DObjectComponent.enabled = false;
             }
-        }
-
-        public void AddStateChangedListener(System.Action<FlyableStates> listener)
-        {
-            m_FSM.Changed += listener;
-        }
-
-        public void RemoveStateChangedListener(System.Action<FlyableStates> listener)
-        {
-            m_FSM.Changed -= listener;
+            else
+            {
+                m_currentBotMovementComponent.GroundProximityCheckerComponent.enabled = true;
+                ToggleFlight(CurrentState != FlyableStates.NotFlying);
+            }
         }
 
         private void ToggleFlight(bool on)
@@ -172,6 +169,61 @@ namespace RSToolkit.AI
             return false;
         }
 
+        public bool Land(bool onNavMesh = true, bool freefall = false)
+        {
+
+            if (CurrentState != FlyableStates.Flying || (onNavMesh && !BotNavMeshComponent.NavMeshAgentComponent.IsAboveNavMeshSurface()))
+            {
+                return false;
+            }
+            m_freefall = freefall;
+            m_FSM.ChangeState(FlyableStates.Landing);
+
+            return true;
+        }
+
+        public bool CanMove()
+        {
+            return CurrentState == FlyableStates.Flying || CurrentState == FlyableStates.NotFlying;
+        }
+
+        #region FSM
+
+        private void InitFSM()
+        {
+            if (m_fsm == null)
+            {
+                m_fsm = FiniteStateMachine<FlyableStates>.Initialize(this, StartInAir ? FlyableStates.Flying : FlyableStates.NotFlying);
+                m_fsm.Changed += Fsm_Changed;
+            }
+        }
+
+        private void Fsm_Changed(FlyableStates state)
+        {
+            try
+            {
+                Debug.Log($"{transform.name} FlyableStates changed from {m_FSM.LastState.ToString()} to {state.ToString()}");
+
+            }
+            catch (System.Exception ex)
+            {
+                Debug.Log($"{transform.name} FlyableStates changed to {state.ToString()}");
+            }
+        }
+
+        public void AddStateChangedListener(System.Action<FlyableStates> listener)
+        {
+            m_FSM.Changed += listener;
+        }
+
+        public void RemoveStateChangedListener(System.Action<FlyableStates> listener)
+        {
+            m_FSM.Changed -= listener;
+        }
+
+        #endregion FSM
+
+        #region TakingOff State
         void TakingOff_Enter()
         {
             StopWandering();
@@ -196,21 +248,9 @@ namespace RSToolkit.AI
         {
             RigidBodyComponent.WakeUp();
         }
+        #endregion TakingOff State
 
-        bool m_freefall = false;
-
-        public bool Land(bool onNavMesh = true, bool freefall = false)
-        {
-            //if (CurrentState != FlyableStates.Flying || (checkForGround && BotFlyingComponent.IsCloseToGround()))
-            if(CurrentState != FlyableStates.Flying || (onNavMesh && !BotNavMeshComponent.NavMeshAgentComponent.IsAboveNavMeshSurface()))
-            {
-                return false;
-            }
-            m_freefall = freefall;
-            m_FSM.ChangeState(FlyableStates.Landing);
-            
-            return true;
-        }
+        #region Landing State
 
         void Landing_Enter()
         {
@@ -221,33 +261,15 @@ namespace RSToolkit.AI
 
         void Landing_Update()
         {
-            /*
-            if (BotFlyingComponent.IsCloseToGround())
-            {
-                m_FSM.ChangeState(FlyableStates.NotFlying);
-
-            }
-            else*/
             if (!m_freefall)
             {
                 BotFlyingComponent.Flying3DObjectComponent.ApplyVerticalThrust(false);
             }
         }
 
-        void OnCollisionEnter(Collision collision)
-        {
-            if(CurrentState == FlyableStates.Landing)
-            {
-                NavMeshHit navHit;
-                for(int i = 0; i < collision.contacts.Length; i++)
-                {
-                    if (NavMesh.SamplePosition(collision.contacts[i].point, out navHit, 1f, NavMesh.AllAreas)){
-                        m_FSM.ChangeState(FlyableStates.NotFlying);
-                        break;
-                    }
-                }
-            }
-        }
+        #endregion Landing State
+
+        #region NotFlying State
 
         void NotFlying_Enter()
         {
@@ -261,24 +283,18 @@ namespace RSToolkit.AI
             CharacterAnimParams.TrySetIsGrounded(AnimatorComponent, false);
         }
 
+        #endregion NotFlying State
+
+        #region Flying State
+
         void Flying_Enter()
         {
             ToggleFlight(true);
         }
 
-        public bool CanMove()
-        {
-            return CurrentState == FlyableStates.Flying || CurrentState == FlyableStates.NotFlying;
-        }
+        #endregion Flying State
 
-        private void InitFSM()
-        {
-            if (m_fsm == null)
-            {
-                m_fsm = FiniteStateMachine<FlyableStates>.Initialize(this, StartInAir ? FlyableStates.Flying : FlyableStates.NotFlying);
-                m_fsm.Changed += Fsm_Changed;
-            }
-        }
+        #region MonoBehaviour Functions
 
         protected override void Awake()
         {
@@ -292,19 +308,23 @@ namespace RSToolkit.AI
             CharacterAnimParams.TrySetSpeed(AnimatorComponent, m_currentBotMovementComponent.CurrentSpeed);
         }
 
-        private void Fsm_Changed(FlyableStates state)
+        void OnCollisionEnter(Collision collision)
         {
-            try
+            if (CurrentState == FlyableStates.Landing)
             {
-                Debug.Log($"{transform.name} FlyableStates changed from {m_FSM.LastState.ToString()} to {state.ToString()}");
-
-            }
-            catch (System.Exception ex)
-            {
-                Debug.Log($"{transform.name} FlyableStates changed to {state.ToString()}");
+                NavMeshHit navHit;
+                for (int i = 0; i < collision.contacts.Length; i++)
+                {
+                    if (NavMesh.SamplePosition(collision.contacts[i].point, out navHit, 1f, NavMesh.AllAreas))
+                    {
+                        m_FSM.ChangeState(FlyableStates.NotFlying);
+                        break;
+                    }
+                }
             }
         }
 
+        #endregion MonoBehaviour Functions
 
     }
 }

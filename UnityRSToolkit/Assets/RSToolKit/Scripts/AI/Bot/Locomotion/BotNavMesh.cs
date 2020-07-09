@@ -6,7 +6,7 @@ using RSToolkit.Helpers;
 using RSToolkit.AI.Helpers;
 using RSToolkit.Space3D;
 
-namespace RSToolkit.AI
+namespace RSToolkit.AI.Locomotion
 {
 
     [RequireComponent(typeof(NavMeshAgent))]
