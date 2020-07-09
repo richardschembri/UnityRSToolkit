@@ -11,12 +11,18 @@ namespace RSToolkit.AI.Locomotion
     public abstract class BotLocomotion : MonoBehaviour
     {
         public bool DebugMode = false;
+        public float MovingAwayCutoffDistance = 9f;
+        public float MovingAwayDistance = 15f;
+
+        public float SqrMovingAwayDistance {get{return MovingAwayDistance * MovingAwayDistance;}}
         public enum LocomotionState
         {
             NotMoving,
             CannotMove,
             MovingToPosition,
-            MovingToTarget
+            MovingToTarget,
+            MovingAwayFromPosition,
+            MovingAwayFromTarget
         }
 
         public enum StopMovementConditions
@@ -100,6 +106,11 @@ namespace RSToolkit.AI.Locomotion
         public bool IsAlmostGrounded()
         {
             return GroundProximityCheckerComponent.IsAlmostTouching();
+        }
+
+        public bool IsMoving(){
+            return CurrentState != LocomotionState.CannotMove 
+                    && CurrentState != LocomotionState.NotMoving;
         }
 
         public class OnDestinationReachedEvent : UnityEvent<Vector3> { }
@@ -217,6 +228,13 @@ namespace RSToolkit.AI.Locomotion
                 return true;
             }
             return false;
+        }
+
+        public virtual Vector3 GetMoveAwayDestination(){
+            if(BotComponent.FocusedOnPosition != null){
+                return transform.position + (transform.position - BotComponent.FocusedOnPosition.Value).normalized * MovingAwayDistance;
+            }
+            return transform.position + MovingAwayDistance * -transform.forward;
         }
 
         protected virtual bool CanMove()
