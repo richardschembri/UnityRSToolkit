@@ -6067,13 +6067,12 @@ GameObject:
   m_Component:
   - component: {fileID: 1878005673}
   - component: {fileID: 1878005672}
+  - component: {fileID: 1878005671}
   - component: {fileID: 1878005670}
   - component: {fileID: 1878005669}
-  - component: {fileID: 1878005668}
   - component: {fileID: 1878005667}
   - component: {fileID: 1878005666}
   - component: {fileID: 1878005665}
-  - component: {fileID: 1878005664}
   - component: {fileID: 1878005663}
   - component: {fileID: 1878005662}
   m_Layer: 0
@@ -6111,31 +6110,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waitTime: 10
   randomizeWait: 0
-  DebugMode: 1
+  DebugMode: 0
   movementTimeout: 10
   AutoWander: 1
-  defaultWanderRadius: 10
---- !u!114 &1878005664
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1878005661}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f3bacfbd3c4b724f983c54cd2078f73, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  waitTime: 3
-  randomizeWait: 0
-  DebugMode: 0
-  movementTimeout: 5
-  AutoWander: 1
-  defaultWanderRadius: 5
-  DefaultY: 5
-  AboveSurface: 1
-  SpherecastRadius: 1
 --- !u!114 &1878005665
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6169,6 +6146,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DebugMode: 0
+  MovingAwayCutoffDistance: 9
+  MovingAwayDistance: 15
   walkSpeed: 0.75
   walkRotationSpeed: 120
   runSpeed: 5
@@ -6196,19 +6175,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &1878005668
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1878005661}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab0ecd98afa41ca498cfe7c135c82fa7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DebugMode: 0
 --- !u!114 &1878005669
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6222,9 +6188,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   InteractableCooldown: 0
+  TetherToTransform: {fileID: 0}
   DebugMode: 1
   forgetTransformTimeout: -1
-  interactionMagnitude: 1.75
+  m_interactionMagnitude: 1.35
+  personalSpacePercent: 0.35
+  safeAwarenessPercent: 1.5
 --- !u!114 &1878005670
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6266,6 +6235,18 @@ MonoBehaviour:
   VerticalDeadzone: 0.2
   LateralDeadzone: 0.2
   HoverWhenIdle: 1
+--- !u!114 &1878005671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1878005661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ac9f6e8e0b70ba4b8396233c90e0c62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!54 &1878005672
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -6938,6 +6919,7 @@ GameObject:
   - component: {fileID: 7990845843178055558}
   - component: {fileID: 7990845843178055565}
   - component: {fileID: 7990845843178055560}
+  - component: {fileID: 7990845843178055567}
   m_Layer: 0
   m_Name: CopterTankBot
   m_TagString: Untagged
@@ -7016,10 +6998,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waitTime: 3
   randomizeWait: 0
-  DebugMode: 0
+  DebugMode: 1
   movementTimeout: 5
   AutoWander: 1
-  defaultWanderRadius: 5
   DefaultY: 5
   AboveSurface: 1
   SpherecastRadius: 1
@@ -7036,6 +7017,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DebugMode: 0
+  MovingAwayCutoffDistance: 9
+  MovingAwayDistance: 15
 --- !u!136 &7990845843178055560
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -7083,10 +7066,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   InteractableCooldown: 0
+  TetherToTransform: {fileID: 0}
   DebugMode: 1
   forgetTransformTimeout: -1
-  interactionMagnitude: 1.75
+  m_interactionMagnitude: 1.35
+  personalSpacePercent: 0.35
+  safeAwarenessPercent: 2
   StartInAir: 1
+  FlightMagnitudeModifier: 1.25
 --- !u!114 &7990845843178055563
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7094,12 +7081,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7990845843178055555}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1633e10d15d4bcf4ab81f048f33d0638, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   DebugMode: 0
+  MovingAwayCutoffDistance: 9
+  MovingAwayDistance: 15
   walkSpeed: 0.75
   walkRotationSpeed: 120
   runSpeed: 5
@@ -7112,7 +7101,7 @@ NavMeshAgent:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7990845843178055555}
-  m_Enabled: 1
+  m_Enabled: 0
   m_AgentTypeID: 0
   m_Radius: 0.5
   m_Speed: 3.5
@@ -7141,10 +7130,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waitTime: 10
   randomizeWait: 0
-  DebugMode: 1
+  DebugMode: 0
   movementTimeout: 10
   AutoWander: 1
-  defaultWanderRadius: 10
 --- !u!114 &7990845843178055566
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7159,6 +7147,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HelicopterParts: {fileID: 1276136823}
   TankParts: {fileID: 851750229}
+--- !u!114 &7990845843178055567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7990845843178055555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 402d5598010d3b546be0bd98dca9a0ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7990845843570252142
 GameObject:
   m_ObjectHideFlags: 0

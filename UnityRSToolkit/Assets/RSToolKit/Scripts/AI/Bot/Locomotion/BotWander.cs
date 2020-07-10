@@ -22,6 +22,16 @@ namespace RSToolkit.AI.Locomotion
         public float movementTimeout = 5f;
         public bool AutoWander = true;
 
+        
+
+        public Transform WanderCenter
+        {
+            get
+            {
+                return BotComponent.TetherToTransform != null ? BotComponent.TetherToTransform : transform;
+            }
+        }
+
         private float GetWaitTime()
         {
             if (m_FSM.LastState == WanderStates.NotWandering || m_FSM.LastState == WanderStates.CannotWander)
@@ -58,7 +68,7 @@ namespace RSToolkit.AI.Locomotion
         }
 
         // public Vector3? WanderPosition { get; private set; } = null;
-        public float defaultWanderRadius = 20f;
+        //public float defaultWanderRadius = 20f;
         private float m_wanderRadius = 20f;
 
         private Bot m_botComponent;
@@ -168,7 +178,7 @@ namespace RSToolkit.AI.Locomotion
 
         public bool Wander()
         {
-            return Wander(defaultWanderRadius);
+            return Wander(BotComponent.SqrAwarenessMagnitude); //defaultWanderRadius);
         }
 
         public bool StopWandering(bool stopMoving = false)
@@ -215,6 +225,7 @@ namespace RSToolkit.AI.Locomotion
                     && CurrentState != BotWander.WanderStates.CannotWander;
         }
 
+        /*
         protected virtual void OnDrawGizmos()
         {
 #if UNITY_EDITOR
@@ -224,6 +235,7 @@ namespace RSToolkit.AI.Locomotion
             UnityEditor.Handles.color = oldColor;
 #endif
         }
+        */
 
     }
 }

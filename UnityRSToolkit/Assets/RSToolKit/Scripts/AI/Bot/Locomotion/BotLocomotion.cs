@@ -33,6 +33,8 @@ namespace RSToolkit.AI.Locomotion
             WITHIN_INTERACTION_DISTANCE,   
         }
 
+        #region FSM
+
         protected FiniteStateMachine<LocomotionState> m_fsm;
         protected FiniteStateMachine<LocomotionState> m_FSM
         {
@@ -50,6 +52,8 @@ namespace RSToolkit.AI.Locomotion
                 m_fsm = FiniteStateMachine<LocomotionState>.Initialize(this, LocomotionState.NotMoving);
             }
         }
+
+        #endregion FSM
 
         public LocomotionState CurrentState
         {
@@ -166,6 +170,39 @@ namespace RSToolkit.AI.Locomotion
             return BotComponent.FocusedOnPosition == null || reachedDestination();
         }
 
+        public bool StopMoving()
+        {
+            if (CurrentState != LocomotionState.NotMoving)
+            {
+                m_FSM.ChangeState(LocomotionState.NotMoving);
+                return true;
+            }
+            return false;
+        }
+
+        public virtual Vector3 GetMoveAwayDestination()
+        {
+            if (BotComponent.FocusedOnPosition != null)
+            {
+                return transform.position + (transform.position - BotComponent.FocusedOnPosition.Value).normalized * MovingAwayDistance;
+            }
+            return transform.position + MovingAwayDistance * -transform.forward;
+        }
+
+        protected virtual bool CanMove()
+        {
+            return true;
+        }
+
+        public void Animate()
+        {
+            CharacterAnimParams.TrySetSpeed(BotComponent.AnimatorComponent, CurrentSpeed);
+        }
+
+        #region States
+
+        #region MovingToPosition
+
         protected virtual void MovingToPosition_Update()
         {
             if (!CanMove())
@@ -187,6 +224,15 @@ namespace RSToolkit.AI.Locomotion
             }
         }
 
+        #endregion MovingToPosition
+
+        #region MovingAwayFromPosition
+
+        #endregion MovingAwayFromPosition
+
+
+        #region MovingToTarget
+
         protected virtual void MovingToTarget_Update()
         {
             if (!CanMove())
@@ -204,6 +250,14 @@ namespace RSToolkit.AI.Locomotion
             
         }
 
+        #endregion MovingToTarget
+
+        #region MovingAwayFromTarget
+
+        #endregion MovingAwayFromTarget
+
+        #region CannotMove
+
         protected virtual void CannotMove_Update()
         {
             if (CanMove())
@@ -212,6 +266,10 @@ namespace RSToolkit.AI.Locomotion
             }
         }
 
+        #endregion CannotMove
+
+        #region NotMoving
+
         protected virtual void NotMoving_Enter()
         {
             if (!CanMove())
@@ -219,33 +277,11 @@ namespace RSToolkit.AI.Locomotion
                 m_FSM.ChangeState(LocomotionState.CannotMove);
             }
         }
-        
-        public bool StopMoving()
-        {
-            if(CurrentState != LocomotionState.NotMoving)
-            {
-                m_FSM.ChangeState(LocomotionState.NotMoving);
-                return true;
-            }
-            return false;
-        }
 
-        public virtual Vector3 GetMoveAwayDestination(){
-            if(BotComponent.FocusedOnPosition != null){
-                return transform.position + (transform.position - BotComponent.FocusedOnPosition.Value).normalized * MovingAwayDistance;
-            }
-            return transform.position + MovingAwayDistance * -transform.forward;
-        }
+        #endregion NotMoving
 
-        protected virtual bool CanMove()
-        {
-            return true;
-        }
+        #endregion States
 
-        public void Animate()
-        {
-            CharacterAnimParams.TrySetSpeed(BotComponent.AnimatorComponent, CurrentSpeed);
-        }
 
         #region MonoBehaviour Functions
         protected virtual void Awake()

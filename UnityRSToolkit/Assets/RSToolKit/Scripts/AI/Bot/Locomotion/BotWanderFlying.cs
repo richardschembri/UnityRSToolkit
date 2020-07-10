@@ -41,10 +41,12 @@ namespace RSToolkit.AI.Locomotion
             if (m_findNewPositionAttempts >= MAX_FINDNEWPOSITIONATTEMPTS)
             {
                 m_FSM.ChangeState(WanderStates.CannotWander);
-                return transform.position;
+                //return transform.position;
+                return WanderCenter.position;
             }
             m_findNewPositionAttempts++;
-            var newPos = transform.GetRandomPositionWithinCircle(radius, BotFlyingComponent.BotComponent.SqrPersonalSpaceMagnitude);
+            //var newPos = transform.GetRandomPositionWithinCircle(radius, BotFlyingComponent.BotComponent.SqrPersonalSpaceMagnitude);
+            var newPos = WanderCenter.GetRandomPositionWithinCircle(radius, BotFlyingComponent.BotComponent.SqrPersonalSpaceMagnitude);
             newPos = new Vector3(newPos.x, DefaultY, newPos.z);
 
             if (AboveSurface && !Physics.Raycast(newPos, Vector3.down, Mathf.Infinity))
@@ -53,8 +55,8 @@ namespace RSToolkit.AI.Locomotion
                 return GetNewWanderPosition(radius);
             }
 
-            if ((SpherecastRadius <= 0 && BotFlyingComponent.BotComponent.ColliderComponent.LinecastFromOutsideBounds(out m_wanderhit, newPos))
-                || (SpherecastRadius > 0 && BotFlyingComponent.BotComponent.ColliderComponent.SpherecastFromOutsideBounds(out m_wanderhit, newPos, SpherecastRadius)))
+            if ((SpherecastRadius <= 0 && BotFlyingComponent.BotComponent.ColliderComponent.RaycastFromOutsideBounds(out m_wanderhit, newPos, radius))
+                || (SpherecastRadius > 0 && BotFlyingComponent.BotComponent.ColliderComponent.SpherecastFromOutsideBounds(out m_wanderhit, newPos, SpherecastRadius, radius)))
             {
                
                 if (DebugMode)

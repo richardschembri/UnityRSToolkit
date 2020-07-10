@@ -33,6 +33,20 @@ namespace RSToolkit.AI
             }
         }
 
+        public float FlightMagnitudeModifier = 1.25f;
+
+        public override float InteractionMagnitude
+        {
+            get
+            {
+                if (CurrentState != FlyableStates.NotFlying)
+                {
+                    return base.InteractionMagnitude * FlightMagnitudeModifier;
+                }
+                return base.InteractionMagnitude;
+            }
+        }
+        
         #region Components
 
         private BotNavMesh m_botNavMeshComponent;

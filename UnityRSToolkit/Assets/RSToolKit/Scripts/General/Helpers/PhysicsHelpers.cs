@@ -19,6 +19,12 @@ namespace RSToolkit.Helpers
             ray.origin = source.ClosestPoint(position) + ray.direction.normalized * 0.05f;
         }
 
+        public static bool RaycastFromOutsideBounds(this Collider source, out RaycastHit hit, Vector3 position, float maxDistance = Mathf.Infinity)
+        {
+            Ray ray = source.GetRayFromOutsideBoundsTowards(position);
+            return source.RaycastFromOutsideBounds(ref ray, out hit, position, maxDistance);
+        }
+
         public static bool RaycastFromOutsideBounds(this Collider source, ref Ray ray, out RaycastHit hit, Vector3 position, float maxDistance = Mathf.Infinity)
         {
             source.SetRayFromOutsideBoundsTowards(ref ray, position);
@@ -31,10 +37,10 @@ namespace RSToolkit.Helpers
             return Physics.Linecast(source.ClosestPoint(position) + direction.normalized * 0.05f, position, out hit);
         }
 
-        public static bool SpherecastFromOutsideBounds(this Collider source, out RaycastHit hit, Vector3 position, float radius)
+        public static bool SpherecastFromOutsideBounds(this Collider source, out RaycastHit hit, Vector3 position, float radius, float maxDistance = Mathf.Infinity)
         {
             var direction = (position - source.transform.position).normalized;
-            return Physics.SphereCast(source.ClosestPoint(position) + direction.normalized * 0.05f, radius, direction, out hit);
+            return Physics.SphereCast(source.ClosestPoint(position) + direction.normalized * 0.05f, radius, direction, out hit, maxDistance);
         }
 
     }

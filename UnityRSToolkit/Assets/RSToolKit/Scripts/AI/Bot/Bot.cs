@@ -22,10 +22,9 @@ namespace RSToolkit.AI
 
         public float InteractableCooldown = 0f;
         private float m_CanInteractFromTime = 0f;
-
+        public Transform TetherToTransform;
 
         public bool DebugMode = false;
-
 
         public virtual void ToggleComponentsForNetwork(bool owner)
         {
@@ -159,6 +158,7 @@ namespace RSToolkit.AI
         public float forgetTransformTimeout = -1f;
 
         #region Interaction/Focus
+
         public Vector3? FocusedOnPosition
         {
             get
@@ -183,22 +183,49 @@ namespace RSToolkit.AI
             }
         }
 
-        public float interactionMagnitude = 1.35f;
+        #region Magnitude
+
+        [SerializeField]
+        private float m_interactionMagnitude = 1.35f;
+
+        public virtual float InteractionMagnitude
+        {
+            get
+            {
+                return m_interactionMagnitude;
+            }
+        }
         public float SqrInteractionMagnitude
         {
             get
             {
-                return interactionMagnitude * interactionMagnitude;
+                return InteractionMagnitude * InteractionMagnitude;
             }
         }
 
+        [SerializeField]
+        public float personalSpacePercent = .35f;
         public float SqrPersonalSpaceMagnitude
         {
             get
             {
-                return SqrInteractionMagnitude * .5f;
+                return SqrInteractionMagnitude * personalSpacePercent;//.5f;
             }
         }
+
+        [SerializeField]
+        public float safeAwarenessPercent = 2f;
+        public float SqrAwarenessMagnitude
+        {
+            get
+            {
+                return SqrInteractionMagnitude * safeAwarenessPercent;
+            }
+        }
+
+        #endregion Magnitude
+
+        #region IsWithinDistance
 
         public bool IsWithinInteractionDistance()
         {
@@ -224,16 +251,33 @@ namespace RSToolkit.AI
 
         }
 
+        public bool IsWithinAwarenessDistance()
+        {
+            if (FocusedOnTransform != null)
+            {
+                return IsWithinAwarenessDistance(FocusedOnTransform);
+            }
+            else if (FocusedOnPosition != null)
+            {
+                return IsWithinAwarenessDistance(FocusedOnPosition.Value);
+            }
+            return false;
+
+        }
+
         public bool IsWithinInteractionDistance(Vector3 position)
         {
-            //return ProximityHelpers.IsWithinDistance(transform, position, SqrInteractionMagnitude);
             return ProximityHelpers.IsWithinDistance(ColliderComponent, position, SqrInteractionMagnitude);
         }
 
         public bool IsWithinPersonalSpace(Vector3 position)
         {
-            //return ProximityHelpers.IsWithinDistance(transform, position, SqrPersonalSpaceMagnitude);
             return ProximityHelpers.IsWithinDistance(ColliderComponent, position, SqrPersonalSpaceMagnitude);
+        }
+
+        public bool IsWithinAwarenessDistance(Vector3 position)
+        {           
+            return ProximityHelpers.IsWithinDistance(ColliderComponent, position, SqrAwarenessMagnitude);
         }
 
         public bool IsWithinInteractionDistance(Transform target)
@@ -245,6 +289,13 @@ namespace RSToolkit.AI
         {
             return IsWithinPersonalSpace(target.position);
         }
+
+        public bool IsWithinAwarenessDistance(Transform target)
+        {
+            return IsWithinAwarenessDistance(target.position);
+        }
+
+        #endregion IsWithinDistance
 
         public void ResetInteractionCooldown()
         {
@@ -267,6 +318,8 @@ namespace RSToolkit.AI
             return false;
         }
 
+        #region AttractMyAttention
+        
         public bool AttractMyAttention_ToTransform(Transform target, bool force, InteractionStates interactionState = InteractionStates.Interactor)
         {
 
@@ -319,6 +372,8 @@ namespace RSToolkit.AI
             return AttractMyAttention_FromBot(FocusedOnTransform.GetComponent<Bot>(), force);
 
         }
+
+        #endregion AttractMyAttention
 
         public void FocusOnPosition(Vector3 target_position)
         {
@@ -424,6 +479,7 @@ namespace RSToolkit.AI
                         && !target.NoticedTransforms.Contains(transform))
             );
         }
+
         #endregion Interaction/Focus
 
         #region Wander
@@ -489,6 +545,12 @@ namespace RSToolkit.AI
             return m_currentBotMovementComponent.MoveToTarget(stopMovementCondition, fullspeed);
         }
 
+        public bool MoveToTetherPoint(BotLocomotion.StopMovementConditions stopMovementCondition = BotLocomotion.StopMovementConditions.WITHIN_PERSONAL_SPACE, bool fullspeed = true)
+        {
+            FocusOnTransform(TetherToTransform);
+            return MoveToTarget(stopMovementCondition, fullspeed);
+        }
+
         public void RotateTowardsPosition()
         {
             m_currentBotMovementComponent.RotateTowardsPosition();
@@ -513,6 +575,7 @@ namespace RSToolkit.AI
         {
             m_currentBotMovementComponent.Animate();
         }
+
         #endregion Locomotion
 
         #region MonoBehaviour Functions
@@ -538,25 +601,35 @@ namespace RSToolkit.AI
         {
 #if UNITY_EDITOR
             ProximityHelpers.DrawGizmoProximity(transform, SqrInteractionMagnitude, IsWithinInteractionDistance());
+            ProximityHelpers.DrawGizmoProximity(transform, SqrAwarenessMagnitude, IsWithinAwarenessDistance());
+            ProximityHelpers.DrawGizmoProximity(transform, SqrPersonalSpaceMagnitude, IsWithinPersonalSpace());
 
             if (FocusedOnTransform != null)
             {
                 var oldColor = UnityEditor.Handles.color;
-                UnityEditor.Handles.color = IsWithinInteractionDistance() ? Color.red : Color.white;
+                UnityEditor.Handles.color = Color.yellow;
                 UnityEditor.Handles.DrawLine(transform.position, FocusedOnTransform.position);
-                UnityEditor.Handles.color = new Color(1f, 0f, 0f, 0.25f);
-                UnityEditor.Handles.DrawSolidDisc(FocusedOnTransform.position, Vector3.up, 0.25f);
                 UnityEditor.Handles.color = oldColor;
+                DrawGizmoPositionPoint(FocusedOnTransform.position);
             }
             else if (FocusedOnPosition != null)
             {
                 UnityEditor.Handles.color = new Color(1f, 1f, 0.008f, 0.55f);
                 UnityEditor.Handles.DrawSolidDisc(FocusedOnPosition.Value, Vector3.up, 0.25f);
+                DrawGizmoPositionPoint(FocusedOnPosition.Value);
             }
-            ProximityHelpers.DrawGizmoProximity(transform, SqrPersonalSpaceMagnitude, IsWithinPersonalSpace());
 #endif
         }
         #endregion MonoBehaviour Functions
+
+        protected void DrawGizmoPositionPoint(Vector3 position)
+        {
+            var oldColor = UnityEditor.Handles.color;
+            //UnityEditor.Handles.color = new Color(1f, 0f, 0f, 0.25f);
+            UnityEditor.Handles.color = new Color(1f, 1f, 0.008f, 0.55f);
+            UnityEditor.Handles.DrawSolidDisc(position, Vector3.up, 0.25f);
+            UnityEditor.Handles.color = oldColor;
+        }
 
     }
 }

@@ -87,7 +87,7 @@
         {
             Vector2 direction = UnityEngine.Random.insideUnitCircle.normalized;
             var distance = UnityEngine.Random.Range(offset, radius);            
-            return self.position +  new Vector3(direction.x, 0, direction.y) * distance;
+            return self.position +  (new Vector3(direction.x, 0, direction.y) * distance);
         }
 
         public static T GetRandomEnumValue<T>()
