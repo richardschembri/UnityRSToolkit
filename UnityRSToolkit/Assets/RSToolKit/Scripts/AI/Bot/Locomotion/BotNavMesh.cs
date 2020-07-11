@@ -50,6 +50,11 @@ namespace RSToolkit.AI.Locomotion
             transform.rotation = Quaternion.RotateTowards(transform.rotation, rotation, NavMeshAgentComponent.angularSpeed* Time.deltaTime);
         }
 
+        public override void RotateAwayFromPosition(){
+            var rotation = Quaternion.LookRotation(GetMoveAwayDestination() - transform.position, Vector3.up);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, rotation, NavMeshAgentComponent.angularSpeed* Time.deltaTime);
+        }
+
         private void MoveTo(Vector3 destination, float speed, float angularSpeed)
         {
             try
@@ -91,6 +96,18 @@ namespace RSToolkit.AI.Locomotion
             else
             {
                 MoveTo(BotComponent.FocusedOnPosition.Value, walkSpeed, walkRotationSpeed);
+            }
+        }
+
+        public override void MoveAway(bool fullspeed = true){
+
+            if (fullspeed)
+            {
+                MoveTo(GetMoveAwayDestination(), runSpeed, runRotationSpeed);
+            }
+            else
+            {
+                MoveTo(GetMoveAwayDestination(), walkSpeed, walkRotationSpeed);
             }
         }
 

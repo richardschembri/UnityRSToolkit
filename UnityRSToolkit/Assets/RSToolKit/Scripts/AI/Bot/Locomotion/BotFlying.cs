@@ -38,6 +38,11 @@ namespace RSToolkit.AI.Locomotion
             Flying3DObjectComponent.YawTo(rotation.eulerAngles.y);
         }
 
+        public override void RotateAwayFromPosition(){
+            var rotation = Quaternion.LookRotation(GetMoveAwayDestination() - transform.position, Vector3.up);
+            Flying3DObjectComponent.YawTo(rotation.eulerAngles.y);
+        }
+
         public override void MoveTowardsPosition(bool fullspeed = true)
         {
 
@@ -58,6 +63,13 @@ namespace RSToolkit.AI.Locomotion
             else if (!BotComponent.IsWithinPersonalSpace())
             {
                 Flying3DObjectComponent.ApplyForwardThrust(fullspeed ? -0.5f : 0.1f);
+            }
+        }
+
+        public override void MoveAway(bool fullspeed = true){
+            RotateAwayFromPosition();
+            if(!IsAway()){
+                Flying3DObjectComponent.ApplyForwardThrust(fullspeed ? 1f : 0.2f);
             }
         }
 

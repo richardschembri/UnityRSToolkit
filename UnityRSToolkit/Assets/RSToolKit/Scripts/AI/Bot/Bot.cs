@@ -545,6 +545,14 @@ namespace RSToolkit.AI
             return m_currentBotMovementComponent.MoveToTarget(stopMovementCondition, fullspeed);
         }
 
+
+        public bool MoveAwayFromPosition(bool fullspeed = true){
+            return m_currentBotMovementComponent.MoveAwayFromPosition(fullspeed);
+        }
+        public bool MoveAwayFromTarget(bool fullspeed = true){
+            return m_currentBotMovementComponent.MoveAwayFromTarget(fullspeed);
+        }
+
         public bool MoveToTetherPoint(BotLocomotion.StopMovementConditions stopMovementCondition = BotLocomotion.StopMovementConditions.WITHIN_PERSONAL_SPACE, bool fullspeed = true)
         {
             FocusOnTransform(TetherToTransform);
@@ -569,6 +577,10 @@ namespace RSToolkit.AI
         public bool IsMoveable()
         {
             return m_currentBotMovementComponent != null;
+        }
+
+        public bool IsMoving(){
+            return IsMoveable() && m_currentBotMovementComponent.IsMoving(); 
         }
 
         public void AnimateLocomotion()

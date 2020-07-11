@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using RSToolkit.Animation;
 using RSToolkit.Space3D;
+using RSToolkit.Helpers;
 
 namespace RSToolkit.AI.Locomotion
 {
@@ -11,10 +12,12 @@ namespace RSToolkit.AI.Locomotion
     public abstract class BotLocomotion : MonoBehaviour
     {
         public bool DebugMode = false;
-        public float MovingAwayCutoffDistance = 9f;
-        public float MovingAwayDistance = 15f;
+        public float MovingAwayDistance {
+            get{
+                return BotComponent.SqrAwarenessMagnitude * 1.1f;
+            }
+        }
 
-        public float SqrMovingAwayDistance {get{return MovingAwayDistance * MovingAwayDistance;}}
         public enum LocomotionState
         {
             NotMoving,
@@ -129,6 +132,8 @@ namespace RSToolkit.AI.Locomotion
             MoveTowardsPosition(fullspeed);
         }
 
+        public abstract void MoveAway(bool fullspeed = true);
+
         public bool MoveToPosition(StopMovementConditions stopMovementCondition, bool fullspeed = true)
         {
             if (!CanMove())
@@ -141,6 +146,31 @@ namespace RSToolkit.AI.Locomotion
 
             return true;
         }
+
+        public bool MoveAwayFromPosition(bool fullspeed = true)
+        {
+            if (!CanMove())
+            {
+                return false;
+            }
+            m_fullspeed = fullspeed;
+            m_FSM.ChangeState(LocomotionState.MovingAwayFromPosition);
+
+            return true;
+        }
+
+        public bool MoveAwayFromTarget(bool fullspeed = true)
+        {
+            if (!CanMove())
+            {
+                return false;
+            }
+            m_fullspeed = fullspeed;
+            m_FSM.ChangeState(LocomotionState.MovingAwayFromTarget);
+
+            return true;
+        }
+
 
         public bool MoveToTarget(StopMovementConditions stopMovementCondition, bool fullspeed = true)
         {
@@ -156,14 +186,25 @@ namespace RSToolkit.AI.Locomotion
         }
 
         public abstract void RotateTowardsPosition();
+        public abstract void RotateAwayFromPosition();
 
-        bool reachedDestination()
+        protected bool reachedDestination()
         {
             return (m_stopMovementCondition == StopMovementConditions.WITHIN_PERSONAL_SPACE && BotComponent.IsWithinPersonalSpace())
                 || (m_stopMovementCondition == StopMovementConditions.WITHIN_INTERACTION_DISTANCE && BotComponent.IsWithinInteractionDistance())
                 || (m_stopMovementCondition == StopMovementConditions.AT_POSITION && transform.position == BotComponent.FocusedOnPosition.Value);
         }
 
+        protected bool IsAway(){
+            if(BotComponent.FocusedOnTransform != null){
+                return !ProximityHelpers.IsWithinDistance(BotComponent.ColliderComponent, BotComponent.FocusedOnTransform.position, BotComponent.SqrAwarenessMagnitude);
+            }
+            return !ProximityHelpers.IsWithinDistance(BotComponent.ColliderComponent, BotComponent.FocusedOnPosition.Value, BotComponent.SqrAwarenessMagnitude);
+        } 
+
+        protected bool IsNotFocusedOrIsAway(){
+            return BotComponent.FocusedOnPosition == null || IsAway();
+        }
 
         public bool IsNotFocusedOrReachedDestination()
         {
@@ -227,6 +268,20 @@ namespace RSToolkit.AI.Locomotion
         #endregion MovingToPosition
 
         #region MovingAwayFromPosition
+        protected virtual void MovingAwayFromPosition_Update(){
+            if (!CanMove())
+            {
+                m_FSM.ChangeState(LocomotionState.CannotMove);
+            }
+            else if (IsNotFocusedOrIsAway())
+            {
+                m_FSM.ChangeState(LocomotionState.NotMoving);
+            }
+            else
+            {
+                MoveAway();
+            }
+        }
 
         #endregion MovingAwayFromPosition
 
@@ -253,6 +308,20 @@ namespace RSToolkit.AI.Locomotion
         #endregion MovingToTarget
 
         #region MovingAwayFromTarget
+        protected virtual void MovingAwayFromTarget_Update(){
+            if (!CanMove())
+            {
+                m_FSM.ChangeState(LocomotionState.CannotMove);
+            }
+            else if (IsNotFocusedOrIsAway())
+            {
+                m_FSM.ChangeState(LocomotionState.NotMoving);
+            }
+            else
+            {
+                MoveAway();
+            }
+        }
 
         #endregion MovingAwayFromTarget
 
