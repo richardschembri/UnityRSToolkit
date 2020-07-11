@@ -10,7 +10,7 @@ using RSToolkit.AI.Locomotion;
 using RSToolkit.Helpers;
 using System;
 
-namespace Demo.CTF{
+namespace Demo.BehaviourTree.CTF{
     public class CTFDefenceBot : CTFBot
     {
         [SerializeField]
@@ -19,22 +19,13 @@ namespace Demo.CTF{
 
         public CTFBot TargetEnemyBot {get; private set;}
 
-        [SerializeField]
-        private float m_defendRadius;
-
-        private float m_sqrDefendRadius{
-            get{
-                return m_defendRadius * m_defendRadius;
-            }
-        }
-
         public bool IsWithinDefenceRadius(){
             if(m_botComponent.FocusedOnPosition == null){
                 return false;
             }
             var thisPosition = transform.position;
             thisPosition.y = m_botComponent.FocusedOnPosition.Value.y;
-            return Vector3.SqrMagnitude(thisPosition - m_botComponent.FocusedOnPosition.Value) <= m_sqrDefendRadius;
+            return Vector3.SqrMagnitude(thisPosition - m_botComponent.FocusedOnPosition.Value) <= m_botComponent.SqrAwarenessMagnitude;
         }
 
         public bool IsFocused(){
@@ -218,14 +209,6 @@ namespace Demo.CTF{
 
         }
 
-        void OnDrawGizmo(){
-            #if UNITY_EDITOR
-            var oldColor = UnityEditor.Handles.color;
-            UnityEditor.Handles.color = new Color(1, 1, 0, 0.3f);
-            UnityEditor.Handles.DrawWireDisc(transform.position, transform.up, m_defendRadius);
-            UnityEditor.Handles.color = oldColor;
-            #endif
-        }
         #endregion Mono Functions
     }
 }

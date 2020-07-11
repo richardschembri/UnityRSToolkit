@@ -8,7 +8,7 @@ using RSToolkit.AI.Behaviour.Decorator;
 using RSToolkit.AI;
 using RSToolkit.AI.Locomotion;
 
-namespace Demo.CTF{
+namespace Demo.BehaviourTree.CTF{
     public class CTFOffenceBot : CTFBot 
     {
 

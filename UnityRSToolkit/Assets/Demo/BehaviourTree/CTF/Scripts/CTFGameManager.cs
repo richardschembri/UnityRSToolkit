@@ -4,7 +4,7 @@ using UnityEngine;
 using RSToolkit;
 using System.Linq;
 
-namespace Demo.CTF{
+namespace Demo.BehaviourTree.CTF{
     public class CTFGameManager : SingletonMonoBehaviour<CTFGameManager>
     {
         public const string TAG_OFFENCE = "Offence";
@@ -22,6 +22,8 @@ namespace Demo.CTF{
         private Transform m_level;
         public Transform Level {get{return m_level;}}
 
+        private bool m_flagTakeCache = false;
+
 #region Reset
         private void ResetFlag(){
            Flag.parent = Level; 
@@ -35,7 +37,8 @@ namespace Demo.CTF{
 #endregion Reset
 
         public bool IsFlagTaken(){
-            return Bots.Any(b => b.HasFlag());
+            //return Bots.Any(b => b.HasFlag());
+            return Flag.parent == Level; 
         }
 
         public bool GiveFlagToBot(CTFBot bot){
@@ -59,6 +62,7 @@ namespace Demo.CTF{
             FlagStartPosition = Flag.position;
             FlagStartRotation = Flag.rotation;
         }
+
         // Start is called before the first frame update
         void Start()
         {

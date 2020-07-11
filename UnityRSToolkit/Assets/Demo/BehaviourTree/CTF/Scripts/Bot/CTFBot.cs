@@ -10,7 +10,7 @@ using RSToolkit.AI.Locomotion;
 using RSToolkit.Helpers;
 using UnityEngine.Events;
 
-namespace Demo.CTF{
+namespace Demo.BehaviourTree.CTF{
     [RequireComponent(typeof(Bot))]
     [RequireComponent(typeof(BotNavMesh))]
     [RequireComponent(typeof(BotVision))]
