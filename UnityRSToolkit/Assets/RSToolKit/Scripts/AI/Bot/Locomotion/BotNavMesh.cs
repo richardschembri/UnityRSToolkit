@@ -17,7 +17,8 @@ namespace RSToolkit.AI.Locomotion
 
         public float runSpeed = 5f;
         public float runRotationSpeed = 120f;
-
+        
+        #region Components
         private NavMeshAgent m_navMeshAgentComponent;
         public NavMeshAgent NavMeshAgentComponent
         {
@@ -31,6 +32,7 @@ namespace RSToolkit.AI.Locomotion
             }
 
         }
+        #endregion Components
 
         public ProximityChecker JumpProximityChecker;
 
@@ -41,8 +43,6 @@ namespace RSToolkit.AI.Locomotion
                 return NavMeshHelpers.GetCurrentSpeed(NavMeshAgentComponent);
             } 
         }
-
-
 
         public override void RotateTowardsPosition()
         {
@@ -146,13 +146,6 @@ namespace RSToolkit.AI.Locomotion
             return false;
         }
 
-        protected override void Awake()
-        {
-            base.Awake();
-            NavMeshAgentComponent.speed = walkSpeed;
-            NavMeshAgentComponent.angularSpeed = walkRotationSpeed;
-            //NavMeshAgentComponent.radius = BotComponent.SqrPersonalSpaceMagnitude;
-        }
 
         protected virtual void OffMeshLinkUpdate(NavMeshHelpers.OffMeshLinkPosition linkposition)
         {
@@ -168,17 +161,25 @@ namespace RSToolkit.AI.Locomotion
                 OffMeshLinkUpdate(m_linkposition);
             }
         }
-
-        protected override void MovingToPosition_Update()
-        {
-            base.MovingToPosition_Update();
-            //NavMeshHelpers.
-        }
-
+        
         private void CheckLinkArea()
         {
 
         }
+
+        protected override bool CanMove()
+        {
+            return (NavMeshAgentComponent.speed > 0
+                && NavMeshAgentComponent.angularSpeed > 0
+                && isActiveAndEnabled);
+        }
+
+        public bool IsAboveNavMeshSurface()
+        {
+            return NavMeshAgentComponent.IsAboveNavMeshSurface();
+        }
+
+        #region States
 
         protected override void NotMoving_Enter()
         {
@@ -189,14 +190,25 @@ namespace RSToolkit.AI.Locomotion
             }
         }
 
-
-        protected override bool CanMove()
+        protected override void MovingToPosition_Update()
         {
-            return (NavMeshAgentComponent.speed > 0
-                && NavMeshAgentComponent.angularSpeed > 0
-                && isActiveAndEnabled);
+            base.MovingToPosition_Update();
+            //NavMeshHelpers.
         }
 
+        #endregion States
+
+        #region MonoBehaviour Functions
+
+        protected override void Awake()
+        {
+            base.Awake();
+            NavMeshAgentComponent.speed = walkSpeed;
+            NavMeshAgentComponent.angularSpeed = walkRotationSpeed;
+            //NavMeshAgentComponent.radius = BotComponent.SqrPersonalSpaceMagnitude;
+        }
+
+        #endregion MonoBehaviour Functions
     }
 }
 

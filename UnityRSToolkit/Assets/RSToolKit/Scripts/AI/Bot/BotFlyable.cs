@@ -201,6 +201,11 @@ namespace RSToolkit.AI
             return CurrentState == FlyableStates.Flying || CurrentState == FlyableStates.NotFlying;
         }
 
+        public bool IsAboveNavMeshSurface()
+        {            
+            return BotNavMeshComponent.IsAboveNavMeshSurface();
+        }
+
         #region FSM
 
         private void InitFSM()

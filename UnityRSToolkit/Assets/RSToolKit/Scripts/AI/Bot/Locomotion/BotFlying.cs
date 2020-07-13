@@ -10,6 +10,7 @@ namespace RSToolkit.AI.Locomotion
     [RequireComponent(typeof(Flying3DObject))]
     public class BotFlying : BotLocomotion
     {
+        #region Components
         private Flying3DObject m_flying3DObjectComponent;
         public Flying3DObject Flying3DObjectComponent
         {
@@ -23,6 +24,7 @@ namespace RSToolkit.AI.Locomotion
             }
 
         }
+        #endregion Components
 
         public override float CurrentSpeed
         {
@@ -88,6 +90,8 @@ namespace RSToolkit.AI.Locomotion
         {
             return GroundProximityCheckerComponent.IsWithinRayDistance(out hit);
         }
+
+
 
     }
 }
