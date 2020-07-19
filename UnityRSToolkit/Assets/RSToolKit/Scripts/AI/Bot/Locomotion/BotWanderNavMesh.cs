@@ -5,34 +5,22 @@ using RSToolkit.AI.Helpers;
 
 namespace RSToolkit.AI.Locomotion
 {
-    [RequireComponent(typeof(BotNavMesh))]
+    [RequireComponent(typeof(BotLocomotive))]
     public class BotWanderNavMesh : BotWander
     {
 
-        private BotNavMesh m_botNavMeshComponent;
-        public BotNavMesh BotNavMeshComponent
-        {
-            get
-            {
-                if (m_botNavMeshComponent == null)
-                {
-                    m_botNavMeshComponent = GetComponent<BotNavMesh>();
-                }
-                return m_botNavMeshComponent;
-            }
-
-        }
-
         public override bool CanWander()
         {
-            return BotNavMeshComponent.CurrentState != BotLocomotion.LocomotionState.CannotMove;
+            //BotNavMesh
+            return BotLocomotiveComponent.CurrentLocomotionType is BotLogicNavMesh 
+                    && BotLocomotiveComponent.CurrentLocomotionType.CanMove();
         }
 
-        protected override Vector3 GetNewWanderPosition(float radius)
+        protected override Vector3? GetNewWanderPosition(Transform wanderCenter, float radius)
         {
             Vector3 result;
             // NavMeshHelpers.AttemptRandomNavPosInSphere(transform.position, radius, out result, BotNavMeshComponent.BotComponent.SqrInteractionMagnitude);
-            NavMeshHelpers.AttemptRandomNavPosInSphere(WanderCenter.position, radius, out result, BotNavMeshComponent.BotComponent.SqrInteractionMagnitude);
+            NavMeshHelpers.AttemptRandomNavPosInSphere(wanderCenter.position, radius, out result, BotLocomotiveComponent.SqrInteractionMagnitude);
             return result;
         }
 

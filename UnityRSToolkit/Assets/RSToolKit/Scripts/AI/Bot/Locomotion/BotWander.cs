@@ -2,85 +2,34 @@
 using System.Collections.Generic;
 using UnityEngine;
 using RSToolkit.Helpers;
+using RSToolkit.AI.FSM;
+
 namespace RSToolkit.AI.Locomotion
 {
-    [RequireComponent(typeof(Bot))]
+    [RequireComponent(typeof(BotWanderManager))]
     public abstract class BotWander : MonoBehaviour
     {
-        public enum WanderStates
-        {
-            NotWandering,
-            FindNewPosition,
-            MovingToPosition,
-            CannotWander
-        }
 
         // public bool WanderOnAwake = false;
-        public float waitTime = 0f;
+        public float WaitTime = 5f;
         public bool randomizeWait = false;
+        private const string DEBUG_TAG = "BotWander";
         public bool DebugMode = false;
-        public float movementTimeout = 5f;
+        public float MovementTimeout = 5f;
         public bool AutoWander = true;
 
-        
+        private float _wanderRadius = 20f;
 
-        public Transform WanderCenter
+        private BotLocomotive m_botLocomotiveComponent;
+        public BotLocomotive BotLocomotiveComponent
         {
             get
             {
-                return BotComponent.TetherToTransform != null ? BotComponent.TetherToTransform : transform;
-            }
-        }
-
-        private float GetWaitTime()
-        {
-            if (m_FSM.LastState == WanderStates.NotWandering || m_FSM.LastState == WanderStates.CannotWander)
-            {
-                return 0.1f;
-            }
-
-            if (randomizeWait)
-            {
-                return RandomHelpers.RandomFloatWithinRange(0f, waitTime);
-            }
-            return waitTime;
-        }
-
-        private FiniteStateMachine<WanderStates> m_fsm;
-        protected FiniteStateMachine<WanderStates> m_FSM
-        {
-            get
-            {
-                if (m_fsm == null)
+                if (m_botLocomotiveComponent == null)
                 {
-                    m_fsm = FiniteStateMachine<WanderStates>.Initialize(this, WanderStates.NotWandering);
+                    m_botLocomotiveComponent = GetComponent<BotLocomotive>();
                 }
-                return m_fsm;
-            }
-        }
-
-        public WanderStates CurrentState
-        {
-            get
-            {
-                return m_FSM.State;
-            }
-        }
-
-        // public Vector3? WanderPosition { get; private set; } = null;
-        //public float defaultWanderRadius = 20f;
-        private float m_wanderRadius = 20f;
-
-        private Bot m_botComponent;
-        public Bot BotComponent
-        {
-            get
-            {
-                if (m_botComponent == null)
-                {
-                    m_botComponent = GetComponent<Bot>();
-                }
-                return m_botComponent;
+                return m_botLocomotiveComponent;
             }
 
         }
@@ -88,141 +37,18 @@ namespace RSToolkit.AI.Locomotion
         public abstract bool CanWander();
 
 
-        IEnumerator FindNewPosition_Enter()
+        public void SetWanderRadius(float radius)
         {
-
-            BotComponent.UnFocus();
-            yield return new WaitForSeconds(GetWaitTime());
-            if (CurrentState == WanderStates.FindNewPosition)
-            {
-                BotComponent.FocusOnPosition(GetNewWanderPosition(m_wanderRadius));
-                m_FSM.ChangeState(WanderStates.MovingToPosition);
-            }
+            _wanderRadius = radius;
         }
 
-        void MovingToPosition_Update()
-        {
-            if (!CanWander())
-            {
-                m_FSM.ChangeState(WanderStates.CannotWander, FiniteStateTransition.Overwrite);
-            }
-            else if (BotComponent.GetMovementState() == BotLocomotion.LocomotionState.NotMoving)
-            {
-
-                m_FSM.ChangeState(AutoWander ? WanderStates.FindNewPosition : WanderStates.NotWandering);
-            }
-
+        public Vector3? GetNewWanderPosition(Transform wanderCenter){
+            return GetNewWanderPosition(wanderCenter, _wanderRadius);
         }
-
-        IEnumerator m_movingToPosition_TimeOut;
-        void MovingToPosition_Enter()
-        {
-            if (movementTimeout > 0)
-            {
-                m_movingToPosition_TimeOut = MovingToPosition_TimeOut();
-                if(!BotComponent.MoveToPosition(BotLocomotion.StopMovementConditions.WITHIN_PERSONAL_SPACE, false))
-                {
-                    m_FSM.ChangeState(WanderStates.CannotWander);
-                    return;
-                }
-                if (DebugMode)
-                {
-                    Debug.Log($"{transform.name} Wandering to {BotComponent.FocusedOnPosition.ToString()}");
-                }
-                StartCoroutine(m_movingToPosition_TimeOut);
-            }
-        }
-
-        void MovingToPosition_Exit()
-        {
-            StopCoroutine(m_movingToPosition_TimeOut);
-        }
-
-        IEnumerator MovingToPosition_TimeOut()
-        {
-            yield return new WaitForSeconds(movementTimeout);
-            if (m_FSM.State == WanderStates.MovingToPosition)
-            {
-                if (DebugMode)
-                {
-                    Debug.Log("Movement timeout!");
-                }
-                m_FSM.ChangeState(WanderStates.FindNewPosition);
-            }
-        }
-
-        void CannotWander_Update()
-        {
-            if (CanWander())
-            {
-                m_FSM.ChangeState(WanderStates.FindNewPosition);
-            }
-        }
-
-        public bool Wander(float radius)
-        {
-            m_wanderRadius = radius;
-
-            if (!CanWander())
-            {
-                m_FSM.ChangeState(WanderStates.CannotWander);
-            }
-            else if (CurrentState == WanderStates.NotWandering)
-            {
-                m_FSM.ChangeState(WanderStates.FindNewPosition);
-                return true;
-            }
-
-            return false;
-        }
-
-        public bool Wander()
-        {
-            return Wander(BotComponent.SqrAwarenessMagnitude); //defaultWanderRadius);
-        }
-
-        public bool StopWandering(bool stopMoving = false)
-        {
-            if (CurrentState != WanderStates.NotWandering)
-            {
-                if (stopMoving)
-                {
-                    BotComponent.StopMoving();
-                }
-                m_FSM.ChangeState(WanderStates.NotWandering, FiniteStateTransition.Overwrite);
-                return true;
-            }
-
-            return false;
-        }
-
-        protected abstract Vector3 GetNewWanderPosition(float radius);
+        protected abstract Vector3? GetNewWanderPosition(Transform wanderCenter, float radius);
 
         protected virtual void Awake()
         {
-            if (DebugMode)
-            {
-                m_FSM.Changed += Fsm_Changed;
-            }
-        }
-
-        private void Fsm_Changed(WanderStates state)
-        {
-            try
-            {
-                Debug.Log($"{transform.name} WanderStates changed from {m_FSM.LastState.ToString()} to {state.ToString()}");
-            }
-            catch (System.Exception ex)
-            {
-                Debug.Log($"{transform.name} WanderStates changed to {state.ToString()}");
-            }
-
-        }
-
-        public bool IsWandering()
-        {
-            return CurrentState != BotWander.WanderStates.NotWandering
-                    && CurrentState != BotWander.WanderStates.CannotWander;
         }
 
         /*

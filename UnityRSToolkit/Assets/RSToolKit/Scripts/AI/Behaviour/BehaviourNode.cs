@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
 using UnityEngine.Events;
+using System.Linq;
 
 namespace RSToolkit.AI.Behaviour
 {
@@ -38,6 +39,13 @@ namespace RSToolkit.AI.Behaviour
             IS_SMALLER_OR_EQUAL,
             IS_SMALLER,
             ALWAYS_TRUE
+        }
+
+        public enum UpdateType
+        {
+            DEFAULT,
+            FIXED,
+            LATE
         }
 
         public static class OperatorHelpers
@@ -155,16 +163,30 @@ namespace RSToolkit.AI.Behaviour
         //public BehaviourNode Root { get; set; }
         public NodeType Type { get; private set; }
         public BehaviourParentNode Parent { get; private set; }
-        
-        private List<NodeTimer> m_timers = new List<NodeTimer>();
 
-        public ReadOnlyCollection<NodeTimer> Timers
+        //private List<NodeTimer> m_timers = new List<NodeTimer>();
+        private Dictionary<UpdateType, List<NodeTimer>> _timers = new Dictionary<UpdateType, List<NodeTimer>>();
+      
+        public ReadOnlyCollection<NodeTimer> GetTimers(UpdateType updateType)
         {
-            get
-            {
-                return m_timers.AsReadOnly();
-            }
+            return _timers[updateType].AsReadOnly();           
         }
+
+        public int GetTimerCount(UpdateType updateType)
+        {
+            return _timers[updateType].Count;
+        }
+
+        public int GetAllTimerCount()
+        {
+            return _timers[UpdateType.DEFAULT].Count + _timers[UpdateType.FIXED].Count + _timers[UpdateType.LATE].Count;
+        }
+
+        public int GetAllTimerCount(bool active)
+        {
+            return _timers[UpdateType.DEFAULT].Count(t => t.IsActive == active) + _timers[UpdateType.FIXED].Count(t => t.IsActive == active) + _timers[UpdateType.LATE].Count(t => t.IsActive == active);
+        }
+
         public UnityEvent OnStarted { get; private set; } = new UnityEvent();
         public UnityEvent OnStartedSilent { get; private set; } = new UnityEvent();
         public UnityEvent OnStopping { get; private set; } = new UnityEvent();
@@ -222,31 +244,32 @@ namespace RSToolkit.AI.Behaviour
             this.Parent = parent;
         }
 
-        protected NodeTimer AddTimer(float time, float randomVariance, int repeat, System.Action timeoutAction, bool autoRemove = false)
+        protected NodeTimer AddTimer(float time, float randomVariance, int repeat, System.Action timeoutAction, bool autoRemove = false, UpdateType updateType = UpdateType.DEFAULT)
         {
             var new_timer = new NodeTimer(time, randomVariance, repeat, timeoutAction, autoRemove);
-            m_timers.Add(new_timer);
+            //m_timers.Add(new_timer);
+            _timers[updateType].Add(new_timer);
             return new_timer;
         }
 
-        protected NodeTimer AddTimer(float time, int repeat, System.Action timeoutAction, bool autoRemove = false)
+        protected NodeTimer AddTimer(float time, int repeat, System.Action timeoutAction, bool autoRemove = false, UpdateType updateType = UpdateType.DEFAULT)
         {
             return AddTimer(time, 0f, repeat, timeoutAction, autoRemove);
         }
 
-        protected NodeTimer RunOnNextTick(System.Action timeoutAction)
+        protected NodeTimer RunOnNextTick(System.Action timeoutAction, UpdateType updateType = UpdateType.DEFAULT)
         {
             return AddTimer(0, 0, timeoutAction, true);
         }
 
-        protected bool HasTimer(NodeTimer timer)
+        protected bool HasTimer(NodeTimer timer, UpdateType updateType = UpdateType.DEFAULT)
         {
-            return m_timers.Contains(timer);
+            return _timers[updateType].Contains(timer); //m_timers.Contains(timer);
         }
 
-        protected void RemoveTimer(NodeTimer to_remove)
+        protected void RemoveTimer(NodeTimer to_remove, UpdateType updateType = UpdateType.DEFAULT)
         {
-            m_timers.Remove(to_remove);
+            _timers[updateType].Remove(to_remove); //m_timers.Remove(to_remove);
         }
 
         /*
@@ -353,6 +376,9 @@ namespace RSToolkit.AI.Behaviour
         {
             this.Name = name;
             this.Type = type;
+            _timers.Add(UpdateType.DEFAULT, new List<NodeTimer>());
+            _timers.Add(UpdateType.FIXED, new List<NodeTimer>());
+            _timers.Add(UpdateType.LATE, new List<NodeTimer>());
             /*
             OnStopped.AddListener(OnStopped_Listener);
             OnStoppedSilent.AddListener(OnStoppedSilent_Listener);
@@ -376,8 +402,28 @@ namespace RSToolkit.AI.Behaviour
                 }
         */
         int m_timerCount;
-        public void UpdateTimers()
+
+        public void UpdateTimers(UpdateType updateType = UpdateType.DEFAULT)
         {
+            m_timerCount = _timers[updateType].Count;
+            for (int i = 0; i < _timers[updateType].Count; i++)
+            {
+                if (_timers[updateType][i].IsFinished && _timers[updateType][i].AutoRemove)
+                {
+                    _timers[updateType].Remove(_timers[updateType][i]);
+                    i--;
+                    m_timerCount--;
+                }
+                else
+                {
+                    _timers[updateType][i].Update();
+                }
+            }
+        }
+
+        /*
+        public void UpdateTimers()
+        {                      
             m_timerCount = m_timers.Count;
             for (int i = 0; i < m_timers.Count; i++)
             {                
@@ -391,14 +437,14 @@ namespace RSToolkit.AI.Behaviour
                 {
                     m_timers[i].Update();
                 }
-            }
+            }           
         }
+        */
 
-        public virtual void Update()
+        public virtual void Update(UpdateType updateType = UpdateType.DEFAULT)
         {
             
         }
-
 
 
 #if UNITY_EDITOR

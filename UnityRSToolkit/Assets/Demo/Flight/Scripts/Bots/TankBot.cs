@@ -32,13 +32,13 @@ namespace Demo
         {
             if (Input.GetKeyUp(KeyCode.Alpha4))
             {
-                if (BotGroundComponent.IsWandering())
+                if (BotGroundComponent.BotWanderManagerComponent.IsWandering())
                 {
-                    BotGroundComponent.StopWandering();
+                    BotGroundComponent.BotWanderManagerComponent.StopWandering();
                 }
                 else
                 {
-                    BotGroundComponent.Wander();
+                    BotGroundComponent.BotWanderManagerComponent.Wander();
                 }
 
             }

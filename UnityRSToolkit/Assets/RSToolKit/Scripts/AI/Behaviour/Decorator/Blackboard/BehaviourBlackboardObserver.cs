@@ -12,9 +12,9 @@ namespace RSToolkit.AI.Behaviour.Decorator.Blackboard
             this.blackboard = blackboard;
         }
 
-        public override void Update()
+        public override void Update(UpdateType updateType = UpdateType.DEFAULT)
         {
-            base.Update();
+            base.Update(updateType);
             // blackboard.Update();
         }
     }

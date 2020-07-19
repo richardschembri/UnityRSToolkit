@@ -175,12 +175,27 @@ namespace RSToolkit.AI.Behaviour
             }
         }
 
-        private void Update()
+        private void UpdateCommon(BehaviourNode.UpdateType updateType)
         {
             // BehaviourNode.UpdateTime(Time.deltaTime);
             BehaviourNode.OverrideElapsedTime(Time.time);
-            CurrentTree?.UpdateRecursively();
+            CurrentTree?.UpdateRecursively(updateType);            
+        }
+
+        void Update()
+        {
+            UpdateCommon(BehaviourNode.UpdateType.DEFAULT);
             CurrentBlackboard?.Update();
+        }
+
+        void FixedUpdate()
+        {
+            UpdateCommon(BehaviourNode.UpdateType.FIXED);
+        }
+
+        void LateUpdate()
+        {
+            UpdateCommon(BehaviourNode.UpdateType.LATE);
         }
     }
 }

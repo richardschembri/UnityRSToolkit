@@ -2,26 +2,31 @@
 using System.Collections.Generic;
 using UnityEngine;
 using RSToolkit.AI.Locomotion;
+using UnityEngine.AI;
 
 namespace RSToolkit.AI
 {
-    public class BotGround : Bot
+    public class BotGround : BotLocomotive
     {
         bool m_freefall = false;
+        BotLogicNavMesh _botNavMesh;
+
 
         #region Components
 
-        private BotNavMesh m_botNavMeshComponent;
-        public BotNavMesh BotNavMeshComponent
+        private NavMeshAgent _navMeshAgentComponent;
+        public NavMeshAgent NavMeshAgentComponent
         {
             get
             {
-                if (m_botNavMeshComponent == null)
+                if (_navMeshAgentComponent == null)
                 {
-                    m_botNavMeshComponent = GetComponent<BotNavMesh>();
+                    _navMeshAgentComponent = GetComponent<NavMeshAgent>();
                 }
-                return m_botNavMeshComponent;
+
+                return _navMeshAgentComponent;
             }
+
         }
 
         private Rigidbody m_rigidBodyComponent;
@@ -39,14 +44,15 @@ namespace RSToolkit.AI
 
         }
 
+        protected BotWanderNavMesh BotWanderNavMeshComponent {get; private set;}
         #endregion Components
 
         private void HandleFailling()
         {
-            if (m_currentBotMovementComponent.IsFarFromGround() && !m_freefall)
+            if (IsFarFromGround() && !m_freefall)
             {
                 m_freefall = true;
-                BotNavMeshComponent.NavMeshAgentComponent.enabled = false;
+                NavMeshAgentComponent.enabled = false;
             }
         }
 
@@ -63,6 +69,19 @@ namespace RSToolkit.AI
             }
         }
 
+        protected override void InitLocomotionTypes(){
+            _botNavMesh = new BotLogicNavMesh(this, NavMeshAgentComponent);
+            CurrentLocomotionType = _botNavMesh;
+        }
+        protected override bool InitBotWander(){
+            if(!base.InitBotWander()){
+                return false;
+            }
+            BotWanderNavMeshComponent = GetComponent<BotWanderNavMesh>();
+            BotWanderManagerComponent.Initialize(BotWanderNavMeshComponent);
+            return true;
+        }
+
         #region MonoBehaviour Functions
 
         protected override void Awake()
@@ -75,13 +94,14 @@ namespace RSToolkit.AI
         {
             base.Update();
             // There must be a better way to do this
-            if (m_freefall && m_currentBotMovementComponent.IsAlmostGrounded())
+            if (m_freefall && IsAlmostGrounded())
             {
                 m_freefall = false;
                 RigidBodyComponent.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
                 RigidBodyComponent.velocity = Vector3.zero;
                 transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
-                BotNavMeshComponent.NavMeshAgentComponent.enabled = true;
+                NavMeshAgentComponent.enabled = true;
+
             }
         }
 

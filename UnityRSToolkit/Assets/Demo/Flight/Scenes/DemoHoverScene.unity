@@ -182,7 +182,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 65421512}
@@ -942,7 +942,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 28453108}
@@ -1679,7 +1679,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 462054401}
@@ -1865,7 +1865,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1850178812}
@@ -2051,7 +2051,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 53724675}
@@ -4072,7 +4072,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1339653554}
@@ -4291,7 +4291,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 382715995}
@@ -4627,7 +4627,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1652777803}
@@ -4721,7 +4721,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 854541221}
@@ -5734,7 +5734,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1798501137}
@@ -6075,6 +6075,7 @@ GameObject:
   - component: {fileID: 1878005665}
   - component: {fileID: 1878005663}
   - component: {fileID: 1878005662}
+  - component: {fileID: 1878005664}
   m_Layer: 0
   m_Name: TankBot
   m_TagString: Untagged
@@ -6108,11 +6109,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4cce5f5470fe7d4ea610c13f5dbf7f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waitTime: 10
+  WaitTime: 5
   randomizeWait: 0
   DebugMode: 0
-  movementTimeout: 10
+  MovementTimeout: 5
   AutoWander: 1
+--- !u!114 &1878005664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1878005661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 419e95672819d40b49efa83de376a945, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1878005665
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6142,17 +6155,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1878005661}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1633e10d15d4bcf4ab81f048f33d0638, type: 3}
+  m_Script: {fileID: 11500000, guid: 014da0d45efb9a5ca80bcad9e54663da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   DebugMode: 0
-  MovingAwayCutoffDistance: 9
-  MovingAwayDistance: 15
-  walkSpeed: 0.75
-  walkRotationSpeed: 120
-  runSpeed: 5
-  runRotationSpeed: 120
-  JumpProximityChecker: {fileID: 825625843}
 --- !u!195 &1878005667
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -6914,12 +6920,12 @@ GameObject:
   - component: {fileID: 7990845843178055562}
   - component: {fileID: 7990845843178055559}
   - component: {fileID: 7990845843178055564}
-  - component: {fileID: 7990845843178055563}
   - component: {fileID: 7990845843178055561}
   - component: {fileID: 7990845843178055558}
   - component: {fileID: 7990845843178055565}
   - component: {fileID: 7990845843178055560}
   - component: {fileID: 7990845843178055567}
+  - component: {fileID: 7990845843178055563}
   m_Layer: 0
   m_Name: CopterTankBot
   m_TagString: Untagged
@@ -6996,10 +7002,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f3bacfbd3c4b724f983c54cd2078f73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waitTime: 3
+  WaitTime: 5
   randomizeWait: 0
   DebugMode: 1
-  movementTimeout: 5
+  MovementTimeout: 5
   AutoWander: 1
   DefaultY: 5
   AboveSurface: 1
@@ -7013,12 +7019,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 7990845843178055555}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab0ecd98afa41ca498cfe7c135c82fa7, type: 3}
+  m_Script: {fileID: 11500000, guid: 014da0d45efb9a5ca80bcad9e54663da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   DebugMode: 0
-  MovingAwayCutoffDistance: 9
-  MovingAwayDistance: 15
 --- !u!136 &7990845843178055560
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -7081,19 +7085,11 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7990845843178055555}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1633e10d15d4bcf4ab81f048f33d0638, type: 3}
+  m_Script: {fileID: 11500000, guid: 419e95672819d40b49efa83de376a945, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DebugMode: 0
-  MovingAwayCutoffDistance: 9
-  MovingAwayDistance: 15
-  walkSpeed: 0.75
-  walkRotationSpeed: 120
-  runSpeed: 5
-  runRotationSpeed: 120
-  JumpProximityChecker: {fileID: 46413271}
 --- !u!195 &7990845843178055564
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -7128,10 +7124,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4cce5f5470fe7d4ea610c13f5dbf7f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waitTime: 10
+  WaitTime: 5
   randomizeWait: 0
   DebugMode: 0
-  movementTimeout: 10
+  MovementTimeout: 5
   AutoWander: 1
 --- !u!114 &7990845843178055566
 MonoBehaviour:

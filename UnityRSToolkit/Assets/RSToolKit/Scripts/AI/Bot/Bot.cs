@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using RSToolkit.AI.Locomotion;
+using RSToolkit.AI.FSM;
 
 namespace RSToolkit.AI
 {
@@ -31,20 +32,18 @@ namespace RSToolkit.AI
             if (!owner)
             {
                 FSMRunnerComponent.enabled = false;
-                m_currentBotWanderComponent.enabled = false;
-                m_currentBotMovementComponent.enabled = false;
-                m_currentBotMovementComponent.GroundProximityCheckerComponent.enabled = false;
+                
+                BTFiniteStateMachineManagerComponent.enabled = false;
             }
             else
             {
-                m_currentBotMovementComponent.GroundProximityCheckerComponent.enabled = true;
-                m_currentBotMovementComponent.enabled = true;
-                m_currentBotWanderComponent.enabled = true;
+                BTFiniteStateMachineManagerComponent.enabled = true;
                 FSMRunnerComponent.enabled = true;
             }
         }
 
         #region Components
+        public BTFiniteStateMachineManager BTFiniteStateMachineManagerComponent {get; private set;}
 
         protected FiniteStateMachineRunner m_fsmRunnerComponent;
         protected FiniteStateMachineRunner FSMRunnerComponent
@@ -59,41 +58,6 @@ namespace RSToolkit.AI
             }
         }
 
-        protected BotWander[] m_botWanderComponents;
-        protected BotWander[] m_BotWanderComponents
-        {
-            get
-            {
-                if (m_botWanderComponents == null)
-                {
-                    m_botWanderComponents = GetComponents<BotWander>();
-                }
-                return m_botWanderComponents;
-            }
-            private set
-            {
-                m_botWanderComponents = value;
-            }
-        }
-        protected BotWander m_currentBotWanderComponent;
-
-        protected BotLocomotion[] m_botMovementComponents;
-        protected BotLocomotion[] m_BotMovementComponents
-        {
-            get
-            {
-                if (m_botMovementComponents == null)
-                {
-                    m_botMovementComponents = GetComponents<BotLocomotion>();
-                }
-                return m_botMovementComponents;
-            }
-            private set
-            {
-                m_botMovementComponents = value;
-            }
-        }
-        protected BotLocomotion m_currentBotMovementComponent;
 
         private Animator m_animatorComponent;
         public Animator AnimatorComponent
@@ -123,32 +87,7 @@ namespace RSToolkit.AI
 
         #endregion Components
 
-        protected void SetCurrentBotWander(BotWander b)
-        {
-            if (m_BotWanderComponents.Contains(b))
-            {
-                m_currentBotWanderComponent = b;
-                for (int i = 0; i < m_BotWanderComponents.Length; i++)
-                {
-                    if (m_BotWanderComponents[i] != b)
-                    {
-                        m_BotWanderComponents[i].StopWandering(true);
-                    }
-                }
-            }
-            else
-            {
-                throw new System.Exception($"{name} does not contain component");
-            }
-        }
-
-        protected void SetCurrentBotMovement(BotLocomotion b)
-        {
-            if (m_BotMovementComponents.Contains(b))
-            {
-                m_currentBotMovementComponent = b;
-            }
-        }
+        
 
 
         public Transform FocusedOnTransform { get; private set; } = null;
@@ -482,126 +421,12 @@ namespace RSToolkit.AI
 
         #endregion Interaction/Focus
 
-        #region Wander
-        public bool Wander()
-        {
-
-            if (m_currentBotWanderComponent.Wander())
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public bool StopWandering(bool stopMoving = false)
-        {
-            if (m_currentBotWanderComponent.StopWandering(stopMoving))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public bool IsWandering()
-        {
-            return m_currentBotWanderComponent!= null && m_currentBotWanderComponent.IsWandering();
-        }
-
-        public BotWander.WanderStates GetWanderState()
-        {
-            return m_currentBotWanderComponent.CurrentState;
-        }
-        #endregion Wander
-
-        #region Locomotion
-
-        public float CurrentSpeed
-        {
-            get
-            {
-                return m_currentBotMovementComponent.CurrentSpeed;
-            }
-        }
-
-        public void MoveTowardsPosition(bool fullspeed = true)
-        {
-            m_currentBotMovementComponent.MoveTowardsPosition(fullspeed);
-        }
-
-        public void MoveTowardsTarget(bool fullspeed = true)
-        {
-            m_currentBotMovementComponent.MoveTowardsTarget(fullspeed);
-        }
-
-        public bool MoveToPosition(BotLocomotion.StopMovementConditions stopMovementCondition, bool fullspeed = true)
-        {
-            return m_currentBotMovementComponent.MoveToPosition(stopMovementCondition, fullspeed);
-        }
-
-        public bool MoveToTarget(BotLocomotion.StopMovementConditions stopMovementCondition, bool fullspeed = true)
-        {
-            return m_currentBotMovementComponent.MoveToTarget(stopMovementCondition, fullspeed);
-        }
-
-
-        public bool MoveAwayFromPosition(bool fullspeed = true){
-            return m_currentBotMovementComponent.MoveAwayFromPosition(fullspeed);
-        }
-        public bool MoveAwayFromTarget(bool fullspeed = true){
-            return m_currentBotMovementComponent.MoveAwayFromTarget(fullspeed);
-        }
-
-        public bool MoveToTetherPoint(BotLocomotion.StopMovementConditions stopMovementCondition = BotLocomotion.StopMovementConditions.WITHIN_PERSONAL_SPACE, bool fullspeed = true)
-        {
-            FocusOnTransform(TetherToTransform);
-            return MoveToTarget(stopMovementCondition, fullspeed);
-        }
-
-        public void RotateTowardsPosition()
-        {
-            m_currentBotMovementComponent.RotateTowardsPosition();
-        }
-
-        public bool StopMoving()
-        {
-            return m_currentBotMovementComponent.StopMoving();
-        }
-
-        public BotLocomotion.LocomotionState GetMovementState()
-        {
-            return m_currentBotMovementComponent.CurrentState;
-        }
-
-        public bool IsMoveable()
-        {
-            return m_currentBotMovementComponent != null;
-        }
-
-        public bool IsMoving(){
-            return IsMoveable() && m_currentBotMovementComponent.IsMoving(); 
-        }
-
-        public void AnimateLocomotion()
-        {
-            m_currentBotMovementComponent.Animate();
-        }
-
-        #endregion Locomotion
 
         #region MonoBehaviour Functions
         protected virtual void Awake()
         {
-            if (m_BotMovementComponents.Length > 0 && m_currentBotMovementComponent == null)
-            {
-                SetCurrentBotMovement(m_BotMovementComponents[0]);
-            }
-
-            if (m_BotWanderComponents.Length > 0 && m_currentBotWanderComponent == null)
-            {
-                SetCurrentBotWander(m_BotWanderComponents[0]);
-            }
+            BTFiniteStateMachineManagerComponent = GetComponent<BTFiniteStateMachineManager>();
+            BTFiniteStateMachineManagerComponent.StartFSMs();
         }
 
         protected virtual void Update()
@@ -611,6 +436,7 @@ namespace RSToolkit.AI
 
         void OnDrawGizmos()
         {
+            return;
 #if UNITY_EDITOR
             ProximityHelpers.DrawGizmoProximity(transform, SqrInteractionMagnitude, IsWithinInteractionDistance());
             ProximityHelpers.DrawGizmoProximity(transform, SqrAwarenessMagnitude, IsWithinAwarenessDistance());

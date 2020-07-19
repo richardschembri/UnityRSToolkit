@@ -2,61 +2,62 @@
 using System.Collections.Generic;
 using UnityEngine;
 using RSToolkit.Helpers;
+using RSToolkit.Space3D;
 using System.Linq;
 
 namespace RSToolkit.AI.Locomotion
 {
-    [RequireComponent(typeof(BotFlying))]
     public class BotWanderFlying : BotWander
     {
         public float DefaultY = 5f;
-        private BotFlying m_botFlyingComponent;
         private int m_findNewPositionAttempts = 0;
         private const int MAX_FINDNEWPOSITIONATTEMPTS = 20;
         public bool AboveSurface = true;
         [Tooltip("If 0 or less a linecast will be used")]
         public float SpherecastRadius = 1f;
 
-        public BotFlying BotFlyingComponent
+        private Flying3DObject _flying3DObjectComponent;
+        public Flying3DObject Flying3DObjectComponent
         {
             get
             {
-                if (m_botFlyingComponent == null)
+                if (_flying3DObjectComponent == null)
                 {
-                    m_botFlyingComponent = GetComponent<BotFlying>();
+                    _flying3DObjectComponent = GetComponent<Flying3DObject>();
                 }
-                return m_botFlyingComponent;
+                return _flying3DObjectComponent;
             }
+
         }
         public override bool CanWander()
         {
-            return Mathf.Abs(BotFlyingComponent.Flying3DObjectComponent.MovementFlightThrust.x) > 0f
-                && Mathf.Abs(BotFlyingComponent.Flying3DObjectComponent.MovementFlightThrust.z) > 0f;
+            return BotLocomotiveComponent.CurrentLocomotionType is BotLogicFlight 
+                && Mathf.Abs(Flying3DObjectComponent.MovementFlightThrust.x) > 0f
+                && Mathf.Abs(Flying3DObjectComponent.MovementFlightThrust.z) > 0f;
         }
 
         RaycastHit m_wanderhit;
 
-        protected override Vector3 GetNewWanderPosition(float radius)
+        protected override Vector3? GetNewWanderPosition(Transform wanderCenter, float radius)
         {
             if (m_findNewPositionAttempts >= MAX_FINDNEWPOSITIONATTEMPTS)
             {
-                m_FSM.ChangeState(WanderStates.CannotWander);
-                //return transform.position;
-                return WanderCenter.position;
+                // FSM.ChangeState(WanderStates.CannotWander);
+                return null;//WanderCenter.position;
             }
             m_findNewPositionAttempts++;
             //var newPos = transform.GetRandomPositionWithinCircle(radius, BotFlyingComponent.BotComponent.SqrPersonalSpaceMagnitude);
-            var newPos = WanderCenter.GetRandomPositionWithinCircle(radius, BotFlyingComponent.BotComponent.SqrPersonalSpaceMagnitude);
-            newPos = new Vector3(newPos.x, DefaultY, newPos.z);
+            Vector3? newPos = wanderCenter.GetRandomPositionWithinCircle(radius, BotLocomotiveComponent.SqrPersonalSpaceMagnitude);
+            newPos = new Vector3(newPos.Value.x, DefaultY, newPos.Value.z);
 
-            if (AboveSurface && !Physics.Raycast(newPos, Vector3.down, Mathf.Infinity))
+            if (AboveSurface && !Physics.Raycast(newPos.Value, Vector3.down, Mathf.Infinity))
             {
                 Debug.Log($"{newPos} Not above surface");
-                return GetNewWanderPosition(radius);
+                return GetNewWanderPosition(wanderCenter, radius);
             }
 
-            if ((SpherecastRadius <= 0 && BotFlyingComponent.BotComponent.ColliderComponent.RaycastFromOutsideBounds(out m_wanderhit, newPos, radius))
-                || (SpherecastRadius > 0 && BotFlyingComponent.BotComponent.ColliderComponent.SpherecastFromOutsideBounds(out m_wanderhit, newPos, SpherecastRadius, radius)))
+            if ((SpherecastRadius <= 0 && BotLocomotiveComponent.ColliderComponent.RaycastFromOutsideBounds(out m_wanderhit, newPos.Value, radius))
+                || (SpherecastRadius > 0 && BotLocomotiveComponent.ColliderComponent.SpherecastFromOutsideBounds(out m_wanderhit, newPos.Value, SpherecastRadius, radius)))
             {
                
                 if (DebugMode)
@@ -65,13 +66,13 @@ namespace RSToolkit.AI.Locomotion
                 }
 
             
-                if (Vector3.Distance(transform.position, m_wanderhit.point) * 0.75f >= BotFlyingComponent.BotComponent.SqrPersonalSpaceMagnitude)
+                if (Vector3.Distance(transform.position, m_wanderhit.point) * 0.75f >= BotLocomotiveComponent.SqrPersonalSpaceMagnitude)
                 {
                     newPos = Vector3.Lerp(transform.position, m_wanderhit.point, 0.75f);
                 }
                 else
                 {
-                    newPos = GetNewWanderPosition(radius);
+                    newPos = GetNewWanderPosition(wanderCenter, radius);
                 }
             }
 

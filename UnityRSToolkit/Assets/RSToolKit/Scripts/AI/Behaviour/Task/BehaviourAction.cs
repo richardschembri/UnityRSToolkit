@@ -25,22 +25,37 @@ namespace RSToolkit.AI.Behaviour.Task
             SKIP
         }
 
-        private System.Func<bool> m_singleFrameFunc = null;
-        private System.Func<bool, ActionResult> m_multiFrameFunc = null;
-        private System.Func<ActionRequest, ActionResult> m_multiFrameRequestFunc = null;
-        private System.Action m_singleFrameAction = null;
-        private bool m_bWasBlocked = false;
-        private bool m_skipping = false;
+        private System.Func<bool> _singleFrameFunc = null;
+        private System.Func<bool, ActionResult> _multiFrameFunc = null;
+        private System.Func<ActionRequest, ActionResult> _multiFrameRequestFunc = null;
+        private System.Action _singleFrameAction = null;
 
-        private ActionResult m_actionResult = ActionResult.PROGRESS;
-        private ActionRequest m_actionRequest = ActionRequest.START;
+        private System.Action _actionFixedUpdate = null;
+        private System.Action _actionLateUpdate = null;
+
+        private bool _bWasBlocked = false;
+        private bool _skipping = false;
+
+        private ActionResult _actionResult = ActionResult.PROGRESS;
+        private ActionRequest _actionRequest = ActionRequest.START;
         private void Init()
         {
             OnStarted.AddListener(OnStarted_Listener);
             OnStartedSilent.AddListener(OnStartedSilent_Listener);
             OnStopping.AddListener(OnStopping_Listener);
-            m_actionResult = ActionResult.PROGRESS;
+            _actionResult = ActionResult.PROGRESS;
         }
+
+        public void SetFixedUpdate(System.Action actionFixedUpdate)
+        {
+            _actionFixedUpdate = actionFixedUpdate;
+        }
+
+        public void SetLateUpdate(System.Action actionLateUpdate)
+        {
+            _actionLateUpdate = actionLateUpdate;
+        }
+
         #region Constructors
 
         /// <summary>
@@ -50,7 +65,7 @@ namespace RSToolkit.AI.Behaviour.Task
         /// <param name="name"></param>
         public BehaviourAction(System.Action action, string name = NODE_NAME) : base(name, NodeType.TASK)
         {
-            m_singleFrameAction = action;
+            _singleFrameAction = action;
             Init();
         }
 
@@ -61,7 +76,7 @@ namespace RSToolkit.AI.Behaviour.Task
         /// <param name="name"></param>
         public BehaviourAction(System.Func<bool> singleFrameFunc, string name = NODE_NAME) : base(name, NodeType.TASK)
         {
-            m_singleFrameFunc = singleFrameFunc;
+            _singleFrameFunc = singleFrameFunc;
             Init();
         }
 
@@ -79,7 +94,7 @@ namespace RSToolkit.AI.Behaviour.Task
         /// <param name="name">The Action`s name</param>
         public BehaviourAction(System.Func<bool, ActionResult> multiFrameFunc, string name = NODE_NAME) : base(name, NodeType.TASK)
         {
-            m_multiFrameFunc = multiFrameFunc;
+            _multiFrameFunc = multiFrameFunc;
             Init();
         }
 
@@ -100,66 +115,87 @@ namespace RSToolkit.AI.Behaviour.Task
         /// <param name="name"></param>
         public BehaviourAction(System.Func<ActionRequest, ActionResult> multiFrameRequestFunc, string name = NODE_NAME) : base(name, NodeType.TASK)
         {
-            m_multiFrameRequestFunc = multiFrameRequestFunc;
+            _multiFrameRequestFunc = multiFrameRequestFunc;
             Init();
         }
 
         
         #endregion Constructors
  
-        public override void Update()
+        private bool OtherUpdate(UpdateType updateType)
+        {
+            switch (updateType)
+            {
+                case UpdateType.DEFAULT:
+                    return false;
+                case UpdateType.FIXED when _actionFixedUpdate != null:
+                    _actionFixedUpdate.Invoke();
+                    break;
+                case UpdateType.LATE when _actionLateUpdate != null:
+                    _actionFixedUpdate.Invoke();
+                    break;
+            }
+            return true;
+        }
+
+        public override void Update(UpdateType updateType)
         {
             base.Update();
-            if (m_singleFrameAction != null)
+
+            if (OtherUpdate(updateType))
             {
-                m_singleFrameAction.Invoke();
-                // OnStopped.Invoke(true);
+                return;
+            }
+
+            if (_singleFrameAction != null)
+            {
+                _singleFrameAction.Invoke();
                 StopNode(true);
             }
-            else if (m_multiFrameFunc != null || m_multiFrameRequestFunc != null)
+            else if (_multiFrameFunc != null || _multiFrameRequestFunc != null)
             {
-                if (m_multiFrameFunc != null)
+                if (_multiFrameFunc != null)
                 {
-                    m_actionResult = m_multiFrameFunc.Invoke(false);
+                    _actionResult = _multiFrameFunc.Invoke(false);
                 }
-                else if (m_multiFrameRequestFunc != null)
+                else if (_multiFrameRequestFunc != null)
                 {
-                    m_actionResult = m_multiFrameRequestFunc.Invoke(m_actionRequest);
-                    m_actionRequest = m_bWasBlocked ? ActionRequest.START : ActionRequest.UPDATE;
+                    _actionResult = _multiFrameRequestFunc.Invoke(_actionRequest);
+                    _actionRequest = _bWasBlocked ? ActionRequest.START : ActionRequest.UPDATE;
                 }
 
-                if (m_actionResult == ActionResult.BLOCKED)
+                if (_actionResult == ActionResult.BLOCKED)
                 {
-                    m_bWasBlocked = true;
+                    _bWasBlocked = true;
                 }
-                else if (m_actionResult != ActionResult.PROGRESS)
+                else if (_actionResult != ActionResult.PROGRESS)
                 {
                     // OnStopped.Invoke(m_actionResult == ActionResult.SUCCESS);
-                    StopNode(m_actionResult == ActionResult.SUCCESS);
+                    StopNode(_actionResult == ActionResult.SUCCESS);
                 }
             }
-            else if (m_singleFrameFunc != null)
+            else if (_singleFrameFunc != null)
             {
                 // OnStopped.Invoke(m_singleFrameFunc.Invoke());
-                StopNode(m_singleFrameFunc.Invoke());
+                StopNode(_singleFrameFunc.Invoke());
             }
         }
 
         public void RequestSkipAction()
         {
-            m_skipping = true;
+            _skipping = true;
             RequestStopNode();
         }
 
         #region Events
         private void OnStarted_Common()
         {
-            m_bWasBlocked = false;
-            m_skipping = false;
+            _bWasBlocked = false;
+            _skipping = false;
 
-            if (m_multiFrameRequestFunc != null)
+            if (_multiFrameRequestFunc != null)
             {
-                m_actionRequest = ActionRequest.START;
+                _actionRequest = ActionRequest.START;
             }
         }
 
@@ -175,18 +211,18 @@ namespace RSToolkit.AI.Behaviour.Task
 
         private void OnStopping_Listener()
         {
-            if (m_multiFrameFunc != null)
+            if (_multiFrameFunc != null)
             {
-                m_actionResult = m_multiFrameFunc.Invoke(true);
+                _actionResult = _multiFrameFunc.Invoke(true);
             }
-            else if (m_multiFrameRequestFunc != null)
+            else if (_multiFrameRequestFunc != null)
             {
-                m_actionResult = m_multiFrameRequestFunc.Invoke(m_skipping ? ActionRequest.SKIP : ActionRequest.CANCEL);
+                _actionResult = _multiFrameRequestFunc.Invoke(_skipping ? ActionRequest.SKIP : ActionRequest.CANCEL);
             }
             // OnStopped.Invoke(m_actionResult == ActionResult.SUCCESS);
 
             // StopNode(m_actionResult == ActionResult.SUCCESS);
-            StopNodeOnNextTick(m_actionResult == ActionResult.SUCCESS);            
+            StopNodeOnNextTick(_actionResult == ActionResult.SUCCESS);            
         }
 
         #endregion Events

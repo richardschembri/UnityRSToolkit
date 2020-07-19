@@ -12,7 +12,7 @@ using UnityEngine.Events;
 
 namespace Demo.BehaviourTree.CTF{
     [RequireComponent(typeof(Bot))]
-    [RequireComponent(typeof(BotNavMesh))]
+    [RequireComponent(typeof(BotLogicNavMesh))]
     [RequireComponent(typeof(BotVision))]
     public abstract class CTFBot : MonoBehaviour
     {
@@ -20,10 +20,10 @@ namespace Demo.BehaviourTree.CTF{
         public Quaternion StartRotation {get; private set;}
 
         protected BehaviourManager m_behaviourManagerComponent;
-        protected Bot m_botComponent;
-        protected BotLocomotion m_botLocomotionComponent;
+        protected BotLocomotive _botLocomotiveComponent;
+        protected BotLogicLocomotion m_botLocomotionComponent;
         protected BotVision m_botVisionComponent;
-        protected BotNavMesh m_botNavMeshComponent;
+        protected BotLogicNavMesh m_botNavMeshComponent;
         public GameObject FlagHolder {get; set;}
 
         public class OnDieEvent : UnityEvent<CTFBot>{} 
@@ -41,19 +41,19 @@ namespace Demo.BehaviourTree.CTF{
         protected abstract bool IsEnemyWithinSight();
 
         protected virtual void DoSeekOnStarted_Listener(){
-            m_botComponent.MoveToTarget(BotLocomotion.StopMovementConditions.WITHIN_PERSONAL_SPACE);
+            _botLocomotiveComponent.MoveToTarget(BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE);
         }
         
         protected virtual BehaviourAction.ActionResult DoSeek(bool cancel){
-            if(cancel || !m_botComponent.IsFocused){
-                m_botComponent.StopMoving();
+            if(cancel || !_botLocomotiveComponent.IsFocused){
+                _botLocomotiveComponent.StopMoving();
                 return BehaviourAction.ActionResult.FAILED;
             }
-            if(m_botComponent.IsWithinPersonalSpace()){
-                if(m_botComponent.IsFacing()){
+            if(_botLocomotiveComponent.IsWithinPersonalSpace()){
+                if(_botLocomotiveComponent.IsFacing()){
                     return BehaviourAction.ActionResult.SUCCESS;
                 }
-                m_botComponent.RotateTowardsPosition();
+                _botLocomotiveComponent.RotateTowardsPosition();
             }
             return BehaviourAction.ActionResult.PROGRESS;
         }
@@ -66,7 +66,7 @@ namespace Demo.BehaviourTree.CTF{
             m_behaviourManagerComponent.SetCurrentTree(GetDefaultTree(), true);
             transform.position = StartPosition;
             transform.rotation = StartRotation;
-            m_botComponent.StopMoving();
+            _botLocomotiveComponent.StopMoving();
         }
 
         protected abstract BehaviourRootNode GetDefaultTree();
@@ -77,10 +77,10 @@ namespace Demo.BehaviourTree.CTF{
         protected virtual void Awake()
         {
             OnDie = new OnDieEvent();
-            m_botComponent = GetComponent<Bot>();
+            _botLocomotiveComponent = GetComponent<BotLocomotive>();
             m_behaviourManagerComponent  = GetComponent<BehaviourManager>();
             m_botVisionComponent = GetComponent<BotVision>();
-            m_botNavMeshComponent = GetComponent<BotNavMesh>();
+            m_botNavMeshComponent = GetComponent<BotLogicNavMesh>();
             FlagHolder = gameObject.GetChild("Flag Holder");
             StartPosition = transform.position;
             StartRotation = transform.rotation;

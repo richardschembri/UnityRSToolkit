@@ -45,7 +45,7 @@ namespace RSToolkit.AI.Behaviour
                     break;
 
             }
-            
+
             if (!m_children.Contains(child))
             {
                 if (child.Parent != null)
@@ -67,7 +67,7 @@ namespace RSToolkit.AI.Behaviour
 
         public BehaviourParentNode(string name, NodeType type) : base(name, type)
         {
-      
+
         }
 
         public bool StartFirstChildNode()
@@ -94,10 +94,41 @@ namespace RSToolkit.AI.Behaviour
             }
         }
 
+        public virtual bool UpdateRecursively(UpdateType updateType = UpdateType.DEFAULT)
+        {
+            UpdateTimers(updateType);
+
+            if (State == NodeState.INACTIVE)
+            {
+                return false;
+            }
+            BehaviourParentNode nodeparent;
+            for (int i = 0; i < Children.Count; i++)
+            {
+                Children[i].UpdateTimers(updateType);
+                if (Children[i].State != NodeState.INACTIVE)
+                {
+                    nodeparent = Children[i] as BehaviourParentNode;
+                    if (nodeparent != null)
+                    {
+                        nodeparent.UpdateRecursively(updateType);
+                    }
+                    else
+                    {
+                        Children[i].Update(updateType);
+                    }
+
+                }
+            }
+            Update(updateType);
+            return true;
+        }
+
+        /*
         public virtual bool UpdateRecursively()
         {
             UpdateTimers();
-            
+
             if (State == NodeState.INACTIVE)
             {
                 return false;
@@ -109,7 +140,7 @@ namespace RSToolkit.AI.Behaviour
                 if (Children[i].State != NodeState.INACTIVE)
                 {
                     nodeparent = Children[i] as BehaviourParentNode;
-                    if(nodeparent != null)
+                    if (nodeparent != null)
                     {
                         nodeparent.UpdateRecursively();
                     }
@@ -117,11 +148,13 @@ namespace RSToolkit.AI.Behaviour
                     {
                         Children[i].Update();
                     }
-                    
+
                 }
             }
             Update();
             return true;
         }
+        */
+
     }
 }

@@ -103,18 +103,18 @@ namespace Demo.BehaviourTree.CTF{
         #region DoFlee
 
         private void DoFleeOnStarted_Listener(){
-            m_botComponent.MoveAwayFromTarget();
+            _botLocomotiveComponent.MoveAwayFromTarget();
         }
 
         protected BehaviourAction.ActionResult DoFlee (bool cancel){
-            if(cancel || !m_botComponent.IsFocused || m_botComponent.GetMovementState() == BotLocomotion.LocomotionState.CannotMove){
-                m_botComponent.StopMoving();
+            if(cancel || !_botLocomotiveComponent.IsFocused || _botLocomotiveComponent.CurrentState == BotLocomotive.LocomotionState.CannotMove){
+                _botLocomotiveComponent.StopMoving();
                 return BehaviourAction.ActionResult.FAILED;
             }
-            if(!m_botComponent.IsWithinAwarenessDistance()){
+            if(!_botLocomotiveComponent.IsWithinAwarenessDistance()){
                 return BehaviourAction.ActionResult.SUCCESS;
-            }else if(!m_botComponent.IsMoving()){
-                m_botComponent.MoveAwayFromTarget();
+            }else if(!_botLocomotiveComponent.IsMoving()){
+                _botLocomotiveComponent.MoveAwayFromTarget();
             }
             return BehaviourAction.ActionResult.PROGRESS;
         }
@@ -122,8 +122,8 @@ namespace Demo.BehaviourTree.CTF{
         #endregion DoFlee
         #region DoSeekFlag
         private void DoSeekFlagOnStarted_Listener(){
-           m_botComponent.FocusOnTransform(CTFGameManager.Instance.Flag);
-           m_botComponent.MoveToTarget(BotLocomotion.StopMovementConditions.WITHIN_PERSONAL_SPACE, true);
+           _botLocomotiveComponent.FocusOnTransform(CTFGameManager.Instance.Flag);
+           _botLocomotiveComponent.MoveToTarget(BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE, true);
         }
         #endregion DoSeekFlag
 

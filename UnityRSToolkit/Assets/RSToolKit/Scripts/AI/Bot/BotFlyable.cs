@@ -9,13 +9,15 @@ using UnityEngine.AI;
 
 namespace RSToolkit.AI
 {
-    [RequireComponent(typeof(BotNavMesh))]
-    [RequireComponent(typeof(BotFlying))]
+    [RequireComponent(typeof(NavMeshAgent))]
+    [RequireComponent(typeof(Flying3DObject))]
     [RequireComponent(typeof(ProximityChecker))]
-    public class BotFlyable : Bot
+    public class BotFlyable : BotLocomotive
     {
         public bool StartInAir = true;
         bool m_freefall = false;
+        public BotLogicNavMesh BotNavMeshRef { get; private set; }
+        public BotLogicFlight BotFlyingRef { get; private set; }
 
         public enum FlyableStates
         {
@@ -25,7 +27,7 @@ namespace RSToolkit.AI
             Flying
         }
 
-        public FlyableStates CurrentState
+        public FlyableStates CurrentFlyableState
         {
             get
             {
@@ -39,71 +41,69 @@ namespace RSToolkit.AI
         {
             get
             {
-                if (CurrentState != FlyableStates.NotFlying)
+                if (CurrentFlyableState != FlyableStates.NotFlying)
                 {
                     return base.InteractionMagnitude * FlightMagnitudeModifier;
                 }
                 return base.InteractionMagnitude;
             }
         }
-        
+
+        private FiniteStateMachine<FlyableStates> m_fsm;
+        protected FiniteStateMachine<FlyableStates> m_FSM
+        {
+            get
+            {
+                InitFSM();
+                return m_fsm;
+            }
+        }
+
         #region Components
 
-        private BotNavMesh m_botNavMeshComponent;
-        public BotNavMesh BotNavMeshComponent
+        private BotLocomotive m_botFSMLocomotionComponent;
+        public BotLocomotive BotFSMLocomotionComponent
         {
             get
             {
-                if (m_botNavMeshComponent == null)
+                if (m_botFSMLocomotionComponent == null)
                 {
-                    m_botNavMeshComponent = GetComponent<BotNavMesh>();
+                    m_botFSMLocomotionComponent = GetComponent<BotLocomotive>();
                 }
-                return m_botNavMeshComponent;
+                return m_botFSMLocomotionComponent;
             }
-
         }
 
-        private BotFlying m_botFlyingComponent;
-        public BotFlying BotFlyingComponent
+        private NavMeshAgent _navMeshAgentComponent;
+        public NavMeshAgent NavMeshAgentComponent
         {
             get
             {
-                if (m_botFlyingComponent == null)
+                if (_navMeshAgentComponent == null)
                 {
-                    m_botFlyingComponent = GetComponent<BotFlying>();
+                    _navMeshAgentComponent = GetComponent<NavMeshAgent>();
                 }
 
-                return m_botFlyingComponent;
+                return _navMeshAgentComponent;
             }
 
         }
+        protected BotWanderNavMesh BotWanderNavMeshComponent {get; private set;}
 
-        private BotWanderNavMesh m_botWanderNavMeshComponent;
-        public BotWanderNavMesh BotWanderNavMeshComponent
+        protected BotWanderFlying BotWanderFlyingComponent{get; private set;}
+
+        private Flying3DObject m_flying3DObjectComponent;
+        public Flying3DObject Flying3DObjectComponent
         {
             get
             {
-                if(m_botWanderNavMeshComponent == null)
+                if (m_flying3DObjectComponent == null)
                 {
-                    m_botWanderNavMeshComponent = GetComponent<BotWanderNavMesh>();
+                    m_flying3DObjectComponent = GetComponent<Flying3DObject>();
                 }
-                return m_botWanderNavMeshComponent;
+                return m_flying3DObjectComponent;
             }
         }
-
-        private BotWanderFlying m_botWanderFlyingComponent;
-        public BotWanderFlying BotWanderFlyingComponent
-        {
-            get
-            {
-                if (m_botWanderFlyingComponent == null)
-                {
-                    m_botWanderFlyingComponent = GetComponent<BotWanderFlying>();
-                }
-                return m_botWanderFlyingComponent;
-            }
-        }
-
 
         private Rigidbody m_rigidBodyComponent;
         public Rigidbody RigidBodyComponent
@@ -120,17 +120,6 @@ namespace RSToolkit.AI
 
         }
 
-
-        private FiniteStateMachine<FlyableStates> m_fsm;
-        protected FiniteStateMachine<FlyableStates> m_FSM
-        {
-            get
-            {
-                InitFSM();
-                return m_fsm;
-            }
-        }
-
         #endregion Components
 
         public override void ToggleComponentsForNetwork(bool owner)
@@ -138,13 +127,13 @@ namespace RSToolkit.AI
             base.ToggleComponentsForNetwork(owner);
             if (!owner)
             {
-                BotNavMeshComponent.NavMeshAgentComponent.enabled = false;
-                BotFlyingComponent.Flying3DObjectComponent.enabled = false;
+                NavMeshAgentComponent.enabled = false;
+                Flying3DObjectComponent.enabled = false;
             }
             else
             {
-                m_currentBotMovementComponent.GroundProximityCheckerComponent.enabled = true;
-                ToggleFlight(CurrentState != FlyableStates.NotFlying);
+                BotFSMLocomotionComponent.GroundProximityCheckerComponent.enabled = true;
+                ToggleFlight(CurrentFlyableState != FlyableStates.NotFlying);
             }
         }
 
@@ -153,28 +142,26 @@ namespace RSToolkit.AI
             if (on)
             {              
                 RigidBodyComponent.constraints = RigidbodyConstraints.None;
-                SetCurrentBotMovement(BotFlyingComponent);
-                SetCurrentBotWander(BotWanderFlyingComponent);
+                CurrentLocomotionType = BotFlyingRef;
+                BotWanderManagerComponent?.SetCurrentBotWander(BotWanderFlyingComponent);
             }
             else
             {
                 RigidBodyComponent.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
                 RigidBodyComponent.velocity = Vector3.zero;
-                transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
-                SetCurrentBotMovement(BotNavMeshComponent);
-                SetCurrentBotWander(BotWanderNavMeshComponent);
+                transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);                
+                CurrentLocomotionType = BotNavMeshRef;
+                BotWanderManagerComponent?.SetCurrentBotWander(BotWanderNavMeshComponent);
             }
             
-            BotNavMeshComponent.NavMeshAgentComponent.enabled = !on;
-            BotNavMeshComponent.enabled = !on;
-            BotFlyingComponent.Flying3DObjectComponent.enabled = on;
-            BotFlyingComponent.enabled = on;
+            NavMeshAgentComponent.enabled = !on;            
+            Flying3DObjectComponent.enabled = on;
             
         }
 
         public bool TakeOff()
         {
-            if (CurrentState == FlyableStates.NotFlying)
+            if (CurrentFlyableState == FlyableStates.NotFlying)
             {
                 m_FSM.ChangeState(FlyableStates.TakingOff);
                 return true;
@@ -186,7 +173,7 @@ namespace RSToolkit.AI
         public bool Land(bool onNavMesh = true, bool freefall = false)
         {
 
-            if (CurrentState != FlyableStates.Flying || (onNavMesh && !BotNavMeshComponent.NavMeshAgentComponent.IsAboveNavMeshSurface()))
+            if (CurrentFlyableState != FlyableStates.Flying || (onNavMesh && !NavMeshAgentComponent.IsAboveNavMeshSurface()))
             {
                 return false;
             }
@@ -198,12 +185,12 @@ namespace RSToolkit.AI
 
         public bool CanMove()
         {
-            return CurrentState == FlyableStates.Flying || CurrentState == FlyableStates.NotFlying;
+            return CurrentFlyableState == FlyableStates.Flying || CurrentFlyableState == FlyableStates.NotFlying;
         }
 
         public bool IsAboveNavMeshSurface()
         {            
-            return BotNavMeshComponent.IsAboveNavMeshSurface();
+            return BotNavMeshRef.IsAboveNavMeshSurface();
         }
 
         #region FSM
@@ -245,16 +232,16 @@ namespace RSToolkit.AI
         #region TakingOff State
         void TakingOff_Enter()
         {
-            StopWandering();
-            BotFlyingComponent.Flying3DObjectComponent.HoverWhenIdle = true;
+            BotWanderManagerComponent?.StopWandering();
+            Flying3DObjectComponent.HoverWhenIdle = true;
             ToggleFlight(true);
         }
 
         void TakingOff_Update()
         {
-            if(!BotFlyingComponent.IsFarFromGround()) // IsCloseToGround())
+            if(!BotFSMLocomotionComponent.IsFarFromGround()) // IsCloseToGround())
             {
-                BotFlyingComponent.Flying3DObjectComponent.ApplyVerticalThrust(true);       
+                Flying3DObjectComponent.ApplyVerticalThrust(true);       
             }           
             else
             {
@@ -273,8 +260,8 @@ namespace RSToolkit.AI
 
         void Landing_Enter()
         {
-            StopWandering();
-            BotFlyingComponent.Flying3DObjectComponent.HoverWhenIdle = false;
+            BotWanderManagerComponent?.StopWandering();
+            Flying3DObjectComponent.HoverWhenIdle = false;
             
         }
 
@@ -282,7 +269,7 @@ namespace RSToolkit.AI
         {
             if (!m_freefall)
             {
-                BotFlyingComponent.Flying3DObjectComponent.ApplyVerticalThrust(false);
+                Flying3DObjectComponent.ApplyVerticalThrust(false);
             }
         }
 
@@ -313,23 +300,41 @@ namespace RSToolkit.AI
 
         #endregion Flying State
 
+        protected override void InitLocomotionTypes(){
+            BotNavMeshRef = new BotLogicNavMesh(BotFSMLocomotionComponent, NavMeshAgentComponent);
+            BotFlyingRef = new BotLogicFlight(BotFSMLocomotionComponent, Flying3DObjectComponent);
+            InitFSM();
+        }
+
+        protected override bool InitBotWander(){
+            if(!base.InitBotWander()){
+                return false;
+            }
+            BotWanderFlyingComponent = GetComponent<BotWanderFlying>();
+            BotWanderNavMeshComponent = GetComponent<BotWanderNavMesh>();
+            if(CurrentFlyableState != FlyableStates.NotFlying){
+                BotWanderManagerComponent.Initialize(BotWanderFlyingComponent);
+            }else{
+                BotWanderManagerComponent.Initialize(BotWanderNavMeshComponent);
+            }
+            return true;
+        }
         #region MonoBehaviour Functions
 
         protected override void Awake()
         {
             base.Awake();
-            InitFSM();
         }
 
         protected override void Update()
         {
             base.Update();
-            CharacterAnimParams.TrySetSpeed(AnimatorComponent, m_currentBotMovementComponent.CurrentSpeed);
+            CharacterAnimParams.TrySetSpeed(AnimatorComponent, BotFSMLocomotionComponent.CurrentSpeed);
         }
 
         void OnCollisionEnter(Collision collision)
         {
-            if (CurrentState == FlyableStates.Landing)
+            if (CurrentFlyableState == FlyableStates.Landing)
             {
                 NavMeshHit navHit;
                 for (int i = 0; i < collision.contacts.Length; i++)

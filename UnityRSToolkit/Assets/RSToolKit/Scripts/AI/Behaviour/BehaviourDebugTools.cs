@@ -68,7 +68,7 @@ namespace RSToolkit.AI.Behaviour
 
         public int GetTotalTimers()
         {
-            int result = m_node.Timers.Count;
+            int result = m_node.GetAllTimerCount(); // .Timers.Count;
             var nodeparent = m_node as BehaviourParentNode;
             if (nodeparent != null)
             {
@@ -82,7 +82,7 @@ namespace RSToolkit.AI.Behaviour
 
         public int GetTotalActiveTimers()
         {
-            int result = m_node.Timers.Where(t => t.IsActive).Count();
+            int result = m_node.GetAllTimerCount(true); //.Timers.Where(t => t.IsActive).Count();
             var nodeparent = m_node as BehaviourParentNode;
             if (nodeparent != null)
             {

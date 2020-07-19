@@ -20,16 +20,16 @@ namespace Demo.BehaviourTree.CTF{
         public CTFBot TargetEnemyBot {get; private set;}
 
         public bool IsWithinDefenceRadius(){
-            if(m_botComponent.FocusedOnPosition == null){
+            if(_botLocomotiveComponent.FocusedOnPosition == null){
                 return false;
             }
             var thisPosition = transform.position;
-            thisPosition.y = m_botComponent.FocusedOnPosition.Value.y;
-            return Vector3.SqrMagnitude(thisPosition - m_botComponent.FocusedOnPosition.Value) <= m_botComponent.SqrAwarenessMagnitude;
+            thisPosition.y = _botLocomotiveComponent.FocusedOnPosition.Value.y;
+            return Vector3.SqrMagnitude(thisPosition - _botLocomotiveComponent.FocusedOnPosition.Value) <= _botLocomotiveComponent.SqrAwarenessMagnitude;
         }
 
         public bool IsFocused(){
-            return m_botComponent.IsFocused && TargetEnemyBot != null;
+            return _botLocomotiveComponent.IsFocused && TargetEnemyBot != null;
         }
 
 #region Behaviour Structs
@@ -129,11 +129,11 @@ namespace Demo.BehaviourTree.CTF{
         private BehaviourAction.ActionResult DoDefend(bool cancel)
         {
             if(cancel || !IsFocused() ||!IsWithinDefenceRadius()){
-                m_botComponent.StopMoving();
+                _botLocomotiveComponent.StopMoving();
                 return BehaviourAction.ActionResult.FAILED;
             }
 
-            if(m_botComponent.IsWithinInteractionDistance()){
+            if(_botLocomotiveComponent.IsWithinInteractionDistance()){
                 return BehaviourAction.ActionResult.SUCCESS;
             }
 
@@ -142,8 +142,8 @@ namespace Demo.BehaviourTree.CTF{
 #endregion Defend
 
         private void MoveToWaypoint(){
-            m_botComponent.FocusOnTransform(m_waypoints[m_waypointIndex]);
-            m_botComponent.MoveToTarget(BotLocomotion.StopMovementConditions.WITHIN_PERSONAL_SPACE, false);
+            _botLocomotiveComponent.FocusOnTransform(m_waypoints[m_waypointIndex]);
+            _botLocomotiveComponent.MoveToTarget(BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE, false);
         }
 
 
@@ -168,9 +168,11 @@ namespace Demo.BehaviourTree.CTF{
                 return BehaviourAction.ActionResult.SUCCESS;
             }
 
+            /*
             if(m_botLocomotionComponent.IsNotFocusedOrReachedDestination()){
                 MoveToNextWaypoint();
             }
+            */
 
             return BehaviourAction.ActionResult.PROGRESS;
         }
@@ -182,7 +184,7 @@ namespace Demo.BehaviourTree.CTF{
         private void SeekBot(){
             TargetEnemyBot = m_botVisionComponent.DoLookoutFor(false, false, CTFGameManager.TAG_OFFENCE)[0].GetComponent<CTFBot>();
             TargetEnemyBot.OnDie.AddListener(OnTargetDie_Listener); 
-            m_botComponent.MoveToTarget(BotLocomotion.StopMovementConditions.WITHIN_PERSONAL_SPACE);
+            _botLocomotiveComponent.MoveToTarget(BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE);
         }
 
         #region Events
@@ -190,7 +192,7 @@ namespace Demo.BehaviourTree.CTF{
            target.OnDie.RemoveListener(OnTargetDie_Listener);
            if(target == TargetEnemyBot){
                TargetEnemyBot = null;
-               m_botComponent.UnFocus();
+               _botLocomotiveComponent.UnFocus();
            }
         }
 

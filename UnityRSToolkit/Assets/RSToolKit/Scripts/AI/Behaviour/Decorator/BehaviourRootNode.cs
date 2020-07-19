@@ -154,13 +154,13 @@ namespace RSToolkit.AI.Behaviour
             throw new System.Exception("Root nodes cannot have parents");
         }
 
-        public override bool UpdateRecursively()
+        public override bool UpdateRecursively(UpdateType updateType = UpdateType.DEFAULT)
         {
             if (IsSilent)
             {
                 return false;
             }
-            return base.UpdateRecursively();
+            return base.UpdateRecursively(updateType);
         }
 
         public void Wake()

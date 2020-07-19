@@ -9,23 +9,11 @@ namespace Demo{
         public GameObject HelicopterParts;
         public GameObject TankParts;
 
-        private BotFlyable m_botFlyableComponent;
-        public BotFlyable BotFlyableComponent
-        {
-            get
-            {
-                if (m_botFlyableComponent == null)
-                {
-                    m_botFlyableComponent = GetComponent<BotFlyable>();
-                }
-
-                return m_botFlyableComponent;
-            }
-
-        }
-
+        public BotFlyable BotFlyableComponent {get; private set;}
+        
         void Awake()
         {
+            BotFlyableComponent = GetComponent<BotFlyable>();
             BotFlyableComponent.AddStateChangedListener(FlyableStateChanged_Listener);    
         }
 
@@ -54,24 +42,24 @@ namespace Demo{
 
             if (Input.GetKeyUp(KeyCode.Alpha4))
             {
-                if (BotFlyableComponent.IsWandering())
+                if (BotFlyableComponent.BotWanderManagerComponent.IsWandering())
                 {
-                    BotFlyableComponent.StopWandering();
+                    BotFlyableComponent.BotWanderManagerComponent.StopWandering();
                 }
                 else
                 {
-                    BotFlyableComponent.Wander();
+                    BotFlyableComponent.BotWanderManagerComponent.Wander();
                 }
                 
             }
 
             if (Input.GetKeyUp(KeyCode.Alpha5))
             {
-                BotFlyableComponent.BotNavMeshComponent.MoveToClosestEdge();
+                BotFlyableComponent.BotNavMeshRef.MoveToClosestEdge();
             }
             if (Input.GetKeyUp(KeyCode.Alpha6))
             {
-                BotFlyableComponent.BotNavMeshComponent.JumpOffLedge();
+                BotFlyableComponent.BotNavMeshRef.JumpOffLedge();
             }
         }
     }
