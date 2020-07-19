@@ -15,7 +15,7 @@ namespace RSToolkit.AI.Locomotion
     [RequireComponent(typeof(BTFiniteStateMachineManager))]
     public abstract class BotLocomotive : Bot
     {
-        public enum LocomotionState
+        public enum LocomotionStates
         {
             NotMoving,
             CannotMove,
@@ -35,9 +35,9 @@ namespace RSToolkit.AI.Locomotion
       
         public BotLogicLocomotion CurrentLocomotionType { get; set; }
 
-        public BTFiniteStateMachine<LocomotionState> FSM { get; private set; } = new BTFiniteStateMachine<LocomotionState>(LocomotionState.NotMoving);
+        public BTFiniteStateMachine<LocomotionStates> FSM { get; private set; } = new BTFiniteStateMachine<LocomotionStates>(LocomotionStates.NotMoving);
 
-        public LocomotionState CurrentState
+        public LocomotionStates CurrentState
         {
             get
             {
@@ -109,8 +109,8 @@ namespace RSToolkit.AI.Locomotion
 
         public bool IsMoving()
         {
-            return CurrentState != LocomotionState.CannotMove
-                    && CurrentState != LocomotionState.NotMoving;
+            return CurrentState != LocomotionStates.CannotMove
+                    && CurrentState != LocomotionStates.NotMoving;
         }
 
         public void AnimateLocomotion()
@@ -187,13 +187,13 @@ namespace RSToolkit.AI.Locomotion
                     Debug.LogError($"Locomotion Error: {ex.Message}");
                 }
 
-                FSM.ChangeState(LocomotionState.CannotMove);
+                FSM.ChangeState(LocomotionStates.CannotMove);
 
             }
         }
             #region Move
 
-            private bool MoveCommon(LocomotionState moveType, bool fullspeed = true, StopMovementConditions stopMovementCondition = StopMovementConditions.NONE)
+            private bool MoveCommon(LocomotionStates moveType, bool fullspeed = true, StopMovementConditions stopMovementCondition = StopMovementConditions.NONE)
         {
             if (!CurrentLocomotionType.CanMove())
             {
@@ -207,29 +207,29 @@ namespace RSToolkit.AI.Locomotion
 
         public bool MoveToPosition(StopMovementConditions stopMovementCondition, bool fullspeed = true)
         {
-            return MoveCommon(LocomotionState.MovingToPosition, _fullspeed, stopMovementCondition);
+            return MoveCommon(LocomotionStates.MovingToPosition, _fullspeed, stopMovementCondition);
         }
 
         public bool MoveAwayFromPosition(bool fullspeed = true)
         {
-            return MoveCommon(LocomotionState.MovingAwayFromPosition, _fullspeed);
+            return MoveCommon(LocomotionStates.MovingAwayFromPosition, _fullspeed);
         }
 
         public bool MoveToTarget(StopMovementConditions stopMovementCondition, bool fullspeed = true)
         {
-            return MoveCommon(LocomotionState.MovingToTarget, _fullspeed, stopMovementCondition);
+            return MoveCommon(LocomotionStates.MovingToTarget, _fullspeed, stopMovementCondition);
         }
 
         public bool MoveAwayFromTarget(bool fullspeed = true)
         {
-            return MoveCommon(LocomotionState.MovingAwayFromTarget, _fullspeed);
+            return MoveCommon(LocomotionStates.MovingAwayFromTarget, _fullspeed);
         }
 
         public bool StopMoving()
         {
-            if (CurrentState != LocomotionState.NotMoving)
+            if (CurrentState != LocomotionStates.NotMoving)
             {
-                FSM.ChangeState(LocomotionState.NotMoving);
+                FSM.ChangeState(LocomotionStates.NotMoving);
                 return true;
             }
             return false;
@@ -256,7 +256,7 @@ namespace RSToolkit.AI.Locomotion
 
         #region States
 
-        private void OnStateChanged_Listener(LocomotionState state)
+        private void OnStateChanged_Listener(LocomotionStates state)
         {
             CurrentLocomotionType.OnStateChange(state);
         }
@@ -267,19 +267,19 @@ namespace RSToolkit.AI.Locomotion
         private void InitStates()
         {
             FSM.OnStateChanged_AddListener(OnStateChanged_Listener);
-            FSM.OnStarted_AddListener(LocomotionState.NotMoving, NotMoving_Enter);
-            FSM.SetUpdateAction(LocomotionState.CannotMove, CannotMove_Update);
-            FSM.SetUpdateAction(LocomotionState.MovingToPosition, MovingToPosition_Update);
-            FSM.SetUpdateAction(LocomotionState.MovingToTarget, MovingToTarget_Update);
-            FSM.SetUpdateAction(LocomotionState.MovingAwayFromPosition, MovingAwayFromPosition_Update);
-            FSM.SetUpdateAction(LocomotionState.MovingAwayFromTarget, MovingAwayFromTarget_Update);
+            FSM.OnStarted_AddListener(LocomotionStates.NotMoving, NotMoving_Enter);
+            FSM.SetUpdateAction(LocomotionStates.CannotMove, CannotMove_Update);
+            FSM.SetUpdateAction(LocomotionStates.MovingToPosition, MovingToPosition_Update);
+            FSM.SetUpdateAction(LocomotionStates.MovingToTarget, MovingToTarget_Update);
+            FSM.SetUpdateAction(LocomotionStates.MovingAwayFromPosition, MovingAwayFromPosition_Update);
+            FSM.SetUpdateAction(LocomotionStates.MovingAwayFromTarget, MovingAwayFromTarget_Update);
         }
 
         private void MovingToPosition_Update()
         {
             if (!CurrentLocomotionType.CanMove())
             {
-                FSM.ChangeState(LocomotionState.CannotMove);
+                FSM.ChangeState(LocomotionStates.CannotMove);
             }
             else if (IsNotFocusedOrReachedDestination())
             {
@@ -288,7 +288,7 @@ namespace RSToolkit.AI.Locomotion
                     OnDestinationReached.Invoke(FocusedOnPosition.Value);
                 }
 
-                FSM.ChangeState(LocomotionState.NotMoving);
+                FSM.ChangeState(LocomotionStates.NotMoving);
             }
             else
             {
@@ -304,7 +304,7 @@ namespace RSToolkit.AI.Locomotion
                         Debug.LogError($"Locomotion Error: {ex.Message}");
                     }
 
-                    FSM.ChangeState(LocomotionState.CannotMove);
+                    FSM.ChangeState(LocomotionStates.CannotMove);
 
                 }
             }
@@ -317,11 +317,11 @@ namespace RSToolkit.AI.Locomotion
         {
             if (!CurrentLocomotionType.CanMove())
             {
-                FSM.ChangeState(LocomotionState.CannotMove);
+                FSM.ChangeState(LocomotionStates.CannotMove);
             }
             else if (IsNotFocusedOrIsAway())
             {
-                FSM.ChangeState(LocomotionState.NotMoving);
+                FSM.ChangeState(LocomotionStates.NotMoving);
             }
             else
             {
@@ -337,7 +337,7 @@ namespace RSToolkit.AI.Locomotion
                         Debug.LogError($"Locomotion Error: {ex.Message}");
                     }
 
-                    FSM.ChangeState(LocomotionState.CannotMove);
+                    FSM.ChangeState(LocomotionStates.CannotMove);
 
                 }
             }
@@ -352,11 +352,11 @@ namespace RSToolkit.AI.Locomotion
         {
             if (!CurrentLocomotionType.CanMove())
             {
-                FSM.ChangeState(LocomotionState.CannotMove);
+                FSM.ChangeState(LocomotionStates.CannotMove);
             }
             else if (IsNotFocusedOrReachedDestination())
             {
-                FSM.ChangeState(LocomotionState.NotMoving);
+                FSM.ChangeState(LocomotionStates.NotMoving);
             }
             else
             {
@@ -372,11 +372,11 @@ namespace RSToolkit.AI.Locomotion
         {
             if (!CurrentLocomotionType.CanMove())
             {
-                FSM.ChangeState(LocomotionState.CannotMove);
+                FSM.ChangeState(LocomotionStates.CannotMove);
             }
             else if (IsNotFocusedOrIsAway())
             {
-                FSM.ChangeState(LocomotionState.NotMoving);
+                FSM.ChangeState(LocomotionStates.NotMoving);
             }
             else
             {
@@ -392,7 +392,7 @@ namespace RSToolkit.AI.Locomotion
                         Debug.LogError($"Locomotion Error: {ex.Message}");
                     }
 
-                    FSM.ChangeState(LocomotionState.CannotMove);
+                    FSM.ChangeState(LocomotionStates.CannotMove);
 
                 }
             }
@@ -406,7 +406,7 @@ namespace RSToolkit.AI.Locomotion
         {
             if (CurrentLocomotionType.CanMove())
             {
-                FSM.ChangeState(LocomotionState.NotMoving);
+                FSM.ChangeState(LocomotionStates.NotMoving);
             }
         }
 
@@ -418,7 +418,7 @@ namespace RSToolkit.AI.Locomotion
         {
             if (!CurrentLocomotionType.CanMove())
             {
-                FSM.ChangeState(LocomotionState.CannotMove);
+                FSM.ChangeState(LocomotionStates.CannotMove);
             }
         }
 

@@ -192,7 +192,7 @@ namespace RSToolkit.AI.Locomotion
             {
                 FSM.ChangeState(WanderStates.CannotWander);
             }
-            else if ( BotLocomotiveComponent.CurrentState == BotLocomotive.LocomotionState.NotMoving)
+            else if ( BotLocomotiveComponent.CurrentState == BotLocomotive.LocomotionStates.NotMoving)
             {
 
                 FSM.ChangeState(_currentBotWanderComponent.AutoWander ? WanderStates.FindNewPosition : WanderStates.NotWandering);

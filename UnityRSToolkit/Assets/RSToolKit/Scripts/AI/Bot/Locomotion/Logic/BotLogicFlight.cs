@@ -62,7 +62,7 @@ namespace RSToolkit.AI.Locomotion
             }
         }
 
-        public override void OnStateChange(BotLocomotive.LocomotionState locomotionState)
+        public override void OnStateChange(BotLocomotive.LocomotionStates locomotionState)
         {
             
         }

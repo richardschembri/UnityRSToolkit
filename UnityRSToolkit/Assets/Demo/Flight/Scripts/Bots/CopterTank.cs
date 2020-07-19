@@ -14,7 +14,7 @@ namespace Demo{
         void Awake()
         {
             BotFlyableComponent = GetComponent<BotFlyable>();
-            BotFlyableComponent.AddStateChangedListener(FlyableStateChanged_Listener);    
+            BotFlyableComponent.FSMFlyable.OnStateChanged_AddListener(FlyableStateChanged_Listener);
         }
 
         private void FlyableStateChanged_Listener(BotFlyable.FlyableStates state)

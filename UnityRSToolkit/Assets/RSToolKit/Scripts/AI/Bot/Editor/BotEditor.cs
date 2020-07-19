@@ -47,7 +47,7 @@ namespace RSToolkit.AI
                 EditorGUI.BeginDisabledGroup(true);
                 EditorGUILayout.EnumPopup(_targetBotLocomotive.CurrentState);  
                 EditorGUI.EndDisabledGroup();
-                if (_targetBotLocomotive.CurrentState != BotLocomotive.LocomotionState.NotMoving)
+                if (_targetBotLocomotive.CurrentState != BotLocomotive.LocomotionStates.NotMoving)
                 {
                     if (GUILayout.Button("Stop Moving"))
                     {

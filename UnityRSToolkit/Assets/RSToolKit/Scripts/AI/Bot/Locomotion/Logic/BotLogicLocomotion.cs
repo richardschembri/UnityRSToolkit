@@ -29,7 +29,7 @@ namespace RSToolkit.AI.Locomotion
             return true;
         }
 
-        public abstract void OnStateChange(BotLocomotive.LocomotionState locomotionState);
+        public abstract void OnStateChange(BotLocomotive.LocomotionStates locomotionState);
 
         public BotLogicLocomotion(BotLocomotive botLocomotion)
         {

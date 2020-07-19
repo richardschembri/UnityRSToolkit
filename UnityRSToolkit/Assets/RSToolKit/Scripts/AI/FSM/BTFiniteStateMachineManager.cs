@@ -13,7 +13,7 @@ namespace RSToolkit.AI.FSM
         private List<IBTFiniteStateMachine> _fsmList = new List<IBTFiniteStateMachine>();
         public ReadOnlyCollection<IBTFiniteStateMachine> FSMList { get { return _fsmList.AsReadOnly(); } }
 
-        public BehaviourRootNode FSMBehaviourtree { get; private set; } = new BehaviourRootNode("FSM");
+        public BehaviourRootNode FSMBehaviourtree { get; private set; } = new BehaviourRootNode();
         private BehaviourParallel _parallelfsm = new BehaviourParallel(BehaviourParallel.StopCondition.ALL_CHILDREN,
                                                                         BehaviourParallel.StopCondition.ALL_CHILDREN);
 
@@ -45,6 +45,8 @@ namespace RSToolkit.AI.FSM
         {
             if (!FSMBehaviourtree.Children.Contains(_parallelfsm))
             {
+                FSMBehaviourtree.Name = gameObject.name;
+                _parallelfsm.Name = "State Machines";
                 FSMBehaviourtree.AddChild(_parallelfsm);
             }
             FSMBehaviourtree.StartNode();

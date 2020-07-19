@@ -160,11 +160,11 @@ namespace RSToolkit.AI.Locomotion
 
         #region States
 
-        public override void OnStateChange(BotLocomotive.LocomotionState locomotionState)
+        public override void OnStateChange(BotLocomotive.LocomotionStates locomotionState)
         {
             switch (locomotionState)
             {
-                case BotLocomotive.LocomotionState.NotMoving:
+                case BotLocomotive.LocomotionStates.NotMoving:
                     if (NavMeshAgentComponent.isOnNavMesh)
                     {
                         NavMeshAgentComponent.isStopped = true;
