@@ -88,7 +88,7 @@ namespace RSToolkit.AI.Locomotion
 
         }
 
-        public BotWanderManager BotWanderManagerComponent{ get; private set;}
+        public BotPartWanderManager BotWanderManagerComponent{ get; private set;}
 
 
         #endregion Components
@@ -427,7 +427,7 @@ namespace RSToolkit.AI.Locomotion
         #endregion States
         protected abstract void InitLocomotionTypes();
         protected virtual bool InitBotWander(){
-            BotWanderManagerComponent = GetComponent<BotWanderManager>();
+            BotWanderManagerComponent = GetComponent<BotPartWanderManager>();
             return BotWanderManagerComponent != null;
         }
         #region MonoBehaviour Functions

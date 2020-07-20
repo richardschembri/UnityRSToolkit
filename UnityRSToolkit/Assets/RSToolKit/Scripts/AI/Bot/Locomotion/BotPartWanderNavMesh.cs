@@ -6,7 +6,7 @@ using RSToolkit.AI.Helpers;
 namespace RSToolkit.AI.Locomotion
 {
     [RequireComponent(typeof(BotLocomotive))]
-    public class BotWanderNavMesh : BotWander
+    public class BotPartWanderNavMesh : BotPartWander
     {
 
         public override bool CanWander()

@@ -44,7 +44,7 @@ namespace RSToolkit.AI
 
         }
 
-        protected BotWanderNavMesh BotWanderNavMeshComponent {get; private set;}
+        protected BotPartWanderNavMesh BotWanderNavMeshComponent {get; private set;}
         #endregion Components
 
         private void HandleFailling()
@@ -77,7 +77,7 @@ namespace RSToolkit.AI
             if(!base.InitBotWander()){
                 return false;
             }
-            BotWanderNavMeshComponent = GetComponent<BotWanderNavMesh>();
+            BotWanderNavMeshComponent = GetComponent<BotPartWanderNavMesh>();
             BotWanderManagerComponent.Initialize(BotWanderNavMeshComponent);
             return true;
         }

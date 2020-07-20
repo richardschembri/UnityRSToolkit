@@ -6,8 +6,8 @@ using RSToolkit.AI.FSM;
 
 namespace RSToolkit.AI.Locomotion
 {
-    [RequireComponent(typeof(BotWanderManager))]
-    public abstract class BotWander : MonoBehaviour
+    [RequireComponent(typeof(BotPartWanderManager))]
+    public abstract class BotPartWander : MonoBehaviour
     {
 
         // public bool WanderOnAwake = false;

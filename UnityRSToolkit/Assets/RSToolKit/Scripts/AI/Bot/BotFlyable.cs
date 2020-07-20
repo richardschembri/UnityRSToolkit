@@ -81,9 +81,9 @@ namespace RSToolkit.AI
             }
 
         }
-        protected BotWanderNavMesh BotWanderNavMeshComponent {get; private set;}
+        protected BotPartWanderNavMesh BotWanderNavMeshComponent {get; private set;}
 
-        protected BotWanderFlying BotWanderFlyingComponent{get; private set;}
+        protected BotPartWanderFlying BotWanderFlyingComponent{get; private set;}
 
         private Flying3DObject m_flying3DObjectComponent;
         public Flying3DObject Flying3DObjectComponent
@@ -285,8 +285,8 @@ namespace RSToolkit.AI
             if(!base.InitBotWander()){
                 return false;
             }
-            BotWanderFlyingComponent = GetComponent<BotWanderFlying>();
-            BotWanderNavMeshComponent = GetComponent<BotWanderNavMesh>();
+            BotWanderFlyingComponent = GetComponent<BotPartWanderFlying>();
+            BotWanderNavMeshComponent = GetComponent<BotPartWanderNavMesh>();
             if(CurrentFlyableState != FlyableStates.NotFlying){
                 BotWanderManagerComponent.Initialize(BotWanderFlyingComponent);
             }else{

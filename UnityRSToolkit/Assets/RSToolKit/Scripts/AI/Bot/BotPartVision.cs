@@ -10,7 +10,7 @@ using UnityEngine.Events;
 namespace RSToolkit.AI
 {
     [RequireComponent(typeof(Bot))]
-    public class BotVision : MonoBehaviour
+    public class BotPartVision : MonoBehaviour
     {
         public float ViewMagnitude = 10;
         public float SqrViewMagnitude

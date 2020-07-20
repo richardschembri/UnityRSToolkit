@@ -172,6 +172,10 @@ namespace RSToolkit.AI
             {
                 return IsWithinInteractionDistance(FocusedOnTransform);
             }
+            else if (FocusedOnPosition != null)
+            {
+                return IsWithinPersonalSpace(FocusedOnPosition.Value);
+            }
             return false;
 
         }
@@ -436,18 +440,15 @@ namespace RSToolkit.AI
 
         void OnDrawGizmos()
         {
-            return;
-#if UNITY_EDITOR
-            ProximityHelpers.DrawGizmoProximity(transform, SqrInteractionMagnitude, IsWithinInteractionDistance());
+#if UNITY_EDITOR          
             ProximityHelpers.DrawGizmoProximity(transform, SqrAwarenessMagnitude, IsWithinAwarenessDistance());
+            ProximityHelpers.DrawGizmoProximity(transform, SqrInteractionMagnitude, IsWithinInteractionDistance());
             ProximityHelpers.DrawGizmoProximity(transform, SqrPersonalSpaceMagnitude, IsWithinPersonalSpace());
 
             if (FocusedOnTransform != null)
             {
-                var oldColor = UnityEditor.Handles.color;
                 UnityEditor.Handles.color = Color.yellow;
                 UnityEditor.Handles.DrawLine(transform.position, FocusedOnTransform.position);
-                UnityEditor.Handles.color = oldColor;
                 DrawGizmoPositionPoint(FocusedOnTransform.position);
             }
             else if (FocusedOnPosition != null)
@@ -463,11 +464,8 @@ namespace RSToolkit.AI
         protected void DrawGizmoPositionPoint(Vector3 position)
         {
 #if UNITY_EDITOR
-            var oldColor = UnityEditor.Handles.color;
-            //UnityEditor.Handles.color = new Color(1f, 0f, 0f, 0.25f);
             UnityEditor.Handles.color = new Color(1f, 1f, 0.008f, 0.55f);
             UnityEditor.Handles.DrawSolidDisc(position, Vector3.up, 0.25f);
-            UnityEditor.Handles.color = oldColor;
 #endif
         }
 

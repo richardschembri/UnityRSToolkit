@@ -8,7 +8,7 @@ using System.Linq;
 namespace RSToolkit.AI.Locomotion
 {
     [RequireComponent(typeof(BotLocomotive))]
-    public class BotWanderManager : MonoBehaviour
+    public class BotPartWanderManager : MonoBehaviour
     {
 
         public enum WanderStates
@@ -50,16 +50,16 @@ namespace RSToolkit.AI.Locomotion
             }
 
         }
-        protected BotWander _currentBotWanderComponent;
+        protected BotPartWander _currentBotWanderComponent;
 
-        protected BotWander[] _botWanderComponents;
-        protected BotWander[] _BotWanderComponents
+        protected BotPartWander[] _botWanderComponents;
+        protected BotPartWander[] _BotWanderComponents
         {
             get
             {
                 if (_botWanderComponents == null)
                 {
-                    _botWanderComponents = GetComponents<BotWander>();
+                    _botWanderComponents = GetComponents<BotPartWander>();
                 }
                 return _botWanderComponents;
             }
@@ -69,7 +69,7 @@ namespace RSToolkit.AI.Locomotion
             }
         }
 
-        public void SetCurrentBotWander(BotWander b)
+        public void SetCurrentBotWander(BotPartWander b)
         {
             if (_BotWanderComponents.Contains(b))
             {
@@ -245,7 +245,7 @@ namespace RSToolkit.AI.Locomotion
         #endregion CannotWander
         #endregion States
         // Start is called before the first frame update
-        public void Initialize(BotWander initialBotWander){
+        public void Initialize(BotPartWander initialBotWander){
             SetCurrentBotWander(initialBotWander);
             InitStates();
             BTFiniteStateMachineManagerComponent.AddFSM(FSM);

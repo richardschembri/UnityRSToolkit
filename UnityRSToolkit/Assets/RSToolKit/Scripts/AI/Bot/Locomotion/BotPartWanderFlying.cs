@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace RSToolkit.AI.Locomotion
 {
-    public class BotWanderFlying : BotWander
+    public class BotPartWanderFlying : BotPartWander
     {
         public float DefaultY = 5f;
         private int m_findNewPositionAttempts = 0;

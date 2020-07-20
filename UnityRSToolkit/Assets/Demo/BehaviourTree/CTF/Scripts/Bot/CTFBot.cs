@@ -13,7 +13,7 @@ using UnityEngine.Events;
 namespace Demo.BehaviourTree.CTF{
     [RequireComponent(typeof(Bot))]
     [RequireComponent(typeof(BotLogicNavMesh))]
-    [RequireComponent(typeof(BotVision))]
+    [RequireComponent(typeof(BotPartVision))]
     public abstract class CTFBot : MonoBehaviour
     {
         public Vector3 StartPosition {get; private set;}
@@ -22,7 +22,7 @@ namespace Demo.BehaviourTree.CTF{
         protected BehaviourManager m_behaviourManagerComponent;
         protected BotLocomotive _botLocomotiveComponent;
         protected BotLogicLocomotion m_botLocomotionComponent;
-        protected BotVision m_botVisionComponent;
+        protected BotPartVision m_botVisionComponent;
         protected BotLogicNavMesh m_botNavMeshComponent;
         public GameObject FlagHolder {get; set;}
 
@@ -79,7 +79,7 @@ namespace Demo.BehaviourTree.CTF{
             OnDie = new OnDieEvent();
             _botLocomotiveComponent = GetComponent<BotLocomotive>();
             m_behaviourManagerComponent  = GetComponent<BehaviourManager>();
-            m_botVisionComponent = GetComponent<BotVision>();
+            m_botVisionComponent = GetComponent<BotPartVision>();
             m_botNavMeshComponent = GetComponent<BotLogicNavMesh>();
             FlagHolder = gameObject.GetChild("Flag Holder");
             StartPosition = transform.position;
