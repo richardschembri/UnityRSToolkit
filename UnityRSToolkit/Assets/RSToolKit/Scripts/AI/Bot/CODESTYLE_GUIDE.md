@@ -12,4 +12,5 @@
 - **BotLogic**: For regular classes.
 
 ## Enums
-- **Finite State Machine**: **FStates** + name
+- **Finite State Machine States**: **FStates** + name
+- Regular **States**: **States** + name

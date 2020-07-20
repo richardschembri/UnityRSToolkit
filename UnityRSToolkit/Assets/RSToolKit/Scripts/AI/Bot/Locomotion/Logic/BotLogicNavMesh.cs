@@ -12,8 +12,8 @@ namespace RSToolkit.AI.Locomotion
 
     public class BotLogicNavMesh : BotLogicLocomotion
     {
-        public float WalkSpeed { get; set; } 
-        public float WalkRotationSpeed { get; set; } 
+        public float WalkSpeed { get; set; }
+        public float WalkRotationSpeed { get; set; }
 
         public float RunSpeed { get; set; }
         public float RunRotationSpeed { get; set; }
@@ -21,10 +21,11 @@ namespace RSToolkit.AI.Locomotion
         #region Components
 
         public NavMeshAgent NavMeshAgentComponent { get; private set; }
+        public ProximityChecker JumpProximityChecker { get; private set; }
 
         #endregion Components
 
-        public ProximityChecker JumpProximityChecker;
+
 
         public override float CurrentSpeed
         {
@@ -48,20 +49,20 @@ namespace RSToolkit.AI.Locomotion
 
         private void MoveTo(Vector3 destination, float speed, float angularSpeed)
         {
-                NavMeshAgentComponent.speed = speed;
-                NavMeshAgentComponent.angularSpeed = angularSpeed;
-                NavMeshAgentComponent.destination = destination;
-                NavMeshAgentComponent.stoppingDistance = 0f;
-                switch (BotLocomotiveComponent.StopMovementCondition)
-                {
-                    case BotLocomotive.StopMovementConditions.WITHIN_INTERACTION_DISTANCE:
-                        NavMeshAgentComponent.stoppingDistance = BotLocomotiveComponent.SqrInteractionMagnitude * .75f;
-                        break;
-                    case BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE:
-                        NavMeshAgentComponent.stoppingDistance = BotLocomotiveComponent.SqrPersonalSpaceMagnitude * .75f;
-                        break;
-                }
-                NavMeshAgentComponent.isStopped = false;          
+            NavMeshAgentComponent.speed = speed;
+            NavMeshAgentComponent.angularSpeed = angularSpeed;
+            NavMeshAgentComponent.destination = destination;
+            NavMeshAgentComponent.stoppingDistance = 0f;
+            switch (BotLocomotiveComponent.StopMovementCondition)
+            {
+                case BotLocomotive.StopMovementConditions.WITHIN_INTERACTION_DISTANCE:
+                    NavMeshAgentComponent.stoppingDistance = BotLocomotiveComponent.SqrInteractionMagnitude * .75f;
+                    break;
+                case BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE:
+                    NavMeshAgentComponent.stoppingDistance = BotLocomotiveComponent.SqrPersonalSpaceMagnitude * .75f;
+                    break;
+            }
+            NavMeshAgentComponent.isStopped = false;
         }
 
         public override void MoveTowardsPosition(bool fullspeed = true)
@@ -160,11 +161,11 @@ namespace RSToolkit.AI.Locomotion
 
         #region States
 
-        public override void OnStateChange(BotLocomotive.LocomotionStates locomotionState)
+        public override void OnStateChange(BotLocomotive.FStatesLocomotion locomotionState)
         {
             switch (locomotionState)
             {
-                case BotLocomotive.LocomotionStates.NotMoving:
+                case BotLocomotive.FStatesLocomotion.NotMoving:
                     if (NavMeshAgentComponent.isOnNavMesh)
                     {
                         NavMeshAgentComponent.isStopped = true;
@@ -175,12 +176,13 @@ namespace RSToolkit.AI.Locomotion
 
         #endregion States
 
-        public BotLogicNavMesh(BotLocomotive botLocomotion, NavMeshAgent navMeshAgentComponent,
+        private void Initialize(BotLocomotive botLocomotion, NavMeshAgent navMeshAgentComponent,
+            ProximityChecker jumpProximityChecker,
             float walkSpeed = 0.75f, float walkRotationSpeed = 120f,
-            float runSpeed = 5f, float runRotationSpeed = 120f) : base(botLocomotion)
+            float runSpeed = 5f, float runRotationSpeed = 120)
         {
             NavMeshAgentComponent = navMeshAgentComponent;
-
+            JumpProximityChecker = jumpProximityChecker;
             WalkSpeed = walkSpeed;
             WalkRotationSpeed = walkRotationSpeed;
             RunSpeed = runSpeed;
@@ -188,7 +190,36 @@ namespace RSToolkit.AI.Locomotion
 
             NavMeshAgentComponent.speed = WalkSpeed;
             NavMeshAgentComponent.angularSpeed = WalkRotationSpeed;
+        }
 
+        public BotLogicNavMesh(BotLocomotive botLocomotion, NavMeshAgent navMeshAgentComponent,
+            ProximityChecker jumpProximityChecker,
+            float walkSpeed = 0.75f, float walkRotationSpeed = 120f,
+            float runSpeed = 5f, float runRotationSpeed = 120f) : base(botLocomotion)
+        {
+            Initialize(botLocomotion, navMeshAgentComponent,
+            jumpProximityChecker,
+            walkSpeed, walkRotationSpeed, runSpeed, runRotationSpeed);
+        }
+
+        public BotLogicNavMesh(BotGround botGround,
+            float walkSpeed = 0.75f, float walkRotationSpeed = 120f,
+            float runSpeed = 5f, float runRotationSpeed = 120f) : base(botGround)
+        {
+            Initialize(botGround, botGround.NavMeshAgentComponent,
+            botGround.JumpProximityChecker,
+            walkSpeed, walkRotationSpeed, runSpeed, runRotationSpeed);
+            botGround.BotLogicNavMeshRef = this;
+        }
+
+        public BotLogicNavMesh(BotFlyable botFlyable,
+            float walkSpeed = 0.75f, float walkRotationSpeed = 120f,
+            float runSpeed = 5f, float runRotationSpeed = 120f) : base(botFlyable)
+        {
+            Initialize(botFlyable, botFlyable.NavMeshAgentComponent,
+            botFlyable.JumpProximityChecker,            
+            walkSpeed, walkRotationSpeed, runSpeed, runRotationSpeed);
+            botFlyable.BotLogicNavMeshRef = this;
         }
 
     }

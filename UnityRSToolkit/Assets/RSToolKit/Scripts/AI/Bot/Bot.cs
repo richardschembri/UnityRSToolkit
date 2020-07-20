@@ -12,14 +12,14 @@ namespace RSToolkit.AI
     public class Bot : MonoBehaviour
     {
 
-        public enum InteractionStates
+        public enum StatesInteraction
         {
             NotInteracting,
             Interactor,
             Interactee
         }
 
-        public InteractionStates CurrentInteractionState { get; private set; } = InteractionStates.NotInteracting;
+        public StatesInteraction CurrentInteractionState { get; private set; } = StatesInteraction.NotInteracting;
 
         public float InteractableCooldown = 0f;
         private float m_CanInteractFromTime = 0f;
@@ -245,9 +245,9 @@ namespace RSToolkit.AI
             m_CanInteractFromTime = Time.time + InteractableCooldown;
         }
 
-        private bool ChangeInteractionState(InteractionStates interactionState, bool force)
+        private bool ChangeInteractionState(StatesInteraction interactionState, bool force)
         {
-            if (interactionState == InteractionStates.NotInteracting)
+            if (interactionState == StatesInteraction.NotInteracting)
             {
                 CurrentInteractionState = interactionState;
                 ResetInteractionCooldown();
@@ -263,7 +263,7 @@ namespace RSToolkit.AI
 
         #region AttractMyAttention
         
-        public bool AttractMyAttention_ToTransform(Transform target, bool force, InteractionStates interactionState = InteractionStates.Interactor)
+        public bool AttractMyAttention_ToTransform(Transform target, bool force, StatesInteraction interactionState = StatesInteraction.Interactor)
         {
 
             if (IsWithinInteractionDistance(target) || force)
@@ -279,7 +279,7 @@ namespace RSToolkit.AI
 
         }
 
-        public bool AttractMyAttention_ToBot(Bot target, bool force, InteractionStates interactionState = InteractionStates.Interactor)
+        public bool AttractMyAttention_ToBot(Bot target, bool force, StatesInteraction interactionState = StatesInteraction.Interactor)
         {
 
             if (IsWithinInteractionDistance(target.transform) || target.IsWithinInteractionDistance(transform) || force)
@@ -305,7 +305,7 @@ namespace RSToolkit.AI
         {
             if (target.FocusedOnTransform != transform)
             {
-                return target.AttractMyAttention_ToBot(this, force, InteractionStates.Interactee);
+                return target.AttractMyAttention_ToBot(this, force, StatesInteraction.Interactee);
             }
             return true;
         }
@@ -388,7 +388,7 @@ namespace RSToolkit.AI
             }
             StartForgetTransform(FocusedOnTransform);
             FocusedOnTransform = null;
-            CurrentInteractionState = InteractionStates.NotInteracting;
+            CurrentInteractionState = StatesInteraction.NotInteracting;
             return true;
         }
 
@@ -424,13 +424,28 @@ namespace RSToolkit.AI
         }
 
         #endregion Interaction/Focus
-
+        public bool AutoInitialize = true;
+        public bool Initialized { get; private set; } = false;
+        public virtual bool Initialize(bool force = false)
+        {
+            if(Initialized && !force)
+            {
+                return false;
+            }
+            Initialized = false;
+            BTFiniteStateMachineManagerComponent = GetComponent<BTFiniteStateMachineManager>();
+            BTFiniteStateMachineManagerComponent.StartFSMs();
+            Initialized = true;
+            return true;
+        }
 
         #region MonoBehaviour Functions
         protected virtual void Awake()
         {
-            BTFiniteStateMachineManagerComponent = GetComponent<BTFiniteStateMachineManager>();
-            BTFiniteStateMachineManagerComponent.StartFSMs();
+            if (AutoInitialize)
+            {
+                Initialize();
+            }            
         }
 
         protected virtual void Update()

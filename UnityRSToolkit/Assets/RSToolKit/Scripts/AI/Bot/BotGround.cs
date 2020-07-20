@@ -9,7 +9,7 @@ namespace RSToolkit.AI
     public class BotGround : BotLocomotive
     {
         bool m_freefall = false;
-        BotLogicNavMesh _botNavMesh;
+        public BotLogicNavMesh BotLogicNavMeshRef { get; set; }
 
 
         #region Components
@@ -70,8 +70,8 @@ namespace RSToolkit.AI
         }
 
         protected override void InitLocomotionTypes(){
-            _botNavMesh = new BotLogicNavMesh(this, NavMeshAgentComponent);
-            CurrentLocomotionType = _botNavMesh;
+            BotLogicNavMeshRef = new BotLogicNavMesh(this, NavMeshAgentComponent, JumpProximityChecker);
+            CurrentLocomotionType = BotLogicNavMeshRef;
         }
         protected override bool InitBotWander(){
             if(!base.InitBotWander()){
@@ -83,11 +83,20 @@ namespace RSToolkit.AI
         }
 
         #region MonoBehaviour Functions
+        public override bool Initialize(bool force = false)
+        {
+            if (!base.Initialize(force))
+            {
+                return false;
+            }
+            HandleFailling();
+            return true;
+        }
 
         protected override void Awake()
         {
             base.Awake();
-            HandleFailling();
+            
         }
 
         protected override void Update()

@@ -15,7 +15,7 @@ namespace RSToolkit.AI.Locomotion
     [RequireComponent(typeof(BTFiniteStateMachineManager))]
     public abstract class BotLocomotive : Bot
     {
-        public enum LocomotionStates
+        public enum FStatesLocomotion
         {
             NotMoving,
             CannotMove,
@@ -35,9 +35,9 @@ namespace RSToolkit.AI.Locomotion
       
         public BotLogicLocomotion CurrentLocomotionType { get; set; }
 
-        public BTFiniteStateMachine<LocomotionStates> FSM { get; private set; } = new BTFiniteStateMachine<LocomotionStates>(LocomotionStates.NotMoving);
+        public BTFiniteStateMachine<FStatesLocomotion> FSM { get; private set; } = new BTFiniteStateMachine<FStatesLocomotion>(FStatesLocomotion.NotMoving);
 
-        public LocomotionStates CurrentState
+        public FStatesLocomotion CurrentFState
         {
             get
             {
@@ -90,8 +90,9 @@ namespace RSToolkit.AI.Locomotion
 
         public BotPartWanderManager BotWanderManagerComponent{ get; private set;}
 
-
+        public ProximityChecker JumpProximityChecker;
         #endregion Components
+
         public bool IsFarFromGround()
         {
             return GroundProximityCheckerComponent.IsBeyondRayDistance(GroundProximityCheckerComponent.MaxRayDistance);
@@ -109,8 +110,8 @@ namespace RSToolkit.AI.Locomotion
 
         public bool IsMoving()
         {
-            return CurrentState != LocomotionStates.CannotMove
-                    && CurrentState != LocomotionStates.NotMoving;
+            return CurrentFState != FStatesLocomotion.CannotMove
+                    && CurrentFState != FStatesLocomotion.NotMoving;
         }
 
         public void AnimateLocomotion()
@@ -187,13 +188,13 @@ namespace RSToolkit.AI.Locomotion
                     Debug.LogError($"Locomotion Error: {ex.Message}");
                 }
 
-                FSM.ChangeState(LocomotionStates.CannotMove);
+                FSM.ChangeState(FStatesLocomotion.CannotMove);
 
             }
         }
             #region Move
 
-            private bool MoveCommon(LocomotionStates moveType, bool fullspeed = true, StopMovementConditions stopMovementCondition = StopMovementConditions.NONE)
+            private bool MoveCommon(FStatesLocomotion moveType, bool fullspeed = true, StopMovementConditions stopMovementCondition = StopMovementConditions.NONE)
         {
             if (!CurrentLocomotionType.CanMove())
             {
@@ -207,29 +208,29 @@ namespace RSToolkit.AI.Locomotion
 
         public bool MoveToPosition(StopMovementConditions stopMovementCondition, bool fullspeed = true)
         {
-            return MoveCommon(LocomotionStates.MovingToPosition, _fullspeed, stopMovementCondition);
+            return MoveCommon(FStatesLocomotion.MovingToPosition, _fullspeed, stopMovementCondition);
         }
 
         public bool MoveAwayFromPosition(bool fullspeed = true)
         {
-            return MoveCommon(LocomotionStates.MovingAwayFromPosition, _fullspeed);
+            return MoveCommon(FStatesLocomotion.MovingAwayFromPosition, _fullspeed);
         }
 
         public bool MoveToTarget(StopMovementConditions stopMovementCondition, bool fullspeed = true)
         {
-            return MoveCommon(LocomotionStates.MovingToTarget, _fullspeed, stopMovementCondition);
+            return MoveCommon(FStatesLocomotion.MovingToTarget, _fullspeed, stopMovementCondition);
         }
 
         public bool MoveAwayFromTarget(bool fullspeed = true)
         {
-            return MoveCommon(LocomotionStates.MovingAwayFromTarget, _fullspeed);
+            return MoveCommon(FStatesLocomotion.MovingAwayFromTarget, _fullspeed);
         }
 
         public bool StopMoving()
         {
-            if (CurrentState != LocomotionStates.NotMoving)
+            if (CurrentFState != FStatesLocomotion.NotMoving)
             {
-                FSM.ChangeState(LocomotionStates.NotMoving);
+                FSM.ChangeState(FStatesLocomotion.NotMoving);
                 return true;
             }
             return false;
@@ -256,7 +257,7 @@ namespace RSToolkit.AI.Locomotion
 
         #region States
 
-        private void OnStateChanged_Listener(LocomotionStates state)
+        private void OnStateChanged_Listener(FStatesLocomotion state)
         {
             CurrentLocomotionType.OnStateChange(state);
         }
@@ -267,19 +268,19 @@ namespace RSToolkit.AI.Locomotion
         private void InitStates()
         {
             FSM.OnStateChanged_AddListener(OnStateChanged_Listener);
-            FSM.OnStarted_AddListener(LocomotionStates.NotMoving, NotMoving_Enter);
-            FSM.SetUpdateAction(LocomotionStates.CannotMove, CannotMove_Update);
-            FSM.SetUpdateAction(LocomotionStates.MovingToPosition, MovingToPosition_Update);
-            FSM.SetUpdateAction(LocomotionStates.MovingToTarget, MovingToTarget_Update);
-            FSM.SetUpdateAction(LocomotionStates.MovingAwayFromPosition, MovingAwayFromPosition_Update);
-            FSM.SetUpdateAction(LocomotionStates.MovingAwayFromTarget, MovingAwayFromTarget_Update);
+            FSM.OnStarted_AddListener(FStatesLocomotion.NotMoving, NotMoving_Enter);
+            FSM.SetUpdateAction(FStatesLocomotion.CannotMove, CannotMove_Update);
+            FSM.SetUpdateAction(FStatesLocomotion.MovingToPosition, MovingToPosition_Update);
+            FSM.SetUpdateAction(FStatesLocomotion.MovingToTarget, MovingToTarget_Update);
+            FSM.SetUpdateAction(FStatesLocomotion.MovingAwayFromPosition, MovingAwayFromPosition_Update);
+            FSM.SetUpdateAction(FStatesLocomotion.MovingAwayFromTarget, MovingAwayFromTarget_Update);
         }
 
         private void MovingToPosition_Update()
         {
             if (!CurrentLocomotionType.CanMove())
             {
-                FSM.ChangeState(LocomotionStates.CannotMove);
+                FSM.ChangeState(FStatesLocomotion.CannotMove);
             }
             else if (IsNotFocusedOrReachedDestination())
             {
@@ -288,7 +289,7 @@ namespace RSToolkit.AI.Locomotion
                     OnDestinationReached.Invoke(FocusedOnPosition.Value);
                 }
 
-                FSM.ChangeState(LocomotionStates.NotMoving);
+                FSM.ChangeState(FStatesLocomotion.NotMoving);
             }
             else
             {
@@ -304,7 +305,7 @@ namespace RSToolkit.AI.Locomotion
                         Debug.LogError($"Locomotion Error: {ex.Message}");
                     }
 
-                    FSM.ChangeState(LocomotionStates.CannotMove);
+                    FSM.ChangeState(FStatesLocomotion.CannotMove);
 
                 }
             }
@@ -317,11 +318,11 @@ namespace RSToolkit.AI.Locomotion
         {
             if (!CurrentLocomotionType.CanMove())
             {
-                FSM.ChangeState(LocomotionStates.CannotMove);
+                FSM.ChangeState(FStatesLocomotion.CannotMove);
             }
             else if (IsNotFocusedOrIsAway())
             {
-                FSM.ChangeState(LocomotionStates.NotMoving);
+                FSM.ChangeState(FStatesLocomotion.NotMoving);
             }
             else
             {
@@ -337,7 +338,7 @@ namespace RSToolkit.AI.Locomotion
                         Debug.LogError($"Locomotion Error: {ex.Message}");
                     }
 
-                    FSM.ChangeState(LocomotionStates.CannotMove);
+                    FSM.ChangeState(FStatesLocomotion.CannotMove);
 
                 }
             }
@@ -352,11 +353,11 @@ namespace RSToolkit.AI.Locomotion
         {
             if (!CurrentLocomotionType.CanMove())
             {
-                FSM.ChangeState(LocomotionStates.CannotMove);
+                FSM.ChangeState(FStatesLocomotion.CannotMove);
             }
             else if (IsNotFocusedOrReachedDestination())
             {
-                FSM.ChangeState(LocomotionStates.NotMoving);
+                FSM.ChangeState(FStatesLocomotion.NotMoving);
             }
             else
             {
@@ -372,11 +373,11 @@ namespace RSToolkit.AI.Locomotion
         {
             if (!CurrentLocomotionType.CanMove())
             {
-                FSM.ChangeState(LocomotionStates.CannotMove);
+                FSM.ChangeState(FStatesLocomotion.CannotMove);
             }
             else if (IsNotFocusedOrIsAway())
             {
-                FSM.ChangeState(LocomotionStates.NotMoving);
+                FSM.ChangeState(FStatesLocomotion.NotMoving);
             }
             else
             {
@@ -392,7 +393,7 @@ namespace RSToolkit.AI.Locomotion
                         Debug.LogError($"Locomotion Error: {ex.Message}");
                     }
 
-                    FSM.ChangeState(LocomotionStates.CannotMove);
+                    FSM.ChangeState(FStatesLocomotion.CannotMove);
 
                 }
             }
@@ -406,7 +407,7 @@ namespace RSToolkit.AI.Locomotion
         {
             if (CurrentLocomotionType.CanMove())
             {
-                FSM.ChangeState(LocomotionStates.NotMoving);
+                FSM.ChangeState(FStatesLocomotion.NotMoving);
             }
         }
 
@@ -418,7 +419,7 @@ namespace RSToolkit.AI.Locomotion
         {
             if (!CurrentLocomotionType.CanMove())
             {
-                FSM.ChangeState(LocomotionStates.CannotMove);
+                FSM.ChangeState(FStatesLocomotion.CannotMove);
             }
         }
 
@@ -430,15 +431,26 @@ namespace RSToolkit.AI.Locomotion
             BotWanderManagerComponent = GetComponent<BotPartWanderManager>();
             return BotWanderManagerComponent != null;
         }
-        #region MonoBehaviour Functions
-        
-        protected override void Awake()
+
+        public override bool Initialize(bool force = false)
         {
-            base.Awake();
+            if (!base.Initialize(force))
+            {
+                return false;
+            }
             InitLocomotionTypes();
             InitStates();
             BTFiniteStateMachineManagerComponent.AddFSM(FSM);
             InitBotWander();
+            return true;
+        }
+
+        #region MonoBehaviour Functions
+
+        protected override void Awake()
+        {
+            base.Awake();
+            
             //Initialize();
             //_btFiniteStateMachineManagerComponent.StartFSMs();
         }

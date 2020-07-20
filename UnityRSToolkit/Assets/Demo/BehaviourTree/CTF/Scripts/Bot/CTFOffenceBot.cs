@@ -107,7 +107,7 @@ namespace Demo.BehaviourTree.CTF{
         }
 
         protected BehaviourAction.ActionResult DoFlee (bool cancel){
-            if(cancel || !_botLocomotiveComponent.IsFocused || _botLocomotiveComponent.CurrentState == BotLocomotive.LocomotionStates.CannotMove){
+            if(cancel || !_botLocomotiveComponent.IsFocused || _botLocomotiveComponent.CurrentFState == BotLocomotive.FStatesLocomotion.CannotMove){
                 _botLocomotiveComponent.StopMoving();
                 return BehaviourAction.ActionResult.FAILED;
             }

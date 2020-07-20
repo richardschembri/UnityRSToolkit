@@ -62,7 +62,7 @@ namespace RSToolkit.AI.Locomotion
             }
         }
 
-        public override void OnStateChange(BotLocomotive.LocomotionStates locomotionState)
+        public override void OnStateChange(BotLocomotive.FStatesLocomotion locomotionState)
         {
             
         }
@@ -73,5 +73,10 @@ namespace RSToolkit.AI.Locomotion
             Flying3DObjectComponent = flying3DObjectComponent;
         }
 
+        public BotLogicFlight(BotFlyable botFlyable) : base(botFlyable)
+        {
+            Flying3DObjectComponent = botFlyable.Flying3DObjectComponent;
+            botFlyable.BotLogicFlyingRef = this;
+        }
     }
 }

@@ -17,9 +17,9 @@ namespace Demo{
             BotFlyableComponent.FSMFlyable.OnStateChanged_AddListener(FlyableStateChanged_Listener);
         }
 
-        private void FlyableStateChanged_Listener(BotFlyable.FlyableStates state)
+        private void FlyableStateChanged_Listener(BotFlyable.FStatesFlyable state)
         {
-            TankParts.SetActive(state == BotFlyable.FlyableStates.NotFlying);
+            TankParts.SetActive(state == BotFlyable.FStatesFlyable.NotFlying);
             HelicopterParts.SetActive(!TankParts.activeSelf);
         }
 
@@ -55,11 +55,11 @@ namespace Demo{
 
             if (Input.GetKeyUp(KeyCode.Alpha5))
             {
-                BotFlyableComponent.BotNavMeshRef.MoveToClosestEdge();
+                BotFlyableComponent.BotLogicNavMeshRef.MoveToClosestEdge();
             }
             if (Input.GetKeyUp(KeyCode.Alpha6))
             {
-                BotFlyableComponent.BotNavMeshRef.JumpOffLedge();
+                BotFlyableComponent.BotLogicNavMeshRef.JumpOffLedge();
             }
         }
     }

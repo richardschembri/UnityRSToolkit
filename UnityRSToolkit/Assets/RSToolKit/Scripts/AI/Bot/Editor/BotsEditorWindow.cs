@@ -37,7 +37,7 @@ namespace RSToolkit.AI
                         EditorGUILayout.EnumPopup(_bots[i].CurrentInteractionState);                   
                         if(_bots[i] is BotLocomotive){
                             
-                            EditorGUILayout.EnumPopup(((BotLocomotive)_bots[i]).CurrentState);
+                            EditorGUILayout.EnumPopup(((BotLocomotive)_bots[i]).CurrentFState);
                         }
                         EditorGUI.EndDisabledGroup();
                     }

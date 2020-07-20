@@ -182,7 +182,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
+  serializedVersion: 3
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 65421512}
@@ -942,7 +942,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
+  serializedVersion: 3
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 28453108}
@@ -1679,7 +1679,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
+  serializedVersion: 3
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 462054401}
@@ -1865,7 +1865,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
+  serializedVersion: 3
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1850178812}
@@ -2051,7 +2051,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
+  serializedVersion: 3
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 53724675}
@@ -2424,6 +2424,12 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!4 &784475863 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: dc6aedf0ccf2e7844bc3d85c2a3d39d0,
+    type: 3}
+  m_PrefabInstance: {fileID: 1105136798}
+  m_PrefabAsset: {fileID: 0}
 --- !u!136 &784475864
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4072,7 +4078,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
+  serializedVersion: 3
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1339653554}
@@ -4291,7 +4297,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
+  serializedVersion: 3
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 382715995}
@@ -4627,7 +4633,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
+  serializedVersion: 3
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1652777803}
@@ -4721,7 +4727,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
+  serializedVersion: 3
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 854541221}
@@ -5734,7 +5740,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
+  serializedVersion: 3
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1798501137}
@@ -6200,6 +6206,8 @@ MonoBehaviour:
   m_interactionMagnitude: 1.35
   personalSpacePercent: 0.35
   safeAwarenessPercent: 1.5
+  AutoInitialize: 1
+  JumpProximityChecker: {fileID: 0}
 --- !u!114 &1878005670
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6915,15 +6923,15 @@ GameObject:
   m_Component:
   - component: {fileID: 7990845843178055554}
   - component: {fileID: 7990845843178055556}
+  - component: {fileID: 7990845843178055560}
+  - component: {fileID: 7990845843178055564}
   - component: {fileID: 7990845843178055566}
   - component: {fileID: 7990845843178055557}
   - component: {fileID: 7990845843178055562}
   - component: {fileID: 7990845843178055559}
-  - component: {fileID: 7990845843178055564}
   - component: {fileID: 7990845843178055561}
   - component: {fileID: 7990845843178055558}
   - component: {fileID: 7990845843178055565}
-  - component: {fileID: 7990845843178055560}
   - component: {fileID: 7990845843178055567}
   - component: {fileID: 7990845843178055563}
   m_Layer: 0
@@ -7070,12 +7078,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   InteractableCooldown: 0
-  TetherToTransform: {fileID: 0}
+  TetherToTransform: {fileID: 784475863}
   DebugMode: 1
   forgetTransformTimeout: -1
   m_interactionMagnitude: 1.35
   personalSpacePercent: 0.35
   safeAwarenessPercent: 2
+  AutoInitialize: 1
+  JumpProximityChecker: {fileID: 0}
   StartInAir: 1
   FlightMagnitudeModifier: 1.25
 --- !u!114 &7990845843178055563

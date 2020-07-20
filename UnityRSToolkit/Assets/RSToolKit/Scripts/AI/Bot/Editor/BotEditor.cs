@@ -45,9 +45,9 @@ namespace RSToolkit.AI
                 GUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Movement State");
                 EditorGUI.BeginDisabledGroup(true);
-                EditorGUILayout.EnumPopup(_targetBotLocomotive.CurrentState);  
+                EditorGUILayout.EnumPopup(_targetBotLocomotive.CurrentFState);  
                 EditorGUI.EndDisabledGroup();
-                if (_targetBotLocomotive.CurrentState != BotLocomotive.LocomotionStates.NotMoving)
+                if (_targetBotLocomotive.CurrentFState != BotLocomotive.FStatesLocomotion.NotMoving)
                 {
                     if (GUILayout.Button("Stop Moving"))
                     {
@@ -113,13 +113,13 @@ namespace RSToolkit.AI
             EditorGUILayout.LabelField("Bot Flyable Controls", EditorStyles.boldLabel);
             switch (m_targetBotFlyable.CurrentFlyableState)
             {
-                case BotFlyable.FlyableStates.Flying:
+                case BotFlyable.FStatesFlyable.Flying:
                     if (GUILayout.Button("Land", EditorStyles.miniButton))
                     {
                         m_targetBotFlyable.Land();
                     }
                     break;
-                case BotFlyable.FlyableStates.NotFlying:
+                case BotFlyable.FStatesFlyable.NotFlying:
                     if (GUILayout.Button("Take Off", EditorStyles.miniButton))
                     {
                         m_targetBotFlyable.TakeOff();
