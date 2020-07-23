@@ -82,7 +82,7 @@ namespace RSToolkit.AI.Behaviour
         {
             SelectedTransform = Selection.activeTransform;
             if (SelectedTransform != null) SelectedManager = SelectedTransform.GetComponentInChildren<BehaviourManager>();
-
+            Init();
             Repaint();
         }
         

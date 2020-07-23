@@ -31,33 +31,16 @@ namespace RSToolkit.AI
         {
             if (!owner)
             {
-                FSMRunnerComponent.enabled = false;
-                
                 BTFiniteStateMachineManagerComponent.enabled = false;
             }
             else
             {
                 BTFiniteStateMachineManagerComponent.enabled = true;
-                FSMRunnerComponent.enabled = true;
             }
         }
 
         #region Components
         public BTFiniteStateMachineManager BTFiniteStateMachineManagerComponent {get; private set;}
-
-        protected FiniteStateMachineRunner m_fsmRunnerComponent;
-        protected FiniteStateMachineRunner FSMRunnerComponent
-        {
-            get
-            {
-                if (m_fsmRunnerComponent == null)
-                {
-                    m_fsmRunnerComponent = GetComponent<FiniteStateMachineRunner>();
-                }
-                return m_fsmRunnerComponent;
-            }
-        }
-
 
         private Animator m_animatorComponent;
         public Animator AnimatorComponent

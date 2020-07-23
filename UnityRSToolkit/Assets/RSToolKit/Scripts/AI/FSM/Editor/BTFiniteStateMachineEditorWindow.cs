@@ -23,7 +23,7 @@ namespace RSToolkit.AI.FSM
         {
             SelectedTransform = Selection.activeTransform;
             if (SelectedTransform != null) SelectedManager = SelectedTransform.GetComponentInChildren<BTFiniteStateMachineManager>();
-
+            Init();
             Repaint();
         }
 

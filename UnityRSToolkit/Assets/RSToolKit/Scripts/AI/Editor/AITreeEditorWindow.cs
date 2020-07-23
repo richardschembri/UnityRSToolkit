@@ -137,11 +137,13 @@ namespace RSToolkit.AI
             //tagStyle.padding.left = last ? depth * 10 : (depth - 1) * 10;
             if (!drawLabel)
             {
-                GUILayout.Label($"{asciiIndent}+- {node.DebugTools.GUItag}", tagStyle);
+                //GUILayout.Label($"{asciiIndent}+- {node.DebugTools.GUItag}", tagStyle);
+                GUILayout.Label($"{node.DebugTools.GUItag}", tagStyle);
             }
             else
             {
-                GUILayout.Label($"{asciiIndent}+- ({node.DebugTools.GUItag}) {node.DebugTools.GUIlabel}", tagStyle);
+                //GUILayout.Label($"{asciiIndent}+- ({node.DebugTools.GUItag}) {node.DebugTools.GUIlabel}", tagStyle);
+                GUILayout.Label($"({node.DebugTools.GUItag}) {node.DebugTools.GUIlabel}", tagStyle);
 
                 // Reset background color
                 GUI.backgroundColor = Color.white;
@@ -182,7 +184,7 @@ namespace RSToolkit.AI
 
             //DrawNode(node, depth, isConnected, last);
             DrawNode(node, asciiIndent, isConnected, last);
-            asciiIndent += last ? "   " : "|  ";  // "--" : "|-";
+            asciiIndent += ""; //last ? "   " : "|  ";  // "--" : "|-";
             var lastrect = GUILayoutUtility.GetLastRect();
 
             if (firstNode)
