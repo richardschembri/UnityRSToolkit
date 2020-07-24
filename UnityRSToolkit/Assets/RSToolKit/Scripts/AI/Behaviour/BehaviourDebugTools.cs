@@ -176,6 +176,7 @@ namespace RSToolkit.AI.Behaviour
                     NodeColor = TASK_COLOR;
                     break;
             }
+
             if (m_node is BehaviourRootNode)
             {
                 NodeColor = ROOT_COLOR;
@@ -189,9 +190,10 @@ namespace RSToolkit.AI.Behaviour
 
             node.OnStopped.AddListener(OnStopped_Listener);
             node.OnStoppedSilent.AddListener(OnStopped_Listener);
-            //node.OnStopped.AddListener()
 
         }
+
+#region Behaviour Events
 
         private void OnStarted_Listener()
         {
@@ -210,6 +212,8 @@ namespace RSToolkit.AI.Behaviour
             LastStoppedAt = Time.time;
         }
 
+#endregion Behaviour Events
+
         public float GetTimeElapsedFromStopRequested()
         {
             return Mathf.Lerp(0.85f, 0.25f, 2.0f * (Time.time - StopRequestAt));
@@ -223,13 +227,16 @@ namespace RSToolkit.AI.Behaviour
         public bool HasNodeFailed()
         {
             float timeElapsed = GetTimeElapsedFromStopped();
-            return (timeElapsed > 0.25f && timeElapsed < 1.0f && (m_node.Result == null || !m_node.Result.Value) && m_node.State == BehaviourNode.NodeState.INACTIVE);
+            return (timeElapsed > 0.25f && timeElapsed < 1.0f
+						&& (m_node.Result == null || !m_node.Result.Value)
+						&& m_node.State == BehaviourNode.NodeState.INACTIVE);
         }
 
         public bool IsStopRequested()
         {
             float timeElapsed = GetTimeElapsedFromStopRequested();
-            return timeElapsed > 0.25f && timeElapsed < 0.1f && m_node.State == BehaviourNode.NodeState.INACTIVE;
+            return timeElapsed > 0.25f && timeElapsed < 0.1f
+					&& m_node.State == BehaviourNode.NodeState.INACTIVE;
         }
 
         public void ToggleCollapse()

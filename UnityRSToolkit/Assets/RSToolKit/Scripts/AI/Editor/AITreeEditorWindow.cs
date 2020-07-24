@@ -119,12 +119,12 @@ namespace RSToolkit.AI
         //private void DrawNode(BehaviourNode node, int depth, bool connected, bool last = false)
         protected void DrawNode(BehaviourNode node, string asciiIndent, bool connected, bool last = false)
         {
-
             float stopRequestedTime = Mathf.Lerp(0.85f, 0.25f, 2.0f * (Time.time - node.DebugTools.StopRequestAt));
             float stoppedTime = Mathf.Lerp(0.85f, 0.25f, 2.0f * (Time.time - node.DebugTools.LastStoppedAt));
             float alpha = node.State == BehaviourNode.NodeState.INACTIVE ? Mathf.Max(0.35f, Mathf.Pow(stoppedTime, 1.5f)) : 1.0f;
             bool failed = (stoppedTime > 0.25f && stoppedTime < 1.0f && (node.Result == null || !node.Result.Value) && node.State == BehaviourNode.NodeState.INACTIVE);
-            bool stopRequested = stopRequestedTime > 0.25f && stopRequestedTime < 0.1f && node.State == BehaviourNode.NodeState.INACTIVE;
+            bool stopRequested = stopRequestedTime > 0.25f && stopRequestedTime < 0.1f
+									&& node.State == BehaviourNode.NodeState.INACTIVE;
 
             EditorGUILayout.BeginHorizontal();
             GUI.color = new Color(1f, 1f, 1f, alpha);
@@ -137,13 +137,13 @@ namespace RSToolkit.AI
             //tagStyle.padding.left = last ? depth * 10 : (depth - 1) * 10;
             if (!drawLabel)
             {
-                //GUILayout.Label($"{asciiIndent}+- {node.DebugTools.GUItag}", tagStyle);
-                GUILayout.Label($"{node.DebugTools.GUItag}", tagStyle);
+                GUILayout.Label($"{asciiIndent}+- {node.DebugTools.GUItag}", tagStyle);
+                //GUILayout.Label($"{node.DebugTools.GUItag}", tagStyle);
             }
             else
             {
-                //GUILayout.Label($"{asciiIndent}+- ({node.DebugTools.GUItag}) {node.DebugTools.GUIlabel}", tagStyle);
-                GUILayout.Label($"({node.DebugTools.GUItag}) {node.DebugTools.GUIlabel}", tagStyle);
+                GUILayout.Label($"{asciiIndent}+- ({node.DebugTools.GUItag}) {node.DebugTools.GUIlabel}", tagStyle);
+                //GUILayout.Label($"({node.DebugTools.GUItag}) {node.DebugTools.GUIlabel}", tagStyle);
 
                 // Reset background color
                 GUI.backgroundColor = Color.white;
@@ -158,33 +158,58 @@ namespace RSToolkit.AI
             DrawNodeStats(node);
             EditorGUILayout.EndHorizontal();
 
+			/*
             // Draw the lines
             if (connected)
             {
-                Rect rect = GUILayoutUtility.GetLastRect();
-
-                Handles.color = new Color(0f, 0f, 0f, 1f);
-                Handles.BeginGUI();
-                float midY = 4 + (rect.yMin + rect.yMax) / 2f;
-                Handles.DrawLine(new Vector2(rect.xMin - 5, midY), new Vector2(rect.xMin, midY));
-                Handles.EndGUI();
+				DrawHorizontalLines();
             }
+			*/
         }
 
-        protected void DrawNodeTree(BehaviourNode node, string asciiIndent, bool firstNode = true, float lastYPos = 0f, bool last = true)
+#region DrawLine
+		protected void DrawVerticalLine(BehaviourNode node, Rect lastrect, float lastYPos){
+            Handles.color = _lineColor;
+            float lineY = lastrect.yMax + 6;
+            if (node.Type != BehaviourNode.NodeType.DECORATOR)
+            {
+                lineY = lastrect.yMax - 4;
+            }
+
+            Handles.DrawLine(new Vector2(lastrect.xMin - 5, lastYPos + 4), new Vector2(lastrect.xMin - 5, lineY));
+		}
+
+		protected void DrawHorizontalLine(){
+			Rect rect = GUILayoutUtility.GetLastRect();
+
+			Handles.color = _lineColor;
+			Handles.BeginGUI();
+			float midY = 4 + (rect.yMin + rect.yMax) / 2f;
+			Handles.DrawLine(new Vector2(rect.xMin - 5, midY), new Vector2(rect.xMin, midY));
+			Handles.EndGUI();
+		}
+#endregion DrawLine
+
+        protected void DrawNodeTree(BehaviourNode node, string asciiIndent,
+										bool firstNode = true, float lastYPos = 0f,
+										bool last = true)
         {
 
             GUI.color = (node.State == BehaviourNode.NodeState.ACTIVE) ? _activeColor : _inactiveColor;
+			/*
             if (node.Parent?.Type == BehaviourNode.NodeType.DECORATOR)
             {
                 DrawSpacing();
             }
+			*/
 
-            bool isConnected = node.Type != BehaviourNode.NodeType.DECORATOR || (node.Type == BehaviourNode.NodeType.DECORATOR && node.DebugTools.GUIcollapse);
+            bool isConnected = node.Type != BehaviourNode.NodeType.DECORATOR
+								|| (node.Type == BehaviourNode.NodeType.DECORATOR
+										&& node.DebugTools.GUIcollapse);
 
             //DrawNode(node, depth, isConnected, last);
             DrawNode(node, asciiIndent, isConnected, last);
-            asciiIndent += ""; //last ? "   " : "|  ";  // "--" : "|-";
+            asciiIndent += last ? "   " : "|  ";  // "--" : "|-"; //""; //
             var lastrect = GUILayoutUtility.GetLastRect();
 
             if (firstNode)
@@ -199,25 +224,22 @@ namespace RSToolkit.AI
             interactionRect.y += 8;
 
             var nodeparent = node as BehaviourParentNode;
-            if (nodeparent != null && nodeparent.Children.Count > 0 && Event.current.type == EventType.MouseUp && Event.current.button == 0 && interactionRect.Contains(Event.current.mousePosition))
+            if (nodeparent != null && nodeparent.Children.Count > 0
+					&& Event.current.type == EventType.MouseUp
+					&& Event.current.button == 0
+					&& interactionRect.Contains(Event.current.mousePosition))
             {
                 node.DebugTools.ToggleCollapse();
                 Event.current.Use();
             }
 
-            Handles.color = _lineColor;
-            float lineY = lastrect.yMax + 6;
-            if (node.Type != BehaviourNode.NodeType.DECORATOR)
-            {
-                lineY = lastrect.yMax - 4;
-            }
-
-            Handles.DrawLine(new Vector2(lastrect.xMin - 5, lastYPos + 4), new Vector2(lastrect.xMin - 5, lineY));
+			//DrawVerticalLine(node, lastrect, lastYPos);
             Handles.EndGUI();
 
             //if (node.Type != BehaviourNode.NodeType.TASK) depth++;
 
-            if (node.Type != BehaviourNode.NodeType.DECORATOR) EditorGUILayout.BeginVertical(_nestedBoxStyle);
+            //if (node.Type != BehaviourNode.NodeType.DECORATOR) EditorGUILayout.BeginVertical(_nestedBoxStyle);
+            if (node.Type != BehaviourNode.NodeType.DECORATOR) EditorGUILayout.BeginVertical();
 
             if (nodeparent != null && nodeparent.Children.Count > 0 && !node.DebugTools.GUIcollapse)
             {
@@ -268,7 +290,6 @@ namespace RSToolkit.AI
             return true;
         }
 
-
         protected void DrawCommonGUI(BehaviourRootNode tree)
         {
             GUILayout.Space(10);
@@ -278,6 +299,5 @@ namespace RSToolkit.AI
             DrawLegends();
             GUILayout.Space(10);
         }
-
     }
 }

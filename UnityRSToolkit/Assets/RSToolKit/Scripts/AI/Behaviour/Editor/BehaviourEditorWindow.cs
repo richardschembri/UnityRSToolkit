@@ -85,7 +85,7 @@ namespace RSToolkit.AI.Behaviour
             Init();
             Repaint();
         }
-        
+
         public void OnGUI()
         {
             GUI.color = _defaultColor;

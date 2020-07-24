@@ -30,10 +30,12 @@ namespace RSToolkit.AI.FSM
         public void OnGUI()
         {
             GUI.color = _defaultColor;
-            GUILayout.Toggle(false, "BT Finite State Machine Debugger", GUI.skin.FindStyle("LODLevelNotifyText"));
+            GUILayout.Toggle(false, "BT Finite State Machine Debugger",
+								GUI.skin.FindStyle("LODLevelNotifyText"));
             GUI.color = Color.white;
 
             var newManager = (BTFiniteStateMachineManager)EditorGUILayout.ObjectField("Selected Debugger:", SelectedManager, typeof(BTFiniteStateMachineManager), true);
+
             if (newManager != SelectedManager)
             {
                 SelectedManager = newManager;
@@ -44,7 +46,7 @@ namespace RSToolkit.AI.FSM
             {
                 return;
             }
-            
+
             _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
             GUILayout.BeginHorizontal();
             DrawStats(SelectedManager.FSMBehaviourtree.DebugTools);
