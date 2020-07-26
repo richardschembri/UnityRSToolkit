@@ -12,20 +12,23 @@ namespace RSToolkit.AI.Behaviour.Decorator
     public class BehaviourCondition : BehaviourObserver 
     {
         private const string NODE_NAME = "Condition";
-        private Func<bool> m_isConditionMetFunc;
+        private Func<bool> _isConditionMetFunc;
         private float m_checkInterval;
         private float m_checkVariance;
         private NodeTimer m_conditionTimer;
 
-        private void Init(Func<bool> isConditionMetFunc, float checkInterval = 0.0f, float checkVariance = 0.0f)
+        protected void Init(Func<bool> isConditionMetFunc, float checkInterval = 0.0f, float checkVariance = 0.0f)
         {
-            m_isConditionMetFunc = isConditionMetFunc;
+            _isConditionMetFunc = isConditionMetFunc;
             m_checkInterval = checkInterval;
             m_checkVariance = checkVariance;
         }
 
         #region Contructors
 
+        protected BehaviourCondition(BehaviourNode decoratee, string nodeName = NODE_NAME, AbortRule abortRule = AbortRule.NONE) : base(NODE_NAME, decoratee, abortRule)
+        {
+        }
         /// <summary>
         /// Execute child node if the given condition returns true
         /// </summary>
@@ -64,7 +67,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
 
         protected override bool IsConditionMet()
         {
-            return m_isConditionMetFunc();
+            return _isConditionMetFunc();
         }
     }
 }

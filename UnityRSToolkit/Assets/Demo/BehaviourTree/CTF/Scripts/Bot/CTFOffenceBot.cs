@@ -17,7 +17,7 @@ namespace Demo.BehaviourTree.CTF{
         public struct OffenceFlagNotTakenBehaviours{
             public BehaviourRootNode Root;
             public BehaviourSelector MainSelector;
-            public BehaviourConditionInverse IsEnemyNotWithinDistance;
+            public BotIsWithinSight IsEnemyNotWithinDistance;
             public BehaviourAction DoSeekFlag;
             public BehaviourAction DoFlee;
         }
@@ -45,16 +45,13 @@ namespace Demo.BehaviourTree.CTF{
         public OffenceFlagTakenBehaviours CTFOffence_FlagTakenBehaviours; 
 
         public override void SwitchToTree_FlagTaken(){
-            m_behaviourManagerComponent.SetCurrentTree(CTFOffence_FlagTakenBehaviours.Root, true);
+            _behaviourManagerComponent.SetCurrentTree(CTFOffence_FlagTakenBehaviours.Root, true);
         }
 
         public override void SwitchToTree_FlagNotTaken(){
-            m_behaviourManagerComponent.SetCurrentTree(CTFOffence_FlagNotTakenBehaviours.Root, true);
+            _behaviourManagerComponent.SetCurrentTree(CTFOffence_FlagNotTakenBehaviours.Root, true);
         }
 
-        protected override bool IsEnemyWithinSight(){
-            return m_botVisionComponent.IsWithinSight(CTFGameManager.TAG_DEFENCE);
-        }
         protected override void InitFlagNotTakenBehaviours(){
             CTFOffence_FlagNotTakenBehaviours.Root = new BehaviourRootNode("Flag Not Taken");
             CTFOffence_FlagNotTakenBehaviours.MainSelector = new BehaviourSelector(false);
@@ -62,7 +59,8 @@ namespace Demo.BehaviourTree.CTF{
 
             CTFOffence_FlagNotTakenBehaviours.DoSeekFlag = new BehaviourAction(DoSeek, "Do Seek Flag");
             CTFOffence_FlagNotTakenBehaviours.DoSeekFlag.OnStarted.AddListener(DoSeekFlagOnStarted_Listener);
-            CTFOffence_FlagNotTakenBehaviours.IsEnemyNotWithinDistance = new BehaviourConditionInverse(IsEnemyWithinSight, CTFOffence_FlagNotTakenBehaviours.DoSeekFlag);
+            CTFOffence_FlagNotTakenBehaviours.IsEnemyNotWithinDistance = new BotIsWithinSight(_botVisionComponent, CTFGameManager.TAG_DEFENCE, CTFOffence_FlagNotTakenBehaviours.DoSeekFlag, true);
+
             CTFOffence_FlagNotTakenBehaviours.MainSelector.AddChild(CTFOffence_FlagNotTakenBehaviours.IsEnemyNotWithinDistance);
 
             CTFOffence_FlagNotTakenBehaviours.DoFlee = new BehaviourAction(DoFlee, "Do Flee");

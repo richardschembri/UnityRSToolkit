@@ -20,15 +20,15 @@ namespace RSToolkit.AI.Behaviour.Task
         public enum ActionRequest
         {
             START,
-            UPDATE,            
+            UPDATE,
             CANCEL,
             SKIP
         }
 
-        private System.Func<bool> _singleFrameFunc = null;
-        private System.Func<bool, ActionResult> _multiFrameFunc = null;
-        private System.Func<ActionRequest, ActionResult> _multiFrameRequestFunc = null;
-        private System.Action _singleFrameAction = null;
+        protected System.Func<bool> _singleFrameFunc = null;
+        protected System.Func<bool, ActionResult> _multiFrameFunc = null;
+        protected System.Func<ActionRequest, ActionResult> _multiFrameRequestFunc = null;
+        protected System.Action _singleFrameAction = null;
 
         private System.Action _actionFixedUpdate = null;
         private System.Action _actionLateUpdate = null;
@@ -57,6 +57,17 @@ namespace RSToolkit.AI.Behaviour.Task
         }
 
         #region Constructors
+
+        /// <summary>
+        /// This constructor is for classes that inherits action and wish to internally
+		/// set the delegates
+        /// </summary>
+        /// <param name="name"></param>
+		protected BehaviourAction(string name = NODE_NAME) : base(name, NodeType.TASK)
+        {
+            Init();
+        }
+
 
         /// <summary>
         /// Single frame action (Always finishes successfully)

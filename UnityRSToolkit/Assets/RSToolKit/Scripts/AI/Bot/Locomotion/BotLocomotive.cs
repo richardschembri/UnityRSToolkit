@@ -135,7 +135,7 @@ namespace RSToolkit.AI.Locomotion
 
         public bool IsNotFocusedOrReachedDestination()
         {
-            return FocusedOnPosition == null || reachedDestination();
+            return FocusedOnPosition == null || HasReachedDestination();
         }
 
         public float? IsCloseToSurface()
@@ -238,7 +238,7 @@ namespace RSToolkit.AI.Locomotion
 
         #endregion Move
 
-        private bool reachedDestination()
+        public bool HasReachedDestination()
         {
             return (StopMovementCondition == StopMovementConditions.WITHIN_PERSONAL_SPACE && IsWithinPersonalSpace())
                 || (StopMovementCondition == StopMovementConditions.WITHIN_INTERACTION_DISTANCE && IsWithinInteractionDistance())
@@ -464,4 +464,3 @@ namespace RSToolkit.AI.Locomotion
         #endregion MonoBehaviour Functions
     }
 }
-

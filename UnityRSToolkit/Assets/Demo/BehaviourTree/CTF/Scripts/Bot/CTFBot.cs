@@ -12,24 +12,34 @@ using UnityEngine.Events;
 
 namespace Demo.BehaviourTree.CTF{
     [RequireComponent(typeof(Bot))]
-    [RequireComponent(typeof(BotLogicNavMesh))]
     [RequireComponent(typeof(BotPartVision))]
     public abstract class CTFBot : MonoBehaviour
     {
+#region Start Values
+
         public Vector3 StartPosition {get; private set;}
         public Quaternion StartRotation {get; private set;}
 
-        protected BehaviourManager m_behaviourManagerComponent;
+#endregion Start Values
+
+#region Components
+
+        protected BehaviourManager _behaviourManagerComponent;
         protected BotLocomotive _botLocomotiveComponent;
-        protected BotLogicLocomotion m_botLocomotionComponent;
-        protected BotPartVision m_botVisionComponent;
-        protected BotLogicNavMesh m_botNavMeshComponent;
+        protected BotLogicLocomotion _botLocomotionComponent;
+        protected BotPartVision _botVisionComponent;
+        protected BotLogicNavMesh _botNavMeshComponent;
+
+#endregion Components
+
         public GameObject FlagHolder {get; set;}
 
-        public class OnDieEvent : UnityEvent<CTFBot>{} 
+        public class OnDieEvent : UnityEvent<CTFBot>{}
         public OnDieEvent OnDie{get; private set;}
 
         public bool HasFlag() {return FlagHolder.transform.childCount > 0;}
+
+#region Init Behaviours
 
         protected abstract void InitFlagNotTakenBehaviours();
         protected abstract void InitFlagTakenBehaviours();
@@ -38,12 +48,16 @@ namespace Demo.BehaviourTree.CTF{
             InitFlagTakenBehaviours();
         }
 
-        protected abstract bool IsEnemyWithinSight();
+#endregion Init Behaviours
+
+#region Behaviour Logic
+
+#region DoSeek
 
         protected virtual void DoSeekOnStarted_Listener(){
             _botLocomotiveComponent.MoveToTarget(BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE);
         }
-        
+
         protected virtual BehaviourAction.ActionResult DoSeek(bool cancel){
             if(cancel || !_botLocomotiveComponent.IsFocused){
                 _botLocomotiveComponent.StopMoving();
@@ -58,12 +72,16 @@ namespace Demo.BehaviourTree.CTF{
             return BehaviourAction.ActionResult.PROGRESS;
         }
 
+#endregion DoSeek
+
+#endregion Behaviour Logic
+
         public abstract void SwitchToTree_FlagTaken();
 
         public abstract void SwitchToTree_FlagNotTaken();
 
         public void ResetBot(){
-            m_behaviourManagerComponent.SetCurrentTree(GetDefaultTree(), true);
+            _behaviourManagerComponent.SetCurrentTree(GetDefaultTree(), true);
             transform.position = StartPosition;
             transform.rotation = StartRotation;
             _botLocomotiveComponent.StopMoving();
@@ -78,9 +96,9 @@ namespace Demo.BehaviourTree.CTF{
         {
             OnDie = new OnDieEvent();
             _botLocomotiveComponent = GetComponent<BotLocomotive>();
-            m_behaviourManagerComponent  = GetComponent<BehaviourManager>();
-            m_botVisionComponent = GetComponent<BotPartVision>();
-            m_botNavMeshComponent = GetComponent<BotLogicNavMesh>();
+            _behaviourManagerComponent  = GetComponent<BehaviourManager>();
+            _botVisionComponent = GetComponent<BotPartVision>();
+            _botNavMeshComponent = GetComponent<BotLogicNavMesh>();
             FlagHolder = gameObject.GetChild("Flag Holder");
             StartPosition = transform.position;
             StartRotation = transform.rotation;

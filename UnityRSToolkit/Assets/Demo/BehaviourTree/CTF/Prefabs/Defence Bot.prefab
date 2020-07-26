@@ -137,7 +137,6 @@ GameObject:
   - component: {fileID: 8314813943792386348}
   - component: {fileID: 6683423811819090443}
   - component: {fileID: 4958976244636293159}
-  - component: {fileID: 4138529169122337302}
   - component: {fileID: 8119500769163548796}
   - component: {fileID: 8844419325444955223}
   m_Layer: 0
@@ -237,9 +236,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   InteractableCooldown: 0
+  TetherToTransform: {fileID: 0}
   DebugMode: 0
   forgetTransformTimeout: -1
-  interactionMagnitude: 1.35
+  m_interactionMagnitude: 1.35
+  personalSpacePercent: 0.35
+  safeAwarenessPercent: 2
+  AutoInitialize: 1
 --- !u!195 &4958976244636293159
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -262,24 +265,6 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &4138529169122337302
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8314813943792386350}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1633e10d15d4bcf4ab81f048f33d0638, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DebugMode: 0
-  walkSpeed: 0.75
-  walkRotationSpeed: 120
-  runSpeed: 5
-  runRotationSpeed: 120
-  JumpProximityChecker: {fileID: 0}
 --- !u!114 &8119500769163548796
 MonoBehaviour:
   m_ObjectHideFlags: 0
