@@ -21,9 +21,19 @@ namespace RSToolkit.Animation
                 animatorComponent.SetTrigger(TriggerHash);
             }
 
+            public bool IsInTransition(Animator animatorComponent)
+            {
+                return animatorComponent.GetAnimatorTransitionInfo(0).IsName(TriggerName);
+            }
+
             public bool IsPlayingAnimation(Animator animatorComponent, string prefix = "")
             {
-                return animatorComponent.GetCurrentAnimatorStateInfo(0).IsName(GetAnimName());
+                return animatorComponent.GetCurrentAnimatorStateInfo(0).IsName(GetAnimName(prefix));
+            }
+
+            public bool IsPlayingAnimationOrIsInTransition(Animator animatorComponent, string prefix = "")
+            {
+                return IsPlayingAnimation(animatorComponent, prefix) || IsInTransition(animatorComponent);
             }
 
             public TriggerAnim(string triggerName)

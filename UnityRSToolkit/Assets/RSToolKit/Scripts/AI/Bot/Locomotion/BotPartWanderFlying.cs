@@ -40,14 +40,15 @@ namespace RSToolkit.AI.Locomotion
 
         protected override Vector3? GetNewWanderPosition(Transform wanderCenter, float radius)
         {
-            if (m_findNewPositionAttempts >= MAX_FINDNEWPOSITIONATTEMPTS)
+            if (m_findNewPositionAttempts >= MAX_FINDNEWPOSITIONATTEMPTS || radius <= BotLocomotiveComponent.SqrInteractionMagnitude)
             {
                 // FSM.ChangeState(WanderStates.CannotWander);
                 return null;//WanderCenter.position;
             }
             m_findNewPositionAttempts++;
             //var newPos = transform.GetRandomPositionWithinCircle(radius, BotFlyingComponent.BotComponent.SqrPersonalSpaceMagnitude);
-            Vector3? newPos = wanderCenter.GetRandomPositionWithinCircle(radius, BotLocomotiveComponent.SqrPersonalSpaceMagnitude);
+            float offset = BotLocomotiveComponent.SqrPersonalSpaceMagnitude + ((radius - BotLocomotiveComponent.SqrInteractionMagnitude) / 2);
+            Vector3 ? newPos = wanderCenter.GetRandomPositionWithinCircle(radius, offset);
             newPos = new Vector3(newPos.Value.x, DefaultY, newPos.Value.z);
 
             if (AboveSurface && !Physics.Raycast(newPos.Value, Vector3.down, Mathf.Infinity))
@@ -64,7 +65,6 @@ namespace RSToolkit.AI.Locomotion
                 {
                     Debug.Log($"Wander position is behind {m_wanderhit.transform.name}");
                 }
-
             
                 if (Vector3.Distance(transform.position, m_wanderhit.point) * 0.75f >= BotLocomotiveComponent.SqrPersonalSpaceMagnitude)
                 {

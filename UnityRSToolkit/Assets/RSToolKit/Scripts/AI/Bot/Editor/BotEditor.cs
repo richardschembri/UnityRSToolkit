@@ -13,8 +13,9 @@ namespace RSToolkit.AI
         Bot _targetBot;
         BotLocomotive _targetBotLocomotive ;
         Object m_waypoint;
-        bool m_fullspeed = false;
-
+        bool _fullspeed = false;
+        float _interactionCooldown = 0f;
+        float _currentSpeed = 0;
         void OnEnable()
         {
             _targetBot = (Bot)target;
@@ -33,6 +34,30 @@ namespace RSToolkit.AI
             }
             
             EditorGUILayout.LabelField("Bot States", EditorStyles.boldLabel);
+            if(_targetBot.InteractableCooldown > 0f)
+            {
+                GUILayout.BeginHorizontal();
+                EditorGUI.BeginDisabledGroup(true);
+                EditorGUILayout.LabelField("Interaction Cooldown");
+                _interactionCooldown = _targetBot.CanInteractFromTime - Time.time;
+                if(_interactionCooldown < 0f)
+                {
+                    _interactionCooldown = 0f;
+                }
+                EditorGUILayout.Slider(_interactionCooldown, 0f, _targetBot.InteractableCooldown);
+                EditorGUI.EndDisabledGroup();
+                GUILayout.EndHorizontal();
+            }
+            
+            EditorGUILayout.LabelField("Noticed Transforms", EditorStyles.boldLabel);
+            foreach (var nt in _targetBot.NoticedTransforms)
+            {                             
+                if (GUILayout.Button(nt.name, GUILayout.Width(200)))
+                {
+                    Selection.objects = new Object[] { nt.gameObject };
+                }
+
+            }
             
             GUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Interaction State");
@@ -47,6 +72,8 @@ namespace RSToolkit.AI
                 EditorGUI.BeginDisabledGroup(true);
                 EditorGUILayout.EnumPopup(_targetBotLocomotive.CurrentFState);  
                 EditorGUI.EndDisabledGroup();
+
+
                 if (_targetBotLocomotive.CurrentFState != BotLocomotive.FStatesLocomotion.NotMoving)
                 {
                     if (GUILayout.Button("Stop Moving"))
@@ -55,6 +82,15 @@ namespace RSToolkit.AI
                     }
                 }
                 GUILayout.EndHorizontal();
+
+                _currentSpeed = 0;
+
+                if (_targetBotLocomotive.enabled && _targetBotLocomotive.CurrentLocomotionType != null)
+                {
+                    _currentSpeed = _targetBotLocomotive.CurrentSpeed;
+                }
+
+                EditorGUILayout.LabelField($"Current Speed: {_currentSpeed}", EditorStyles.boldLabel);
 
                 EditorGUILayout.LabelField("Bot Controls", EditorStyles.boldLabel);
                 if(_targetBotLocomotive.BotWanderManagerComponent != null){
@@ -78,11 +114,11 @@ namespace RSToolkit.AI
                 
                 m_waypoint = EditorGUILayout.ObjectField(m_waypoint, typeof(Transform), true);
                 EditorGUI.BeginDisabledGroup(m_waypoint == null);
-                m_fullspeed = EditorGUILayout.Toggle("Full Speed", m_fullspeed);
+                _fullspeed = EditorGUILayout.Toggle("Full Speed", _fullspeed);
                 if (GUILayout.Button("Move to"))
                 {
                     _targetBotLocomotive.FocusOnTransform((Transform)m_waypoint);
-                    _targetBotLocomotive.MoveToTarget( BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE, m_fullspeed);
+                    _targetBotLocomotive.MoveToTarget( BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE, _fullspeed);
                 }
                 EditorGUI.EndDisabledGroup();
                 GUILayout.EndHorizontal();

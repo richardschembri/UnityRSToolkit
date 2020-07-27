@@ -3013,7 +3013,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 921164157}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 101, y: -4, z: -97}
+  m_LocalPosition: {x: 80, y: 3.05, z: -95}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -5455,7 +5455,7 @@ MonoBehaviour:
   MovementFlightThrust: {x: 75, y: 150, z: 100}
   CurrentFlightThrust: {x: 0, y: 0, z: 0}
   ManualControl: 1
-  m_FlightEnabled: 1
+  FlightEnabled: 1
   rollVerticalThrust: 281
   verticalInputDeadzone: 0.2
   horizontalInputDeadzone: 0.2
@@ -6232,7 +6232,7 @@ MonoBehaviour:
   MovementFlightThrust: {x: 75, y: 150, z: 100}
   CurrentFlightThrust: {x: 0, y: 0, z: 0}
   ManualControl: 0
-  m_FlightEnabled: 1
+  FlightEnabled: 1
   rollVerticalThrust: 281
   verticalInputDeadzone: 0.2
   horizontalInputDeadzone: 0.2
@@ -6932,7 +6932,6 @@ GameObject:
   - component: {fileID: 7990845843178055561}
   - component: {fileID: 7990845843178055558}
   - component: {fileID: 7990845843178055565}
-  - component: {fileID: 7990845843178055567}
   - component: {fileID: 7990845843178055563}
   m_Layer: 0
   m_Name: CopterTankBot
@@ -6981,7 +6980,7 @@ MonoBehaviour:
   MovementFlightThrust: {x: 75, y: 150, z: 100}
   CurrentFlightThrust: {x: 0, y: 0, z: 0}
   ManualControl: 0
-  m_FlightEnabled: 1
+  FlightEnabled: 1
   rollVerticalThrust: 281
   verticalInputDeadzone: 0.2
   horizontalInputDeadzone: 0.2
@@ -7153,18 +7152,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HelicopterParts: {fileID: 1276136823}
   TankParts: {fileID: 851750229}
---- !u!114 &7990845843178055567
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7990845843178055555}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 402d5598010d3b546be0bd98dca9a0ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &7990845843570252142
 GameObject:
   m_ObjectHideFlags: 0

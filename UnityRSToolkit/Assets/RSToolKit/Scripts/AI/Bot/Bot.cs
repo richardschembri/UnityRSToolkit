@@ -22,7 +22,7 @@ namespace RSToolkit.AI
         public StatesInteraction CurrentInteractionState { get; private set; } = StatesInteraction.NotInteracting;
 
         public float InteractableCooldown = 0f;
-        private float m_CanInteractFromTime = 0f;
+        public float CanInteractFromTime { get; private set; } = 0f;
         public Transform TetherToTransform;
 
         public bool DebugMode = false;
@@ -225,7 +225,7 @@ namespace RSToolkit.AI
 
         public void ResetInteractionCooldown()
         {
-            m_CanInteractFromTime = Time.time + InteractableCooldown;
+            CanInteractFromTime = Time.time + InteractableCooldown;
         }
 
         private bool ChangeInteractionState(StatesInteraction interactionState, bool force)
@@ -236,7 +236,7 @@ namespace RSToolkit.AI
                 ResetInteractionCooldown();
                 return true;
             }
-            else if (force || Time.time > m_CanInteractFromTime)
+            else if (force || Time.time > CanInteractFromTime)
             {
                 CurrentInteractionState = interactionState;
                 return true;
@@ -394,7 +394,7 @@ namespace RSToolkit.AI
 
         public bool CanInteract()
         {
-            return Time.time > m_CanInteractFromTime;
+            return Time.time > CanInteractFromTime;
         }
 
         public bool CanInteractWith(Bot target)
