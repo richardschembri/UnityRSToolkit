@@ -64,14 +64,7 @@ namespace RSToolkit.AI.Locomotion
 
         public override void OnStateChange(BotLocomotive.FStatesLocomotion locomotionState)
         {
-            switch (locomotionState)
-            {
-                case BotLocomotive.FStatesLocomotion.NotMoving:
-                    Flying3DObjectComponent.RigidBodyComponent.angularVelocity = Vector3.zero;
-                    break;
-            }
         }
-
 
         public BotLogicFlight(BotLocomotive botLocomotion, Flying3DObject flying3DObjectComponent) :base(botLocomotion)
         {
