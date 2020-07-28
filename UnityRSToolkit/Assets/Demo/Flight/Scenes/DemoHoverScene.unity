@@ -182,7 +182,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 65421512}
@@ -942,7 +942,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 28453108}
@@ -1679,7 +1679,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 462054401}
@@ -1865,7 +1865,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1850178812}
@@ -2051,7 +2051,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 53724675}
@@ -4078,7 +4078,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1339653554}
@@ -4297,7 +4297,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 382715995}
@@ -4633,7 +4633,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1652777803}
@@ -4727,7 +4727,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 854541221}
@@ -5740,7 +5740,7 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1798501137}
@@ -6074,7 +6074,6 @@ GameObject:
   - component: {fileID: 1878005673}
   - component: {fileID: 1878005672}
   - component: {fileID: 1878005671}
-  - component: {fileID: 1878005670}
   - component: {fileID: 1878005669}
   - component: {fileID: 1878005667}
   - component: {fileID: 1878005666}
@@ -6208,47 +6207,6 @@ MonoBehaviour:
   safeAwarenessPercent: 1.5
   AutoInitialize: 1
   JumpProximityChecker: {fileID: 0}
---- !u!114 &1878005670
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1878005661}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4866b8ab120aa534da555c2ce486005a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DefaultFlightAxis:
-    pitch: 0
-    yaw: 0
-    roll: 0
-  MovementFlightAxis:
-    pitch: 20
-    yaw: 1
-    roll: 20
-  HoverFlightThrust: {x: 0, y: 98.1, z: 0}
-  MovementFlightThrust: {x: 75, y: 150, z: 100}
-  CurrentFlightThrust: {x: 0, y: 0, z: 0}
-  ManualControl: 0
-  FlightEnabled: 1
-  rollVerticalThrust: 281
-  verticalInputDeadzone: 0.2
-  horizontalInputDeadzone: 0.2
-  InputControls:
-    VerticalThrustPositive: 105
-    VerticalThrustNegative: 107
-    LateralThrustPositive: 97
-    LateralThrustNegative: 100
-    ForwardThrustPositive: 119
-    ForwardThrustNegative: 115
-    YawPositive: 108
-    YawNegative: 106
-    ToggleHover: 32
-  VerticalDeadzone: 0.2
-  LateralDeadzone: 0.2
-  HoverWhenIdle: 1
 --- !u!114 &1878005671
 MonoBehaviour:
   m_ObjectHideFlags: 0

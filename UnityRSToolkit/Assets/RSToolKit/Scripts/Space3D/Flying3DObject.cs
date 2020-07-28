@@ -188,6 +188,7 @@ namespace RSToolkit.Space3D
         {
             RigidBodyComponent.velocity = Vector3.zero;
             RigidBodyComponent.angularVelocity = Vector3.zero;
+			RigidBodyComponent.rotation =  Quaternion.identity;
         }
 
         #endregion Reset Functions
@@ -505,9 +506,11 @@ namespace RSToolkit.Space3D
                 RigidBodyComponent.velocity = Vector3.SmoothDamp(RigidBodyComponent.velocity, Vector3.zero, ref _clampedVelocity, 0.95f);
             }
 
+/*
 			if(CurrentFlightAxis.toVector3() == Vector3.zero){
                 RigidBodyComponent.angularVelocity = Vector3.SmoothDamp(RigidBodyComponent.angularVelocity, Vector3.zero, ref _clampedVelocity, 0.15f);
 			}
+			*/
         }
 
         public bool IsGrounded { get; private set; } = false;

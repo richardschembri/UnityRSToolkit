@@ -39,18 +39,22 @@ namespace RSToolkit.AI.Locomotion
 
             if (Mathf.RoundToInt(BotLocomotiveComponent.FocusedOnPosition.Value.y) > Mathf.RoundToInt(BotLocomotiveComponent.transform.position.y))
             {
+				// Fly towards position
                 Flying3DObjectComponent.ApplyVerticalThrust(true);
             }
             if (Mathf.RoundToInt(BotLocomotiveComponent.FocusedOnPosition.Value.y) < Mathf.RoundToInt(BotLocomotiveComponent.transform.position.y))
             {
+				// Match height of position
                 Flying3DObjectComponent.ApplyVerticalThrust(false);
             }
             if (!BotLocomotiveComponent.IsWithinInteractionDistance())
             {
+				// Slow down
                 Flying3DObjectComponent.ApplyForwardThrust(fullspeed ? 1f : 0.2f);
             }
             else if (!BotLocomotiveComponent.IsWithinPersonalSpace())
             {
+				// Back up
                 Flying3DObjectComponent.ApplyForwardThrust(fullspeed ? -0.5f : 0.1f);
             }
         }
