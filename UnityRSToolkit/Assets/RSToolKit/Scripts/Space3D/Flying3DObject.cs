@@ -43,7 +43,8 @@ namespace RSToolkit.Space3D
         public KeyCode ToggleHover = KeyCode.Space;
 
 
-        #region GetKey
+#region GetKey
+
         private bool GetFlightKey(bool positive, KeyCode postiveKey, KeyCode negativeKey)
         {
             return positive ? Input.GetKey(postiveKey) : Input.GetKey(negativeKey);
@@ -73,9 +74,11 @@ namespace RSToolkit.Space3D
         {
             return Input.GetKeyUp(ToggleHover);
         }
-        #endregion GetKey
 
-        #region Down
+#endregion GetKey
+
+#region Key Down
+
         public bool IsVerticalThrustDown()
         {
             return Input.GetKey(VerticalThrustPositive) || Input.GetKey(VerticalThrustNegative);
@@ -95,7 +98,8 @@ namespace RSToolkit.Space3D
         {
             return Input.GetKey(YawPositive) || Input.GetKey(YawNegative);
         }
-        #endregion
+
+#endregion Key Down
 
     }
 
@@ -138,7 +142,9 @@ namespace RSToolkit.Space3D
         public float LateralDeadzone = 0.2f;
 
         public bool HoverWhenIdle = true;
+        public bool IsGrounded { get; private set; } = false;
 
+#region IsOutDeadzone
 
         public bool IsOutDeadzoneVertical()
         {
@@ -154,7 +160,9 @@ namespace RSToolkit.Space3D
             return IsOutDeadzoneVertical() || IsOutDeadzoneLateral();
         }
 
-        #region Reset Functions
+#endregion IsOutDeadzone
+
+#region Reset Functions
 
         public void ResetAppliedAxis()
         {
@@ -191,7 +199,7 @@ namespace RSToolkit.Space3D
 			RigidBodyComponent.rotation =  Quaternion.identity;
         }
 
-        #endregion Reset Functions
+#endregion Reset Functions
 
         public Rigidbody RigidBodyComponent
         {
@@ -214,50 +222,6 @@ namespace RSToolkit.Space3D
         }
 
         float m_decelerateVelocity;
-
-        #region Mono Functions
-
-        void Awake()
-        {
-            ResetAppliedForces();
-        }
-
-        void Update()
-        {
-            if (InputControls.GetToggleHoverKey())
-            {
-                HoverWhenIdle = !HoverWhenIdle;
-            }
-        }
-
-        void FixedUpdate()
-        {
-            if (!FlightEnabled)
-            {
-                return;
-            }
-
-            if (ManualControl)
-            {
-                ManualVerticalThrustControl();
-                ManualForwardMovementControl();
-                ManualLateralMovementControl();
-                ManualYawControl();
-            }
-
-            UpdateYaw();
-            UpdateRoll();
-            UpdatePitch();
-            ClampForces();
-
-            RigidBodyComponent.AddRelativeForce(CurrentFlightThrust);
-
-            RigidBodyComponent.rotation = Quaternion.Euler(CurrentFlightAxis.toVector3()); // new Vector3(CurrentFlightAxis.pitch, CurrentFlightAxis.yaw, m_RigidBodyComponent.rotation.z));
-            UpdateForwardThrust();
-            UpdateVerticalThrust();
-        }
-
-        #endregion Mono Functions
 
         public bool HasLateralVelocity()
         {
@@ -284,7 +248,6 @@ namespace RSToolkit.Space3D
         {
             FlightEnabled = false;
         }
-
 
         void ManualVerticalThrustControl()
         {
@@ -334,6 +297,9 @@ namespace RSToolkit.Space3D
             }
         }
 
+#region Update Functions
+#region Update Thrust
+
         private void UpdateVerticalThrust()
         {
             if (HoverWhenIdle)
@@ -347,11 +313,52 @@ namespace RSToolkit.Space3D
             _targetFlightAxis.pitch = 0;
         }
 
-        private float m_forwardVelocity;
-        void ManualForwardMovementControl()
+        private void UpdateForwardThrust()
         {
-            ApplyForwardThrust(Input.GetAxis("Vertical"));
+            if (HoverWhenIdle)
+            {
+                CurrentFlightThrust.z = HoverFlightThrust.z;
+            }
+            else
+            {
+                CurrentFlightThrust.z = 0;
+            }
         }
+
+#endregion Update Thrust
+
+#region Update Axis
+
+        private void UpdatePitch()
+        {
+            if (CurrentFlightAxis.pitch != _targetFlightAxis.pitch)
+            {
+                CurrentFlightAxis.pitch = Mathf.SmoothDamp(CurrentFlightAxis.pitch, _targetFlightAxis.pitch, ref m_forwardVelocity, 0.1f);
+            }
+        }
+
+        private float _lateralVelocity;
+        private void UpdateRoll()
+        {
+            if (CurrentFlightAxis.roll != _targetFlightAxis.roll)
+            {
+                CurrentFlightAxis.roll = Mathf.SmoothDamp(CurrentFlightAxis.roll, _targetFlightAxis.roll, ref _lateralVelocity, 0.1f);
+            }
+        }
+
+        private void UpdateYaw()
+        {
+            if (CurrentFlightAxis.yaw != _targetFlightAxis.yaw)
+            {
+                CurrentFlightAxis.yaw = Mathf.SmoothDamp(CurrentFlightAxis.yaw, _targetFlightAxis.yaw, ref _yawVelocity, 0.25f);
+
+            }
+        }
+
+#endregion Update Axis
+#endregion Update Functions
+
+#region Apply Functions
 
         public void ApplyForwardThrust(float percent)
         {
@@ -368,34 +375,16 @@ namespace RSToolkit.Space3D
             _targetFlightAxis.pitch = MovementFlightAxis.pitch * percent;
         }
 
-
-
-        private void UpdateForwardThrust()
+        public void ApplyYaw(bool positive)
         {
-            if (HoverWhenIdle)
+            if (positive)
             {
-                CurrentFlightThrust.z = HoverFlightThrust.z;
+                _targetFlightAxis.yaw += MovementFlightAxis.yaw;
             }
             else
             {
-                CurrentFlightThrust.z = 0;
+                _targetFlightAxis.yaw -= MovementFlightAxis.yaw;
             }
-        }
-
-        private void UpdatePitch()
-        {
-            if (CurrentFlightAxis.pitch != _targetFlightAxis.pitch)
-            {
-                CurrentFlightAxis.pitch = Mathf.SmoothDamp(CurrentFlightAxis.pitch, _targetFlightAxis.pitch, ref m_forwardVelocity, 0.1f);
-            }
-        }
-
-
-
-
-        void ManualLateralMovementControl()
-        {
-            ApplyLateralThrust(Input.GetAxis("Horizontal"));
 
         }
 
@@ -419,7 +408,6 @@ namespace RSToolkit.Space3D
             {
                 _targetFlightAxis.roll = 0;
             }
-
         }
 
         public void ApplyRoll(bool positive)
@@ -433,17 +421,23 @@ namespace RSToolkit.Space3D
             {
                 _targetFlightAxis.roll = -MovementFlightAxis.roll;
             }
-
         }
-        private float _lateralVelocity;
-        private void UpdateRoll()
+
+#endregion Apply Functions
+
+#region Manual Control
+
+        private float m_forwardVelocity;
+        void ManualForwardMovementControl()
         {
-            if (CurrentFlightAxis.roll != _targetFlightAxis.roll)
-            {
-                CurrentFlightAxis.roll = Mathf.SmoothDamp(CurrentFlightAxis.roll, _targetFlightAxis.roll, ref _lateralVelocity, 0.1f);
-            }
+            ApplyForwardThrust(Input.GetAxis("Vertical"));
         }
 
+        void ManualLateralMovementControl()
+        {
+            ApplyLateralThrust(Input.GetAxis("Horizontal"));
+
+        }
 
         private float _yawVelocity;
         void ManualYawControl()
@@ -458,27 +452,7 @@ namespace RSToolkit.Space3D
             }
         }
 
-        public void ApplyYaw(bool positive)
-        {
-            if (positive)
-            {
-                _targetFlightAxis.yaw += MovementFlightAxis.yaw;
-            }
-            else
-            {
-                _targetFlightAxis.yaw -= MovementFlightAxis.yaw;
-            }
-
-        }
-
-        private void UpdateYaw()
-        {
-            if (CurrentFlightAxis.yaw != _targetFlightAxis.yaw)
-            {
-                CurrentFlightAxis.yaw = Mathf.SmoothDamp(CurrentFlightAxis.yaw, _targetFlightAxis.yaw, ref _yawVelocity, 0.25f);
-
-            }
-        }
+#endregion Manual Control
 
         public void YawTo(float y)
         {
@@ -505,15 +479,49 @@ namespace RSToolkit.Space3D
             {
                 RigidBodyComponent.velocity = Vector3.SmoothDamp(RigidBodyComponent.velocity, Vector3.zero, ref _clampedVelocity, 0.95f);
             }
-
-/*
-			if(CurrentFlightAxis.toVector3() == Vector3.zero){
-                RigidBodyComponent.angularVelocity = Vector3.SmoothDamp(RigidBodyComponent.angularVelocity, Vector3.zero, ref _clampedVelocity, 0.15f);
-			}
-			*/
         }
 
-        public bool IsGrounded { get; private set; } = false;
+#region Mono Functions
+
+        void Awake()
+        {
+            ResetAppliedForces();
+        }
+
+        void Update()
+        {
+            if (InputControls.GetToggleHoverKey())
+            {
+                HoverWhenIdle = !HoverWhenIdle;
+            }
+        }
+
+        void FixedUpdate()
+        {
+            if (!FlightEnabled)
+            {
+                return;
+            }
+
+            if (ManualControl)
+            {
+                ManualVerticalThrustControl();
+                ManualForwardMovementControl();
+                ManualLateralMovementControl();
+                ManualYawControl();
+            }
+
+            UpdateYaw();
+            UpdateRoll();
+            UpdatePitch();
+            ClampForces();
+
+            RigidBodyComponent.AddRelativeForce(CurrentFlightThrust);
+
+            RigidBodyComponent.rotation = Quaternion.Euler(CurrentFlightAxis.toVector3()); // new Vector3(CurrentFlightAxis.pitch, CurrentFlightAxis.yaw, m_RigidBodyComponent.rotation.z));
+            UpdateForwardThrust();
+            UpdateVerticalThrust();
+        }
 
         void OnCollisionStay(Collision collision)
         {
@@ -529,6 +537,8 @@ namespace RSToolkit.Space3D
 
             }
         }
+
+#endregion Mono Functions
 
     }
 }
