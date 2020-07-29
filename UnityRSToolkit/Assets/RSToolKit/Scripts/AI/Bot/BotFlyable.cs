@@ -16,7 +16,8 @@ namespace RSToolkit.AI
     public class BotFlyable : BotLocomotive
     {
         public bool StartInAir = true;
-        bool m_freefall = false;
+        bool _freefall = false;        
+
         public BotLogicNavMesh BotLogicNavMeshRef { get; set; }
         public BotLogicFlight BotLogicFlyingRef { get; set; }
 
@@ -32,6 +33,12 @@ namespace RSToolkit.AI
         {
             get
             {
+#if UNITY_EDITOR
+                if(FSMFlyable == null)
+                {
+                    return StartInAir ? FStatesFlyable.Flying : FStatesFlyable.NotFlying;
+                }             
+#endif
                 return FSMFlyable.CurrentState;
             }
         }
@@ -50,7 +57,7 @@ namespace RSToolkit.AI
             }
         }
 
-        public BTFiniteStateMachine<FStatesFlyable> FSMFlyable { get; private set; } = new BTFiniteStateMachine<FStatesFlyable>(FStatesFlyable.Flying);
+        public BTFiniteStateMachine<FStatesFlyable> FSMFlyable { get; private set; } // = new BTFiniteStateMachine<FStatesFlyable>(FStatesFlyable.Flying);
 
         #region Components
 
@@ -170,7 +177,7 @@ namespace RSToolkit.AI
             {
                 return false;
             }
-            m_freefall = freefall;
+            _freefall = freefall;
             FSMFlyable.ChangeState(FStatesFlyable.Landing);
 
             return true;
@@ -189,6 +196,7 @@ namespace RSToolkit.AI
 
         private void InitStates()
         {
+            FSMFlyable = new BTFiniteStateMachine<FStatesFlyable>(StartInAir ? FStatesFlyable.Flying : FStatesFlyable.NotFlying);
             FSMFlyable.OnStarted_AddListener(FStatesFlyable.TakingOff, TakingOff_Enter);
             FSMFlyable.SetUpdateAction(FStatesFlyable.TakingOff, TakingOff_Update);
             FSMFlyable.OnStopped_AddListener(FStatesFlyable.TakingOff, TakingOff_Exit);
@@ -240,7 +248,7 @@ namespace RSToolkit.AI
 
         void Landing_Update()
         {
-            if (!m_freefall)
+            if (!_freefall)
             {
                 Flying3DObjectComponent.ApplyVerticalThrust(false);
             }

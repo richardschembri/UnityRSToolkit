@@ -16,7 +16,7 @@ namespace RSToolkit.Animation
                 return $"{prefix}{TriggerName}";
             }
 
-            public void SetTrigger(Animator animatorComponent, string prefix = "")
+            public void SetTrigger(Animator animatorComponent)
             {
                 animatorComponent.SetTrigger(TriggerHash);
             }

@@ -42,36 +42,46 @@ namespace RSToolkit.AI
         #region Components
         public BTFiniteStateMachineManager BTFiniteStateMachineManagerComponent {get; private set;}
 
-        private Animator m_animatorComponent;
+        private Animator _animatorComponent;
         public Animator AnimatorComponent
         {
             get
             {
-                if (m_animatorComponent == null)
+                if (_animatorComponent == null)
                 {
-                    m_animatorComponent = GetComponent<Animator>();
+                    _animatorComponent = GetComponent<Animator>();
                 }
-                return m_animatorComponent;
+                return _animatorComponent;
             }
         }
 
-        private Collider m_colliderComponent;
+        private Collider _colliderComponent;
         public Collider ColliderComponent
         {
             get
             {
-                if (m_colliderComponent == null)
+                if (_colliderComponent == null)
                 {
-                    m_colliderComponent = GetComponent<Collider>();
+                    _colliderComponent = GetComponent<Collider>();
                 }
-                return m_colliderComponent;
+                return _colliderComponent;
+            }
+        }
+
+        private Rigidbody _rigidBodyComponent;
+        public Rigidbody RigidBodyComponent
+        {
+            get
+            {
+                if(_rigidBodyComponent == null)
+                {
+                    _rigidBodyComponent = GetComponent<Rigidbody>();
+                }
+                return _rigidBodyComponent;
             }
         }
 
         #endregion Components
-
-        
-
 
         public Transform FocusedOnTransform { get; private set; } = null;
         public Vector3? m_FocusedOnPosition = null;
@@ -145,80 +155,114 @@ namespace RSToolkit.AI
             }
         }
 
+        [SerializeField]
+        public float atPositionErrorMargin = 0.1f;
+        public float SqrAtPositionErrorMargin
+        {
+            get
+            {
+                return SqrInteractionMagnitude * atPositionErrorMargin;
+            }
+        }
+
         #endregion Magnitude
 
         #region IsWithinDistance
 
-        public bool IsWithinInteractionDistance()
+        public bool IsAtPosition()
         {
             if (FocusedOnTransform != null)
             {
-                return IsWithinInteractionDistance(FocusedOnTransform);
+                return IsAtPosition(FocusedOnTransform);
             }
             else if (FocusedOnPosition != null)
             {
-                return IsWithinPersonalSpace(FocusedOnPosition.Value);
+                return IsAtPosition(FocusedOnPosition.Value);
             }
             return false;
-
         }
 
-        public bool IsWithinPersonalSpace()
+        public bool IsWithinInteractionDistance(float percent = 1.0f)
         {
             if (FocusedOnTransform != null)
             {
-                return IsWithinPersonalSpace(FocusedOnTransform);
+                return IsWithinInteractionDistance(FocusedOnTransform, percent);
             }
             else if (FocusedOnPosition != null)
             {
-                return IsWithinPersonalSpace(FocusedOnPosition.Value);
+                return IsWithinInteractionDistance(FocusedOnPosition.Value, percent);
             }
             return false;
-
         }
 
-        public bool IsWithinAwarenessDistance()
+        public bool IsWithinPersonalSpace(float percent = 1.0f)
         {
             if (FocusedOnTransform != null)
             {
-                return IsWithinAwarenessDistance(FocusedOnTransform);
+                return IsWithinPersonalSpace(FocusedOnTransform, percent);
             }
             else if (FocusedOnPosition != null)
             {
-                return IsWithinAwarenessDistance(FocusedOnPosition.Value);
+                return IsWithinPersonalSpace(FocusedOnPosition.Value, percent);
             }
             return false;
-
         }
 
-        public bool IsWithinInteractionDistance(Vector3 position)
+        public bool IsWithinAwarenessDistance(float percent = 1.0f)
         {
-            return ProximityHelpers.IsWithinDistance(ColliderComponent, position, SqrInteractionMagnitude);
+            if (FocusedOnTransform != null)
+            {
+                return IsWithinAwarenessDistance(FocusedOnTransform, percent);
+            }
+            else if (FocusedOnPosition != null)
+            {
+                return IsWithinAwarenessDistance(FocusedOnPosition.Value, percent);
+            }
+            return false;
         }
 
-        public bool IsWithinPersonalSpace(Vector3 position)
+        public bool IsAtPosition(Vector3 position)
         {
-            return ProximityHelpers.IsWithinDistance(ColliderComponent, position, SqrPersonalSpaceMagnitude);
+            if(SqrAtPositionErrorMargin == 0)
+            {
+                return transform.position == position;
+            }
+            return ProximityHelpers.IsWithinDistance(ColliderComponent, position, SqrAtPositionErrorMargin);
         }
 
-        public bool IsWithinAwarenessDistance(Vector3 position)
+        public bool IsWithinInteractionDistance(Vector3 position, float percent = 1.0f)
+        {
+            return ProximityHelpers.IsWithinDistance(ColliderComponent, position, SqrInteractionMagnitude * percent);
+        }
+
+        public bool IsWithinPersonalSpace(Vector3 position, float percent = 1.0f)
+        {
+            return ProximityHelpers.IsWithinDistance(ColliderComponent, position, SqrPersonalSpaceMagnitude * percent);
+        }
+
+        public bool IsWithinAwarenessDistance(Vector3 position, float percent = 1.0f)
         {           
-            return ProximityHelpers.IsWithinDistance(ColliderComponent, position, SqrAwarenessMagnitude);
+            return ProximityHelpers.IsWithinDistance(ColliderComponent, position, SqrAwarenessMagnitude * percent);
         }
 
-        public bool IsWithinInteractionDistance(Transform target)
+        public bool IsWithinInteractionDistance(Transform target, float percent = 1.0f)
         {
-            return IsWithinInteractionDistance(target.position);
+            return IsWithinInteractionDistance(target.position, percent);
         }
 
-        public bool IsWithinPersonalSpace(Transform target)
+        public bool IsWithinPersonalSpace(Transform target, float percent = 1.0f)
         {
-            return IsWithinPersonalSpace(target.position);
+            return IsWithinPersonalSpace(target.position, percent);
         }
 
-        public bool IsWithinAwarenessDistance(Transform target)
+        public bool IsWithinAwarenessDistance(Transform target, float percent = 1.0f)
         {
-            return IsWithinAwarenessDistance(target.position);
+            return IsWithinAwarenessDistance(target.position, percent);
+        }
+
+        public bool IsAtPosition(Transform target)
+        {
+            return IsAtPosition(target.position);
         }
 
         #endregion IsWithinDistance

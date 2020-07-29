@@ -19,6 +19,7 @@ namespace RSToolkit.AI.Behaviour.Composite
 
         public BehaviourStateSelector(T initialState) : base("Enum Selector", NodeType.COMPOSITE){
             _nextstate = initialState;
+            CurrentState = initialState;
             _states = Enum.GetValues(typeof(T));
             _stateActions = new Dictionary<T, BehaviourAction>();
             if (_states.Length < 1) { throw new ArgumentException("Enum provided to Initialize must have at least 1 visible definition"); }

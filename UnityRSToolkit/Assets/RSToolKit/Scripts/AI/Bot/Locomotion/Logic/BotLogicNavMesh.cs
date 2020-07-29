@@ -65,8 +65,12 @@ namespace RSToolkit.AI.Locomotion
             NavMeshAgentComponent.isStopped = false;
         }
 
-        public override void MoveTowardsPosition(bool fullspeed = true)
+        public override bool MoveTowardsPosition(bool fullspeed = true)
         {
+            if (BotLocomotiveComponent.IsAtPosition())
+            {
+                return false;
+            }
             if (fullspeed)
             {
                 MoveTo(BotLocomotiveComponent.FocusedOnPosition.Value, RunSpeed, RunRotationSpeed);
@@ -75,6 +79,7 @@ namespace RSToolkit.AI.Locomotion
             {
                 MoveTo(BotLocomotiveComponent.FocusedOnPosition.Value, WalkSpeed, WalkRotationSpeed);
             }
+            return true;
         }
 
         public override void MoveAway(bool fullspeed = true)

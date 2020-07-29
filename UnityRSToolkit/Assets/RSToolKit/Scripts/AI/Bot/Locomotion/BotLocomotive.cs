@@ -57,7 +57,6 @@ namespace RSToolkit.AI.Locomotion
             }
         }
 
-
         public override void ToggleComponentsForNetwork(bool owner)
         {
             base.ToggleComponentsForNetwork(owner);
@@ -72,6 +71,7 @@ namespace RSToolkit.AI.Locomotion
                 //_botWanderManagerComponent.enabled = true;
             }
         }
+
         #region Components
         private ProximityChecker _proximityCheckerComponent;
         public ProximityChecker GroundProximityCheckerComponent
@@ -173,12 +173,17 @@ namespace RSToolkit.AI.Locomotion
             return MoveToTarget(stopMovementCondition, fullspeed);
         }
 
-        public void MoveTowardsTarget(bool fullspeed = true)
+        public bool MoveTowardsTarget(bool fullspeed = true)
         {
+            if(FocusedOnTransform == null)
+            {
+                FSM.ChangeState(FStatesLocomotion.NotMoving);
+                return false;
+            }
             FocusOnPosition(FocusedOnTransform.position);
             try
             {
-                CurrentLocomotionType.MoveTowardsPosition(fullspeed);
+                return CurrentLocomotionType.MoveTowardsPosition(fullspeed);
             }
             catch (System.Exception ex)
             {
@@ -189,12 +194,12 @@ namespace RSToolkit.AI.Locomotion
                 }
 
                 FSM.ChangeState(FStatesLocomotion.CannotMove);
-
+                return false;
             }
         }
             #region Move
 
-            private bool MoveCommon(FStatesLocomotion moveType, bool fullspeed = true, StopMovementConditions stopMovementCondition = StopMovementConditions.NONE)
+        private bool MoveCommon(FStatesLocomotion moveType, bool fullspeed = true, StopMovementConditions stopMovementCondition = StopMovementConditions.NONE)
         {
             if (!CurrentLocomotionType.CanMove())
             {
@@ -208,22 +213,22 @@ namespace RSToolkit.AI.Locomotion
 
         public bool MoveToPosition(StopMovementConditions stopMovementCondition, bool fullspeed = true)
         {
-            return MoveCommon(FStatesLocomotion.MovingToPosition, _fullspeed, stopMovementCondition);
+            return MoveCommon(FStatesLocomotion.MovingToPosition, fullspeed, stopMovementCondition);
         }
 
         public bool MoveAwayFromPosition(bool fullspeed = true)
         {
-            return MoveCommon(FStatesLocomotion.MovingAwayFromPosition, _fullspeed);
+            return MoveCommon(FStatesLocomotion.MovingAwayFromPosition, fullspeed);
         }
 
         public bool MoveToTarget(StopMovementConditions stopMovementCondition, bool fullspeed = true)
         {
-            return MoveCommon(FStatesLocomotion.MovingToTarget, _fullspeed, stopMovementCondition);
+            return MoveCommon(FStatesLocomotion.MovingToTarget, fullspeed, stopMovementCondition);
         }
 
         public bool MoveAwayFromTarget(bool fullspeed = true)
         {
-            return MoveCommon(FStatesLocomotion.MovingAwayFromTarget, _fullspeed);
+            return MoveCommon(FStatesLocomotion.MovingAwayFromTarget, fullspeed);
         }
 
         public bool StopMoving()
@@ -242,7 +247,7 @@ namespace RSToolkit.AI.Locomotion
         {
             return (StopMovementCondition == StopMovementConditions.WITHIN_PERSONAL_SPACE && IsWithinPersonalSpace())
                 || (StopMovementCondition == StopMovementConditions.WITHIN_INTERACTION_DISTANCE && IsWithinInteractionDistance())
-                || (StopMovementCondition == StopMovementConditions.AT_POSITION && transform.position == FocusedOnPosition.Value);
+                || (StopMovementCondition == StopMovementConditions.AT_POSITION && IsAtPosition());
         }
 
         public Vector3 GetMoveAwayDestination()

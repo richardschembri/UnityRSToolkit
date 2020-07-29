@@ -16,7 +16,7 @@ namespace RSToolkit.AI.Locomotion
         
         public abstract float CurrentSpeed { get; }
 
-        public abstract void MoveTowardsPosition(bool fullspeed = true);
+        public abstract bool MoveTowardsPosition(bool fullspeed = true);
 
         public abstract void MoveAway(bool fullspeed = true);
 
