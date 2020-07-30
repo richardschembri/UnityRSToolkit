@@ -251,6 +251,16 @@ namespace RSToolkit.AI.Locomotion
             BTFiniteStateMachineManagerComponent.AddFSM(FSM);
         }
 
+        #region Mono Functions
+        void OnCollisionEnter(Collision collision)
+        {
+            if(FSM.CurrentState == FStatesWander.MovingToPosition)
+            {
+                BotLocomotiveComponent.StopMoving();
+                FSM.ChangeState(FStatesWander.FindNewPosition);
+            }
+        }
+        #endregion Mono Functions
     }
 
 }

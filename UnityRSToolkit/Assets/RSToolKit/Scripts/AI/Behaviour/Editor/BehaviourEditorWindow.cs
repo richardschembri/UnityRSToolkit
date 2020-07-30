@@ -78,7 +78,7 @@ namespace RSToolkit.AI.Behaviour
             }
         }
 
-        public void OnSelectionChange()
+        public override void OnSelectionChange()
         {
             SelectedTransform = Selection.activeTransform;
             if (SelectedTransform != null) SelectedManager = SelectedTransform.GetComponentInChildren<BehaviourManager>();

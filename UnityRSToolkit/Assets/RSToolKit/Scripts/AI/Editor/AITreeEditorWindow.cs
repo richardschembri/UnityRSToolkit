@@ -273,6 +273,10 @@ namespace RSToolkit.AI
         {
             if (manager == null)
             {
+                if (GUILayout.Button("Refresh"))
+                {
+                    OnSelectionChange();
+                }
                 EditorGUILayout.HelpBox("Please select an object", MessageType.Info);
                 return false;
             }
@@ -299,5 +303,12 @@ namespace RSToolkit.AI
             DrawLegends();
             GUILayout.Space(10);
         }
-    }
+
+        #region Mono Functions
+        public virtual void OnSelectionChange()
+        {
+
+        }
+        #endregion Mono Functions
+        }
 }

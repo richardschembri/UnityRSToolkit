@@ -19,7 +19,7 @@ namespace RSToolkit.AI.FSM
             window.Show();
         }
 
-        public void OnSelectionChange()
+        public override void OnSelectionChange()
         {
             SelectedTransform = Selection.activeTransform;
             if (SelectedTransform != null) SelectedManager = SelectedTransform.GetComponentInChildren<BTFiniteStateMachineManager>();
