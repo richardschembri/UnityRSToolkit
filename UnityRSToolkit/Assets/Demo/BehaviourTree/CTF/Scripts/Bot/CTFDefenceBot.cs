@@ -17,6 +17,7 @@ namespace Demo.BehaviourTree.CTF{
 
         public CTFBot TargetEnemyBot {get; private set;}
 
+#region Behaviour Conditions
         public bool IsWithinDefenceRadius(){
             if(_botLocomotiveComponent.FocusedOnPosition == null){
                 return false;
@@ -29,6 +30,7 @@ namespace Demo.BehaviourTree.CTF{
         public bool IsFocused(){
             return _botLocomotiveComponent.IsFocused && TargetEnemyBot != null;
         }
+#endregion Behaviour Conditions
 
 #region Behaviour Structs
 
