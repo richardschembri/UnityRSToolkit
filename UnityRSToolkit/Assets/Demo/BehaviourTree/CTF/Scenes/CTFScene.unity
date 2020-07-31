@@ -684,6 +684,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Defence Bot 2
       objectReference: {fileID: 0}
+    - target: {fileID: 8314813943792386350, guid: be5c62f6e798d6524a57895e2ec08a3d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: be5c62f6e798d6524a57895e2ec08a3d, type: 3}
 --- !u!4 &350152925 stripped
@@ -1836,6 +1841,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Patrol Bot 2
       objectReference: {fileID: 0}
+    - target: {fileID: 8314813943792386350, guid: be5c62f6e798d6524a57895e2ec08a3d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8844419325444955223, guid: be5c62f6e798d6524a57895e2ec08a3d,
         type: 3}
       propertyPath: m_waypoints.Array.size
@@ -1918,8 +1928,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c5717ecbf3cb968a81165ef4056b261, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BotsContainer: {fileID: 0}
-  m_level: {fileID: 0}
+  BotsContainer: {fileID: 1113439273}
+  m_level: {fileID: 887895224}
 --- !u!1 &887895223
 GameObject:
   m_ObjectHideFlags: 0
@@ -2392,6 +2402,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Defence Bot 3
       objectReference: {fileID: 0}
+    - target: {fileID: 8314813943792386350, guid: be5c62f6e798d6524a57895e2ec08a3d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: be5c62f6e798d6524a57895e2ec08a3d, type: 3}
 --- !u!4 &1208694734 stripped
@@ -2415,7 +2430,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1315780104
 Transform:
   m_ObjectHideFlags: 0
@@ -3178,6 +3193,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Patrol Bot 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8314813943792386350, guid: be5c62f6e798d6524a57895e2ec08a3d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8844419325444955223, guid: be5c62f6e798d6524a57895e2ec08a3d,
         type: 3}
       propertyPath: m_waypoints.Array.size
@@ -3281,7 +3301,7 @@ PrefabInstance:
     - target: {fileID: 8314813943792386350, guid: be5c62f6e798d6524a57895e2ec08a3d,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8314813943792386355, guid: be5c62f6e798d6524a57895e2ec08a3d,
         type: 3}

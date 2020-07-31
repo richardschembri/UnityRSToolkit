@@ -16,17 +16,17 @@ namespace RSToolkit.AI
     public class BotFlyable : BotLocomotive
     {
         public bool StartInAir = true;
-        bool _freefall = false;        
+        bool _freefall = false;
 
         public BotLogicNavMesh BotLogicNavMeshRef { get; set; }
         public BotLogicFlight BotLogicFlyingRef { get; set; }
 
         public enum FStatesFlyable
         {
-            NotFlying,
-            Landing,
-            TakingOff,
-            Flying
+            NotFlying = 0,
+            Landing = 1,
+            TakingOff = 2,
+            Flying = 3
         }
 
         public FStatesFlyable CurrentFlyableState
@@ -34,10 +34,10 @@ namespace RSToolkit.AI
             get
             {
 #if UNITY_EDITOR
-                if(FSMFlyable == null)
+                if (FSMFlyable == null)
                 {
                     return StartInAir ? FStatesFlyable.Flying : FStatesFlyable.NotFlying;
-                }             
+                }
 #endif
                 return FSMFlyable.CurrentState;
             }
@@ -88,9 +88,9 @@ namespace RSToolkit.AI
             }
 
         }
-        protected BotPartWanderNavMesh BotWanderNavMeshComponent {get; private set;}
+        protected BotPartWanderNavMesh BotWanderNavMeshComponent { get; private set; }
 
-        protected BotPartWanderFlying BotWanderFlyingComponent{get; private set;}
+        protected BotPartWanderFlying BotWanderFlyingComponent { get; private set; }
 
         private Flying3DObject m_flying3DObjectComponent;
         public Flying3DObject Flying3DObjectComponent
@@ -140,7 +140,7 @@ namespace RSToolkit.AI
         private void ToggleFlight(bool on)
         {
             if (on)
-            {              
+            {
                 RigidBodyComponent.constraints = RigidbodyConstraints.None;
                 CurrentLocomotionType = BotLogicFlyingRef;
                 BotWanderManagerComponent?.SetCurrentBotWander(BotWanderFlyingComponent);
@@ -149,14 +149,14 @@ namespace RSToolkit.AI
             {
                 RigidBodyComponent.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
                 RigidBodyComponent.velocity = Vector3.zero;
-                transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);                
+                transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
                 CurrentLocomotionType = BotLogicNavMeshRef;
                 BotWanderManagerComponent?.SetCurrentBotWander(BotWanderNavMeshComponent);
             }
-            
-            NavMeshAgentComponent.enabled = !on;            
+
+            NavMeshAgentComponent.enabled = !on;
             Flying3DObjectComponent.enabled = on;
-            
+
         }
 
         public bool TakeOff()
@@ -189,7 +189,7 @@ namespace RSToolkit.AI
         }
 
         public bool IsAboveNavMeshSurface()
-        {            
+        {
             return BotLogicNavMeshRef.IsAboveNavMeshSurface();
         }
 
@@ -208,6 +208,9 @@ namespace RSToolkit.AI
             FSMFlyable.OnStopped_AddListener(FStatesFlyable.NotFlying, NotFlying_Exit);
 
             FSMFlyable.OnStarted_AddListener(FStatesFlyable.Flying, Flying_Enter);
+
+            FSMFlyable.OnStateChanged_AddListener(OnFlyableStateChanged_Listener);
+            CharacterAnimParams.TrySetFStateFlyable(AnimatorComponent, (int)FSMFlyable.CurrentState);
         }
 
         #region TakingOff State
@@ -220,10 +223,10 @@ namespace RSToolkit.AI
 
         void TakingOff_Update()
         {
-            if(!BotFSMLocomotionComponent.IsFarFromGround()) // IsCloseToGround())
+            if (!BotFSMLocomotionComponent.IsFarFromGround()) // IsCloseToGround())
             {
-                Flying3DObjectComponent.ApplyVerticalThrust(true);       
-            }           
+                Flying3DObjectComponent.ApplyVerticalThrust(true);
+            }
             else
             {
                 RigidBodyComponent.Sleep();
@@ -243,7 +246,7 @@ namespace RSToolkit.AI
         {
             BotWanderManagerComponent?.StopWandering();
             Flying3DObjectComponent.HoverWhenIdle = false;
-            
+
         }
 
         void Landing_Update()
@@ -281,7 +284,8 @@ namespace RSToolkit.AI
 
         #endregion Flying State
 
-        protected override void InitLocomotionTypes(){
+        protected override void InitLocomotionTypes()
+        {
             BotLogicNavMeshRef = new BotLogicNavMesh(BotFSMLocomotionComponent, NavMeshAgentComponent, JumpProximityChecker);
             BotLogicFlyingRef = new BotLogicFlight(BotFSMLocomotionComponent, Flying3DObjectComponent);
             InitStates();
@@ -289,24 +293,36 @@ namespace RSToolkit.AI
             BTFiniteStateMachineManagerComponent.AddFSM(FSMFlyable);
         }
 
-        protected override bool InitBotWander(){
-            if(!base.InitBotWander()){
+        protected override bool InitBotWander()
+        {
+            if (!base.InitBotWander())
+            {
                 return false;
             }
             BotWanderFlyingComponent = GetComponent<BotPartWanderFlying>();
             BotWanderNavMeshComponent = GetComponent<BotPartWanderNavMesh>();
-            if(CurrentFlyableState != FStatesFlyable.NotFlying){
+            if (CurrentFlyableState != FStatesFlyable.NotFlying)
+            {
                 BotWanderManagerComponent.Initialize(BotWanderFlyingComponent);
-            }else{
+            }
+            else
+            {
                 BotWanderManagerComponent.Initialize(BotWanderNavMeshComponent);
             }
             return true;
         }
+
+        private void OnFlyableStateChanged_Listener(BotFlyable.FStatesFlyable state)
+        {
+            CharacterAnimParams.TrySetFStateFlyable(AnimatorComponent, (int)state);
+        }
+
         #region MonoBehaviour Functions
 
         protected override void Awake()
         {
             base.Awake();
+
         }
 
         protected override void Update()

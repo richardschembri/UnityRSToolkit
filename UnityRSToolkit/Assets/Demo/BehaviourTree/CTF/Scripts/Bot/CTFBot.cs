@@ -30,6 +30,15 @@ namespace Demo.BehaviourTree.CTF{
         protected BotPartVision _botVisionComponent;
         protected BotLogicNavMesh _botNavMeshComponent;
 
+        protected void InitComponents()
+        {
+            _botLocomotiveComponent = GetComponent<BotLocomotive>();
+            _behaviourManagerComponent = GetComponent<BehaviourManager>();
+            _botVisionComponent = GetComponent<BotPartVision>();
+            _botNavMeshComponent = GetComponent<BotLogicNavMesh>();
+            FlagHolder = gameObject.GetChild("Flag Holder");
+        }
+
 #endregion Components
 
         public GameObject FlagHolder {get; set;}
@@ -68,19 +77,22 @@ namespace Demo.BehaviourTree.CTF{
         protected abstract BehaviourRootNode GetDefaultTree();
 
 
-        #region Mono Functions
+#region Mono Functions
         // Start is called before the first frame update
         protected virtual void Awake()
         {
             OnDie = new OnDieEvent();
-            _botLocomotiveComponent = GetComponent<BotLocomotive>();
-            _behaviourManagerComponent  = GetComponent<BehaviourManager>();
-            _botVisionComponent = GetComponent<BotPartVision>();
-            _botNavMeshComponent = GetComponent<BotLogicNavMesh>();
-            FlagHolder = gameObject.GetChild("Flag Holder");
+            InitComponents();
+            InitBehaviours();
             StartPosition = transform.position;
             StartRotation = transform.rotation;
         }
-        #endregion Mono Functions
+
+        protected virtual void Start()
+        {
+            _behaviourManagerComponent.SetCurrentTree(GetDefaultTree(), false);
+            _behaviourManagerComponent.StartTree();
+        }
+#endregion Mono Functions
     }
 }
