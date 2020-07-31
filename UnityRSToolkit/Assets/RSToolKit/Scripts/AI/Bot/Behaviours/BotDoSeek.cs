@@ -10,23 +10,33 @@ using StopMovementConditions = BotLocomotive.StopMovementConditions;
 	public class BotDoSeek : BehaviourAction
 	{
         private const string NODE_NAME = "DoSeek";
-		public bool StopAtPersonalOrInteract {get; set;}
+		public StopMovementConditions StopMovementCondition {get; set;}
 		public BotLocomotive BotLocomotiveComponent{get; private set;}
 
 		public BotDoSeek(BotLocomotive botLocomotiveComponent,
-								bool stopAtPersonalOrInteract = true,
+								StopMovementConditions stopMovementCondition = StopMovementConditions.WITHIN_INTERACTION_DISTANCE ,
 								string name = NODE_NAME) : base( name){
 			BotLocomotiveComponent = botLocomotiveComponent;
-			StopAtPersonalOrInteract= stopAtPersonalOrInteract;
+			StopMovementCondition= stopMovementCondition;
 			_multiFrameFunc = DoSeek;
 			OnStarted.AddListener(DoSeekOnStarted_Listener);
 		}
 
         protected virtual void DoSeekOnStarted_Listener(){
-            BotLocomotiveComponent.MoveToTarget(StopAtPersonalOrInteract ?
-													StopMovementConditions.WITHIN_PERSONAL_SPACE :
-													StopMovementConditions.WITHIN_INTERACTION_DISTANCE);
+            BotLocomotiveComponent.MoveToTarget(StopMovementCondition);
         }
+
+		public bool ArrivedAtDestination(){
+			switch(StopMovementCondition){
+				case StopMovementConditions.WITHIN_INTERACTION_DISTANCE:
+					return BotLocomotiveComponent.IsWithinInteractionDistance();
+				case StopMovementConditions.WITHIN_PERSONAL_SPACE:
+					return BotLocomotiveComponent.IsWithinPersonalSpace();
+				case StopMovementConditions.AT_POSITION:
+					return BotLocomotiveComponent.IsAtPosition();
+			}
+			return false;
+		}
 
         protected virtual BehaviourAction.ActionResult DoSeek(bool cancel){
             if(cancel || !BotLocomotiveComponent.IsFocused){
@@ -34,8 +44,7 @@ using StopMovementConditions = BotLocomotive.StopMovementConditions;
                 return BehaviourAction.ActionResult.FAILED;
             }
 
-            if((StopAtPersonalOrInteract && BotLocomotiveComponent.IsWithinPersonalSpace())
-				|| (!StopAtPersonalOrInteract && BotLocomotiveComponent.IsWithinInteractionDistance())){
+            if(ArrivedAtDestination()){
                 if(BotLocomotiveComponent.IsFacing()){
                     return BehaviourAction.ActionResult.SUCCESS;
                 }

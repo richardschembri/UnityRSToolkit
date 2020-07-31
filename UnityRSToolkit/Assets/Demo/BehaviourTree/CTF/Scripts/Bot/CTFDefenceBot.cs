@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using RSToolkit.AI;
 using RSToolkit.AI.Behaviour;
 using RSToolkit.AI.Behaviour.Composite;
 using RSToolkit.AI.Behaviour.Task;
@@ -68,7 +69,7 @@ namespace Demo.BehaviourTree.CTF{
             CTFDefend_FlagNotTakenBehaviours.IsEnemyWithinSight = new BotIsWithinSight(_botVisionComponent, CTFGameManager.TAG_OFFENCE, CTFDefend_FlagNotTakenBehaviours.DoDefend);
             CTFDefend_FlagNotTakenBehaviours.MainSelector.AddChild(CTFDefend_FlagNotTakenBehaviours.IsEnemyWithinSight);
 
-            CTFDefend_FlagNotTakenBehaviours.DoSeekStartingPosition = new BehaviourAction(DoSeek, "Do Seek");
+            CTFDefend_FlagNotTakenBehaviours.DoSeekStartingPosition = new BotDoSeek (_botLocomotiveComponent, BotLocomotive.StopMovementConditions.AT_POSITION );
         }
 
         protected override void InitFlagTakenBehaviours(){
@@ -79,7 +80,7 @@ namespace Demo.BehaviourTree.CTF{
             }
         }
         protected void InitDefendFlagTakenBehaviours(){
-            CTFDefend_FlagTakenBehaviours.DoSeekEnemy = new BotDoSeek(_botLocomotiveComponent, true, "Do Seek Enemy");
+            CTFDefend_FlagTakenBehaviours.DoSeekEnemy = new BotDoSeek(_botLocomotiveComponent, BotLocomotive.StopMovementConditions.AT_POSITION, "Do Seek Enemy");
             CTFDefend_FlagTakenBehaviours.IsFlagNotCaptured = new BehaviourCondition(IsFlagNotCapturedCondition, CTFDefend_FlagTakenBehaviours.DoSeekEnemy);
         }
 
@@ -87,7 +88,7 @@ namespace Demo.BehaviourTree.CTF{
             CTFPatrol_FlagNotTakenBehaviours.PatrolSequence = new BehaviourSequence(false);
             CTFPatrol_FlagNotTakenBehaviours.DoPatrol = new BotDoPatrol(_botLocomotiveComponent, CTFGameManager.TAG_OFFENCE);
 			CTFPatrol_FlagNotTakenBehaviours.DoPatrol.OnStopped.AddListener(DoPatrol_OnStopped);
-            CTFPatrol_FlagNotTakenBehaviours.DoSeekEnemy = new BotDoSeek(_botLocomotiveComponent, true, "Do Seek Action");
+            CTFPatrol_FlagNotTakenBehaviours.DoSeekEnemy = new BotDoSeek(_botLocomotiveComponent, BotLocomotive.StopMovementConditions.AT_POSITION, "Do Seek Action");
         }
 #endregion Init Behaviours
 

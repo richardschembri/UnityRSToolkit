@@ -52,28 +52,6 @@ namespace Demo.BehaviourTree.CTF{
 
 #region Behaviour Logic
 
-#region DoSeek
-
-        protected virtual void DoSeekOnStarted_Listener(){
-            _botLocomotiveComponent.MoveToTarget(BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE);
-        }
-
-        protected virtual BehaviourAction.ActionResult DoSeek(bool cancel){
-            if(cancel || !_botLocomotiveComponent.IsFocused){
-                _botLocomotiveComponent.StopMoving();
-                return BehaviourAction.ActionResult.FAILED;
-            }
-            if(_botLocomotiveComponent.IsWithinPersonalSpace()){
-                if(_botLocomotiveComponent.IsFacing()){
-                    return BehaviourAction.ActionResult.SUCCESS;
-                }
-                _botLocomotiveComponent.RotateTowardsPosition();
-            }
-            return BehaviourAction.ActionResult.PROGRESS;
-        }
-
-#endregion DoSeek
-
 #endregion Behaviour Logic
 
         public abstract void SwitchToTree_FlagTaken();

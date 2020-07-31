@@ -57,14 +57,16 @@ namespace Demo.BehaviourTree.CTF{
             CTFOffence_FlagNotTakenBehaviours.MainSelector = new BehaviourSelector(false);
             CTFOffence_FlagNotTakenBehaviours.Root.AddChild(CTFOffence_FlagNotTakenBehaviours.MainSelector);
 
-            CTFOffence_FlagNotTakenBehaviours.DoSeekFlag = new BehaviourAction(DoSeek, "Do Seek Flag");
+            CTFOffence_FlagNotTakenBehaviours.DoSeekFlag = new BotDoSeek(_botLocomotiveComponent,
+																			BotLocomotive.StopMovementConditions.AT_POSITION,
+																			"Do Seek Flag");
             CTFOffence_FlagNotTakenBehaviours.DoSeekFlag.OnStarted.AddListener(DoSeekFlagOnStarted_Listener);
             CTFOffence_FlagNotTakenBehaviours.IsEnemyNotWithinDistance = new BotIsWithinSight(_botVisionComponent, CTFGameManager.TAG_DEFENCE, CTFOffence_FlagNotTakenBehaviours.DoSeekFlag, true);
 
             CTFOffence_FlagNotTakenBehaviours.MainSelector.AddChild(CTFOffence_FlagNotTakenBehaviours.IsEnemyNotWithinDistance);
 
             CTFOffence_FlagNotTakenBehaviours.DoFlee = new BehaviourAction(DoFlee, "Do Flee");
-            CTFOffence_FlagNotTakenBehaviours.DoFlee.OnStarted.AddListener(DoFleeOnStarted_Listener); 
+            CTFOffence_FlagNotTakenBehaviours.DoFlee.OnStarted.AddListener(DoFleeOnStarted_Listener);
             CTFOffence_FlagNotTakenBehaviours.MainSelector.AddChild(CTFOffence_FlagNotTakenBehaviours.DoFlee);
         }
 
@@ -79,16 +81,16 @@ namespace Demo.BehaviourTree.CTF{
             CTFOffence_FlagTakenBehaviours.HasFlag.Name = "Has Flag";
             CTFOffence_FlagTakenBehaviours.MainSelector.AddChild(CTFOffence_FlagTakenBehaviours.HasFlag);
 
-            CTFOffence_FlagTakenBehaviours.DoSeekCapturePoint = new BehaviourAction(DoSeek, "Do Seek Capture Point");
+            CTFOffence_FlagTakenBehaviours.DoSeekCapturePoint = new BotDoSeek(_botLocomotiveComponent, BotLocomotive.StopMovementConditions.AT_POSITION, "Do Seek Capture Point");//new BehaviourAction(DoSeek, "Do Seek Capture Point");
             CTFOffence_FlagTakenBehaviours.TakeFlagToCapturePointSequence.AddChild(CTFOffence_FlagTakenBehaviours.DoSeekCapturePoint);
             CTFOffence_FlagTakenBehaviours.DoTakeCelebrate = new BehaviourAction(DoCelebrate, "Do Celebrate");
             CTFOffence_FlagTakenBehaviours.TakeFlagToCapturePointSequence.AddChild(CTFOffence_FlagTakenBehaviours.DoTakeCelebrate);
 
             CTFOffence_FlagTakenBehaviours.SeekFlagSequence = new BehaviourSequence(false);
             CTFOffence_FlagTakenBehaviours.IsFlagNotCaptured = new BehaviourConditionInverse(CTFGameManager.Instance.IsFlagTaken, CTFOffence_FlagTakenBehaviours.SeekFlagSequence);
-            CTFOffence_FlagTakenBehaviours.DoSeekFlag = new BehaviourAction(DoSeek, "Do Seek Flag");
+            CTFOffence_FlagTakenBehaviours.DoSeekFlag = new BotDoSeek(_botLocomotiveComponent,BotLocomotive.StopMovementConditions.AT_POSITION, "Do Seek Flag");
             CTFOffence_FlagTakenBehaviours.SeekFlagSequence.AddChild(CTFOffence_FlagTakenBehaviours.DoSeekFlag);
-            CTFOffence_FlagTakenBehaviours.DoSeekCelebrate = new BehaviourAction(DoSeek, "Do Seek Celebrate");
+            CTFOffence_FlagTakenBehaviours.DoSeekCelebrate = new BotDoSeek(_botLocomotiveComponent,BotLocomotive.StopMovementConditions.AT_POSITION, "Do Seek Celebrate");
             CTFOffence_FlagTakenBehaviours.SeekFlagSequence.AddChild(CTFOffence_FlagTakenBehaviours.DoSeekCelebrate);
         }
 
