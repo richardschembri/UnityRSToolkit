@@ -39,7 +39,7 @@ namespace RSToolkit.AI.Behaviour.Composite
                 _stateActions.Add(state, stateaction);
                 AddChild(stateaction);
             }
-            
+
             return stateaction;
         }
 
@@ -51,10 +51,10 @@ namespace RSToolkit.AI.Behaviour.Composite
         public void ChangeState(T newState, bool silent = false)
         {
             _nextstate = newState;
-            if(_stateActions[CurrentState].State == NodeState.INACTIVE){
+            if(_stateActions[CurrentState].State == NodeState.INACTIVE || silent){
                 ChangeState(silent);
             }else if(_stateActions[CurrentState].State == NodeState.ACTIVE){
-                _stateActions[CurrentState].RequestStopNode(silent);
+                _stateActions[CurrentState].RequestStopNode();
             }
         }
 
@@ -65,11 +65,14 @@ namespace RSToolkit.AI.Behaviour.Composite
 
         private void ChangeState(bool silent){
             LastState = CurrentState;
+			if(silent){
+				_stateActions[LastState].StopNode(silent);
+			}
             CurrentState = _nextstate;
             if (!silent)
             {
                 OnChanged?.Invoke(CurrentState);
-            }            
+            }
             _stateActions[CurrentState].StartNode(silent);
         }
 

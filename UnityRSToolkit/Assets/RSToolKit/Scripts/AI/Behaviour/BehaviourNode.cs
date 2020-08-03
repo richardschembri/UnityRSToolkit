@@ -437,13 +437,13 @@ namespace RSToolkit.AI.Behaviour
                 {
                     m_timers[i].Update();
                 }
-            }           
+            }
         }
         */
 
         public virtual void Update(UpdateType updateType = UpdateType.DEFAULT)
         {
-            
+
         }
 
 

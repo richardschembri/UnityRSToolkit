@@ -19,7 +19,6 @@ namespace RSToolkit.AI.FSM
 
         public void AddFSM(IBTFiniteStateMachine fsm)
         {
-            
             if (_fsmList.Contains(fsm))
             {
                 throw new Exception($"{fsm.GetName()} already exists");
