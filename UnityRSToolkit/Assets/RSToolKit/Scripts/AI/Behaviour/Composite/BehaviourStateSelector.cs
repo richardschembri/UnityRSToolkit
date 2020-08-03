@@ -48,21 +48,32 @@ namespace RSToolkit.AI.Behaviour.Composite
             return _stateActions[state];
         }
 
-        public void ChangeState(T newState){
+        public void ChangeState(T newState, bool silent = false)
+        {
             _nextstate = newState;
             if(_stateActions[CurrentState].State == NodeState.INACTIVE){
-                ChangeState();
+                ChangeState(silent);
             }else if(_stateActions[CurrentState].State == NodeState.ACTIVE){
-                _stateActions[CurrentState].RequestStopNode();
+                _stateActions[CurrentState].RequestStopNode(silent);
             }
         }
 
-        private void ChangeState(){
+        private void ChangeState()
+        {
+            ChangeState(false);
+        }
+
+        private void ChangeState(bool silent){
             LastState = CurrentState;
             CurrentState = _nextstate;
-            OnChanged?.Invoke(CurrentState);
-            _stateActions[CurrentState].StartNode(false);
+            if (!silent)
+            {
+                OnChanged?.Invoke(CurrentState);
+            }            
+            _stateActions[CurrentState].StartNode(silent);
         }
+
+        #region Events
 
         private void OnStarted_Listener()
         {
@@ -79,5 +90,7 @@ namespace RSToolkit.AI.Behaviour.Composite
                 StopNode(false);
             }
         }
+
+        #endregion Events
     }
 }

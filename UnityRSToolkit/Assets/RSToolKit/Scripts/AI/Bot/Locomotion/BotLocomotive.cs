@@ -57,6 +57,7 @@ namespace RSToolkit.AI.Locomotion
             }
         }
 
+        /*
         public override void ToggleComponentsForNetwork(bool owner)
         {
             base.ToggleComponentsForNetwork(owner);
@@ -71,6 +72,7 @@ namespace RSToolkit.AI.Locomotion
                 //_botWanderManagerComponent.enabled = true;
             }
         }
+        */
 
         #region Components
         private ProximityChecker _proximityCheckerComponent;
@@ -197,7 +199,8 @@ namespace RSToolkit.AI.Locomotion
                 return false;
             }
         }
-            #region Move
+
+        #region Move
 
         private bool MoveCommon(FStatesLocomotion moveType, bool fullspeed = true, StopMovementConditions stopMovementCondition = StopMovementConditions.NONE)
         {

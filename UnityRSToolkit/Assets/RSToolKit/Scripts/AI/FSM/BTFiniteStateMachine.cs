@@ -35,9 +35,9 @@ namespace RSToolkit.AI.FSM
             }
         }
 
-        public void ChangeState(T newState)
+        public void ChangeState(T newState, bool silent = false)
         {
-            _stateSelector.ChangeState(newState);
+            _stateSelector.ChangeState(newState, silent);
         }
 
         public string GetName()

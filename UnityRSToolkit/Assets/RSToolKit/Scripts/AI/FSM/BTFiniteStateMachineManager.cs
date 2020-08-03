@@ -58,6 +58,19 @@ namespace RSToolkit.AI.FSM
             FSMBehaviourtree?.UpdateRecursively(updateType);
         }
 
+        private void FSMBehaviourtreeOnStartedSilent_Listener()
+        {
+            //  Need to start it on next tick
+            _parallelfsm.StartNode(true);
+        }
+
+        #region Mono Functions
+
+        void Awake()
+        {
+            FSMBehaviourtree.OnStartedSilent.AddListener(FSMBehaviourtreeOnStartedSilent_Listener);
+        }
+
         void Update()
         {
             UpdateCommon(BehaviourNode.UpdateType.DEFAULT);
@@ -72,5 +85,6 @@ namespace RSToolkit.AI.FSM
         {
             UpdateCommon(BehaviourNode.UpdateType.LATE);
         }
+        #endregion Mono Functions
     }
 }

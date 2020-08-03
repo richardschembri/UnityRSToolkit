@@ -286,11 +286,13 @@ namespace RSToolkit.AI
                 EditorGUILayout.HelpBox("Cannot use this utility in Editor Mode", MessageType.Info);
                 return false;
             }
+            /*
             else if (!manager.isActiveAndEnabled)
             {
                 EditorGUILayout.HelpBox($"{manager.name} is disabled", MessageType.Info);
                 return false;
             }
+            */
             return true;
         }
 
