@@ -10,6 +10,8 @@ namespace RSToolkit.AI.FSM
     [DisallowMultipleComponent]
     public class BTFiniteStateMachineManager : MonoBehaviour
     {
+        public bool IsSilent = false;
+
         private List<IBTFiniteStateMachine> _fsmList = new List<IBTFiniteStateMachine>();
         public ReadOnlyCollection<IBTFiniteStateMachine> FSMList { get { return _fsmList.AsReadOnly(); } }
 
@@ -40,7 +42,7 @@ namespace RSToolkit.AI.FSM
             return fsm;
         }
 
-        public void StartFSMs(bool silent = false)
+        public void StartFSMs()
         {
             if (!FSMBehaviourtree.Children.Contains(_parallelfsm))
             {
@@ -48,7 +50,15 @@ namespace RSToolkit.AI.FSM
                 _parallelfsm.Name = "State Machines";
                 FSMBehaviourtree.AddChild(_parallelfsm);
             }
-            FSMBehaviourtree.StartNode();
+            FSMBehaviourtree.StartNode(IsSilent);
+            if (IsSilent)
+            {
+                _parallelfsm.StartNode(true);
+                for(int i = 0; i < _parallelfsm.Children.Count; i++)
+                {
+                    _parallelfsm.Children[i].StartNode(true);
+                }
+            }
         }
 
         private void UpdateCommon(BehaviourNode.UpdateType updateType)
@@ -57,33 +67,30 @@ namespace RSToolkit.AI.FSM
             FSMBehaviourtree?.UpdateRecursively(updateType);
         }
 
-        private void FSMBehaviourtreeOnStartedSilent_Listener()
-        {
-            //  Need to start it on next tick
-            _parallelfsm.StartNode(true);
-        }
-
         #region Mono Functions
 
         void Awake()
         {
-            FSMBehaviourtree.OnStartedSilent.AddListener(FSMBehaviourtreeOnStartedSilent_Listener);
         }
 
         void Update()
         {
+            if (IsSilent) { return; }
             UpdateCommon(BehaviourNode.UpdateType.DEFAULT);
         }
 
         void FixedUpdate()
         {
+            if (IsSilent) { return; }
             UpdateCommon(BehaviourNode.UpdateType.FIXED);
         }
 
         void LateUpdate()
         {
+            if (IsSilent) { return; }
             UpdateCommon(BehaviourNode.UpdateType.LATE);
         }
+
         #endregion Mono Functions
     }
 }

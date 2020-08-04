@@ -19,6 +19,14 @@ namespace RSToolkit.AI
             Interactee
         }
 
+        public enum NetworkTypes
+        {
+            None,
+            Owner,
+            Peer
+        }
+
+
         public StatesInteraction CurrentInteractionState { get; private set; } = StatesInteraction.NotInteracting;
 
         public float InteractableCooldown = 0f;
@@ -26,9 +34,25 @@ namespace RSToolkit.AI
         public Transform TetherToTransform;
 
         public bool DebugMode = false;
+        public NetworkTypes NetworkType { get; private set; } = NetworkTypes.None;
 
-        public virtual void ToggleComponentsForNetwork(bool owner)
+        protected bool _IsNetworkPeer
         {
+            get
+            {
+                return NetworkType == NetworkTypes.Peer;
+            }
+        }
+
+        public void SetNetworkType(NetworkTypes networkType)
+        {
+            NetworkType = networkType;
+            ToggleComponentsForNetwork();
+        }
+
+        protected virtual void ToggleComponentsForNetwork()
+        {
+            /*
             if (!owner)
             {
                 BTFiniteStateMachineManagerComponent.enabled = false;
@@ -37,6 +61,9 @@ namespace RSToolkit.AI
             {
                 BTFiniteStateMachineManagerComponent.enabled = true;
             }
+            */
+
+            BTFiniteStateMachineManagerComponent.IsSilent = NetworkType == NetworkTypes.Peer;
         }
 
         #region Components
@@ -426,7 +453,6 @@ namespace RSToolkit.AI
             // return transform.rotation == Quaternion.LookRotation(target.position - transform.position, Vector3.up);
         }
 
-
         public bool IsFacing()
         {
             if (FocusedOnTransform != null)
@@ -451,8 +477,12 @@ namespace RSToolkit.AI
         }
 
         #endregion Interaction/Focus
+
+        #region Intialize
+
         public bool AutoInitialize = true;
         public bool Initialized { get; private set; } = false;
+
         public virtual bool Initialize(bool force = false)
         {
             if(Initialized && !force)
@@ -460,19 +490,42 @@ namespace RSToolkit.AI
                 return false;
             }
             Initialized = false;
-            BTFiniteStateMachineManagerComponent = GetComponent<BTFiniteStateMachineManager>();
-            BTFiniteStateMachineManagerComponent.StartFSMs();
+            BTFiniteStateMachineManagerComponent = GetComponent<BTFiniteStateMachineManager>();           
             Initialized = true;
             return true;
         }
 
+        public virtual bool Initialize(NetworkTypes networkType, bool force = false)
+        {
+            if (Initialize(force))
+            {
+                SetNetworkType(networkType);
+                return true;
+            }
+            
+            return false;
+        }
+
+        #endregion Intialize
+
         #region MonoBehaviour Functions
+
         protected virtual void Awake()
         {
             if (AutoInitialize)
             {
                 Initialize();
             }            
+        }
+
+        protected virtual void Start()
+        {
+            if (!Initialized)
+            {
+                return;
+            }
+
+            BTFiniteStateMachineManagerComponent.StartFSMs();
         }
 
         protected virtual void Update()
@@ -501,6 +554,7 @@ namespace RSToolkit.AI
             }
 #endif
         }
+
         #endregion MonoBehaviour Functions
 
         protected void DrawGizmoPositionPoint(Vector3 position)

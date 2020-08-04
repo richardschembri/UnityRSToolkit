@@ -122,10 +122,10 @@ namespace RSToolkit.AI
 
         #endregion Components
 
-        public override void ToggleComponentsForNetwork(bool owner)
+        protected override void ToggleComponentsForNetwork()
         {
-            base.ToggleComponentsForNetwork(owner);
-            if (!owner)
+            base.ToggleComponentsForNetwork();
+            if (_IsNetworkPeer)
             {
                 NavMeshAgentComponent.enabled = false;
                 Flying3DObjectComponent.enabled = false;

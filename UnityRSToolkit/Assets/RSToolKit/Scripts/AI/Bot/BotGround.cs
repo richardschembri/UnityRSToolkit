@@ -56,14 +56,14 @@ namespace RSToolkit.AI
             }
         }
 
-        public override void ToggleComponentsForNetwork(bool owner)
+        protected override void ToggleComponentsForNetwork()
         {
-            base.ToggleComponentsForNetwork(owner);
-            if (m_freefall && !owner)
+            base.ToggleComponentsForNetwork();
+            if (m_freefall && _IsNetworkPeer)
             {
                 m_freefall = false;
             }
-            else if (owner)
+            else if (!_IsNetworkPeer)
             {
                 HandleFailling();
             }

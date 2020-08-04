@@ -32,9 +32,17 @@ namespace RSToolkit.AI
             {
                 return;
             }
-            
+
+            GUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Network Type");
+            EditorGUI.BeginDisabledGroup(true);
+            EditorGUILayout.EnumPopup(_targetBot.NetworkType);
+            EditorGUI.EndDisabledGroup();
+            GUILayout.EndHorizontal();
+
             EditorGUILayout.LabelField("Bot States", EditorStyles.boldLabel);
-            if(_targetBot.InteractableCooldown > 0f)
+
+            if (_targetBot.InteractableCooldown > 0f)
             {
                 GUILayout.BeginHorizontal();
                 EditorGUI.BeginDisabledGroup(true);
