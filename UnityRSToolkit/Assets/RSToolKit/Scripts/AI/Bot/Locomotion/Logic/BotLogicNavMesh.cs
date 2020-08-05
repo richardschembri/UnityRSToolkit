@@ -25,8 +25,6 @@ namespace RSToolkit.AI.Locomotion
 
         #endregion Components
 
-
-
         public override float CurrentSpeed
         {
             get
@@ -52,6 +50,7 @@ namespace RSToolkit.AI.Locomotion
             NavMeshAgentComponent.speed = speed;
             NavMeshAgentComponent.angularSpeed = angularSpeed;
             NavMeshAgentComponent.destination = destination;
+            /*
             NavMeshAgentComponent.stoppingDistance = 0f;
             switch (BotLocomotiveComponent.StopMovementCondition)
             {
@@ -62,6 +61,7 @@ namespace RSToolkit.AI.Locomotion
                     NavMeshAgentComponent.stoppingDistance = BotLocomotiveComponent.SqrPersonalSpaceMagnitude * .75f;
                     break;
             }
+            */
             NavMeshAgentComponent.isStopped = false;
         }
 

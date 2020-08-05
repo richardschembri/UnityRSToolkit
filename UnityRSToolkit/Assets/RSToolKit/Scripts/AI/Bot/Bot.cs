@@ -549,7 +549,7 @@ namespace RSToolkit.AI
             else if (FocusedOnPosition != null)
             {
                 UnityEditor.Handles.color = new Color(1f, 1f, 0.008f, 0.55f);
-                UnityEditor.Handles.DrawSolidDisc(FocusedOnPosition.Value, Vector3.up, 0.25f);
+                //UnityEditor.Handles.DrawSolidDisc(FocusedOnPosition.Value, Vector3.up, 0.25f);
                 DrawGizmoPositionPoint(FocusedOnPosition.Value);
             }
 #endif
@@ -561,7 +561,7 @@ namespace RSToolkit.AI
         {
 #if UNITY_EDITOR
             UnityEditor.Handles.color = new Color(1f, 1f, 0.008f, 0.55f);
-            UnityEditor.Handles.DrawSolidDisc(position, Vector3.up, 0.25f);
+            UnityEditor.Handles.DrawSolidDisc(position, Vector3.up, SqrPersonalSpaceMagnitude / 5);
 #endif
         }
 

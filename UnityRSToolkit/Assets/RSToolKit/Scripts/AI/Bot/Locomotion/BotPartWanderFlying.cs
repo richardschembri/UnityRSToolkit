@@ -29,6 +29,15 @@ namespace RSToolkit.AI.Locomotion
             }
 
         }
+
+        public override BotLocomotive.StopMovementConditions StopMovementCondition
+        {
+            get
+            {
+                return BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE;
+            }
+        }
+
         public override bool CanWander()
         {
             return BotLocomotiveComponent.CurrentLocomotionType is BotLogicFlight 

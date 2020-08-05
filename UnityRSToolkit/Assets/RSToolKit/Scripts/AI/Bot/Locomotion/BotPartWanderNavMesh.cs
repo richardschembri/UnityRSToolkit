@@ -20,7 +20,7 @@ namespace RSToolkit.AI.Locomotion
         {
             Vector3 result;
             // NavMeshHelpers.AttemptRandomNavPosInSphere(transform.position, radius, out result, BotNavMeshComponent.BotComponent.SqrInteractionMagnitude);
-            NavMeshHelpers.AttemptRandomNavPosInSphere(wanderCenter.position, radius, out result, BotLocomotiveComponent.SqrInteractionMagnitude);
+            NavMeshHelpers.AttemptRandomNavPosInSphere(wanderCenter.position, radius, out result, BotLocomotiveComponent.SqrPersonalSpaceMagnitude);
             return result;
         }
 

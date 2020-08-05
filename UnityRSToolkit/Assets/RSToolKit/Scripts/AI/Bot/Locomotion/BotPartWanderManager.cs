@@ -205,7 +205,7 @@ namespace RSToolkit.AI.Locomotion
             if (_currentBotWanderComponent.MovementTimeout > 0)
             {
                 m_movingToPosition_TimeOut = MovingToPosition_TimeOut();
-                if(!BotLocomotiveComponent.MoveToPosition(BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE, false))
+                if(!BotLocomotiveComponent.MoveToPosition(_currentBotWanderComponent.StopMovementCondition, false))
                 {
                     FSM.ChangeState(FStatesWander.CannotWander);
                     return;

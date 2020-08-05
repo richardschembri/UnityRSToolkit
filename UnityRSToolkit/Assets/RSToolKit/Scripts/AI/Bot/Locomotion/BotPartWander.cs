@@ -34,18 +34,29 @@ namespace RSToolkit.AI.Locomotion
 
         }
 
-        public abstract bool CanWander();
+        public virtual BotLocomotive.StopMovementConditions StopMovementCondition
+        {
+            get
+            {
+                return BotLocomotive.StopMovementConditions.AT_POSITION;
+            }
+        }
+            //BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE
 
+        public abstract bool CanWander();
 
         public void SetWanderRadius(float radius)
         {
             _wanderRadius = radius;
         }
 
+
         public Vector3? GetNewWanderPosition(Transform wanderCenter){
             return GetNewWanderPosition(wanderCenter, _wanderRadius);
         }
         protected abstract Vector3? GetNewWanderPosition(Transform wanderCenter, float radius);
+
+        
 
         protected virtual void Awake()
         {
