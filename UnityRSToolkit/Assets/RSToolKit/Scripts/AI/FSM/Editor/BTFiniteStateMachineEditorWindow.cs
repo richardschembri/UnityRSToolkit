@@ -36,10 +36,6 @@ namespace RSToolkit.AI.FSM
 
             var newManager = (BTFiniteStateMachineManager)EditorGUILayout.ObjectField("Selected Debugger:", SelectedManager, typeof(BTFiniteStateMachineManager), true);
 
-            if (newManager.IsSilent)
-            {
-                EditorGUILayout.LabelField("Is Silent", EditorStyles.boldLabel);
-            }
             if (newManager != SelectedManager)
             {
                 SelectedManager = newManager;
@@ -49,6 +45,12 @@ namespace RSToolkit.AI.FSM
             if (!IsDebuggable(SelectedManager))
             {
                 return;
+            }
+
+
+            if (newManager.IsSilent)
+            {
+                EditorGUILayout.LabelField("Is Silent", EditorStyles.boldLabel);
             }
 
             _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);

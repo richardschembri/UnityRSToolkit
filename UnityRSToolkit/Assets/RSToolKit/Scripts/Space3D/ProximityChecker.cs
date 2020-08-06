@@ -55,7 +55,7 @@ namespace RSToolkit.Space3D
 
         public bool IsAlmostTouching(bool checkForNavMesh = true)
         {
-            bool result = IsWithinRayDistance(checkForNavMesh) != null && IsWithinRayDistance(checkForNavMesh) < 0.2f;
+            bool result = IsWithinRayDistance(checkForNavMesh) != null && IsWithinRayDistance(checkForNavMesh) < 0.05f;
             if(result)
             {
                 if(IsTrigger && !touchEnteredTriggered)

@@ -255,6 +255,10 @@ namespace RSToolkit.AI
             {
                 Flying3DObjectComponent.ApplyVerticalThrust(false);
             }
+            if (IsAlmostGrounded())
+            {
+                FSMFlyable.ChangeState(FStatesFlyable.NotFlying);
+            }
         }
 
         #endregion Landing State
