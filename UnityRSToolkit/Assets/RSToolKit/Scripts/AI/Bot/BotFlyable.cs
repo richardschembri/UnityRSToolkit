@@ -223,7 +223,7 @@ namespace RSToolkit.AI
 
         void TakingOff_Update()
         {
-            if (!BotFSMLocomotionComponent.IsFarFromGround()) // IsCloseToGround())
+            if (BotFSMLocomotionComponent.IsCloseToGround()) // .IsFarFromGround()) // 
             {
                 Flying3DObjectComponent.ApplyVerticalThrust(true);
             }

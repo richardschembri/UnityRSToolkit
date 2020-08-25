@@ -32,7 +32,7 @@ namespace RSToolkit.Space3D
         public UnityEvent OnTouchingEntered { get; private set; } = new UnityEvent();
         bool proximityEnteredTriggered = false;
         bool touchEnteredTriggered = false;
-        Color m_rayColor = Color.green;
+        Color _rayColor = Color.green;
         private Vector3 GetRayDirectionVector()
         {
             switch (RayDirection)
@@ -71,6 +71,7 @@ namespace RSToolkit.Space3D
             return result;
         }
 
+        /*
         public bool IsBeyondRayDistance(float offsetDistance)
         {
             RaycastHit hit;
@@ -80,6 +81,7 @@ namespace RSToolkit.Space3D
             }
             return true;
         }
+        */
 
 // To Refactor
         public float? IsWithinRayDistance(bool checkForNavMesh = true)
@@ -100,13 +102,14 @@ namespace RSToolkit.Space3D
         public float? IsWithinRayDistance(out RaycastHit hit)
         {
             float? hitDistance = null;
+            _rayColor = Color.green;
             if (Physics.Raycast(transform.position, GetRayDirectionVector(), out hit, MaxRayDistance, LayerMask, QueryTriggerInteraction.Ignore))
             {
                 if (hit.distance >= MinRayDistance)
                 {
                     
                     hitDistance = hit.distance;
-                    m_rayColor = Color.red;
+                    _rayColor = Color.red;
 
                     if (IsTrigger && !proximityEnteredTriggered)
                     {
@@ -129,9 +132,10 @@ namespace RSToolkit.Space3D
         public float? IsWithinRayDistance(out NavMeshHit hit)
         {
             float? hitDistance = null;
+            _rayColor = Color.green;
             if (NavMesh.SamplePosition(transform.position, out hit, MaxRayDistance, NavMesh.AllAreas))
             {
-                m_rayColor = Color.red;
+                _rayColor = Color.red;
                 hitDistance = hit.distance;
 
                 if (IsTrigger && !proximityEnteredTriggered)
@@ -156,7 +160,11 @@ namespace RSToolkit.Space3D
         void OnDrawGizmos()
         {
 #if UNITY_EDITOR
-            Debug.DrawLine(transform.position, transform.TransformPoint(GetRayDirectionVector() * MaxRayDistance), m_rayColor);
+            if (DebugMode)
+            {
+                IsWithinRayDistance();
+                Debug.DrawLine(transform.position, transform.TransformPoint(GetRayDirectionVector() * MaxRayDistance), _rayColor);
+            }
 #endif
         }
 

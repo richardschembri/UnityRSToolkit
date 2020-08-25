@@ -19,8 +19,8 @@ namespace RSToolkit.AI.Locomotion
         protected override Vector3? GetNewWanderPosition(Transform wanderCenter, float radius)
         {
             Vector3 result;
-            // NavMeshHelpers.AttemptRandomNavPosInSphere(transform.position, radius, out result, BotNavMeshComponent.BotComponent.SqrInteractionMagnitude);
-            NavMeshHelpers.AttemptRandomNavPosInSphere(wanderCenter.position, radius, out result, BotLocomotiveComponent.SqrPersonalSpaceMagnitude);
+            NavMeshHelpers.AttemptRandomNavPosInSphere(transform.position, radius, out result, BotLocomotiveComponent.SqrInteractionMagnitude);
+            // NavMeshHelpers.AttemptRandomNavPosInSphere(wanderCenter.position, radius, out result, BotLocomotiveComponent.SqrPersonalSpaceMagnitude);
             return result;
         }
 

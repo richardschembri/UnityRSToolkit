@@ -26,7 +26,6 @@ namespace RSToolkit.AI
             Peer
         }
 
-
         public StatesInteraction CurrentInteractionState { get; private set; } = StatesInteraction.NotInteracting;
 
         public float InteractableCooldown = 0f;
@@ -294,9 +293,9 @@ namespace RSToolkit.AI
 
         #endregion IsWithinDistance
 
-        public void ResetInteractionCooldown()
+        public void ResetInteractionCooldown(float percent = 1.0f)
         {
-            CanInteractFromTime = Time.time + InteractableCooldown;
+            CanInteractFromTime = Time.time + (InteractableCooldown * percent);
         }
 
         private bool ChangeInteractionState(StatesInteraction interactionState, bool force)

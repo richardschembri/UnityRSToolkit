@@ -49,7 +49,8 @@ namespace RSToolkit.AI
 
         private void HandleFailling()
         {
-            if (IsFarFromGround() && !m_freefall)
+            //if (IsFarFromGround() && !m_freefall)
+            if(!IsAlmostGrounded() && !m_freefall)
             {
                 m_freefall = true;
                 NavMeshAgentComponent.enabled = false;

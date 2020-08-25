@@ -95,10 +95,12 @@ namespace RSToolkit.AI.Locomotion
         public ProximityChecker JumpProximityChecker;
         #endregion Components
 
+        /*
         public bool IsFarFromGround()
         {
-            return GroundProximityCheckerComponent.IsBeyondRayDistance(GroundProximityCheckerComponent.MaxRayDistance);
+            return GroundProximityCheckerComponent.IsWithinRayDistance() == null;
         }
+        */
 
         public bool IsCloseToGround()
         {

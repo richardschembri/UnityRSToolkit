@@ -44,6 +44,12 @@ namespace RSToolkit.AI.FSM
 
         public void StartFSMs()
         {
+            StartFSMs(IsSilent);
+        }
+
+        public void StartFSMs(bool isSilent)
+        {
+            IsSilent = isSilent;
             if (!FSMBehaviourtree.Children.Contains(_parallelfsm))
             {
                 FSMBehaviourtree.Name = gameObject.name;
