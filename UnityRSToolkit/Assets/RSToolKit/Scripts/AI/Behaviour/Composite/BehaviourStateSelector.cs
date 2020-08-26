@@ -64,10 +64,11 @@ namespace RSToolkit.AI.Behaviour.Composite
         }
 
         private void ChangeState(bool silent){
-            LastState = CurrentState;
-			if(silent){
-				_stateActions[LastState].StopNode(silent);
+            
+			if(silent && _stateActions[CurrentState] != _stateActions[_nextstate]){
+				_stateActions[CurrentState].StopNode(silent);
 			}
+            LastState = CurrentState;
             CurrentState = _nextstate;
             if (!silent)
             {
