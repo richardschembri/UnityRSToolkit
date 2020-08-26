@@ -13,12 +13,12 @@ namespace RSToolkit.AI.Behaviour.Composite
 
         public T CurrentState { get; private set; }
         public T LastState { get; private set; }
-        private T _nextstate;
+        public T NextState { get; private set; }
 
         public event Action<T> OnChanged;
 
         public BehaviourStateSelector(T initialState) : base("Enum Selector", NodeType.COMPOSITE){
-            _nextstate = initialState;
+            NextState = initialState;
             CurrentState = initialState;
             _states = Enum.GetValues(typeof(T));
             _stateActions = new Dictionary<T, BehaviourAction>();
@@ -50,7 +50,7 @@ namespace RSToolkit.AI.Behaviour.Composite
 
         public void ChangeState(T newState, bool silent = false)
         {
-            _nextstate = newState;
+            NextState = newState;
             if(_stateActions[CurrentState].State == NodeState.INACTIVE || silent){
                 ChangeState(silent);
             }else if(_stateActions[CurrentState].State == NodeState.ACTIVE){
@@ -65,11 +65,11 @@ namespace RSToolkit.AI.Behaviour.Composite
 
         private void ChangeState(bool silent){
             
-			if(silent && _stateActions[CurrentState] != _stateActions[_nextstate]){
-				_stateActions[CurrentState].StopNode(silent);
+			if(silent && _stateActions[CurrentState] != _stateActions[NextState]){
+				_stateActions[CurrentState].StopNode(true, silent);
 			}
             LastState = CurrentState;
-            CurrentState = _nextstate;
+            CurrentState = NextState;
             if (!silent)
             {
                 OnChanged?.Invoke(CurrentState);
@@ -86,7 +86,7 @@ namespace RSToolkit.AI.Behaviour.Composite
 
         private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
         {
-            if(State == NodeState.ACTIVE && _stateActions[_nextstate] != _stateActions[CurrentState]){
+            if(State == NodeState.ACTIVE && _stateActions[NextState] != _stateActions[CurrentState]){
                 RunOnNextTick(ChangeState);
             }else if(State == NodeState.STOPPING){
                 StopNode(true);

@@ -58,6 +58,14 @@ namespace RSToolkit.AI.FSM
             }
         }
 
+        public T NextState
+        {
+            get
+            {
+                return _stateSelector.NextState;
+            }
+        }
+
         public string GetCurrentStateText()
         {
             return CurrentState.ToString();
