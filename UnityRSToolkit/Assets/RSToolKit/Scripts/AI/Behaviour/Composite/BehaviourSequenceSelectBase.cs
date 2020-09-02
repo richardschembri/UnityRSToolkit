@@ -7,16 +7,16 @@ namespace RSToolkit.AI.Behaviour.Composite
 {
     public abstract class BehaviourSequenceSelectBase : BehaviourParentNode
     {
-        private int m_index = -1;
+        private int _index = -1;
         //private NodeTimer m_processChildTimer;
 
         public BehaviourNode CurrentChild
         {
             get
             {
-                if (m_index >= 0 && m_index < Children.Count)
+                if (_index >= 0 && _index < Children.Count)
                 {
-                    return Children[m_index];
+                    return Children[_index];
                 }
                 return null;
             }
@@ -34,7 +34,7 @@ namespace RSToolkit.AI.Behaviour.Composite
 
         protected void ProcessChildNodeSequence(bool result_on_stop)
         {
-            if (++m_index < Children.Count)
+            if (++_index < Children.Count)
             {
                 if (State == NodeState.STOPPING)
                 {
@@ -65,7 +65,7 @@ namespace RSToolkit.AI.Behaviour.Composite
 
         private void ResetIndex()
         {
-            m_index = -1;
+            _index = -1;
         }
 
         private void OnStarted_Common()
@@ -90,8 +90,14 @@ namespace RSToolkit.AI.Behaviour.Composite
 
         private void OnStopping_Listener()
         {
-            Children[m_index].RequestStopNode();
-
+            if(_index > 0)
+            {
+                Children[_index].RequestStopNode();
+            }
+            else
+            {
+                StopChildren();
+            }
         }
 
         /*
@@ -117,7 +123,7 @@ namespace RSToolkit.AI.Behaviour.Composite
                 if(Children[i].State == NodeState.ACTIVE)
                 {
                     Children[i].RequestStopNode();
-                    m_index = restart_child ? i - 1 : Children.Count;
+                    _index = restart_child ? i - 1 : Children.Count;
                     return;
                 }
                 

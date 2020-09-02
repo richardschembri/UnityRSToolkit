@@ -13,15 +13,15 @@ namespace RSToolkit.AI.Behaviour.Decorator
     {
         private const string NODE_NAME = "Condition";
         private Func<bool> _isConditionMetFunc;
-        private float m_checkInterval;
-        private float m_checkVariance;
-        private NodeTimer m_conditionTimer;
+        private float _checkInterval;
+        private float _checkVariance;
+        private NodeTimer _conditionTimer;
 
         protected void Init(Func<bool> isConditionMetFunc, float checkInterval = 0.0f, float checkVariance = 0.0f)
         {
             _isConditionMetFunc = isConditionMetFunc;
-            m_checkInterval = checkInterval;
-            m_checkVariance = checkVariance;
+            _checkInterval = checkInterval;
+            _checkVariance = checkVariance;
         }
 
         #region Contructors
@@ -57,12 +57,12 @@ namespace RSToolkit.AI.Behaviour.Decorator
 
         protected override void StartObserving()
         {
-            m_conditionTimer = AddTimer(m_checkInterval, m_checkVariance, -1, Evaluate);
+            _conditionTimer = AddTimer(_checkInterval, _checkVariance, -1, Evaluate);
         }
 
         protected override void StopObserving()
         {
-            RemoveTimer(m_conditionTimer);
+            RemoveTimer(_conditionTimer);
         }
 
         protected override bool IsConditionMet()

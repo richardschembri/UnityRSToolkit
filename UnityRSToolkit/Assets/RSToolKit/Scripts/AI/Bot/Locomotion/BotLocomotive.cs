@@ -205,12 +205,13 @@ namespace RSToolkit.AI.Locomotion
         #region Move
 
         private bool MoveCommon(FStatesLocomotion moveType, bool fullspeed = true, StopMovementConditions stopMovementCondition = StopMovementConditions.NONE)
-        {
-            if (!CurrentLocomotionType.CanMove())
+        {            
+            StopMovementCondition = stopMovementCondition;
+            if (!CurrentLocomotionType.CanMove() || HasReachedDestination())
             {
+                StopMovementCondition = StopMovementConditions.NONE;
                 return false;
             }
-            StopMovementCondition = stopMovementCondition;
             _fullspeed = fullspeed;
             FSM.ChangeState(moveType);
             return true;
@@ -229,6 +230,15 @@ namespace RSToolkit.AI.Locomotion
         public bool MoveToTarget(StopMovementConditions stopMovementCondition, bool fullspeed = true)
         {
             return MoveCommon(FStatesLocomotion.MovingToTarget, fullspeed, stopMovementCondition);
+        }
+
+        public bool MoveToTarget(Transform transform, StopMovementConditions stopMovementCondition, bool fullspeed = true)
+        {
+            if (AttractMyAttention_ToTransform(transform, true))
+            {
+                return MoveToTarget(stopMovementCondition, fullspeed);
+            }
+            return false;
         }
 
         public bool MoveAwayFromTarget(bool fullspeed = true)

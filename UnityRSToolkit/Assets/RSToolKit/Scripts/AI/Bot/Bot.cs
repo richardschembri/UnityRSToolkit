@@ -420,6 +420,10 @@ namespace RSToolkit.AI
 
         public void FocusOnTransform(Transform target)
         {
+            if(target == FocusedOnTransform)
+            {
+                return;
+            }
             if (DebugMode)
             {
                 Debug.Log($"{transform.name}.FocusOnTransform: {target.name}");

@@ -11,7 +11,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
     {
         private const string NODE_NAME = "Repeater";
         private bool m_loopCountSkip = false;
-        public int TotalLoops { get; private set; }  = -1;
+        public int TotalLoops { get; private set; } = -1;
         public int LoopCount { get; private set; } = 0;
 
         NodeTimer m_restartChildTimer;
@@ -65,16 +65,17 @@ namespace RSToolkit.AI.Behaviour.Decorator
         {
             OnStarted_Common();
         }
-        
 
-        private void OnStopping_Common(){
+
+        private void OnStopping_Common()
+        {
             RemoveTimer(m_restartChildTimer);
         }
 
         private void OnStopping_Listener()
         {
             OnStopping_Common();
-            if(Children[0].State == NodeState.ACTIVE)
+            if (Children[0].State == NodeState.ACTIVE)
             {
                 Children[0].RequestStopNodeOnNextTick();
             }
@@ -84,7 +85,8 @@ namespace RSToolkit.AI.Behaviour.Decorator
             }
         }
 
-        private void OnStoppingSilent_Listener(){
+        private void OnStoppingSilent_Listener()
+        {
             OnStopping_Common();
         }
 
@@ -93,7 +95,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
         {
             if (success)
             {
-                if(State == NodeState.STOPPING || (TotalLoops >= 0 && ++LoopCount >= TotalLoops))
+                if (State == NodeState.STOPPING || (TotalLoops >= 0 && ++LoopCount >= TotalLoops))
                 {
                     StopNodeOnNextTick(true);
                 }
@@ -110,7 +112,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
 
         private void OnChildNodeStoppedSilent_Listener(BehaviourNode child, bool success)
         {
-            if (success 
+            if (success
                     && !(State == NodeState.STOPPING || (TotalLoops >= 0 && ++LoopCount >= TotalLoops)))
             {
                 m_restartChildTimer = AddTimer(0, 0, 0, RestartChild);
