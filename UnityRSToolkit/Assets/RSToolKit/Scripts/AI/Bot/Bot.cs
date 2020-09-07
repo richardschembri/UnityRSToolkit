@@ -337,6 +337,11 @@ namespace RSToolkit.AI
 
             if (IsWithinInteractionDistance(target.transform) || target.IsWithinInteractionDistance(transform) || force)
             {
+                if (target.CurrentInteractionState == StatesInteraction.Interactor)
+                {
+                    interactionState = StatesInteraction.Interactee;
+                }
+
                 if (ChangeInteractionState(interactionState, force))
                 {
                     FocusOnTransform(target.transform);
