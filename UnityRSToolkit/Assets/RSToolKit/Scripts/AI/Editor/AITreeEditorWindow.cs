@@ -16,7 +16,7 @@ namespace RSToolkit.AI
         protected const int NESTED_PADDING = 10;
 
         protected Color _activeColor = new Color(1f, 1f, 1f, 1f);
-        protected Color _inactiveColor = new Color(1f, 1f, 1f, 0.3f);
+        protected Color _inactiveColor = new Color(1f, 1f, 1f, 0.75f);
         protected Color _lineColor = new Color(0f, 0f, 0f, 1f);
 
         protected Color _defaultColor;
@@ -35,9 +35,10 @@ namespace RSToolkit.AI
 
             _smallTextStyle = new GUIStyle();
             _smallTextStyle.font = EditorStyles.miniFont;
+            _smallTextStyle.normal.textColor = Color.white;
 
             _nodeCapsuleGray = (GUIStyle)"helpbox";
-            _nodeCapsuleGray.normal.textColor = Color.black;
+            _nodeCapsuleGray.normal.textColor = Color.white; //Color.black;
 
             _nodeCapsuleFailed = new GUIStyle(_nodeCapsuleGray);
             _nodeCapsuleFailed.normal.textColor = Color.red;
@@ -133,7 +134,9 @@ namespace RSToolkit.AI
             bool drawLabel = !string.IsNullOrEmpty(node.DebugTools.GUIlabel);
             string label = node.DebugTools.GUIlabel;
 
+            
             GUI.backgroundColor = node.DebugTools.NodeColor;
+            GUI.contentColor = Color.white;
             //tagStyle.padding.left = last ? depth * 10 : (depth - 1) * 10;
             if (!drawLabel)
             {
