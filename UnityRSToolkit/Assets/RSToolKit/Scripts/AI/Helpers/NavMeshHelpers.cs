@@ -10,10 +10,10 @@ namespace RSToolkit.AI.Helpers
     {
         public enum OffMeshLinkPosition
         {
-            Off,
-            Start,
-            Mid,
-            End
+            Off = 0,
+            Start = 1,
+            Mid = 2,
+            End = 3
         }
         // Might use only velovity magnitude instead
         public static float GetCurrentSpeed(this NavMeshAgent self)
