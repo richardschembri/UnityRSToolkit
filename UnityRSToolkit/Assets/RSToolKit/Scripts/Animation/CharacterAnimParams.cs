@@ -21,6 +21,11 @@ namespace RSToolkit.Animation
                 animatorComponent.SetTrigger(TriggerHash);
             }
 
+            public void ResetTrigger(Animator animatorComponent)
+            {
+                animatorComponent.ResetTrigger(TriggerHash);
+            }
+
             public bool IsInTransition(Animator animatorComponent)
             {
                 return animatorComponent.GetAnimatorTransitionInfo(0).IsName(TriggerName);

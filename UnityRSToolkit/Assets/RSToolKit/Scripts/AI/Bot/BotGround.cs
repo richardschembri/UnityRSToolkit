@@ -57,9 +57,9 @@ namespace RSToolkit.AI
             }
         }
 
-        protected override void ToggleComponentsForNetwork()
+        protected override void ToggleComponentsForNetwork(bool toggleKinematic = true)
         {
-            base.ToggleComponentsForNetwork();
+            base.ToggleComponentsForNetwork(toggleKinematic);
             if (m_freefall && _IsNetworkPeer)
             {
                 m_freefall = false;

@@ -13,6 +13,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
         private bool m_loopCountSkip = false;
         public int TotalLoops { get; private set; } = -1;
         public int LoopCount { get; private set; } = 0;
+        public bool StopOnChildFail { get; private set; }
 
         NodeTimer m_restartChildTimer;
 
@@ -20,9 +21,10 @@ namespace RSToolkit.AI.Behaviour.Decorator
         /// Repeated runs it's child node
         /// </summary>
         /// <param name="totalLoops">The amount of times the child node is looped. If -1 it will loop indefinately unless stopped manually.</param>
-        public BehaviourRepeater(int totalLoops = -1) : base(NODE_NAME, NodeType.DECORATOR)
+        public BehaviourRepeater(int totalLoops = -1, bool stopOnChildFail = true) : base(NODE_NAME, NodeType.DECORATOR)
         {
             TotalLoops = totalLoops;
+            StopOnChildFail = stopOnChildFail;
             OnStarted.AddListener(OnStarted_Listener);
             OnStartedSilent.AddListener(OnStartedSilent_Listener);
             OnStopping.AddListener(OnStopping_Listener);
@@ -90,7 +92,27 @@ namespace RSToolkit.AI.Behaviour.Decorator
             OnStopping_Common();
         }
 
-
+        /*
+         private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
+         {
+             if (success)
+             {
+                 if(State == NodeState.STOPPING || (TotalLoops >= 0 && ++LoopCount >= TotalLoops))
+                 {
+                     StopNodeOnNextTick(true);
+                 }
+                 else
+                 {
+                     m_restartChildTimer = AddTimer(0, 0, 0, RestartChild);
+                 }
+             }
+             else
+             {
+                 StopNodeOnNextTick(false);
+             }
+         }
+         */
+        // To Refactor
         private void OnChildNodeStopped_Listener(BehaviourNode child, bool success)
         {
             if (success)
@@ -104,10 +126,15 @@ namespace RSToolkit.AI.Behaviour.Decorator
                     m_restartChildTimer = AddTimer(0, 0, 0, RestartChild);
                 }
             }
-            else
+            else if (State == NodeState.STOPPING || StopOnChildFail)
             {
                 StopNodeOnNextTick(false);
             }
+            else
+            {
+                m_restartChildTimer = AddTimer(0, 0, 0, RestartChild);
+            }
+
         }
 
         private void OnChildNodeStoppedSilent_Listener(BehaviourNode child, bool success)

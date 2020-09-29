@@ -122,9 +122,9 @@ namespace RSToolkit.AI
 
         #endregion Components
 
-        protected override void ToggleComponentsForNetwork()
+        protected override void ToggleComponentsForNetwork(bool toggleKinematic = true)
         {
-            base.ToggleComponentsForNetwork();
+            base.ToggleComponentsForNetwork(toggleKinematic);
             if (_IsNetworkPeer)
             {
                 NavMeshAgentComponent.enabled = false;

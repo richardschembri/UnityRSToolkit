@@ -43,26 +43,10 @@ namespace RSToolkit.AI
             }
         }
 
-        public void SetNetworkType(NetworkTypes networkType)
+        public void SetNetworkType(NetworkTypes networkType, bool toggleKinematic = true)
         {
             NetworkType = networkType;
-            ToggleComponentsForNetwork();
-        }
-
-        protected virtual void ToggleComponentsForNetwork()
-        {
-            /*
-            if (!owner)
-            {
-                BTFiniteStateMachineManagerComponent.enabled = false;
-            }
-            else
-            {
-                BTFiniteStateMachineManagerComponent.enabled = true;
-            }
-            */
-
-            BTFiniteStateMachineManagerComponent.IsSilent = NetworkType == NetworkTypes.Peer;
+            ToggleComponentsForNetwork(toggleKinematic);
         }
 
         #region Components
@@ -104,6 +88,29 @@ namespace RSToolkit.AI
                     _rigidBodyComponent = GetComponent<Rigidbody>();
                 }
                 return _rigidBodyComponent;
+            }
+        }
+
+        protected virtual void ToggleComponentsForNetwork(bool toggleKinematic = true)
+        {
+            //BTFiniteStateMachineManagerComponent.IsSilent = NetworkType == NetworkTypes.Peer;
+            if(NetworkType == NetworkTypes.Peer)
+            {
+                BTFiniteStateMachineManagerComponent.IsSilent = true;
+
+                if (toggleKinematic)
+                {
+                    RigidBodyComponent.isKinematic = true;
+                }                
+            }
+            else
+            {
+                BTFiniteStateMachineManagerComponent.IsSilent = false;
+
+                if (toggleKinematic)
+                {
+                    RigidBodyComponent.isKinematic = false;
+                }
             }
         }
 
