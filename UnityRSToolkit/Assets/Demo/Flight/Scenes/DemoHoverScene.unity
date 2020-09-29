@@ -6131,6 +6131,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 419e95672819d40b49efa83de376a945, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsSilent: 0
 --- !u!114 &1878005665
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6205,6 +6206,7 @@ MonoBehaviour:
   m_interactionMagnitude: 1.35
   personalSpacePercent: 0.35
   safeAwarenessPercent: 1.5
+  atPositionErrorMargin: 0.1
   AutoInitialize: 1
   JumpProximityChecker: {fileID: 0}
 --- !u!114 &1878005671
@@ -6772,7 +6774,7 @@ Camera:
   m_GameObject: {fileID: 2000414103}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
+  m_ClearFlags: 2
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -6814,7 +6816,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2000414103}
   m_LocalRotation: {x: 0.02337799, y: 0.00000003440336, z: -8.045013e-10, w: 0.9997267}
-  m_LocalPosition: {x: 0, y: 1.5220001, z: -2.345}
+  m_LocalPosition: {x: 86.93, y: 7.5, z: -146.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -7041,6 +7043,7 @@ MonoBehaviour:
   m_interactionMagnitude: 1.35
   personalSpacePercent: 0.35
   safeAwarenessPercent: 2
+  atPositionErrorMargin: 0.1
   AutoInitialize: 1
   JumpProximityChecker: {fileID: 0}
   StartInAir: 1
@@ -7057,6 +7060,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 419e95672819d40b49efa83de376a945, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsSilent: 0
 --- !u!195 &7990845843178055564
 NavMeshAgent:
   m_ObjectHideFlags: 0
