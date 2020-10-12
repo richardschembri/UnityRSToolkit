@@ -83,13 +83,6 @@ namespace RSToolkit.AI.Behaviour
             ElapsedTime = elapsedTime;
         }
 
-        /*
-        public static void UpdateTime(float deltaTime)
-        {
-            ElapsedTime += deltaTime;
-        }
-        */
-
         public class NodeTimer
         {
             public double TimeOutIn { get; private set; }
@@ -158,13 +151,10 @@ namespace RSToolkit.AI.Behaviour
 
         public NodeState State { get; protected set; } = NodeState.INACTIVE;
         public bool? Result { get; private set; } = null;
-        //public string Name { get; protected set; }
         public string Name { get; set; }
-        //public BehaviourNode Root { get; set; }
         public NodeType Type { get; private set; }
         public BehaviourParentNode Parent { get; private set; }
 
-        //private List<NodeTimer> m_timers = new List<NodeTimer>();
         private Dictionary<UpdateType, List<NodeTimer>> _timers = new Dictionary<UpdateType, List<NodeTimer>>();
       
         public ReadOnlyCollection<NodeTimer> GetTimers(UpdateType updateType)
@@ -194,23 +184,8 @@ namespace RSToolkit.AI.Behaviour
         public class OnStoppedEvent : UnityEvent<bool> { };
         public OnStoppedEvent OnStopped { get; private set; } = new OnStoppedEvent();
         public OnStoppedEvent OnStoppedSilent { get; private set; } = new OnStoppedEvent();
-        /*
-        public BehaviourNode GetRoot()
-        {
-            if(Type == NodeType.ROOT)
-            {
-                return this;
-            }
-            if (Parent == null)
-            {
-                return null;
-            }else if(Parent.Type == NodeType.ROOT){
-                return Parent;
-            }else{
-                return Parent.GetRoot();
-            }
-        }
-        */
+        public class OnLeafBroadcastEvent : UnityEvent<BehaviourNode> { };
+
         public BehaviourRootNode GetRoot()
         {
             if (this is BehaviourRootNode)
@@ -271,20 +246,6 @@ namespace RSToolkit.AI.Behaviour
         {
             _timers[updateType].Remove(to_remove); //m_timers.Remove(to_remove);
         }
-
-        /*
-        public bool StartNode()
-        {
-            if(this.State != NodeState.INACTIVE)
-            {
-                return false;
-            }
-            this.Result = null;
-            this.State = NodeState.ACTIVE;
-            OnStarted.Invoke();
-            return true;
-        }
-        */
 
         /// <summary>
         /// Starts the node
@@ -379,28 +340,11 @@ namespace RSToolkit.AI.Behaviour
             _timers.Add(UpdateType.DEFAULT, new List<NodeTimer>());
             _timers.Add(UpdateType.FIXED, new List<NodeTimer>());
             _timers.Add(UpdateType.LATE, new List<NodeTimer>());
-            /*
-            OnStopped.AddListener(OnStopped_Listener);
-            OnStoppedSilent.AddListener(OnStoppedSilent_Listener);
-            */
 #if UNITY_EDITOR
             InitDebugTools();
 #endif
         }
 
-        /*
-                private void OnStopped_Listener(bool success)
-                {
-                    OnStopped_Common(success);
-                    Parent?.OnChildNodeStopped.Invoke(this, success);
-                }
-
-                private void OnStoppedSilent_Listener(bool success)
-                {
-                    OnStopped_Common(success);
-                    Parent?.OnChildNodeStoppedSilent.Invoke(this, success);
-                }
-        */
         int m_timerCount;
 
         public void UpdateTimers(UpdateType updateType = UpdateType.DEFAULT)
@@ -421,31 +365,10 @@ namespace RSToolkit.AI.Behaviour
             }
         }
 
-        /*
-        public void UpdateTimers()
-        {                      
-            m_timerCount = m_timers.Count;
-            for (int i = 0; i < m_timers.Count; i++)
-            {                
-                if(m_timers[i].IsFinished && m_timers[i].AutoRemove)
-                {
-                    m_timers.Remove(m_timers[i]);
-                    i--;
-                    m_timerCount--;
-                }
-                else
-                {
-                    m_timers[i].Update();
-                }
-            }
-        }
-        */
-
         public virtual void Update(UpdateType updateType = UpdateType.DEFAULT)
         {
 
         }
-
 
 #if UNITY_EDITOR
         public BehaviourDebugTools DebugTools { get; protected set; }

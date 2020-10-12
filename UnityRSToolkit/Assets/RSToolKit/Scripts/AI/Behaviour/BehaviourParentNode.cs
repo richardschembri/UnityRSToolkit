@@ -156,5 +156,29 @@ namespace RSToolkit.AI.Behaviour
         }
         */
 
+
+        public IEnumerable<BehaviourNode> GetLeaves(NodeState nodeState)
+        {
+            BehaviourParentNode parentNode;
+            for (int i = 0; i < m_children.Count; i++)
+            {
+                if(m_children[i].State == nodeState)
+                {
+                    parentNode = m_children[i] as BehaviourParentNode;
+
+                    if (parentNode != null)
+                    {
+                        foreach(var leaf in parentNode.GetLeaves(nodeState))
+                        {
+                            yield return leaf;
+                        }
+                    }
+                    else
+                    {
+                        yield return m_children[i];
+                    }
+                }
+            }
+        }
     }
 }
