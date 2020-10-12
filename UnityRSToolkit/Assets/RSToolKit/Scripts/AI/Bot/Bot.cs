@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Linq;
 using RSToolkit.AI.Locomotion;
 using RSToolkit.AI.FSM;
+using UnityEngine.Events;
 
 namespace RSToolkit.AI
 {
@@ -42,6 +43,8 @@ namespace RSToolkit.AI
                 return NetworkType == NetworkTypes.Peer;
             }
         }
+
+        public UnityEvent OnAwake = new UnityEvent();
 
         public void SetNetworkType(NetworkTypes networkType, bool toggleKinematic = true)
         {
@@ -530,7 +533,8 @@ namespace RSToolkit.AI
             if (AutoInitialize)
             {
                 Initialize();
-            }            
+            }
+            OnAwake.Invoke();
         }
 
         protected virtual void Start()
