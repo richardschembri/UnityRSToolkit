@@ -177,14 +177,33 @@ namespace RSToolkit.AI.Behaviour
             return _timers[UpdateType.DEFAULT].Count(t => t.IsActive == active) + _timers[UpdateType.FIXED].Count(t => t.IsActive == active) + _timers[UpdateType.LATE].Count(t => t.IsActive == active);
         }
 
+        public string GetUniqueID()
+        {
+            if (Parent != null)
+            {
+                return $"{Parent.GetUniqueID()}-{Parent.GetIndexOfChild(this)}";
+            }
+
+            return "0";
+        }
+
+        public string GetNamePath()
+        {
+            if (Parent != null)
+            {
+                return $"{Parent.GetNamePath()} -> {Name}";
+            }
+
+            return Name;
+        }
+
         public UnityEvent OnStarted { get; private set; } = new UnityEvent();
         public UnityEvent OnStartedSilent { get; private set; } = new UnityEvent();
         public UnityEvent OnStopping { get; private set; } = new UnityEvent();
         public UnityEvent OnStoppingSilent { get; private set; } = new UnityEvent();
         public class OnStoppedEvent : UnityEvent<bool> { };
         public OnStoppedEvent OnStopped { get; private set; } = new OnStoppedEvent();
-        public OnStoppedEvent OnStoppedSilent { get; private set; } = new OnStoppedEvent();
-        public class OnLeafBroadcastEvent : UnityEvent<BehaviourNode> { };
+        public OnStoppedEvent OnStoppedSilent { get; private set; } = new OnStoppedEvent();        
 
         public BehaviourRootNode GetRoot()
         {
@@ -269,6 +288,19 @@ namespace RSToolkit.AI.Behaviour
                 OnStartedSilent.Invoke();
             }
             return true;
+        }
+
+        public bool RecursiveStartNode(bool silent = true)
+        {
+            if(Parent.State != NodeState.ACTIVE)
+            {
+                if (!Parent.RecursiveStartNode(true))
+                {
+                    return false;
+                }
+            }
+
+            return StartNode(silent);
         }
 
         public NodeTimer StartNodeOnNextTick(bool silent = false)

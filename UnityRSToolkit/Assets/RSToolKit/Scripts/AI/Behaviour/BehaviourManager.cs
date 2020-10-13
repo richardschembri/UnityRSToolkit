@@ -11,8 +11,8 @@ namespace RSToolkit.AI.Behaviour
     [DisallowMultipleComponent]
     public class BehaviourManager : MonoBehaviour
     {
-        private List<BehaviourRootNode> m_behaviourtrees = new List<BehaviourRootNode>();
-        private List<BehaviourBlackboard> m_blackboards = new List<BehaviourBlackboard>();
+        private List<BehaviourRootNode> _behaviourtrees = new List<BehaviourRootNode>();
+        private List<BehaviourBlackboard> _blackboards = new List<BehaviourBlackboard>();
 
         public BehaviourRootNode CurrentTree { get; private set; } = null;
         public BehaviourRootNode NextTree { get; private set; } = null;
@@ -22,6 +22,19 @@ namespace RSToolkit.AI.Behaviour
         public bool StoppingTree { get; private set; } = false;
         public bool StartingTree { get; private set; } = false;
         public bool StartingTreeSilent { get; private set; } = false;
+
+        public bool Paused { get; private set; } = false;
+
+        public void PauseTree()
+        {
+            Paused = true;
+        }
+
+        public void UnPauseTree()
+        {
+            Paused = false;
+        }
+
         /// <summary>
         /// Used for when the Behaviour Tree is mimicking another tree (ex: network peer)
         /// </summary>
@@ -34,7 +47,7 @@ namespace RSToolkit.AI.Behaviour
 
         private void AddBehaviourTree(BehaviourRootNode behaviourtree)
         {
-            m_behaviourtrees.Add(behaviourtree);
+            _behaviourtrees.Add(behaviourtree);
             behaviourtree.OnStopped.AddListener(BehaviourtreeOnStopped_Listener);
         }
 
@@ -53,19 +66,17 @@ namespace RSToolkit.AI.Behaviour
 
         public void RemoveBehaviourTree(BehaviourRootNode behaviourtree)
         {
-            m_behaviourtrees.Remove(behaviourtree);
+            _behaviourtrees.Remove(behaviourtree);
             if (behaviourtree == CurrentTree)
             {
-                CurrentTree = m_behaviourtrees.FirstOrDefault();
+                CurrentTree = _behaviourtrees.FirstOrDefault();
             }
         }
-
-
 
         public BehaviourBlackboard AddBlackboard()
         {
             var blackboard = new BehaviourBlackboard();
-            m_blackboards.Add(blackboard);
+            _blackboards.Add(blackboard);
             if (CurrentBlackboard == null)
             {
                 CurrentBlackboard = blackboard;
@@ -76,20 +87,20 @@ namespace RSToolkit.AI.Behaviour
 
         public void RemoveBlackboard(BehaviourBlackboard blackboard)
         {
-            m_blackboards.Remove(blackboard);
+            _blackboards.Remove(blackboard);
             if (blackboard == CurrentBlackboard)
             {
-                CurrentBlackboard = m_blackboards.FirstOrDefault();
+                CurrentBlackboard = _blackboards.FirstOrDefault();
             }
         }
 
         public bool SetCurrentTree(BehaviourRootNode behaviourtree, bool stopCurrentTree, bool addIfNotPresent = true)
         {
-            if (!m_behaviourtrees.Contains(behaviourtree))
+            if (!_behaviourtrees.Contains(behaviourtree))
             {
                 if (addIfNotPresent)
                 {
-                    m_behaviourtrees.Add(behaviourtree);
+                    _behaviourtrees.Add(behaviourtree);
                 }
                 else
                 {
@@ -177,10 +188,16 @@ namespace RSToolkit.AI.Behaviour
 
         private void UpdateCommon(BehaviourNode.UpdateType updateType)
         {
+            if (Paused)
+            {
+                return;
+            }
             // BehaviourNode.UpdateTime(Time.deltaTime);
             BehaviourNode.OverrideElapsedTime(Time.time);
             CurrentTree?.UpdateRecursively(updateType);            
         }
+
+        #region MonoBehaviour Functions
 
         void Update()
         {
@@ -197,5 +214,7 @@ namespace RSToolkit.AI.Behaviour
         {
             UpdateCommon(BehaviourNode.UpdateType.LATE);
         }
+
+        #endregion MonoBehaviour Functions
     }
 }

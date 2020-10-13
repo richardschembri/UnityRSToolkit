@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using RSToolkit.Helpers;
@@ -9,7 +10,7 @@ namespace RSToolkit.AI.Behaviour
 {
     public class BehaviourParentNode : BehaviourNode
     {
-        private List<BehaviourNode> m_children = new List<BehaviourNode>();
+        private List<BehaviourNode> _children = new List<BehaviourNode>();
         public class OnChildNodeStoppedEvent : UnityEvent<BehaviourNode, bool> { }
         public OnChildNodeStoppedEvent OnChildNodeStopped { get; private set; } = new OnChildNodeStoppedEvent();
         public OnChildNodeStoppedEvent OnChildNodeStoppedSilent { get; private set; } = new OnChildNodeStoppedEvent();
@@ -21,7 +22,7 @@ namespace RSToolkit.AI.Behaviour
         {
             get
             {
-                return m_children.AsReadOnly();
+                return _children.AsReadOnly();
             }
         }
 
@@ -46,13 +47,13 @@ namespace RSToolkit.AI.Behaviour
 
             }
 
-            if (!m_children.Contains(child))
+            if (!_children.Contains(child))
             {
                 if (child.Parent != null)
                 {
                     throw new System.Exception($"Adding child to {Name} failed. {child.Name} already has parent {child.Parent.Name}");
                 }
-                m_children.Add(child);
+                _children.Add(child);
                 child.SetParent(this);
                 OnChildNodeAdded.Invoke(this, child);
             }
@@ -61,7 +62,7 @@ namespace RSToolkit.AI.Behaviour
         public void RemoveChild(BehaviourNode child)
         {
             child.SetParent(null);
-            m_children.Remove(child);
+            _children.Remove(child);
             OnChildNodeRemoved.Invoke(this, child);
         }
 
@@ -82,7 +83,7 @@ namespace RSToolkit.AI.Behaviour
 
         protected void ShuffleChildren()
         {
-            m_children.Shuffle();
+            _children.Shuffle();
         }
 
 
@@ -124,47 +125,21 @@ namespace RSToolkit.AI.Behaviour
             return true;
         }
 
-        /*
-        public virtual bool UpdateRecursively()
+        public int GetIndexOfChild(BehaviourNode child)
         {
-            UpdateTimers();
-
-            if (State == NodeState.INACTIVE)
-            {
-                return false;
-            }
-            BehaviourParentNode nodeparent;
-            for (int i = 0; i < Children.Count; i++)
-            {
-                Children[i].UpdateTimers();
-                if (Children[i].State != NodeState.INACTIVE)
-                {
-                    nodeparent = Children[i] as BehaviourParentNode;
-                    if (nodeparent != null)
-                    {
-                        nodeparent.UpdateRecursively();
-                    }
-                    else
-                    {
-                        Children[i].Update();
-                    }
-
-                }
-            }
-            Update();
-            return true;
+            return _children.IndexOf(child);
         }
-        */
+
 
 
         public IEnumerable<BehaviourNode> GetLeaves(NodeState nodeState)
         {
             BehaviourParentNode parentNode;
-            for (int i = 0; i < m_children.Count; i++)
+            for (int i = 0; i < _children.Count; i++)
             {
-                if(m_children[i].State == nodeState)
+                if(_children[i].State == nodeState)
                 {
-                    parentNode = m_children[i] as BehaviourParentNode;
+                    parentNode = _children[i] as BehaviourParentNode;
 
                     if (parentNode != null)
                     {
@@ -175,10 +150,27 @@ namespace RSToolkit.AI.Behaviour
                     }
                     else
                     {
-                        yield return m_children[i];
+                        yield return _children[i];
                     }
                 }
             }
         }
+
+        public void SyncLeaves(BehaviourNode[] leaves, bool silent = true)
+        {
+            var myLeaves = GetLeaves(NodeState.ACTIVE);
+            var toStop = myLeaves.Except(leaves);
+
+            for(int i = 0; i < leaves.Length; i++)
+            {
+                if(leaves[i].State != NodeState.ACTIVE)
+                {
+                    leaves[i].StartNode(silent);
+                }
+            }
+
+
+        }
+
     }
 }
