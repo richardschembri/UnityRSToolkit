@@ -372,6 +372,20 @@ namespace RSToolkit.AI.Behaviour
             return RunOnNextTick(() => { StopNode(success, silent); });
         }
 
+        public bool IsMyAncestor(BehaviourNode node)
+        {
+            if(this.Parent == null)
+            {
+                return false;
+            }else if(node == this.Parent)
+            {
+                return true;
+            }
+
+            return this.Parent.IsMyAncestor(node);
+        }
+
+
         public BehaviourNode(string name, NodeType type)
         {
             this.Name = name;

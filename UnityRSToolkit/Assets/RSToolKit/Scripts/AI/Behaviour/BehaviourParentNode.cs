@@ -144,6 +144,18 @@ namespace RSToolkit.AI.Behaviour
             return _children.IndexOf(child);
         }
 
+        public bool IsAncestorOfOneOrMore(List<BehaviourNode> nodes)
+        {
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (nodes[i].IsMyAncestor(this))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
 
         public IEnumerable<BehaviourNode> GetLeaves(NodeState? nodeState = null)

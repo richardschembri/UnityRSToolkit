@@ -58,7 +58,7 @@ namespace RSToolkit.AI.Behaviour
             if (this.Children[0].State == NodeState.ACTIVE)
             {
                 StopChildren();
-                
+
             }
             else
             {
@@ -120,16 +120,20 @@ namespace RSToolkit.AI.Behaviour
                     if (!ml.StopNode(silent))
                     {
                         return false;
-                    }                    
+                    }
                 }
                 myLeaves.Remove(ml);
 
-                if (!ml.Parent.HasChildren(activeLeaves))
+                if (ml.Parent != null && 
+                        (ml.Parent.Type == NodeType.DECORATOR 
+                            || (ml.Parent.Type == NodeType.COMPOSITE && !ml.Parent.IsAncestorOfOneOrMore(activeLeaves))
+                        )
+                    ) //!ml.Parent.HasChildren(activeLeaves))
                 {
                     myLeaves.Add(ml.Parent);
                 }
             }
-            
+
             // Recursivly start all nodes that should be running
             for (int i = 0; i < activeLeaves.Count; i++)
             {
@@ -156,7 +160,7 @@ namespace RSToolkit.AI.Behaviour
         public bool SyncActiveLeaves(string nodeIDs, char seperator = '|', bool silent = true)
         {
             var nodeIDArray = nodeIDs.Split(seperator);
-            return SyncActiveLeaves(nodeIDArray, silent);           
+            return SyncActiveLeaves(nodeIDArray, silent);
         }
 
         #endregion
