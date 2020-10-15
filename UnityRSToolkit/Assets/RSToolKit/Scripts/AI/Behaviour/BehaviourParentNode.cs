@@ -11,12 +11,6 @@ namespace RSToolkit.AI.Behaviour
     public class BehaviourParentNode : BehaviourNode
     {
         private List<BehaviourNode> _children = new List<BehaviourNode>();
-        public class OnChildNodeStoppedEvent : UnityEvent<BehaviourNode, bool> { }
-        public OnChildNodeStoppedEvent OnChildNodeStopped { get; private set; } = new OnChildNodeStoppedEvent();
-        public OnChildNodeStoppedEvent OnChildNodeStoppedSilent { get; private set; } = new OnChildNodeStoppedEvent();
-        public class OnChildNodeAddRemoveEvent : UnityEvent<BehaviourNode, BehaviourNode> { } // parent, child
-        public OnChildNodeAddRemoveEvent OnChildNodeAdded = new OnChildNodeAddRemoveEvent();
-        public OnChildNodeAddRemoveEvent OnChildNodeRemoved = new OnChildNodeAddRemoveEvent();
 
         public ReadOnlyCollection<BehaviourNode> Children
         {
@@ -24,6 +18,21 @@ namespace RSToolkit.AI.Behaviour
             {
                 return _children.AsReadOnly();
             }
+        }
+
+        #region Events
+        public class OnChildNodeStoppedEvent : UnityEvent<BehaviourNode, bool> { }
+        public OnChildNodeStoppedEvent OnChildNodeStopped { get; private set; } = new OnChildNodeStoppedEvent();
+        public OnChildNodeStoppedEvent OnChildNodeStoppedSilent { get; private set; } = new OnChildNodeStoppedEvent();
+        public class OnChildNodeAddRemoveEvent : UnityEvent<BehaviourNode, BehaviourNode> { } // parent, child
+        public OnChildNodeAddRemoveEvent OnChildNodeAdded = new OnChildNodeAddRemoveEvent();
+        public OnChildNodeAddRemoveEvent OnChildNodeRemoved = new OnChildNodeAddRemoveEvent();
+        #endregion Events
+
+
+        public BehaviourParentNode(string name, NodeType type) : base(name, type)
+        {
+
         }
 
         public override void SetParent(BehaviourParentNode parent)
@@ -66,9 +75,14 @@ namespace RSToolkit.AI.Behaviour
             OnChildNodeRemoved.Invoke(this, child);
         }
 
-        public BehaviourParentNode(string name, NodeType type) : base(name, type)
+        public bool HasChild(BehaviourNode node)
         {
+            return Children.Contains(node);
+        }
 
+        public bool HasChildren(IEnumerable<BehaviourNode> children)
+        {
+            return Children.Any(c => children.Contains(c));
         }
 
         public bool StartFirstChildNode()
@@ -132,12 +146,12 @@ namespace RSToolkit.AI.Behaviour
 
 
 
-        public IEnumerable<BehaviourNode> GetLeaves(NodeState nodeState)
+        public IEnumerable<BehaviourNode> GetLeaves(NodeState? nodeState = null)
         {
             BehaviourParentNode parentNode;
             for (int i = 0; i < _children.Count; i++)
             {
-                if(_children[i].State == nodeState)
+                if(nodeState == null || _children[i].State == nodeState)
                 {
                     parentNode = _children[i] as BehaviourParentNode;
 
@@ -156,21 +170,6 @@ namespace RSToolkit.AI.Behaviour
             }
         }
 
-        public void SyncLeaves(BehaviourNode[] leaves, bool silent = true)
-        {
-            var myLeaves = GetLeaves(NodeState.ACTIVE);
-            var toStop = myLeaves.Except(leaves);
-
-            for(int i = 0; i < leaves.Length; i++)
-            {
-                if(leaves[i].State != NodeState.ACTIVE)
-                {
-                    leaves[i].StartNode(silent);
-                }
-            }
-
-
-        }
 
     }
 }

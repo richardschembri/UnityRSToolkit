@@ -290,11 +290,18 @@ namespace RSToolkit.AI.Behaviour
             return true;
         }
 
-        public bool RecursiveStartNode(bool silent = true)
+        public bool StartNodePath(bool silent = true)
         {
             if(Parent.State != NodeState.ACTIVE)
             {
-                if (!Parent.RecursiveStartNode(true))
+                if(Parent.State == NodeState.STOPPING)
+                {
+                    if (!Parent.StopNode(true))
+                    {
+                        return false;
+                    }
+                }
+                if (!Parent.StartNodePath(true))
                 {
                     return false;
                 }

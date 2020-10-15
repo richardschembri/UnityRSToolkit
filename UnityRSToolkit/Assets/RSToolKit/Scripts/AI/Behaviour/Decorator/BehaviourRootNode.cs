@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace RSToolkit.AI.Behaviour
@@ -102,6 +103,62 @@ namespace RSToolkit.AI.Behaviour
             IsSilent = true;
         }
 
+        #region SyncLeaves
+        // This is used to sync behaviour trees (for example when it comes to Network play)
 
+        public bool SyncActiveLeaves(List<BehaviourNode> activeLeaves, bool silent = true)
+        {
+            var myLeaves = GetLeaves(NodeState.ACTIVE).ToList();
+
+            // Recursively stop all leaves that should not be running
+            while (myLeaves.Count() > 0)
+            {
+                var ml = myLeaves[0];
+
+                if (!activeLeaves.Contains(ml))
+                {
+                    if (!ml.StopNode(silent))
+                    {
+                        return false;
+                    }                    
+                }
+                myLeaves.Remove(ml);
+
+                if (!ml.Parent.HasChildren(activeLeaves))
+                {
+                    myLeaves.Add(ml.Parent);
+                }
+            }
+            
+            // Recursivly start all nodes that should be running
+            for (int i = 0; i < activeLeaves.Count; i++)
+            {
+                if (activeLeaves[i].State != NodeState.ACTIVE)
+                {
+                    if (!activeLeaves[i].StartNodePath(silent))
+                    {
+                        return false;
+                    }
+                }
+
+            }
+
+            return true;
+        }
+
+        public bool SyncActiveLeaves(string[] nodeIDs, bool silent = true)
+        {
+            var myLeaves = GetLeaves();
+            return SyncActiveLeaves(myLeaves.Where(l => nodeIDs.Contains(l.GetUniqueID())).ToList(), silent);
+
+        }
+
+        public bool SyncActiveLeaves(string nodeIDs, char seperator = '|', bool silent = true)
+        {
+            var nodeIDArray = nodeIDs.Split(seperator);
+            return SyncActiveLeaves(nodeIDArray, silent);           
+        }
+
+        #endregion
     }
 }

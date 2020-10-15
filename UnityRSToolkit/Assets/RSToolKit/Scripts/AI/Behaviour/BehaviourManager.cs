@@ -14,6 +14,8 @@ namespace RSToolkit.AI.Behaviour
         private List<BehaviourRootNode> _behaviourtrees = new List<BehaviourRootNode>();
         private List<BehaviourBlackboard> _blackboards = new List<BehaviourBlackboard>();
 
+        #region Properties
+
         public BehaviourRootNode CurrentTree { get; private set; } = null;
         public BehaviourRootNode NextTree { get; private set; } = null;
 
@@ -24,6 +26,8 @@ namespace RSToolkit.AI.Behaviour
         public bool StartingTreeSilent { get; private set; } = false;
 
         public bool Paused { get; private set; } = false;
+        
+        #endregion Properties
 
         public void PauseTree()
         {
@@ -166,6 +170,26 @@ namespace RSToolkit.AI.Behaviour
             return false;
         }
 
+        #region SyncLeaves
+
+        public bool SyncActiveLeaves(List<BehaviourNode> activeLeaves, bool silent = true)
+        {
+            return CurrentTree.SyncActiveLeaves(activeLeaves, silent);
+        }
+
+        public bool SyncActiveLeaves(string[] nodeIDs, bool silent = true)
+        {
+            return CurrentTree.SyncActiveLeaves(nodeIDs, silent); ;
+        }
+
+        public bool SyncActiveLeaves(string nodeIDs, char seperator = '|', bool silent = true)
+        {
+            return CurrentTree.SyncActiveLeaves(nodeIDs, seperator, silent);
+        }
+
+        #endregion SyncLeaves
+
+        #region Events
         private void BehaviourtreeOnStopped_Listener(bool success)
         {
             if (NextTree != null)
@@ -185,6 +209,7 @@ namespace RSToolkit.AI.Behaviour
                 CurrentTree.StartNode(true);
             }
         }
+        #endregion Events
 
         private void UpdateCommon(BehaviourNode.UpdateType updateType)
         {
