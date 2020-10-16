@@ -346,7 +346,7 @@ namespace RSToolkit.AI.Behaviour
         /// <param name="success">If the node was successful</param>
         /// <param name="silent">If true will not invoke the OnStarted event</param>
         /// <returns></returns>
-        public bool StopNode(bool success, bool silent = false)
+        public virtual bool StopNode(bool success, bool silent = false)
         {
             if (this.State != NodeState.INACTIVE)
             {

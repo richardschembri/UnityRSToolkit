@@ -109,6 +109,24 @@ namespace RSToolkit.AI.Behaviour
             }
         }
 
+        protected void StopChildrenSilent()
+        {
+            for (int i = 0; i < Children.Count; i++)
+            {
+                Children[i].StopNode(true);
+            }
+        }
+
+        public override bool StopNode(bool success, bool silent = false)
+        {
+            if (silent && this.State != NodeState.INACTIVE)
+            {
+                StopChildrenSilent();
+            }
+
+            return base.StopNode(success, silent);
+        }
+
         public virtual bool UpdateRecursively(UpdateType updateType = UpdateType.DEFAULT)
         {
             UpdateTimers(updateType);
