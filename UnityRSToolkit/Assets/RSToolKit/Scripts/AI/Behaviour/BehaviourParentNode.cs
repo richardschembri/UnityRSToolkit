@@ -175,10 +175,10 @@ namespace RSToolkit.AI.Behaviour
             return false;
         }
 
-
-        public IEnumerable<BehaviourNode> GetLeaves(NodeState? nodeState = null)
+        private IEnumerable<BehaviourNode> GetLeavesFromChildren(NodeState? nodeState = null)
         {
             BehaviourParentNode parentNode;
+            BehaviourNode[] children;
             for (int i = 0; i < _children.Count; i++)
             {
                 if(nodeState == null || _children[i].State == nodeState)
@@ -187,10 +187,18 @@ namespace RSToolkit.AI.Behaviour
 
                     if (parentNode != null)
                     {
-                        foreach(var leaf in parentNode.GetLeaves(nodeState))
+                        children = parentNode.GetLeaves(nodeState);
+
+                        for(int j = 0; j < children.Length; j++)
                         {
-                            yield return leaf;
+                            yield return children[j];
                         }
+
+                        if(children.Length <= 0)
+                        {
+                            yield return parentNode;
+                        }
+
                     }
                     else
                     {
@@ -200,6 +208,16 @@ namespace RSToolkit.AI.Behaviour
             }
         }
 
+        public BehaviourNode[] GetLeaves(NodeState? nodeState = null)
+        {
+            BehaviourNode[] leaves = GetLeavesFromChildren(nodeState).ToArray();
+            if(leaves.Length <= 0 && (nodeState == null || State == nodeState)){
+                leaves = new BehaviourNode[] { this };
+            }
+
+            return leaves;
+        }
+        
 
     }
 }

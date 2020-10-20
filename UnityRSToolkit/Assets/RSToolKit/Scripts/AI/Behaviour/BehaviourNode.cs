@@ -177,14 +177,22 @@ namespace RSToolkit.AI.Behaviour
             return _timers[UpdateType.DEFAULT].Count(t => t.IsActive == active) + _timers[UpdateType.FIXED].Count(t => t.IsActive == active) + _timers[UpdateType.LATE].Count(t => t.IsActive == active);
         }
 
-        public string GetUniqueID()
+        string _uniqueID = "";
+        public string GetUniqueID(bool refresh = false)
         {
-            if (Parent != null)
+            if(!string.IsNullOrEmpty(_uniqueID) && !refresh)
             {
-                return $"{Parent.GetUniqueID()}-{Parent.GetIndexOfChild(this)}";
+                return _uniqueID;
             }
 
-            return "0";
+            if (Parent != null)
+            {
+                _uniqueID = $"{Parent.GetUniqueID()}-{Parent.GetIndexOfChild(this)}";
+                return _uniqueID;
+            }
+
+            _uniqueID = "0";
+            return _uniqueID;
         }
 
         public string GetNamePath()
@@ -292,7 +300,7 @@ namespace RSToolkit.AI.Behaviour
 
         public bool StartNodePath(bool silent = true)
         {
-            if(Parent.State != NodeState.ACTIVE)
+            if(Parent != null && Parent.State != NodeState.ACTIVE)
             {
                 if(Parent.State == NodeState.STOPPING)
                 {

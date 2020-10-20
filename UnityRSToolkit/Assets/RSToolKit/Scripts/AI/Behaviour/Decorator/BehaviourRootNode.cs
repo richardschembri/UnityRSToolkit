@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
 
@@ -13,6 +14,8 @@ namespace RSToolkit.AI.Behaviour
     {
         private NodeTimer m_rootTimer;
         public bool IsSilent { get; private set; } = false;
+
+        private Dictionary<string, BehaviourNode> _nodeDictionary = new Dictionary<string, BehaviourNode>();
 
         /// <summary>
         /// The root node of a tree
@@ -103,6 +106,32 @@ namespace RSToolkit.AI.Behaviour
             IsSilent = true;
         }
 
+        public void PopulateDictionary()
+        {
+            _nodeDictionary.Clear();
+            _nodeDictionary.Add(GetUniqueID(), this);
+            PopulateDictionaryFromChildren(Children);
+        }
+
+        private void PopulateDictionaryFromChildren(ReadOnlyCollection<BehaviourNode> children)
+        {
+            BehaviourParentNode parentNode;
+            for (int i = 0; i < children.Count; i++)
+            {
+                _nodeDictionary.Add(children[i].GetUniqueID(), children[i]);
+                parentNode = children[i] as BehaviourParentNode;
+                if (parentNode != null)
+                {
+                    PopulateDictionaryFromChildren(parentNode.Children);
+                }
+            }
+        }
+
+        public BehaviourNode GetNodeByID(string id)
+        {
+            return _nodeDictionary[id];
+        }
+
         #region SyncLeaves
         // This is used to sync behaviour trees (for example when it comes to Network play)
 
@@ -114,12 +143,17 @@ namespace RSToolkit.AI.Behaviour
             while (myLeaves.Count() > 0)
             {
                 var ml = myLeaves[0];
-
+                               
                 if (!activeLeaves.Contains(ml))
                 {
-                    if (!ml.StopNode(silent))
+                    var nodeParent = ml as BehaviourParentNode;
+                    if (nodeParent == null || !nodeParent.IsAncestorOfOneOrMore(activeLeaves))
                     {
-                        return false;
+                        ml.RequestStopNode(true);
+                        if (!ml.StopNode(silent))
+                        {
+                            return false;
+                        }
                     }
                 }
                 myLeaves.Remove(ml);
@@ -153,8 +187,13 @@ namespace RSToolkit.AI.Behaviour
         public bool SyncActiveLeaves(string[] nodeIDs, bool silent = true)
         {
             var myLeaves = GetLeaves();
-            return SyncActiveLeaves(myLeaves.Where(l => nodeIDs.Contains(l.GetUniqueID())).ToList(), silent);
+            List<BehaviourNode> activeLeaves = new List<BehaviourNode>();
+            for(int i = 0; i < nodeIDs.Length; i++)
+            {
+                activeLeaves.Add(GetNodeByID(nodeIDs[i]));
+            }
 
+            return SyncActiveLeaves(activeLeaves, silent);
         }
 
         public bool SyncActiveLeaves(string nodeIDs, char seperator = '|', bool silent = true)
