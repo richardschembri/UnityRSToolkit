@@ -272,6 +272,7 @@ namespace RSToolkit.AI.Behaviour
         protected void RemoveTimer(NodeTimer to_remove, UpdateType updateType = UpdateType.DEFAULT)
         {
             _timers[updateType].Remove(to_remove); //m_timers.Remove(to_remove);
+            to_remove = null;
         }
 
         /// <summary>

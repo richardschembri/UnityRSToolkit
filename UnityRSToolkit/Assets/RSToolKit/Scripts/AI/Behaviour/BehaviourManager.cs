@@ -172,7 +172,7 @@ namespace RSToolkit.AI.Behaviour
 
         #region SyncLeaves
 
-        public bool SyncActiveLeaves(List<BehaviourNode> activeLeaves, bool silent = true)
+        public bool SyncActiveLeaves(BehaviourNode[] activeLeaves, bool silent = true)
         {
             return CurrentTree.SyncActiveLeaves(activeLeaves, silent);
         }

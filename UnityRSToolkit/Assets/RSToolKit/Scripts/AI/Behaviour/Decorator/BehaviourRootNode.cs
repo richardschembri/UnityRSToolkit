@@ -135,7 +135,7 @@ namespace RSToolkit.AI.Behaviour
         #region SyncLeaves
         // This is used to sync behaviour trees (for example when it comes to Network play)
 
-        public bool SyncActiveLeaves(List<BehaviourNode> activeLeaves, bool silent = true)
+        public bool SyncActiveLeaves(BehaviourNode[] activeLeaves, bool silent = true)
         {
             var myLeaves = GetLeaves(NodeState.ACTIVE).ToList();
 
@@ -150,10 +150,7 @@ namespace RSToolkit.AI.Behaviour
                     if (nodeParent == null || !nodeParent.IsAncestorOfOneOrMore(activeLeaves))
                     {
                         ml.RequestStopNode(true);
-                        if (!ml.StopNode(silent))
-                        {
-                            return false;
-                        }
+                        ml.StopNode(silent);                        
                     }
                 }
                 myLeaves.Remove(ml);
@@ -169,7 +166,7 @@ namespace RSToolkit.AI.Behaviour
             }
 
             // Recursivly start all nodes that should be running
-            for (int i = 0; i < activeLeaves.Count; i++)
+            for (int i = 0; i < activeLeaves.Length; i++)
             {
                 if (activeLeaves[i].State != NodeState.ACTIVE)
                 {
@@ -186,11 +183,10 @@ namespace RSToolkit.AI.Behaviour
 
         public bool SyncActiveLeaves(string[] nodeIDs, bool silent = true)
         {
-            var myLeaves = GetLeaves();
-            List<BehaviourNode> activeLeaves = new List<BehaviourNode>();
+            var activeLeaves = new BehaviourNode[nodeIDs.Length];
             for(int i = 0; i < nodeIDs.Length; i++)
             {
-                activeLeaves.Add(GetNodeByID(nodeIDs[i]));
+                activeLeaves[i] = GetNodeByID(nodeIDs[i]);
             }
 
             return SyncActiveLeaves(activeLeaves, silent);

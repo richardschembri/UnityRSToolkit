@@ -15,7 +15,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
         public int LoopCount { get; private set; } = 0;
         public bool StopOnChildFail { get; private set; }
 
-        NodeTimer m_restartChildTimer;
+        NodeTimer _restartChildTimer;
 
         /// <summary>
         /// Repeated runs it's child node
@@ -44,7 +44,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
 
         private void OnStarted_Common()
         {
-            RemoveTimer(m_restartChildTimer);
+            RemoveTimer(_restartChildTimer);
 
             if (!m_loopCountSkip)
             {
@@ -71,7 +71,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
 
         private void OnStopping_Common()
         {
-            RemoveTimer(m_restartChildTimer);
+            RemoveTimer(_restartChildTimer);
         }
 
         private void OnStopping_Listener()
@@ -123,7 +123,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
                 }
                 else
                 {
-                    m_restartChildTimer = AddTimer(0, 0, 0, RestartChild);
+                    _restartChildTimer = AddTimer(0, 0, 0, RestartChild);
                 }
             }
             else if (State == NodeState.STOPPING || StopOnChildFail)
@@ -132,7 +132,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
             }
             else
             {
-                m_restartChildTimer = AddTimer(0, 0, 0, RestartChild);
+                _restartChildTimer = AddTimer(0, 0, 0, RestartChild);
             }
 
         }
@@ -142,7 +142,7 @@ namespace RSToolkit.AI.Behaviour.Decorator
             if (success
                     && !(State == NodeState.STOPPING || (TotalLoops >= 0 && ++LoopCount >= TotalLoops)))
             {
-                m_restartChildTimer = AddTimer(0, 0, 0, RestartChild);
+                _restartChildTimer = AddTimer(0, 0, 0, RestartChild);
             }
         }
 

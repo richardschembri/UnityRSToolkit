@@ -113,13 +113,14 @@ namespace RSToolkit.AI.Behaviour
         {
             for (int i = 0; i < Children.Count; i++)
             {
-                Children[i].StopNode(true);
+                Children[i].RequestStopNode(true);
+                Children[i].StopNode(true, true);
             }
         }
 
         public override bool StopNode(bool success, bool silent = false)
         {
-            if (silent && this.State != NodeState.INACTIVE)
+            if (silent)
             {
                 StopChildrenSilent();
             }
@@ -162,9 +163,9 @@ namespace RSToolkit.AI.Behaviour
             return _children.IndexOf(child);
         }
 
-        public bool IsAncestorOfOneOrMore(List<BehaviourNode> nodes)
+        public bool IsAncestorOfOneOrMore(BehaviourNode[] nodes)
         {
-            for (int i = 0; i < nodes.Count; i++)
+            for (int i = 0; i < nodes.Length; i++)
             {
                 if (nodes[i].IsMyAncestor(this))
                 {
@@ -177,31 +178,33 @@ namespace RSToolkit.AI.Behaviour
 
         private IEnumerable<BehaviourNode> GetLeavesFromChildren(NodeState? nodeState = null)
         {
-            BehaviourParentNode parentNode;
-            BehaviourNode[] children;
+            BehaviourParentNode parentChildNode;
+            BehaviourNode[] descendantLeaves;
             for (int i = 0; i < _children.Count; i++)
             {
                 if(nodeState == null || _children[i].State == nodeState)
                 {
-                    parentNode = _children[i] as BehaviourParentNode;
+                    parentChildNode = _children[i] as BehaviourParentNode;
 
-                    if (parentNode != null)
+                    if (parentChildNode != null)
                     {
-                        children = parentNode.GetLeaves(nodeState);
+                        descendantLeaves = parentChildNode.GetLeaves(nodeState);
 
-                        for(int j = 0; j < children.Length; j++)
+                        if (descendantLeaves.Length <= 0)
                         {
-                            yield return children[j];
+                            //Leaf
+                            yield return parentChildNode;
                         }
 
-                        if(children.Length <= 0)
+                        for (int j = 0; j < descendantLeaves.Length; j++)
                         {
-                            yield return parentNode;
+                            yield return descendantLeaves[j];
                         }
-
+                        
                     }
                     else
                     {
+                        // Leaf
                         yield return _children[i];
                     }
                 }
@@ -210,12 +213,12 @@ namespace RSToolkit.AI.Behaviour
 
         public BehaviourNode[] GetLeaves(NodeState? nodeState = null)
         {
-            BehaviourNode[] leaves = GetLeavesFromChildren(nodeState).ToArray();
-            if(leaves.Length <= 0 && (nodeState == null || State == nodeState)){
-                leaves = new BehaviourNode[] { this };
+            var result = GetLeavesFromChildren(nodeState).ToArray();
+            if(result.Length <= 0 && (nodeState == null || State == nodeState)){
+                result = new BehaviourNode[] { this };
             }
 
-            return leaves;
+            return result;
         }
         
 
