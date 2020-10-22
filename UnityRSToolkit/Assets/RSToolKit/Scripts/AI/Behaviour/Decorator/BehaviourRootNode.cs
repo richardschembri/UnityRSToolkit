@@ -17,6 +17,8 @@ namespace RSToolkit.AI.Behaviour
 
         private Dictionary<string, BehaviourNode> _nodeDictionary = new Dictionary<string, BehaviourNode>();
 
+        public string[] LastResyncNodeIDs = null;
+
         /// <summary>
         /// The root node of a tree
         /// </summary>
@@ -183,6 +185,7 @@ namespace RSToolkit.AI.Behaviour
 
         public bool SyncActiveLeaves(string[] nodeIDs, bool silent = true)
         {
+            LastResyncNodeIDs = nodeIDs;
             var activeLeaves = new BehaviourNode[nodeIDs.Length];
             for(int i = 0; i < nodeIDs.Length; i++)
             {

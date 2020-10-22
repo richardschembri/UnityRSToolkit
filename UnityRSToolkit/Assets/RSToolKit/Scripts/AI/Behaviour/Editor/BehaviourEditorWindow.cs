@@ -21,8 +21,25 @@ namespace RSToolkit.AI.Behaviour
             window.Show();
         }
         protected override void DrawAdditionalStats(BehaviourDebugTools debugTools)
-        {
-            DrawKeyValue("Is Silent:  ", SelectedManager.CurrentTree.IsSilent.ToString());
+        {            
+            if(SelectedManager.CurrentTree.LastResyncNodeIDs != null)
+            {
+                EditorGUILayout.BeginVertical();
+                {
+                    GUILayout.Label("Last Resync Leaves:", EditorStyles.boldLabel);
+
+                    EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                    {                        
+                        for (int i = 0; i < SelectedManager.CurrentTree.LastResyncNodeIDs.Length; i++)
+                        {
+                            DrawKeyValue(SelectedManager.CurrentTree.GetNodeByID(SelectedManager.CurrentTree.LastResyncNodeIDs[i]).Name, 
+                                            SelectedManager.CurrentTree.LastResyncNodeIDs[i]);
+                        }
+                    }
+                    EditorGUILayout.EndVertical();                    
+                }
+                EditorGUILayout.EndVertical();
+            }
         }
 
         private void DrawBlackboardKeyValues(string label, BehaviourBlackboard blackboard)
