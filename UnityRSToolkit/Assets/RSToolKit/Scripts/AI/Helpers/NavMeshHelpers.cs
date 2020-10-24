@@ -87,8 +87,18 @@ namespace RSToolkit.AI.Helpers
 
         public static bool IsAboveNavMeshSurface(this NavMeshAgent agent, Collider collider, out Vector3 navPosition, out RaycastHit rayHit)
         {           
-            var bottomColliderPoint = collider.ClosestPointOnBounds(agent.transform.position + Vector3.down * ((agent.height / 2f) + 0.1f));
+            var bottomColliderPoint = collider.ClosestPointOnBounds(agent.transform.position + Vector3.down * ((agent.height / 2f) + 0.1f));            
+            return IsAboveNavMeshSurface(bottomColliderPoint, out navPosition, out rayHit);
+        }
 
+        public static bool IsAboveNavMeshSurface(this Collider collider, out Vector3 navPosition, out RaycastHit rayHit)
+        {
+            var bottomColliderPoint = collider.ClosestPointOnBounds(collider.transform.position + Vector3.down * ((collider.bounds.extents.y) + 0.1f));
+            return IsAboveNavMeshSurface(bottomColliderPoint, out navPosition, out rayHit);            
+        }
+
+        public static bool IsAboveNavMeshSurface(Vector3 bottomColliderPoint, out Vector3 navPosition, out RaycastHit rayHit)
+        {
             NavMeshHit navHit;
             if (Physics.Raycast(bottomColliderPoint, Vector3.down, out rayHit))
             {

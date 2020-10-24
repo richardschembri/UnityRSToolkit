@@ -8,16 +8,16 @@ namespace RSToolkit.Space3D
 {
     public class NavSpawnMarker : SpawnMarker
     {
-        private NavMeshAgent m_parentNavMeshAgentComponent;
+        private NavMeshAgent _parentNavMeshAgentComponent;
         public NavMeshAgent ParentNavMeshAgentComponent
         {
             get
             {
-                if (m_parentNavMeshAgentComponent == null)
+                if (_parentNavMeshAgentComponent == null)
                 {
-                    m_parentNavMeshAgentComponent = GetComponentInParent<NavMeshAgent>();
+                    _parentNavMeshAgentComponent = GetComponentInParent<NavMeshAgent>();
                 }
-                return m_parentNavMeshAgentComponent;
+                return _parentNavMeshAgentComponent;
             }
         }
 
@@ -25,7 +25,14 @@ namespace RSToolkit.Space3D
        
         protected override Vector3 GetSurfacePoint()
         {
-            CanSpawn = ParentNavMeshAgentComponent.IsAboveNavMeshSurface(ParentColliderComponent, out m_navPosition,out m_rayHit);           
+            if(ParentNavMeshAgentComponent != null)
+            {
+                CanSpawn = ParentNavMeshAgentComponent.IsAboveNavMeshSurface(ParentColliderComponent, out m_navPosition, out m_rayHit);
+            }else if (ParentColliderComponent != null)
+            {
+                CanSpawn = ParentColliderComponent.IsAboveNavMeshSurface(out m_navPosition, out m_rayHit);
+            }
+                      
             return m_rayHit.point;
         }
 

@@ -63,6 +63,10 @@ namespace RSToolkit.AI
                 if (_animatorComponent == null)
                 {
                     _animatorComponent = GetComponent<Animator>();
+                    if(_animatorComponent == null)
+                    {
+                        _animatorComponent = GetComponentInChildren<Animator>();
+                    }
                 }
                 return _animatorComponent;
             }
