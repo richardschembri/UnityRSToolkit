@@ -38,7 +38,7 @@ namespace Demo
                 }
                 else
                 {
-                    BotGroundComponent.BotWanderManagerComponent.Wander();
+                    BotGroundComponent.BotWanderManagerComponent.Wander(false);
                 }
 
             }

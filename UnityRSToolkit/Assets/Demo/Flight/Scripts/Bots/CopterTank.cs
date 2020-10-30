@@ -48,7 +48,7 @@ namespace Demo{
                 }
                 else
                 {
-                    BotFlyableComponent.BotWanderManagerComponent.Wander();
+                    BotFlyableComponent.BotWanderManagerComponent.Wander(false);
                 }
                 
             }

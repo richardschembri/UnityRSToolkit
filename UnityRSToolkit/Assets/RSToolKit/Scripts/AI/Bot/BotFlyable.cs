@@ -88,9 +88,9 @@ namespace RSToolkit.AI
             }
 
         }
-        protected BotPartWanderNavMesh BotWanderNavMeshComponent { get; private set; }
+        public BotPartWanderNavMesh BotWanderNavMeshComponent { get; private set; }
 
-        protected BotPartWanderFlying BotWanderFlyingComponent { get; private set; }
+        public BotPartWanderFlying BotWanderFlyingComponent { get; private set; }
 
         private Flying3DObject m_flying3DObjectComponent;
         public Flying3DObject Flying3DObjectComponent

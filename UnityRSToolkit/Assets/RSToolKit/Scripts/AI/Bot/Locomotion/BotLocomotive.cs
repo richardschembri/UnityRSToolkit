@@ -15,6 +15,8 @@ namespace RSToolkit.AI.Locomotion
     [RequireComponent(typeof(BTFiniteStateMachineManager))]
     public abstract class BotLocomotive : Bot
     {
+        public bool IsFreefall { get; protected set; } = false;
+
         public enum FStatesLocomotion
         {
             NotMoving,
@@ -217,9 +219,16 @@ namespace RSToolkit.AI.Locomotion
             return true;
         }
 
+       
         public bool MoveToPosition(StopMovementConditions stopMovementCondition, bool fullspeed = true)
         {
             return MoveCommon(FStatesLocomotion.MovingToPosition, fullspeed, stopMovementCondition);
+        }
+
+        public bool MoveToPosition(Vector3 position, StopMovementConditions stopMovementCondition, bool fullspeed = true)
+        {
+            FocusOnPosition(position);
+            return MoveToPosition(stopMovementCondition, fullspeed);
         }
 
         public bool MoveAwayFromPosition(bool fullspeed = true)

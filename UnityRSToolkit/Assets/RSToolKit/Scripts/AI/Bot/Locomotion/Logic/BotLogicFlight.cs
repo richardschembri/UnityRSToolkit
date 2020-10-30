@@ -32,6 +32,7 @@ namespace RSToolkit.AI.Locomotion
             Flying3DObjectComponent.YawTo(rotation.eulerAngles.y);
         }
 
+        /*
         public override bool MoveTowardsPosition(bool fullspeed = true)
         {
 
@@ -74,6 +75,54 @@ namespace RSToolkit.AI.Locomotion
                 Flying3DObjectComponent.ResetAppliedAxis();
                 return false;
             }
+            return true;
+        }
+        */
+
+        public override bool MoveTowardsPosition(bool fullspeed = true)
+        {
+
+            RotateTowardsPosition();
+
+            // Match height of position
+            if (Mathf.RoundToInt(BotLocomotiveComponent.FocusedOnPosition.Value.y) > Mathf.RoundToInt(BotLocomotiveComponent.transform.position.y))
+            {
+                Flying3DObjectComponent.ApplyVerticalThrust(true);
+            }
+            if (Mathf.RoundToInt(BotLocomotiveComponent.FocusedOnPosition.Value.y) < Mathf.RoundToInt(BotLocomotiveComponent.transform.position.y))
+            {
+                Flying3DObjectComponent.ApplyVerticalThrust(false);
+            }
+
+            if (BotLocomotiveComponent.IsAtPosition())
+            {
+                // At position, stop all forces
+                Flying3DObjectComponent.ResetAppliedForces();
+                Flying3DObjectComponent.ResetAppliedAxis();
+            }
+            else if (BotLocomotiveComponent.IsWithinPersonalSpace(0.85f))
+            {
+                // Back up
+                Flying3DObjectComponent.ApplyForwardThrust(fullspeed ? -0.25f : 0.05f);
+            }
+            else if (BotLocomotiveComponent.IsWithinPersonalSpace(1.1f))
+            {
+                if (fullspeed)
+                {
+                    Flying3DObjectComponent.ApplyForwardThrust(0.1f);
+                }
+            }
+            else if (BotLocomotiveComponent.IsWithinInteractionDistance())
+            {
+                // Slow down
+                Flying3DObjectComponent.ApplyForwardThrust(fullspeed ? 0.9f : 0.15f);
+            }
+            // Move towards position
+            else if (!BotLocomotiveComponent.IsWithinInteractionDistance())
+            {
+                Flying3DObjectComponent.ApplyForwardThrust(fullspeed ? 1f : 0.2f);
+            }                      
+                    
             return true;
         }
 

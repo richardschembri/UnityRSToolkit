@@ -113,7 +113,7 @@ namespace RSToolkit.AI
                     {
                         if (GUILayout.Button("Start Wandering"))
                         {
-                            _targetBotLocomotive.BotWanderManagerComponent.Wander();
+                            _targetBotLocomotive.BotWanderManagerComponent.Wander(false);
                         }
                     }
                 }

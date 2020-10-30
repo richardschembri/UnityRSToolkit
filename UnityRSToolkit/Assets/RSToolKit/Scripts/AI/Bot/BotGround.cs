@@ -8,7 +8,7 @@ namespace RSToolkit.AI
 {
     public class BotGround : BotLocomotive
     {
-        bool m_freefall = false;
+
         public BotLogicNavMesh BotLogicNavMeshRef { get; set; }
 
 
@@ -50,9 +50,9 @@ namespace RSToolkit.AI
         private void HandleFailling()
         {
             //if (IsFarFromGround() && !m_freefall)
-            if(!IsAlmostGrounded() && !m_freefall)
+            if(!IsAlmostGrounded() && !IsFreefall)
             {
-                m_freefall = true;
+                IsFreefall = true;
                 NavMeshAgentComponent.enabled = false;
             }
         }
@@ -60,9 +60,9 @@ namespace RSToolkit.AI
         protected override void ToggleComponentsForNetwork(bool toggleKinematic = true)
         {
             base.ToggleComponentsForNetwork(toggleKinematic);
-            if (m_freefall && _IsNetworkPeer)
+            if (IsFreefall && _IsNetworkPeer)
             {
-                m_freefall = false;
+                IsFreefall = false;
             }
             else if (!_IsNetworkPeer)
             {
@@ -104,14 +104,13 @@ namespace RSToolkit.AI
         {
             base.Update();
             // There must be a better way to do this
-            if (m_freefall && IsAlmostGrounded())
+            if (IsFreefall && IsAlmostGrounded())
             {
-                m_freefall = false;
+                IsFreefall = false;
                 RigidBodyComponent.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
                 RigidBodyComponent.velocity = Vector3.zero;
                 transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
                 NavMeshAgentComponent.enabled = true;
-
             }
         }
 

@@ -270,9 +270,35 @@ namespace RSToolkit.AI
             return ProximityHelpers.IsWithinDistance(ColliderComponent, position, SqrAtPositionErrorMargin);
         }
 
+        #region IsWithinInteractionDistance
+
+        public bool IsWithinInteractionDistanceVertical(Vector3 position, float percent = 1.0f)
+        {
+            return ProximityHelpers.IsWithinDistanceVertical(ColliderComponent, position, SqrInteractionMagnitude * percent);
+        }
+
+        public bool IsWithinInteractionDistanceHorizontal(Vector3 position, float percent = 1.0f)
+        {
+            return ProximityHelpers.IsWithinDistanceHorizontal(ColliderComponent, position, SqrInteractionMagnitude * percent);
+        }
+
         public bool IsWithinInteractionDistance(Vector3 position, float percent = 1.0f)
         {
             return ProximityHelpers.IsWithinDistance(ColliderComponent, position, SqrInteractionMagnitude * percent);
+        }
+
+        #endregion IsWithinInteractionDistance
+
+        #region IsWithinPersonalSpace
+
+        public bool IsWithinPersonalSpaceVertical(Vector3 position, float percent = 1.0f)
+        {
+            return ProximityHelpers.IsWithinDistanceVertical(ColliderComponent, position, SqrPersonalSpaceMagnitude * percent);
+        }
+
+        public bool IsWithinPersonalSpaceHorizontal(Vector3 position, float percent = 1.0f)
+        {
+            return ProximityHelpers.IsWithinDistanceHorizontal(ColliderComponent, position, SqrPersonalSpaceMagnitude * percent);
         }
 
         public bool IsWithinPersonalSpace(Vector3 position, float percent = 1.0f)
@@ -280,15 +306,43 @@ namespace RSToolkit.AI
             return ProximityHelpers.IsWithinDistance(ColliderComponent, position, SqrPersonalSpaceMagnitude * percent);
         }
 
+        #endregion IsWithinPersonalSpace
+
+        #region IsWithinAwarenessDistance
+        public bool IsWithinAwarenessDistanceVertical(Vector3 position, float percent = 1.0f)
+        {
+            return ProximityHelpers.IsWithinDistanceVertical(ColliderComponent, position, SqrAwarenessMagnitude * percent);
+        }
+
+        public bool IsWithinAwarenessDistanceHorizontal(Vector3 position, float percent = 1.0f)
+        {
+            return ProximityHelpers.IsWithinDistanceHorizontal(ColliderComponent, position, SqrAwarenessMagnitude * percent);
+        }
+
         public bool IsWithinAwarenessDistance(Vector3 position, float percent = 1.0f)
         {           
             return ProximityHelpers.IsWithinDistance(ColliderComponent, position, SqrAwarenessMagnitude * percent);
+        }
+        #endregion IsWithinAwarenessDistance
+
+        #region IsWithinInteraction
+
+        public bool IsWithinInteractionDistanceHorizontal(Transform target, float percent = 1.0f)
+        {
+            return IsWithinInteractionDistanceHorizontal(target.position, percent);
+        }
+
+        public bool IsWithinInteractionDistanceVertical(Transform target, float percent = 1.0f)
+        {
+            return IsWithinInteractionDistanceVertical(target.position, percent);
         }
 
         public bool IsWithinInteractionDistance(Transform target, float percent = 1.0f)
         {
             return IsWithinInteractionDistance(target.position, percent);
         }
+
+        #endregion IsWithinInteraction
 
         public bool IsWithinPersonalSpace(Transform target, float percent = 1.0f)
         {
@@ -454,7 +508,12 @@ namespace RSToolkit.AI
 
         public bool UnFocus()
         {
-            if (FocusedOnTransform == null)
+            if(FocusedOnPosition != null && FocusedOnTransform == null)
+            {
+                FocusedOnPosition = null;
+                return true;
+            }
+            else if (FocusedOnTransform == null)
             {
                 return false;
             }
@@ -464,6 +523,7 @@ namespace RSToolkit.AI
             }
             StartForgetTransform(FocusedOnTransform);
             FocusedOnTransform = null;
+            FocusedOnPosition = null;
             CurrentInteractionState = StatesInteraction.NotInteracting;
             return true;
         }

@@ -22,6 +22,8 @@ namespace RSToolkit.AI.Locomotion
         private const string DEBUG_TAG = "BotWanderManager";
         public bool DebugMode = false;
 
+        public bool _waitOnStart = true;
+
         #region FSM
         public BTFiniteStateMachine<FStatesWander> FSM { get; private set; } = new BTFiniteStateMachine<FStatesWander>(FStatesWander.NotWandering);
         private BTFiniteStateMachineManager _btFiniteStateMachineManagerComponent; 
@@ -92,7 +94,7 @@ namespace RSToolkit.AI.Locomotion
 
         private float GetWaitTime()
         {
-            if (FSM.LastState == FStatesWander.NotWandering || FSM.LastState == FStatesWander.CannotWander)
+            if ((FSM.LastState == FStatesWander.NotWandering || FSM.LastState == FStatesWander.CannotWander) && !_waitOnStart)
             {
                 return 0.1f;
             }
@@ -104,13 +106,14 @@ namespace RSToolkit.AI.Locomotion
             return _currentBotWanderComponent.WaitTime;
         }
 
-        public void Wander()
+        public void Wander(bool waitOnStart)
         {
-            Wander(BotLocomotiveComponent.SqrAwarenessMagnitude);
+            Wander(BotLocomotiveComponent.SqrAwarenessMagnitude, waitOnStart);
         }
 
-        public bool Wander(float radius)
+        public bool Wander(float radius, bool waitOnStart)
         {
+            _waitOnStart = waitOnStart;
             _currentBotWanderComponent.SetWanderRadius(radius);
 
             if (!_currentBotWanderComponent.CanWander())
@@ -170,6 +173,7 @@ namespace RSToolkit.AI.Locomotion
         Vector3? _newWanderPosition;
         void FindNewPosition_Update()
         { 
+            
             m_findPositionTimeout -= Time.deltaTime;
             if(m_findPositionTimeout > 0){
                 return;
