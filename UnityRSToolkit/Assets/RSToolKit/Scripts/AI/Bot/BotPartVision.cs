@@ -58,7 +58,7 @@ namespace RSToolkit.AI
                 try{
                     m_tagLookOutForTransforms.AddRange(GameObject.FindGameObjectsWithTag(LookOutForTags[i])
                                 .Select(go => go.transform));
-                }catch(Exception ex){
+                }catch(Exception){
                     // Tag does not exist
                 }
             }

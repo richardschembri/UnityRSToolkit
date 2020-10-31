@@ -19,10 +19,10 @@ namespace Demo.BehaviourTree.CTF{
         public Transform Flag {get; private set;}
 
         [SerializeField]
-        private Transform m_level;
-        public Transform Level {get{return m_level;}}
+        private Transform _level = null;
+        public Transform Level {get{return _level;}}
 
-        private bool m_flagTakeCache = false;
+        // private bool m_flagTakeCache = false;
 
 #region Reset
         private void ResetFlag(){

@@ -126,7 +126,8 @@ namespace RSToolkit.AI
                 if (GUILayout.Button("Move to"))
                 {
                     _targetBotLocomotive.FocusOnTransform((Transform)m_waypoint);
-                    _targetBotLocomotive.MoveToTarget( BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE, _fullspeed);
+                    // _targetBotLocomotive.MoveToTarget( BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE, _fullspeed);
+                    _targetBotLocomotive.MoveToTarget(Bot.DistanceType.PERSONAL_SPACE, _fullspeed);
                 }
                 EditorGUI.EndDisabledGroup();
                 GUILayout.EndHorizontal();

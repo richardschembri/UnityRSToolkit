@@ -15,6 +15,13 @@ namespace RSToolkit.Helpers
             REAR
         }
 
+        // Need a better name for this
+        public enum DistanceDirection{
+            HORIZONTAL,
+            VERTICAL,
+            ALL
+        }
+
         public static Vector3 GetDirection(Transform sourceTransform, Transform targetTransform)
         {
             return targetTransform.position - sourceTransform.position;
@@ -27,7 +34,7 @@ namespace RSToolkit.Helpers
             float angle = Vector3.Angle(direction, sourceTransform.forward);
             // an object is within sight if it is within the field of view and has a magnitude less than what the object can see
             if (IsWithinViewingAngle(sourceTransform, targetTransform, fieldOfViewAngle)
-                && IsWithinDistance(sourceTransform, targetTransform, sqrViewMagnitude))
+                && IsWithinDistance(sourceTransform, targetTransform, sqrViewMagnitude, DistanceDirection.ALL ))
             {
                 return true;
 
@@ -44,75 +51,39 @@ namespace RSToolkit.Helpers
             return angle < fieldOfViewAngle;
         }
         #region IsWithinDistance
-        public static bool IsWithinDistance(Transform sourceTransform, Transform targetTransform, float sqrViewMagnitude)
+        public static bool IsWithinDistance(Transform sourceTransform, Transform targetTransform, float sqrViewMagnitude, DistanceDirection direction)
         {
-            return IsWithinDistance(sourceTransform, targetTransform.position, sqrViewMagnitude);
+            return IsWithinDistance(sourceTransform, targetTransform.position, sqrViewMagnitude, direction);
         }
 
-        public static bool IsWithinDistance(Transform sourceTransform, Vector3 position, float sqrViewMagnitude)
+        public static bool IsWithinDistance(Transform sourceTransform, Vector3 position, float sqrViewMagnitude, DistanceDirection direction)
         {
-            return IsWithinDistance(sourceTransform.position, position, sqrViewMagnitude);
+            return IsWithinDistance(sourceTransform.position, position, sqrViewMagnitude, direction);
         }
 
-        public static bool IsWithinDistance(Collider sourceCollider, Vector3 position, float sqrViewMagnitude)
+        public static bool IsWithinDistance(Collider sourceCollider, Vector3 position, float sqrViewMagnitude, DistanceDirection direction)
         {
-            return IsWithinDistance(sourceCollider.ClosestPointOnBounds(position), position, sqrViewMagnitude);
+            return IsWithinDistance(sourceCollider.ClosestPointOnBounds(position), position, sqrViewMagnitude, direction);
         }
 
-        public static bool IsWithinDistance(Vector3 origin, Vector3 position, float sqrViewMagnitude)
+        public static bool IsWithinDistance(Vector3 origin, Vector3 position, float sqrViewMagnitude, DistanceDirection direction)
         {
+            switch(direction){
+                case DistanceDirection.HORIZONTAL:
+                    origin = new Vector3(origin.x, 0f, origin.z);
+                    position = new Vector3(position.x, 0, position.z);
+                    break;
+                case DistanceDirection.VERTICAL:
+                    origin = new Vector3(0, origin.y, 0);
+                    position = new Vector3(0, position.y, 0);
+                    break;
+            }
+
             return Vector3.SqrMagnitude(position - origin) < sqrViewMagnitude;
         }
+
         #endregion IsWithinDistance
-
-        #region IsWithinDistanceHorizontal
-        public static bool IsWithinDisanceHorizontal(Transform sourceTransform, Transform targetTransform, float sqrViewMagnitude)
-        {
-            return IsWithinDisanceHorizontal(sourceTransform, targetTransform.position, sqrViewMagnitude);
-        }
-
-        public static bool IsWithinDisanceHorizontal(Transform sourceTransform, Vector3 position, float sqrViewMagnitude)
-        {
-            return IsWithinDisanceHorizontal(sourceTransform.position, position, sqrViewMagnitude);
-        }
-
-        public static bool IsWithinDistanceHorizontal(Collider sourceCollider, Vector3 position, float sqrViewMagnitude)
-        {
-            return IsWithinDisanceHorizontal(sourceCollider.ClosestPointOnBounds(position), position, sqrViewMagnitude);
-        }
-
-        public static bool IsWithinDisanceHorizontal(Vector3 origin, Vector3 position, float sqrViewMagnitude)
-        {
-            return IsWithinDistance(new Vector3(origin.x, 0f, origin.z), 
-                                    new Vector3(position.x, 0, position.z), 
-                                    sqrViewMagnitude);
-        }
-        #endregion IsWithinDistanceHorizontal
         
-        #region IsWithinDisanceVertical
-        public static bool IsWithinDisanceVertical(Transform sourceTransform, Transform targetTransform, float sqrViewMagnitude)
-        {
-            return IsWithinDisanceVertical(sourceTransform, targetTransform.position, sqrViewMagnitude);
-        }
-
-        public static bool IsWithinDisanceVertical(Transform sourceTransform, Vector3 position, float sqrViewMagnitude)
-        {
-            return IsWithinDisanceVertical(sourceTransform.position, position, sqrViewMagnitude);
-        }
-
-        public static bool IsWithinDistanceVertical(Collider sourceCollider, Vector3 position, float sqrViewMagnitude)
-        {
-            return IsWithinDisanceVertical(sourceCollider.ClosestPointOnBounds(position), position, sqrViewMagnitude);
-        }
-
-        public static bool IsWithinDisanceVertical(Vector3 origin, Vector3 position, float sqrViewMagnitude)
-        {
-            return IsWithinDistance(new Vector3(origin.x, 0f, origin.z),
-                                    new Vector3(position.x, 0, position.z),
-                                    sqrViewMagnitude);
-        }
-        #endregion IsWithinDisanceVertical
-
         // returns true if targetTransform is in a line of sight of transform
         public static bool IsInLineOfSight(Transform transform, Transform targetTransform, Vector3 direction)
         {

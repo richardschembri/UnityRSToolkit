@@ -11,7 +11,7 @@
     {
         private LoadImageTools lit;
         [SerializeField]
-        private Sprite[] m_digitSprites;
+        private Sprite[] _digitSprites = null;
 
         [FormerlySerializedAs("Digit")]
         [SerializeField]
@@ -30,9 +30,9 @@
         }
 
         public void RefreshImage(){
-            if (m_digitSprites.Length > Digit && m_digitSprites[Digit] != null && m_digitSprites[Digit] != ImageComponent.sprite){
+            if (_digitSprites.Length > Digit && _digitSprites[Digit] != null && _digitSprites[Digit] != ImageComponent.sprite){
                 ImageComponent.sprite = null; // Set to null because of Unity Aspect bug
-                ImageComponent.sprite = m_digitSprites[Digit];
+                ImageComponent.sprite = _digitSprites[Digit];
                 ImageComponent.preserveAspect = true;
             }
         }

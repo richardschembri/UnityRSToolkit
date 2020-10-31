@@ -27,6 +27,14 @@ namespace RSToolkit.AI
             Peer
         }
 
+        public enum DistanceType{
+            AT_POSITION,
+            PERSONAL_SPACE,
+            INTERACTION,
+            AWARENESS,
+            OUTSIDE_AWARENESS
+        }
+
         public StatesInteraction CurrentInteractionState { get; private set; } = StatesInteraction.NotInteracting;
 
         public float InteractableCooldown = 0f;
@@ -209,154 +217,57 @@ namespace RSToolkit.AI
 
         #region IsWithinDistance
 
-        public bool IsAtPosition()
+        public bool IsWithinDistance(DistanceType distanceType, Vector3 position,
+            ProximityHelpers.DistanceDirection direction = ProximityHelpers.DistanceDirection.ALL,
+            float percent = 1.0f)
+        {
+            float sqrMagnitude = 0f;
+            switch(distanceType){
+                case DistanceType.AT_POSITION:
+                    if(SqrAtPositionErrorMargin == 0)
+                    {
+                        return transform.position == position;
+                    }
+                    sqrMagnitude = SqrAtPositionErrorMargin;
+                    break;
+                case DistanceType.INTERACTION:
+                    sqrMagnitude = SqrInteractionMagnitude;
+                    break;
+                case DistanceType.AWARENESS:
+                case DistanceType.OUTSIDE_AWARENESS:
+                    sqrMagnitude = SqrAwarenessMagnitude;
+                    break;
+            }
+
+            bool result = ProximityHelpers.IsWithinDistance(ColliderComponent, position, sqrMagnitude * percent, direction);
+
+            if (distanceType == DistanceType.OUTSIDE_AWARENESS)
+            {
+                return !result;
+            }
+
+            return result;
+        }
+
+        public bool IsWithinDistance(DistanceType distanceType, Transform target,
+            ProximityHelpers.DistanceDirection direction = ProximityHelpers.DistanceDirection.ALL,
+            float percent = 1.0f)
+        {
+            return IsWithinDistance(distanceType, target.position, direction,  percent);
+        }
+        public bool IsWithinDistance(DistanceType distanceType,
+            ProximityHelpers.DistanceDirection direction = ProximityHelpers.DistanceDirection.ALL,
+            float percent = 1.0f)
         {
             if (FocusedOnTransform != null)
             {
-                return IsAtPosition(FocusedOnTransform);
+                return IsWithinDistance(distanceType, FocusedOnTransform.position, direction,  percent);
             }
             else if (FocusedOnPosition != null)
             {
-                return IsAtPosition(FocusedOnPosition.Value);
+                return IsWithinDistance(distanceType, FocusedOnPosition.Value, direction, percent);
             }
             return false;
-        }
-
-        public bool IsWithinInteractionDistance(float percent = 1.0f)
-        {
-            if (FocusedOnTransform != null)
-            {
-                return IsWithinInteractionDistance(FocusedOnTransform, percent);
-            }
-            else if (FocusedOnPosition != null)
-            {
-                return IsWithinInteractionDistance(FocusedOnPosition.Value, percent);
-            }
-            return false;
-        }
-
-        public bool IsWithinPersonalSpace(float percent = 1.0f)
-        {
-            if (FocusedOnTransform != null)
-            {
-                return IsWithinPersonalSpace(FocusedOnTransform, percent);
-            }
-            else if (FocusedOnPosition != null)
-            {
-                return IsWithinPersonalSpace(FocusedOnPosition.Value, percent);
-            }
-            return false;
-        }
-
-        public bool IsWithinAwarenessDistance(float percent = 1.0f)
-        {
-            if (FocusedOnTransform != null)
-            {
-                return IsWithinAwarenessDistance(FocusedOnTransform, percent);
-            }
-            else if (FocusedOnPosition != null)
-            {
-                return IsWithinAwarenessDistance(FocusedOnPosition.Value, percent);
-            }
-            return false;
-        }
-
-        public bool IsAtPosition(Vector3 position)
-        {
-            if(SqrAtPositionErrorMargin == 0)
-            {
-                return transform.position == position;
-            }
-            return ProximityHelpers.IsWithinDistance(ColliderComponent, position, SqrAtPositionErrorMargin);
-        }
-
-        #region IsWithinInteractionDistance
-
-        public bool IsWithinInteractionDistanceVertical(Vector3 position, float percent = 1.0f)
-        {
-            return ProximityHelpers.IsWithinDistanceVertical(ColliderComponent, position, SqrInteractionMagnitude * percent);
-        }
-
-        public bool IsWithinInteractionDistanceHorizontal(Vector3 position, float percent = 1.0f)
-        {
-            return ProximityHelpers.IsWithinDistanceHorizontal(ColliderComponent, position, SqrInteractionMagnitude * percent);
-        }
-
-        public bool IsWithinInteractionDistance(Vector3 position, float percent = 1.0f)
-        {
-            return ProximityHelpers.IsWithinDistance(ColliderComponent, position, SqrInteractionMagnitude * percent);
-        }
-
-        #endregion IsWithinInteractionDistance
-
-        #region IsWithinPersonalSpace
-
-        public bool IsWithinPersonalSpaceVertical(Vector3 position, float percent = 1.0f)
-        {
-            return ProximityHelpers.IsWithinDistanceVertical(ColliderComponent, position, SqrPersonalSpaceMagnitude * percent);
-        }
-
-        public bool IsWithinPersonalSpaceHorizontal(Vector3 position, float percent = 1.0f)
-        {
-            return ProximityHelpers.IsWithinDistanceHorizontal(ColliderComponent, position, SqrPersonalSpaceMagnitude * percent);
-        }
-
-        public bool IsWithinPersonalSpace(Vector3 position, float percent = 1.0f)
-        {
-            return ProximityHelpers.IsWithinDistance(ColliderComponent, position, SqrPersonalSpaceMagnitude * percent);
-        }
-
-        #endregion IsWithinPersonalSpace
-
-        #region IsWithinAwarenessDistance
-        public bool IsWithinAwarenessDistanceVertical(Vector3 position, float percent = 1.0f)
-        {
-            return ProximityHelpers.IsWithinDistanceVertical(ColliderComponent, position, SqrAwarenessMagnitude * percent);
-        }
-
-        public bool IsWithinAwarenessDistanceHorizontal(Vector3 position, float percent = 1.0f)
-        {
-            return ProximityHelpers.IsWithinDistanceHorizontal(ColliderComponent, position, SqrAwarenessMagnitude * percent);
-        }
-
-        public bool IsWithinAwarenessDistance(Vector3 position, float percent = 1.0f)
-        {           
-            return ProximityHelpers.IsWithinDistance(ColliderComponent, position, SqrAwarenessMagnitude * percent);
-        }
-        #endregion IsWithinAwarenessDistance
-
-        #region IsWithinInteraction
-
-        public bool IsWithinInteractionDistanceHorizontal(Transform target, float percent = 1.0f)
-        {
-            return IsWithinInteractionDistanceHorizontal(target.position, percent);
-        }
-
-        public bool IsWithinInteractionDistanceVertical(Transform target, float percent = 1.0f)
-        {
-            return IsWithinInteractionDistanceVertical(target.position, percent);
-        }
-
-        public bool IsWithinInteractionDistance(Transform target, float percent = 1.0f)
-        {
-            return IsWithinInteractionDistance(target.position, percent);
-        }
-
-        #endregion IsWithinInteraction
-
-        public bool IsWithinPersonalSpace(Transform target, float percent = 1.0f)
-        {
-            return IsWithinPersonalSpace(target.position, percent);
-        }
-
-        public bool IsWithinAwarenessDistance(Transform target, float percent = 1.0f)
-        {
-            return IsWithinAwarenessDistance(target.position, percent);
-        }
-
-        public bool IsAtPosition(Transform target)
-        {
-            return IsAtPosition(target.position);
         }
 
         #endregion IsWithinDistance
@@ -387,7 +298,7 @@ namespace RSToolkit.AI
         public bool AttractMyAttention_ToTransform(Transform target, bool force, StatesInteraction interactionState = StatesInteraction.Interactor)
         {
 
-            if (IsWithinInteractionDistance(target) || force)
+            if (IsWithinDistance(DistanceType.INTERACTION, target) || force)
             {
                 if (ChangeInteractionState(interactionState, force))
                 {
@@ -403,7 +314,7 @@ namespace RSToolkit.AI
         public bool AttractMyAttention_ToBot(Bot target, bool force, StatesInteraction interactionState = StatesInteraction.Interactor)
         {
 
-            if (IsWithinInteractionDistance(target.transform) || target.IsWithinInteractionDistance(transform) || force)
+            if (IsWithinDistance(DistanceType.INTERACTION, target.transform) || target.IsWithinDistance(DistanceType.INTERACTION, transform) || force)
             {
                 if (target.CurrentInteractionState == StatesInteraction.Interactor)
                 {
@@ -619,9 +530,9 @@ namespace RSToolkit.AI
         void OnDrawGizmos()
         {
 #if UNITY_EDITOR          
-            ProximityHelpers.DrawGizmoProximity(transform, SqrAwarenessMagnitude, IsWithinAwarenessDistance());
-            ProximityHelpers.DrawGizmoProximity(transform, SqrInteractionMagnitude, IsWithinInteractionDistance());
-            ProximityHelpers.DrawGizmoProximity(transform, SqrPersonalSpaceMagnitude, IsWithinPersonalSpace());
+            ProximityHelpers.DrawGizmoProximity(transform, SqrAwarenessMagnitude, IsWithinDistance(DistanceType.AWARENESS)); // IsWithinAwarenessDistance());
+            ProximityHelpers.DrawGizmoProximity(transform, SqrInteractionMagnitude, IsWithinDistance(DistanceType.INTERACTION)); //IsWithinInteractionDistance());
+            ProximityHelpers.DrawGizmoProximity(transform, SqrPersonalSpaceMagnitude, IsWithinDistance(DistanceType.PERSONAL_SPACE)); ///IsWithinPersonalSpace());
 
             if (FocusedOnTransform != null)
             {

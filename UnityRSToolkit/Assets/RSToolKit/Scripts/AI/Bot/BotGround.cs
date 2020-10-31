@@ -29,21 +29,6 @@ namespace RSToolkit.AI
 
         }
 
-        private Rigidbody m_rigidBodyComponent;
-        public Rigidbody RigidBodyComponent
-        {
-            get
-            {
-                if (m_rigidBodyComponent == null)
-                {
-                    m_rigidBodyComponent = GetComponent<Rigidbody>();
-                }
-
-                return m_rigidBodyComponent;
-            }
-
-        }
-
         protected BotPartWanderNavMesh BotWanderNavMeshComponent {get; private set;}
         #endregion Components
 

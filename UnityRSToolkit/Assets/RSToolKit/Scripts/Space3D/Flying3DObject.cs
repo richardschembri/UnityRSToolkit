@@ -164,12 +164,14 @@ namespace RSToolkit.Space3D
 
 #region Reset Functions
 
+/*
         public void ResetAppliedAxis()
         {
             CurrentFlightAxis.pitch = DefaultFlightAxis.pitch;
             CurrentFlightAxis.yaw = DefaultFlightAxis.yaw;
             CurrentFlightAxis.roll = DefaultFlightAxis.roll;
         }
+*/
 
         public void ResetAppliedForces()
         {
@@ -188,7 +190,7 @@ namespace RSToolkit.Space3D
 
         public void ResetAppliedValues()
         {
-            ResetAppliedAxis();
+            // ResetAppliedAxis();
             ResetAppliedForces();
         }
 

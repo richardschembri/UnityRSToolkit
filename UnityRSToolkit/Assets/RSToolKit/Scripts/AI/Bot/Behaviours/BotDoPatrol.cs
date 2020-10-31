@@ -17,7 +17,7 @@ namespace RSToolkit.AI.Behaviour.Task{
 #endregion Components
 
         private int _waypointIndex = 0;
-        private Transform[] _waypoints;
+        private Transform[] _waypoints = null;
 
 		public string TargetTag {get; set;}
 		public Transform[] TargetTransforms {get; private set;}
@@ -58,7 +58,8 @@ namespace RSToolkit.AI.Behaviour.Task{
 
         private void MoveToWaypoint(){
             BotLocomotiveComponent.FocusOnTransform(_waypoints[_waypointIndex]);
-            BotLocomotiveComponent.MoveToTarget(BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE, false);
+            // BotLocomotiveComponent.MoveToTarget(BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE, false);
+            BotLocomotiveComponent.MoveToTarget(Bot.DistanceType.PERSONAL_SPACE, false);
         }
 
         private void MoveToNextWaypoint(){

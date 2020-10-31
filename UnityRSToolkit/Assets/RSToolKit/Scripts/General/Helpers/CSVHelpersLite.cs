@@ -245,7 +245,7 @@ using System.Text.RegularExpressions;
                     {
                         try{
                             pi.SetValue(tEntry, Convert.ChangeType(csvEntry[h], pi.PropertyType), null);
-                        }catch(Exception ex){
+                        }catch(Exception){
                             //Unable to convert
                         }
                     }

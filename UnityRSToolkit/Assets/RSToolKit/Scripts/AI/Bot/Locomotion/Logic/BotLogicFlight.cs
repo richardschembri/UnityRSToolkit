@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using RSToolkit.Space3D;
+using RSToolkit.Helpers;
 using UnityEngine.AI;
 using RSToolkit.AI.FSM;
 
@@ -94,31 +95,32 @@ namespace RSToolkit.AI.Locomotion
                 Flying3DObjectComponent.ApplyVerticalThrust(false);
             }
 
-            if (BotLocomotiveComponent.IsAtPosition())
+            if (BotLocomotiveComponent.IsWithinDistance(Bot.DistanceType.AT_POSITION, ProximityHelpers.DistanceDirection.ALL))
             {
                 // At position, stop all forces
                 Flying3DObjectComponent.ResetAppliedForces();
-                Flying3DObjectComponent.ResetAppliedAxis();
+                // Flying3DObjectComponent.ResetAppliedAxis();
+                return false;
             }
-            else if (BotLocomotiveComponent.IsWithinPersonalSpace(0.85f))
+            else if (BotLocomotiveComponent.IsWithinDistance(Bot.DistanceType.PERSONAL_SPACE, ProximityHelpers.DistanceDirection.HORIZONTAL, 0.85f)) // .IsWithinPersonalSpace(0.85f))
             {
                 // Back up
                 Flying3DObjectComponent.ApplyForwardThrust(fullspeed ? -0.25f : 0.05f);
             }
-            else if (BotLocomotiveComponent.IsWithinPersonalSpace(1.1f))
+            else if (BotLocomotiveComponent.IsWithinDistance(Bot.DistanceType.PERSONAL_SPACE, ProximityHelpers.DistanceDirection.HORIZONTAL, 1.1f))// IsWithinPersonalSpace(1.1f))
             {
                 if (fullspeed)
                 {
                     Flying3DObjectComponent.ApplyForwardThrust(0.1f);
                 }
             }
-            else if (BotLocomotiveComponent.IsWithinInteractionDistance())
+            else if (BotLocomotiveComponent.IsWithinDistance(Bot.DistanceType.INTERACTION, ProximityHelpers.DistanceDirection.HORIZONTAL)) // IsWithinInteractionDistance())
             {
                 // Slow down
                 Flying3DObjectComponent.ApplyForwardThrust(fullspeed ? 0.9f : 0.15f);
             }
             // Move towards position
-            else if (!BotLocomotiveComponent.IsWithinInteractionDistance())
+            else // if (!BotLocomotiveComponent.IsWithinInteractionDistance())
             {
                 Flying3DObjectComponent.ApplyForwardThrust(fullspeed ? 1f : 0.2f);
             }                      

@@ -30,6 +30,14 @@ namespace RSToolkit.AI.Locomotion
 
         }
 
+        public override Bot.DistanceType StopMovementCondition
+        {
+            get
+            {
+                return Bot.DistanceType.PERSONAL_SPACE;
+            }
+        }
+        /*
         public override BotLocomotive.StopMovementConditions StopMovementCondition
         {
             get
@@ -37,6 +45,7 @@ namespace RSToolkit.AI.Locomotion
                 return BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE;
             }
         }
+        */
 
         public override bool CanWander()
         {

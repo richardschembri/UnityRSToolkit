@@ -4,14 +4,15 @@ using RSToolkit.AI.Locomotion;
 
 namespace RSToolkit.AI.Behaviour.Composite
 {
-using StopMovementConditions = BotLocomotive.StopMovementConditions;
+// using StopMovementConditions = BotLocomotive.StopMovementConditions;
 	public class BotSeekWithinSightSequence : BehaviourSequence
 	{
 		public BotIsWithinSight IsWithinSight {get; private set;}
 		public BotDoSeek DoSeek {get; private set;}
 
 		private void Init(BotLocomotive botLocomotiveComponent, BotPartVision botVisionComponent,
-				StopMovementConditions stopMovementCondition , string targetTag, BehaviourNode[] nodes = null){
+				Bot.DistanceType stopMovementCondition , string targetTag, BehaviourNode[] nodes = null){
+				// StopMovementConditions stopMovementCondition , string targetTag, BehaviourNode[] nodes = null){
 			DoSeek = new BotDoSeek(botLocomotiveComponent, stopMovementCondition);
 			IsWithinSight = new BotIsWithinSight(botVisionComponent, targetTag, DoSeek);
 			AddChild(IsWithinSight);
@@ -24,14 +25,16 @@ using StopMovementConditions = BotLocomotive.StopMovementConditions;
 
 		public BotSeekWithinSightSequence(BotLocomotive botLocomotiveComponent,
 								BotPartVision botVisionComponent, string targetTag,
-								StopMovementConditions stopMovementCondition = StopMovementConditions.WITHIN_INTERACTION_DISTANCE) : base(false){
+								Bot.DistanceType stopMovementCondition = Bot.DistanceType.INTERACTION) : base(false){
+								// StopMovementConditions stopMovementCondition = StopMovementConditions.WITHIN_INTERACTION_DISTANCE) : base(false){
 			Init(botLocomotiveComponent, botVisionComponent,
 								stopMovementCondition, targetTag);
 		}
 
 		public BotSeekWithinSightSequence(BehaviourNode[] nodes, BotLocomotive botLocomotiveComponent,
 								BotPartVision botVisionComponent, string targetTag,
-								StopMovementConditions stopMovementCondition = StopMovementConditions.WITHIN_INTERACTION_DISTANCE)
+								Bot.DistanceType stopMovementCondition = Bot.DistanceType.INTERACTION)
+								// StopMovementConditions stopMovementCondition = StopMovementConditions.WITHIN_INTERACTION_DISTANCE)
 								: base(false){
 			Init(botLocomotiveComponent, botVisionComponent,
 								stopMovementCondition, targetTag, nodes);

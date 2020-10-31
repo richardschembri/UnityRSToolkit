@@ -67,7 +67,7 @@ namespace RSToolkit.AI.Locomotion
 
         public override bool MoveTowardsPosition(bool fullspeed = true)
         {
-            if (BotLocomotiveComponent.IsAtPosition())
+            if (BotLocomotiveComponent.IsWithinDistance(Bot.DistanceType.PERSONAL_SPACE)) // IsAtPosition())
             {
                 return false;
             }
@@ -102,7 +102,8 @@ namespace RSToolkit.AI.Locomotion
             BotLocomotiveComponent.UnFocus();
             BotLocomotiveComponent.FocusOnPosition(hit.position);
             MoveTowardsPosition(fullspeed);
-            BotLocomotiveComponent.MoveToPosition(BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE, fullspeed);
+            // BotLocomotiveComponent.MoveToPosition(BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE, fullspeed);
+            BotLocomotiveComponent.MoveToPosition(Bot.DistanceType.PERSONAL_SPACE, fullspeed);
         }
 
         public Vector3? JumpOffLedge(bool fullspeed = false)
@@ -113,7 +114,8 @@ namespace RSToolkit.AI.Locomotion
             {
                 BotLocomotiveComponent.UnFocus();
                 BotLocomotiveComponent.FocusOnPosition(rayhit.point);
-                BotLocomotiveComponent.MoveToPosition(BotLocomotive.StopMovementConditions.AT_POSITION, fullspeed);
+                // BotLocomotiveComponent.MoveToPosition(BotLocomotive.StopMovementConditions.AT_POSITION, fullspeed);
+                BotLocomotiveComponent.MoveToPosition(Bot.DistanceType.AT_POSITION, fullspeed);
                 return rayhit.point;
             }
             return null;
