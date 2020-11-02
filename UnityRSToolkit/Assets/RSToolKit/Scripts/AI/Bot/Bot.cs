@@ -242,7 +242,8 @@ namespace RSToolkit.AI
                     break;
             }
 
-            bool result = ProximityHelpers.IsWithinDistance(ColliderComponent, position, sqrMagnitude * percent, direction);
+            bool result = ProximityHelpers.IsWithinDistance(ColliderComponent, position, sqrMagnitude * percent, direction)
+                            || ProximityHelpers.IsWithinDistance(transform.position, position, sqrMagnitude * percent, direction);
 
             if (distanceType == DistanceType.OUTSIDE_AWARENESS)
             {
