@@ -2040,7 +2040,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!65 &631939400
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7071,9 +7071,7 @@ MonoBehaviour:
   DebugMode: 1
   MovementTimeout: 5
   AutoWander: 1
-  DefaultY: 5
   AboveSurface: 1
-  UseSpherecast: 1
 --- !u!114 &7990845843178055559
 MonoBehaviour:
   m_ObjectHideFlags: 0
