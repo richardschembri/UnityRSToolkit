@@ -43,5 +43,28 @@ namespace RSToolkit.Helpers
             return Physics.SphereCast(source.ClosestPoint(position) + direction.normalized * 0.05f, radius, direction, out hit, maxDistance);
         }
 
+        // I need better name for this. Need to improve
+        public static Vector3 AdjustPositionInVerticalVolume(this Collider source, Vector3 position){
+            RaycastHit hit;
+            float radius = Mathf.Max(source.bounds.size.x, source.bounds.size.z) / 2;
+
+            float newY = position.y;
+            if(Physics.SphereCast(position, radius, Vector3.up, out hit, source.bounds.size.y)){
+                newY = hit.point.y - source.bounds.size.y;
+                if(newY < position.y){
+                    return new Vector3(position.x, newY, position.z);
+                }
+            }
+
+            if(Physics.SphereCast(position, radius, Vector3.down, out hit, source.bounds.size.y)){
+                newY = hit.point.y + source.bounds.size.y;
+                if(newY > position.y){
+                    return new Vector3(position.x, newY, position.z);
+                }
+            }
+
+            return position;
+        }
+
     }
 }

@@ -105,7 +105,7 @@ namespace RSToolkit.AI.Locomotion
             else if (BotLocomotiveComponent.IsWithinDistance(Bot.DistanceType.PERSONAL_SPACE, ProximityHelpers.DistanceDirection.HORIZONTAL, 0.85f)) // .IsWithinPersonalSpace(0.85f))
             {
                 // Back up
-                Flying3DObjectComponent.ApplyForwardThrust(fullspeed ? -0.25f : 0.05f);
+                Flying3DObjectComponent.ApplyForwardThrust(fullspeed ? -0.35f : 0.05f);
             }
             else if (BotLocomotiveComponent.IsWithinDistance(Bot.DistanceType.PERSONAL_SPACE, ProximityHelpers.DistanceDirection.HORIZONTAL, 1.1f))// IsWithinPersonalSpace(1.1f))
             {
@@ -117,7 +117,7 @@ namespace RSToolkit.AI.Locomotion
             else if (BotLocomotiveComponent.IsWithinDistance(Bot.DistanceType.INTERACTION, ProximityHelpers.DistanceDirection.HORIZONTAL)) // IsWithinInteractionDistance())
             {
                 // Slow down
-                Flying3DObjectComponent.ApplyForwardThrust(fullspeed ? 0.9f : 0.15f);
+                Flying3DObjectComponent.ApplyForwardThrust(fullspeed ? 0.5f : 0.15f);
             }
             // Move towards position
             else // if (!BotLocomotiveComponent.IsWithinInteractionDistance())

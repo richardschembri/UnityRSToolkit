@@ -5,16 +5,6 @@ namespace RSToolkit.Helpers
 {
     public class ProximityHelpers
     {
-        public enum RayDirection
-        {
-            UP,
-            DOWN,
-            LEFT,
-            RIGHT,
-            FRONT,
-            REAR
-        }
-
         // Need a better name for this
         public enum DistanceDirection{
             HORIZONTAL,
@@ -22,9 +12,14 @@ namespace RSToolkit.Helpers
             ALL
         }
 
-        public static Vector3 GetDirection(Transform sourceTransform, Transform targetTransform)
+        public static Vector3 GetDirection(Vector3 origin, Vector3 target)
         {
-            return targetTransform.position - sourceTransform.position;
+            return target - origin;
+        }
+
+        public static Vector3 GetDirection(Transform origin, Transform target)
+        {
+            return GetDirection(origin.position, target.position);
         }
 
         // returns true if targetTransform is within sight of transform

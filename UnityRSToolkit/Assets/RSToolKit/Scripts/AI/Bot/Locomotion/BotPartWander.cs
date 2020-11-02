@@ -52,13 +52,10 @@ namespace RSToolkit.AI.Locomotion
             _wanderRadius = radius;
         }
 
-
         public Vector3? GetNewWanderPosition(Transform wanderCenter){
             return GetNewWanderPosition(wanderCenter, _wanderRadius);
         }
         protected abstract Vector3? GetNewWanderPosition(Transform wanderCenter, float radius);
-
-        
 
         protected virtual void Awake()
         {
