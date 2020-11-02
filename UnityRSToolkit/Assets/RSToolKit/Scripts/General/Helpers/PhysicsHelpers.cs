@@ -43,6 +43,12 @@ namespace RSToolkit.Helpers
             return Physics.SphereCast(source.ClosestPoint(position) + direction.normalized * 0.05f, radius, direction, out hit, maxDistance);
         }
 
+        public static bool SweepTestToPosition(this Rigidbody source, out RaycastHit hit, Vector3 position)
+        {
+            var direction = (position - source.transform.position).normalized;
+            return source.SweepTest(direction, out hit, Vector3.Distance(source.position, position));
+        }
+
         // I need better name for this. Need to improve
         public static Vector3 AdjustPositionInVerticalVolume(this Collider source, Vector3 position){
             RaycastHit hit;

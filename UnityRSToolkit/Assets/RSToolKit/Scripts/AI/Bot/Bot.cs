@@ -230,6 +230,9 @@ namespace RSToolkit.AI
                     }
                     sqrMagnitude = SqrAtPositionErrorMargin;
                     break;
+                case DistanceType.PERSONAL_SPACE:
+                    sqrMagnitude = SqrPersonalSpaceMagnitude;
+                    break;
                 case DistanceType.INTERACTION:
                     sqrMagnitude = SqrInteractionMagnitude;
                     break;

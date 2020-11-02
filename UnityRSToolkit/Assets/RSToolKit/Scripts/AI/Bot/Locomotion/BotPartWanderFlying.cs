@@ -9,12 +9,12 @@ namespace RSToolkit.AI.Locomotion
 {
     public class BotPartWanderFlying : BotPartWander
     {
-        public float DefaultY = 5f;
+        // public float DefaultY = 5f;
         private int _findNewPositionAttempts = 0;
         private const int MAX_FINDNEWPOSITIONATTEMPTS = 20;
         public bool AboveSurface = true;
 
-        public bool UseSpherecast = true;
+        // public bool UseSpherecast = true;
 
         // [Tooltip("If 0 or less a linecast will be used")]
         public float SpherecastRadius {get; private set;}
@@ -63,13 +63,14 @@ namespace RSToolkit.AI.Locomotion
         {
             if (_findNewPositionAttempts >= MAX_FINDNEWPOSITIONATTEMPTS || radius <= BotLocomotiveComponent.SqrInteractionMagnitude)
             {
+                _findNewPositionAttempts = 0;
                 return null;
             }
             _findNewPositionAttempts++;
             //var newPos = transform.GetRandomPositionWithinCircle(radius, BotFlyingComponent.BotComponent.SqrPersonalSpaceMagnitude);
             float offset = BotLocomotiveComponent.SqrPersonalSpaceMagnitude + ((radius - BotLocomotiveComponent.SqrInteractionMagnitude) / 2);
             Vector3? newPos = wanderCenter.GetRandomPositionWithinCircle(radius, offset);
-            newPos = new Vector3(newPos.Value.x, DefaultY, newPos.Value.z);
+            newPos = new Vector3(newPos.Value.x, BotLocomotiveComponent.transform.position.y, newPos.Value.z);
 
             if (AboveSurface && !Physics.Raycast(newPos.Value, Vector3.down, Mathf.Infinity))
             {
@@ -79,10 +80,11 @@ namespace RSToolkit.AI.Locomotion
 
             newPos = BotLocomotiveComponent.ColliderComponent.AdjustPositionInVerticalVolume(newPos.Value);
 
-            if ((!UseSpherecast && BotLocomotiveComponent.ColliderComponent.RaycastFromOutsideBounds(out _wanderhit, newPos.Value, radius))
-                || (UseSpherecast && BotLocomotiveComponent.ColliderComponent.SpherecastFromOutsideBounds(out _wanderhit, newPos.Value, SpherecastRadius, radius)))
+            //if ((!UseSpherecast && BotLocomotiveComponent.ColliderComponent.RaycastFromOutsideBounds(out _wanderhit, newPos.Value, radius))
+            //    || (UseSpherecast && BotLocomotiveComponent.ColliderComponent.SpherecastFromOutsideBounds(out _wanderhit, newPos.Value, SpherecastRadius, radius)))
+            if(BotLocomotiveComponent.RigidBodyComponent.SweepTestToPosition(out _wanderhit, newPos.Value))
             {
-               
+                
                 if (DebugMode)
                 {
                     Debug.Log($"Wander position is behind {_wanderhit.transform.name}");

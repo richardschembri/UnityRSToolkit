@@ -99,20 +99,18 @@ namespace RSToolkit.AI.Locomotion
             {
                 // At position, stop all forces
                 Flying3DObjectComponent.ResetAppliedForces();
+                Flying3DObjectComponent.RigidBodyComponent.ResetInertiaTensor();
                 // Flying3DObjectComponent.ResetAppliedAxis();
                 return false;
             }
-            else if (BotLocomotiveComponent.IsWithinDistance(Bot.DistanceType.PERSONAL_SPACE, ProximityHelpers.DistanceDirection.HORIZONTAL, 0.85f)) // .IsWithinPersonalSpace(0.85f))
+            else if (BotLocomotiveComponent.IsWithinDistance(Bot.DistanceType.PERSONAL_SPACE, ProximityHelpers.DistanceDirection.ALL, 0.85f)) // .IsWithinPersonalSpace(0.85f))
             {
                 // Back up
                 Flying3DObjectComponent.ApplyForwardThrust(fullspeed ? -0.35f : 0.05f);
             }
             else if (BotLocomotiveComponent.IsWithinDistance(Bot.DistanceType.PERSONAL_SPACE, ProximityHelpers.DistanceDirection.HORIZONTAL, 1.1f))// IsWithinPersonalSpace(1.1f))
-            {
-                if (fullspeed)
-                {
-                    Flying3DObjectComponent.ApplyForwardThrust(0.1f);
-                }
+            {                
+                Flying3DObjectComponent.ApplyForwardThrust(fullspeed ? 0.1f : 0.05f);                
             }
             else if (BotLocomotiveComponent.IsWithinDistance(Bot.DistanceType.INTERACTION, ProximityHelpers.DistanceDirection.HORIZONTAL)) // IsWithinInteractionDistance())
             {
