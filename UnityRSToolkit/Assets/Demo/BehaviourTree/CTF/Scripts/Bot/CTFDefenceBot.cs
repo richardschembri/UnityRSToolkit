@@ -63,7 +63,7 @@ namespace Demo.BehaviourTree.CTF{
         public PatrolFlagNotTakenBehaviours CTFPatrol_FlagNotTakenBehaviours; 
 
         protected override void InitFlagNotTakenBehaviours(){
-            CTFDefend_FlagNotTakenBehaviours.Root = new BehaviourRootNode("Flag Not Taken");
+            CTFDefend_FlagNotTakenBehaviours.Root = GenerateRoot(false);
             CTFDefend_FlagNotTakenBehaviours.MainSelector = new BehaviourSelector(false);
 
             CTFDefend_FlagNotTakenBehaviours.DoDefend = new BehaviourAction(DoDefend, "Do Defend");

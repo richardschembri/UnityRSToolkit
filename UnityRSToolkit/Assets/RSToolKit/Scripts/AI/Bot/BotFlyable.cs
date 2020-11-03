@@ -320,7 +320,7 @@ namespace RSToolkit.AI
             CharacterAnimParams.TrySetSpeed(AnimatorComponent, BotFSMLocomotionComponent.CurrentSpeed);
         }
 
-        void OnCollisionEnter(Collision collision)
+        protected override void OnCollisionEnter(Collision collision)
         {
             if (CurrentFlyableState == FStatesFlyable.Landing)
             {

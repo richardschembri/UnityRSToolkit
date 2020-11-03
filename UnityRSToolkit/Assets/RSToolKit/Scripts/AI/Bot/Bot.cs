@@ -374,18 +374,15 @@ namespace RSToolkit.AI
             return false;
         }
 
-        public void StartForgetTransform(Transform target)
+        public void ForgetTransformAfterTiemout(Transform target)
         {
             if (forgetTransformTimeout > 0)
             {
                 StartCoroutine(DelayedForgetTransform(target));
 
+            }else{
+                ForgetTransform(target);
             }
-            /*
-            else if (forgetTransformTimeout < 0)
-            {
-                NoticeTransform(target);
-            }*/
         }
 
         IEnumerator DelayedForgetTransform(Transform target)
@@ -421,7 +418,7 @@ namespace RSToolkit.AI
 
         }
 
-        public bool UnFocus()
+        public bool UnFocus(bool forget = true)
         {
             if(FocusedOnPosition != null && FocusedOnTransform == null)
             {
@@ -436,7 +433,9 @@ namespace RSToolkit.AI
             {
                 Debug.Log($"{transform.name}.UnFocus: {FocusedOnTransform.name}");
             }
-            StartForgetTransform(FocusedOnTransform);
+            if(forget){
+                ForgetTransformAfterTiemout(FocusedOnTransform);
+            }
             FocusedOnTransform = null;
             FocusedOnPosition = null;
             CurrentInteractionState = StatesInteraction.NotInteracting;
@@ -531,7 +530,11 @@ namespace RSToolkit.AI
 
         }
 
-        void OnDrawGizmos()
+        protected virtual void OnCollisionEnter(Collision collision){
+
+        }
+
+        protected virtual void OnDrawGizmos()
         {
 #if UNITY_EDITOR          
             ProximityHelpers.DrawGizmoProximity(transform, SqrAwarenessMagnitude, IsWithinDistance(DistanceType.AWARENESS)); // IsWithinAwarenessDistance());

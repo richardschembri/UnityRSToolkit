@@ -53,12 +53,11 @@ namespace Demo.BehaviourTree.CTF{
         }
 
         protected override void InitFlagNotTakenBehaviours(){
-            CTFOffence_FlagNotTakenBehaviours.Root = new BehaviourRootNode("Flag Not Taken");
+            CTFOffence_FlagNotTakenBehaviours.Root = GenerateRoot(false); // new BehaviourRootNode("Flag Not Taken");
             CTFOffence_FlagNotTakenBehaviours.MainSelector = new BehaviourSelector(false);
             CTFOffence_FlagNotTakenBehaviours.Root.AddChild(CTFOffence_FlagNotTakenBehaviours.MainSelector);
 
             CTFOffence_FlagNotTakenBehaviours.DoSeekFlag = new BotDoSeek(_botLocomotiveComponent,
-																			// BotLocomotive.StopMovementConditions.AT_POSITION,
 																			BotLocomotive.DistanceType.AT_POSITION,
 																			"Do Seek Flag");
             CTFOffence_FlagNotTakenBehaviours.DoSeekFlag.OnStarted.AddListener(DoSeekFlagOnStarted_Listener);
@@ -72,7 +71,7 @@ namespace Demo.BehaviourTree.CTF{
         }
 
         protected override void InitFlagTakenBehaviours(){
-            CTFOffence_FlagTakenBehaviours.Root = new BehaviourRootNode("Flag Taken");
+            CTFOffence_FlagTakenBehaviours.Root = GenerateRoot(true);
             CTFOffence_FlagTakenBehaviours.MainSelector = new BehaviourSelector(false);
             CTFOffence_FlagTakenBehaviours.MainSelector.Name = "Main Selector";
             CTFOffence_FlagTakenBehaviours.TakeFlagToCapturePointSequence = new BehaviourSequence(false);

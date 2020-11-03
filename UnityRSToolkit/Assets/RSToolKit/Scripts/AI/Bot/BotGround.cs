@@ -42,6 +42,14 @@ namespace RSToolkit.AI
             }
         }
 
+        private void Land(){
+            IsFreefall = false;
+            RigidBodyComponent.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
+            RigidBodyComponent.velocity = Vector3.zero;
+            transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
+            NavMeshAgentComponent.enabled = true;
+        }
+
         protected override void ToggleComponentsForNetwork(bool toggleKinematic = true)
         {
             base.ToggleComponentsForNetwork(toggleKinematic);
@@ -91,14 +99,24 @@ namespace RSToolkit.AI
             // There must be a better way to do this
             if (IsFreefall && IsAlmostGrounded())
             {
-                IsFreefall = false;
-                RigidBodyComponent.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
-                RigidBodyComponent.velocity = Vector3.zero;
-                transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
-                NavMeshAgentComponent.enabled = true;
+                Land();
             }
         }
-
+        protected override void OnCollisionEnter(Collision collision)
+        {
+            if (IsFreefall)
+            {
+                NavMeshHit navHit;
+                for (int i = 0; i < collision.contacts.Length; i++)
+                {
+                    if (NavMesh.SamplePosition(collision.contacts[i].point, out navHit, 1f, NavMesh.AllAreas))
+                    {
+                        Land();
+                        break;
+                    }
+                }
+            }
+        }
         #endregion MonoBehaviour Functions
     }
 }

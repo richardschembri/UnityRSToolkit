@@ -15,6 +15,7 @@ namespace Demo.BehaviourTree.CTF{
     [RequireComponent(typeof(BotPartVision))]
     public abstract class CTFBot : MonoBehaviour
     {
+        public const string NAME_FLAGHOLDER = "Flag Holder";
 #region Start Values
 
         public Vector3 StartPosition {get; private set;}
@@ -36,7 +37,7 @@ namespace Demo.BehaviourTree.CTF{
             _behaviourManagerComponent = GetComponent<BehaviourManager>();
             _botVisionComponent = GetComponent<BotPartVision>();
             _botNavMeshComponent = GetComponent<BotLogicNavMesh>();
-            FlagHolder = gameObject.GetChild("Flag Holder");
+            FlagHolder = gameObject.GetChild(NAME_FLAGHOLDER);
         }
 
 #endregion Components
@@ -61,6 +62,12 @@ namespace Demo.BehaviourTree.CTF{
 
 #region Behaviour Logic
 
+        protected BehaviourRootNode GenerateRoot(bool flagTaken){
+            if(flagTaken){
+                return new BehaviourRootNode("Flag Taken");
+            }
+            return new BehaviourRootNode("Flag Not Taken");            
+        }
 #endregion Behaviour Logic
 
         public abstract void SwitchToTree_FlagTaken();
