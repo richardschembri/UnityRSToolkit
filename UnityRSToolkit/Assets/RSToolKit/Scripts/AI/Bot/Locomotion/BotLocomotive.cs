@@ -281,13 +281,11 @@ namespace RSToolkit.AI.Locomotion
 
         public bool HasReachedDestination()
         {
+            return CurrentLocomotionType.HasReachedDestination();
+            /*
             return (StopMovementCondition == DistanceType.PERSONAL_SPACE && IsWithinDistance(DistanceType.PERSONAL_SPACE))
                 || (StopMovementCondition == DistanceType.INTERACTION && IsWithinDistance(DistanceType.INTERACTION))
                 || (StopMovementCondition == DistanceType.AT_POSITION && IsWithinDistance(DistanceType.AT_POSITION));
-            /*
-            return (StopMovementCondition == StopMovementConditions.WITHIN_PERSONAL_SPACE && IsWithinPersonalSpace())
-                || (StopMovementCondition == StopMovementConditions.WITHIN_INTERACTION_DISTANCE && IsWithinInteractionDistance())
-                || (StopMovementCondition == StopMovementConditions.AT_POSITION && IsAtPosition());
             */
         }
 
@@ -317,9 +315,29 @@ namespace RSToolkit.AI.Locomotion
             FSM.OnStarted_AddListener(FStatesLocomotion.NotMoving, NotMoving_Enter);
             FSM.SetUpdateAction(FStatesLocomotion.CannotMove, CannotMove_Update);
             FSM.SetUpdateAction(FStatesLocomotion.MovingToPosition, MovingToPosition_Update);
+            FSM.OnStarted_AddListener(FStatesLocomotion.MovingToPosition, MovingToPositionOnStarted_Listener);
             FSM.SetUpdateAction(FStatesLocomotion.MovingToTarget, MovingToTarget_Update);
             FSM.SetUpdateAction(FStatesLocomotion.MovingAwayFromPosition, MovingAwayFromPosition_Update);
             FSM.SetUpdateAction(FStatesLocomotion.MovingAwayFromTarget, MovingAwayFromTarget_Update);
+        }
+
+        private void MovingToPositionOnStarted_Listener()
+        {
+            try
+            {
+                CurrentLocomotionType.MoveTowardsPosition(_fullspeed);
+            }
+            catch (System.Exception ex)
+            {
+
+                if (DebugMode)
+                {
+                    Debug.LogError($"Locomotion Error: {ex.Message}");
+                }
+
+                FSM.ChangeState(FStatesLocomotion.CannotMove);
+
+            }
         }
 
         private void MovingToPosition_Update()
@@ -336,24 +354,6 @@ namespace RSToolkit.AI.Locomotion
                 }
 
                 FSM.ChangeState(FStatesLocomotion.NotMoving);
-            }
-            else
-            {
-                try
-                {
-                    CurrentLocomotionType.MoveTowardsPosition(_fullspeed);
-                }
-                catch (System.Exception ex)
-                {
-
-                    if (DebugMode)
-                    {
-                        Debug.LogError($"Locomotion Error: {ex.Message}");
-                    }
-
-                    FSM.ChangeState(FStatesLocomotion.CannotMove);
-
-                }
             }
         }
 

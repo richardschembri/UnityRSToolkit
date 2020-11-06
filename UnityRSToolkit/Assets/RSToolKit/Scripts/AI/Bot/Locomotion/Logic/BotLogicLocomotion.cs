@@ -36,5 +36,12 @@ namespace RSToolkit.AI.Locomotion
             BotLocomotiveComponent = botLocomotion;
         }
 
+        public virtual bool HasReachedDestination()
+        {
+            return (BotLocomotiveComponent.StopMovementCondition == Bot.DistanceType.PERSONAL_SPACE && BotLocomotiveComponent.IsWithinDistance(Bot.DistanceType.PERSONAL_SPACE))
+                || (BotLocomotiveComponent.StopMovementCondition == Bot.DistanceType.INTERACTION && BotLocomotiveComponent.IsWithinDistance(Bot.DistanceType.INTERACTION))
+                || (BotLocomotiveComponent.StopMovementCondition == Bot.DistanceType.AT_POSITION && BotLocomotiveComponent.IsWithinDistance(Bot.DistanceType.AT_POSITION));
+
+        }
     }
 }

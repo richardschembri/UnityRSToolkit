@@ -49,7 +49,7 @@ namespace RSToolkit.AI.Locomotion
         {
             NavMeshAgentComponent.speed = speed;
             NavMeshAgentComponent.angularSpeed = angularSpeed;
-            NavMeshAgentComponent.destination = destination;
+            NavMeshAgentComponent.SetDestination(destination);
             /*
             NavMeshAgentComponent.stoppingDistance = 0f;
             switch (BotLocomotiveComponent.StopMovementCondition)
@@ -67,7 +67,8 @@ namespace RSToolkit.AI.Locomotion
 
         public override bool MoveTowardsPosition(bool fullspeed = true)
         {
-            if (BotLocomotiveComponent.IsWithinDistance(Bot.DistanceType.PERSONAL_SPACE)) // IsAtPosition())
+            if (BotLocomotiveComponent.CurrentFState == BotLocomotive.FStatesLocomotion.MovingToPosition
+                && BotLocomotiveComponent.IsWithinDistance(Bot.DistanceType.PERSONAL_SPACE)) // IsAtPosition())
             {
                 return false;
             }
@@ -224,11 +225,21 @@ namespace RSToolkit.AI.Locomotion
             float runSpeed = 5f, float runRotationSpeed = 120f) : base(botFlyable)
         {
             Initialize(botFlyable, botFlyable.NavMeshAgentComponent,
-            botFlyable.JumpProximityChecker,            
+            botFlyable.JumpProximityChecker,
             walkSpeed, walkRotationSpeed, runSpeed, runRotationSpeed);
             botFlyable.BotLogicNavMeshRef = this;
         }
 
+        /*
+        // To improve
+        public override bool HasReachedDestination()
+        {
+            return (BotLocomotiveComponent.FocusedOnPosition != null && BotLocomotiveComponent.FocusedOnPosition == NavMeshAgentComponent.destination 
+                    && ( NavMeshAgentComponent.path.status == NavMeshPathStatus.PathPartial //If Agent tried and failed to reach destination return FAILED
+                            || NavMeshAgentComponent.path.status == NavMeshPathStatus.PathComplete)
+                        ) || base.HasReachedDestination();
+        }
+        */
     }
 }
 

@@ -21,17 +21,43 @@ namespace RSToolkit.AI.Helpers
             return self.velocity.magnitude / self.speed;
         }
 
+        
         public static bool RandomNavPosInSphere(Vector3 origin, float radius, out Vector3 position ,float offset = 0f, int areamask = NavMesh.AllAreas)
         {
             position = origin + ((offset + (radius * Random.value)) * Random.insideUnitSphere.normalized);
             NavMeshPath path = new NavMeshPath();
             NavMesh.CalculatePath(origin, position, areamask, path);
+
             if(path.status == NavMeshPathStatus.PathInvalid || Vector3.Distance(origin, position) < offset)
             {
                 return false;
             }
             return true;
         }
+
+        /*
+        public static bool RandomNavPosInSphere(Vector3 origin, float radius, out Vector3 position, float offset = 0f, int areamask = NavMesh.AllAreas)
+        {
+
+            Vector2 randomPoint2D = new Vector2(origin.x, origin.z);
+            Vector3 randomPoint3D;
+
+            do
+            {
+                randomPoint2D = randomPoint2D + Random.insideUnitCircle * radius;
+                randomPoint3D = new Vector3(randomPoint2D.x, origin.y, randomPoint2D.y);
+            } while (Vector3.Distance(randomPoint3D, origin) < offset);
+
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(randomPoint3D, out hit, 1.0f, NavMesh.AllAreas))
+            {
+                position = hit.position;
+                return true;
+            }
+            position = origin;
+            return false;
+        }
+        */
 
         public static bool AttemptRandomNavPosInSphere(Vector3 origin, float radius, out Vector3 position, float offset = 0f, int areamask = NavMesh.AllAreas, int attempts = 100)
         {
