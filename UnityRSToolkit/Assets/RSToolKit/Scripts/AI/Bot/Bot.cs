@@ -189,9 +189,12 @@ namespace RSToolkit.AI
         {
             get
             {                
+                return SqrInteractionMagnitude * personalSpacePercent;
+                /*
                 return Mathf.Max(SqrInteractionMagnitude * personalSpacePercent, 
                                     Mathf.Max(ColliderComponent.bounds.size.x * 1.1f, 
                                                 ColliderComponent.bounds.size.z * 1.1f));
+                */
             }
         }
 

@@ -36,12 +36,31 @@ namespace RSToolkit.AI.Locomotion
             BotLocomotiveComponent = botLocomotion;
         }
 
-        public virtual bool HasReachedDestination()
+        public bool HasReachedDestinationApprox(Bot.DistanceType StopMovementCondition)
         {
-            return (BotLocomotiveComponent.StopMovementCondition == Bot.DistanceType.PERSONAL_SPACE && BotLocomotiveComponent.IsWithinDistance(Bot.DistanceType.PERSONAL_SPACE))
-                || (BotLocomotiveComponent.StopMovementCondition == Bot.DistanceType.INTERACTION && BotLocomotiveComponent.IsWithinDistance(Bot.DistanceType.INTERACTION))
-                || (BotLocomotiveComponent.StopMovementCondition == Bot.DistanceType.AT_POSITION && BotLocomotiveComponent.IsWithinDistance(Bot.DistanceType.AT_POSITION));
+            return (BotLocomotiveComponent.StopMovementCondition == StopMovementCondition
+                    && BotLocomotiveComponent.IsWithinDistance(StopMovementCondition, ProximityHelpers.DistanceDirection.VERTICAL)
+                    && BotLocomotiveComponent.IsWithinDistance(StopMovementCondition, ProximityHelpers.DistanceDirection.HORIZONTAL)
+                    );
+        }
 
+        protected bool HasReachedDestinationApprox(){
+            return (HasReachedDestinationApprox(Bot.DistanceType.PERSONAL_SPACE)
+                    || HasReachedDestinationApprox(Bot.DistanceType.INTERACTION)
+                    || HasReachedDestinationApprox(Bot.DistanceType.AT_POSITION));
+        }
+
+        public bool HasReachedDestination(Bot.DistanceType StopMovementCondition)
+        {
+            return (BotLocomotiveComponent.StopMovementCondition == StopMovementCondition
+                    && BotLocomotiveComponent.IsWithinDistance(StopMovementCondition));
+        }
+
+        public bool HasReachedDestination()
+        {
+            return (HasReachedDestination(Bot.DistanceType.PERSONAL_SPACE)
+                    || HasReachedDestination(Bot.DistanceType.INTERACTION)
+                    || HasReachedDestination(Bot.DistanceType.AT_POSITION));
         }
     }
 }

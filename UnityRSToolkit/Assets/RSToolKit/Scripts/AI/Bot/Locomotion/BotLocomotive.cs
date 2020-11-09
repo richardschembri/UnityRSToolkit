@@ -26,16 +26,6 @@ namespace RSToolkit.AI.Locomotion
             MovingAwayFromPosition,
             MovingAwayFromTarget
         }
-
-        /*
-        public enum StopMovementConditions
-        {
-            NONE,
-            AT_POSITION,
-            WITHIN_PERSONAL_SPACE,
-            WITHIN_INTERACTION_DISTANCE,
-        }
-        */
       
         public BotLogicLocomotion CurrentLocomotionType { get; set; }
 
@@ -61,23 +51,6 @@ namespace RSToolkit.AI.Locomotion
                 return SqrAwarenessMagnitude * 1.1f;
             }
         }
-
-        /*
-        public override void ToggleComponentsForNetwork(bool owner)
-        {
-            base.ToggleComponentsForNetwork(owner);
-            if (!owner)
-            {
-                //_botWanderManagerComponent.enabled = false;
-                GroundProximityCheckerComponent.enabled = false;
-            }
-            else
-            {
-                GroundProximityCheckerComponent.enabled = true;
-                //_botWanderManagerComponent.enabled = true;
-            }
-        }
-        */
 
         #region Components
         private ProximityChecker _proximityCheckerComponent;

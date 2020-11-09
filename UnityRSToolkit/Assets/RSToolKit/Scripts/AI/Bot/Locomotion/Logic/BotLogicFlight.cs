@@ -86,11 +86,13 @@ namespace RSToolkit.AI.Locomotion
             RotateTowardsPosition();
 
             // Match height of position
-            if (Mathf.RoundToInt(BotLocomotiveComponent.FocusedOnPosition.Value.y) > Mathf.RoundToInt(BotLocomotiveComponent.transform.position.y))
+            // if (Mathf.RoundToInt(BotLocomotiveComponent.FocusedOnPosition.Value.y) > Mathf.RoundToInt(BotLocomotiveComponent.transform.position.y))
+            if (BotLocomotiveComponent.FocusedOnPosition.Value.y > BotLocomotiveComponent.transform.position.y)
             {
                 Flying3DObjectComponent.ApplyVerticalThrust(true);
             }
-            if (Mathf.RoundToInt(BotLocomotiveComponent.FocusedOnPosition.Value.y) < Mathf.RoundToInt(BotLocomotiveComponent.transform.position.y))
+            // if (Mathf.RoundToInt(BotLocomotiveComponent.FocusedOnPosition.Value.y) < Mathf.RoundToInt(BotLocomotiveComponent.transform.position.y))
+            if (BotLocomotiveComponent.FocusedOnPosition.Value.y < BotLocomotiveComponent.transform.position.y)
             {
                 Flying3DObjectComponent.ApplyVerticalThrust(false);
             }

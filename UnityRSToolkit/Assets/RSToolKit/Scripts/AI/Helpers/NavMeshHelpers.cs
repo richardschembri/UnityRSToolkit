@@ -22,6 +22,7 @@ namespace RSToolkit.AI.Helpers
         }
 
         
+        /*
         public static bool RandomNavPosInSphere(Vector3 origin, float radius, out Vector3 position ,float offset = 0f, int areamask = NavMesh.AllAreas)
         {
             position = origin + ((offset + (radius * Random.value)) * Random.insideUnitSphere.normalized);
@@ -34,31 +35,34 @@ namespace RSToolkit.AI.Helpers
             }
             return true;
         }
+        */
 
-        /*
-        public static bool RandomNavPosInSphere(Vector3 origin, float radius, out Vector3 position, float offset = 0f, int areamask = NavMesh.AllAreas)
+        public static Vector3? RandomNavPosInSphere(Vector3 origin, float radius, float offset = 0f, int areamask = NavMesh.AllAreas, int attempts = 100)
         {
+            if(offset > radius || attempts <= 0){
+                return null;
+            }
 
             Vector2 randomPoint2D = new Vector2(origin.x, origin.z);
             Vector3 randomPoint3D;
-
+            float distance = 0f;
             do
             {
                 randomPoint2D = randomPoint2D + Random.insideUnitCircle * radius;
                 randomPoint3D = new Vector3(randomPoint2D.x, origin.y, randomPoint2D.y);
-            } while (Vector3.Distance(randomPoint3D, origin) < offset);
+                distance = Vector3.Distance(randomPoint3D, origin);
+            } while (distance < offset || distance > radius);
 
             NavMeshHit hit;
             if (NavMesh.SamplePosition(randomPoint3D, out hit, 1.0f, NavMesh.AllAreas))
             {
-                position = hit.position;
-                return true;
+                return hit.position;
             }
-            position = origin;
-            return false;
+            attempts--; 
+            return RandomNavPosInSphere(origin, radius, offset, areamask, attempts);
         }
-        */
 
+        /*
         public static bool AttemptRandomNavPosInSphere(Vector3 origin, float radius, out Vector3 position, float offset = 0f, int areamask = NavMesh.AllAreas, int attempts = 100)
         {
             position = origin;
@@ -71,6 +75,7 @@ namespace RSToolkit.AI.Helpers
             }
             return false;
         }
+        */
 
         public static OffMeshLinkPosition GetOffMeshLinkPosition(this NavMeshAgent agent, float startend_proximity = 0.25f)
         {
