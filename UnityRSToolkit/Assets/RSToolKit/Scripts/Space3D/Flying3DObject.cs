@@ -335,7 +335,7 @@ namespace RSToolkit.Space3D
         {
             if (CurrentFlightAxis.pitch != _targetFlightAxis.pitch)
             {
-                CurrentFlightAxis.pitch = Mathf.SmoothDamp(CurrentFlightAxis.pitch, _targetFlightAxis.pitch, ref m_forwardVelocity, 0.1f);
+                CurrentFlightAxis.pitch = Mathf.SmoothDampAngle(CurrentFlightAxis.pitch, _targetFlightAxis.pitch, ref m_forwardVelocity, 0.1f);
             }
         }
 
@@ -344,7 +344,7 @@ namespace RSToolkit.Space3D
         {
             if (CurrentFlightAxis.roll != _targetFlightAxis.roll)
             {
-                CurrentFlightAxis.roll = Mathf.SmoothDamp(CurrentFlightAxis.roll, _targetFlightAxis.roll, ref _lateralVelocity, 0.1f);
+                CurrentFlightAxis.roll = Mathf.SmoothDampAngle(CurrentFlightAxis.roll, _targetFlightAxis.roll, ref _lateralVelocity, 0.1f);
             }
         }
 
@@ -352,7 +352,7 @@ namespace RSToolkit.Space3D
         {
             if (CurrentFlightAxis.yaw != _targetFlightAxis.yaw)
             {
-                CurrentFlightAxis.yaw = Mathf.SmoothDamp(CurrentFlightAxis.yaw, _targetFlightAxis.yaw, ref _yawVelocity, 0.25f);
+                CurrentFlightAxis.yaw = Mathf.SmoothDampAngle(CurrentFlightAxis.yaw, _targetFlightAxis.yaw, ref _yawVelocity, 0.25f); // Mathf.SmoothDamp(CurrentFlightAxis.yaw, _targetFlightAxis.yaw, ref _yawVelocity, 0.25f);
 
             }
         }

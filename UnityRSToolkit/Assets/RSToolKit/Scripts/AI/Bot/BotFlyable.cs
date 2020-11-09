@@ -306,6 +306,15 @@ namespace RSToolkit.AI
             CharacterAnimParams.TrySetFStateFlyable(AnimatorComponent, (int)state);
         }
 
+        protected override void MovingToPosition_Update()
+        {
+            base.MovingToPosition_Update();
+            if(FocusedOnPosition != null)
+            {
+                CurrentLocomotionType.MoveTowardsPosition(_fullspeed);
+            }           
+        }
+
         #region MonoBehaviour Functions
 
         protected override void Awake()

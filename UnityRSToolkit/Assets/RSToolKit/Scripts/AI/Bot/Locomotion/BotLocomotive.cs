@@ -40,7 +40,7 @@ namespace RSToolkit.AI.Locomotion
         }
         public float CurrentSpeed { get { return CurrentLocomotionType != null ? CurrentLocomotionType .CurrentSpeed : 0; } }
 
-        private bool _fullspeed = true;
+        protected bool _fullspeed = true;
         //public StopMovementConditions StopMovementCondition { get; private set; }
         public DistanceType? StopMovementCondition { get; private set; } = null;
 
@@ -313,7 +313,7 @@ namespace RSToolkit.AI.Locomotion
             }
         }
 
-        private void MovingToPosition_Update()
+        protected virtual void MovingToPosition_Update()
         {
             if (!CurrentLocomotionType.CanMove())
             {
