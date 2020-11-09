@@ -74,7 +74,8 @@ namespace RSToolkit.Helpers
                     break;
             }
 
-            return Vector3.SqrMagnitude(position - origin) < sqrViewMagnitude;
+            // return Vector3.SqrMagnitude(position - origin) < sqrViewMagnitude;
+            return Vector3.Distance(position, origin) <= sqrViewMagnitude;
         }
 
         #endregion IsWithinDistance

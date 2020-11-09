@@ -281,6 +281,33 @@ namespace RSToolkit.AI
 
         #endregion IsWithinDistance
 
+        public DistanceType? GetDistanceTypeFromFocusedPosition()
+        {
+            if(FocusedOnPosition == null)
+            {
+                return null;
+            }
+
+            if (IsWithinDistance(DistanceType.AT_POSITION))
+            {
+                return DistanceType.AT_POSITION;
+            }
+            else if (IsWithinDistance(DistanceType.PERSONAL_SPACE))
+            {
+                return DistanceType.PERSONAL_SPACE;
+            }
+            else if (IsWithinDistance(DistanceType.INTERACTION))
+            {
+                return DistanceType.INTERACTION;
+            }
+            else if (IsWithinDistance(DistanceType.AWARENESS))
+            {
+                return DistanceType.AWARENESS;
+            }
+
+            return DistanceType.OUTSIDE_AWARENESS;
+        }
+
         public void ResetInteractionCooldown(float percent = 1.0f)
         {
             CanInteractFromTime = Time.time + (InteractableCooldown * percent);
@@ -549,14 +576,15 @@ namespace RSToolkit.AI
             if (FocusedOnTransform != null)
             {
                 UnityEditor.Handles.color = Color.yellow;
-                UnityEditor.Handles.DrawLine(transform.position, FocusedOnTransform.position);
+                
                 DrawGizmoPositionPoint(FocusedOnTransform.position);
             }
             else if (FocusedOnPosition != null)
             {
                 UnityEditor.Handles.color = new Color(1f, 1f, 0.008f, 0.55f);
-                //UnityEditor.Handles.DrawSolidDisc(FocusedOnPosition.Value, Vector3.up, 0.25f);
+                //UnityEditor.Handles.DrawSolidDisc(FocusedOnPosition.Value, Vector3.up, 0.25f);                
                 DrawGizmoPositionPoint(FocusedOnPosition.Value);
+                UnityEditor.Handles.DrawLine(transform.position, FocusedOnPosition.Value);
             }
 #endif
         }

@@ -16,6 +16,7 @@ namespace RSToolkit.AI
         bool _fullspeed = false;
         float _interactionCooldown = 0f;
         float _currentSpeed = 0;
+        string _debugDistanceType = "";
         void OnEnable()
         {
             _targetBot = (Bot)target;
@@ -131,6 +132,30 @@ namespace RSToolkit.AI
                 }
                 EditorGUI.EndDisabledGroup();
                 GUILayout.EndHorizontal();
+
+                Bot.DistanceType? dt = _targetBotLocomotive.GetDistanceTypeFromFocusedPosition();
+                if (dt != null)
+                {
+                    float sqrMagnitude = 0f;
+                    switch (dt)
+                    {
+                        case Bot.DistanceType.AT_POSITION:
+                            sqrMagnitude = _targetBotLocomotive.SqrAtPositionErrorMargin;
+                            break;
+                        case Bot.DistanceType.PERSONAL_SPACE:
+                            sqrMagnitude = _targetBotLocomotive.SqrPersonalSpaceMagnitude;
+                            break;
+                        case Bot.DistanceType.INTERACTION:
+                            sqrMagnitude = _targetBotLocomotive.SqrPersonalSpaceMagnitude;
+                            break;
+                        case Bot.DistanceType.AWARENESS:
+                            sqrMagnitude = _targetBotLocomotive.SqrAwarenessMagnitude;
+                            break;
+                    }
+                    _debugDistanceType = $"Move to : {dt.ToString()}|{Vector3.SqrMagnitude(_targetBotLocomotive.FocusedOnPosition.Value - _targetBotLocomotive.transform.position)}/{sqrMagnitude}|{Vector3.Distance(_targetBotLocomotive.FocusedOnPosition.Value, _targetBotLocomotive.transform.position)}/{sqrMagnitude}";
+                    
+                }
+                EditorGUILayout.LabelField(_debugDistanceType, EditorStyles.boldLabel);
             }
         }
     }
