@@ -83,11 +83,16 @@
             return result + rnd.Next(16).ToString("X");
         }
 
-        public static Vector3 GetRandomPositionWithinCircle(this Transform self, float radius, float offset = 0f)
+        public static Vector3 GetRandomPositionWithinCircle(this Vector3 self, float radius, float offset = 0f, float y = 0f)
         {
             Vector2 direction = UnityEngine.Random.insideUnitCircle.normalized;
-            var distance = UnityEngine.Random.Range(offset, radius);            
-            return self.position +  (new Vector3(direction.x, 0, direction.y) * distance);
+            var distance = UnityEngine.Random.Range(offset, radius);
+            var result = self + (new Vector3(direction.x, 0f, direction.y) * distance);
+            if(y != 0f)
+            {
+                result = new Vector3(result.x, y, result.z);
+            }
+            return result;
         }
 
         public static T GetRandomEnumValue<T>()

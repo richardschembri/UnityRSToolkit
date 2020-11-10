@@ -10,6 +10,7 @@ namespace RSToolkit.AI.Locomotion
     public class BotPartWanderFlying : BotPartWander
     {
         // public float DefaultY = 5f;
+        private float _defaultY;
         private int _findNewPositionAttempts = 0;
         private const int MAX_FINDNEWPOSITIONATTEMPTS = 20;
         public bool AboveSurface = true;
@@ -17,7 +18,7 @@ namespace RSToolkit.AI.Locomotion
         // public bool UseSpherecast = true;
 
         // [Tooltip("If 0 or less a linecast will be used")]
-        public float SpherecastRadius {get; private set;}
+        // public float SpherecastRadius {get; private set;}
 
         private Flying3DObject _flying3DObjectComponent;
         public Flying3DObject Flying3DObjectComponent
@@ -69,9 +70,9 @@ namespace RSToolkit.AI.Locomotion
             _findNewPositionAttempts++;
             //var newPos = transform.GetRandomPositionWithinCircle(radius, BotFlyingComponent.BotComponent.SqrPersonalSpaceMagnitude);
             float offset = BotLocomotiveComponent.SqrPersonalSpaceMagnitude + ((radius - BotLocomotiveComponent.SqrInteractionMagnitude) / 2);
-            Vector3? newPos = wanderCenter.GetRandomPositionWithinCircle(radius, offset);
-            newPos = new Vector3(newPos.Value.x, BotLocomotiveComponent.transform.position.y, newPos.Value.z);
-
+            Vector3? newPos = wanderCenter.position.GetRandomPositionWithinCircle(radius, offset, _defaultY);
+            // newPos = new Vector3(newPos.Value.x, BotLocomotiveComponent.transform.position.y, newPos.Value.z);
+            // newPos = new Vector3(newPos.Value.x, _defaultY, newPos.Value.z);
             if (AboveSurface && !Physics.Raycast(newPos.Value, Vector3.down, Mathf.Infinity))
             {
                 Debug.Log($"{newPos} Not above surface");
@@ -109,9 +110,12 @@ namespace RSToolkit.AI.Locomotion
         protected override void Awake()
         {
             base.Awake();
+            /*
             SpherecastRadius = Mathf.Max(Mathf.Max(BotLocomotiveComponent.ColliderComponent.bounds.size.x,
                                                     BotLocomotiveComponent.ColliderComponent.bounds.size.y),
                                             BotLocomotiveComponent.ColliderComponent.bounds.size.z);
+            */
+            _defaultY = this.transform.position.y;
         }
         #endregion MonoBehaviour Functions
 

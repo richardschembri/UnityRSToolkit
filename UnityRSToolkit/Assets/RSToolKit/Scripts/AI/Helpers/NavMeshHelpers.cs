@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using RSToolkit.Helpers;
 
 namespace RSToolkit.AI.Helpers
 {
@@ -43,23 +44,13 @@ namespace RSToolkit.AI.Helpers
                 return null;
             }
 
-            Vector2 randomPoint2D = new Vector2(origin.x, origin.z);
-            Vector3 randomPoint3D;
-            float distance = 0f;
-            do
-            {
-                randomPoint2D = randomPoint2D + Random.insideUnitCircle * radius;
-                randomPoint3D = new Vector3(randomPoint2D.x, origin.y, randomPoint2D.y);
-                distance = Vector3.Distance(randomPoint3D, origin);
-            } while (distance < offset || distance > radius);
-
             NavMeshHit hit;
-            if (NavMesh.SamplePosition(randomPoint3D, out hit, 1.0f, NavMesh.AllAreas))
+            if (NavMesh.SamplePosition(origin.GetRandomPositionWithinCircle(radius, offset, origin.y), out hit, 1.0f, NavMesh.AllAreas))
             {
                 return hit.position;
             }
-            attempts--; 
-            return RandomNavPosInSphere(origin, radius, offset, areamask, attempts);
+
+            return RandomNavPosInSphere(origin, radius, offset, areamask, attempts - 1);
         }
 
         /*
