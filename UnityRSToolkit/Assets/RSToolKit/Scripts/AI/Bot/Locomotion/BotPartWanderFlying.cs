@@ -41,15 +41,11 @@ namespace RSToolkit.AI.Locomotion
                 return Bot.DistanceType.PERSONAL_SPACE;
             }
         }
-        /*
-        public override BotLocomotive.StopMovementConditions StopMovementCondition
+
+        public void SetDefaultY(float defaultY)
         {
-            get
-            {
-                return BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE;
-            }
+            _defaultY = defaultY;
         }
-        */
 
         public override bool CanWander()
         {
@@ -115,7 +111,7 @@ namespace RSToolkit.AI.Locomotion
                                                     BotLocomotiveComponent.ColliderComponent.bounds.size.y),
                                             BotLocomotiveComponent.ColliderComponent.bounds.size.z);
             */
-            _defaultY = this.transform.position.y;
+            SetDefaultY(this.transform.position.y);
         }
         #endregion MonoBehaviour Functions
 
