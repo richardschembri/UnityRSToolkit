@@ -25,9 +25,26 @@ namespace RSToolkit.XR.Network
             return transform.position - tetherObject.position;
         }
 
+        /*
         public Vector3 CalculateOffset(Vector3 peerTetherPosition, ProximityHelpers.DistanceDirection direction)
         {
             CachedOffset = GetPositionDifference() - GetPositionDifference(peerTetherPosition);
+            switch (direction)
+            {
+                case ProximityHelpers.DistanceDirection.HORIZONTAL:
+                    CachedOffset = new Vector3(CachedOffset.x, 0f, CachedOffset.z);
+                    break;
+                case ProximityHelpers.DistanceDirection.VERTICAL:
+                    CachedOffset = new Vector3(0f, CachedOffset.y, 0f);
+                    break;
+            }
+            return CachedOffset;
+        }
+        */
+
+        public Vector3 CalculateOffset(Vector3 peerPositionDifference, ProximityHelpers.DistanceDirection direction)
+        {
+            CachedOffset = GetPositionDifference() - peerPositionDifference;
             switch (direction)
             {
                 case ProximityHelpers.DistanceDirection.HORIZONTAL:
