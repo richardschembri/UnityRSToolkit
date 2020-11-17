@@ -34,8 +34,10 @@ namespace RSToolkit.AI.Locomotion
         }
 
         public override void RotateTowardsPosition()
-        {
-            var rotation = Quaternion.LookRotation(BotLocomotiveComponent.FocusedOnPosition.Value - BotLocomotiveComponent.transform.position, Vector3.up);
+        {            
+            // var rotation = Quaternion.LookRotation(BotLocomotiveComponent.FocusedOnPosition.Value - BotLocomotiveComponent.transform.position, Vector3.up);
+            var lookTo = new Vector3(BotLocomotiveComponent.FocusedOnPosition.Value.x, BotLocomotiveComponent.transform.position.y, BotLocomotiveComponent.FocusedOnPosition.Value.z);
+            var rotation = Quaternion.LookRotation(lookTo - BotLocomotiveComponent.transform.position, Vector3.up);
             BotLocomotiveComponent.transform.rotation = Quaternion.RotateTowards(BotLocomotiveComponent.transform.rotation, rotation, NavMeshAgentComponent.angularSpeed * Time.deltaTime);
         }
 
