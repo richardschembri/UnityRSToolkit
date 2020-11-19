@@ -71,38 +71,39 @@ namespace RSToolkit.AI
             return GetTagLookOutForTransforms(refresh).Union(LookOutForTransforms);
         }
 
-        private bool IsWithinSight(Transform target, string tag = ""){
+        private bool IsWithinSight(Transform target, string tag = "", ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL)
+        {
             if(!string.IsNullOrEmpty(tag) && target.tag != tag){
                 return false;
             }
 
-            return ProximityHelpers.IsWithinSight(transform, target, FieldOfViewAngle, SqrViewMagnitude);
+            return ProximityHelpers.IsWithinSight(transform, target, FieldOfViewAngle, SqrViewMagnitude, distanceDirection);
         }
 
-        public virtual bool IsWithinSight(string tag = "")
+        public virtual bool IsWithinSight(string tag = "", ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL)
         {
-            return GetAllLookOutForTransforms().Any(t => IsWithinSight(t, tag));
+            return GetAllLookOutForTransforms().Any(t => IsWithinSight(t, tag, distanceDirection));
         }
 
-        public virtual bool IsWithinSight<T>(string tag = "") where T: MonoBehaviour
+        public virtual bool IsWithinSight<T>(string tag = "", ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL) where T: MonoBehaviour
         {
-            return GetAllLookOutForTransforms().Any(t => IsWithinSight(t, tag) && t.GetComponent<T>() != null);
+            return GetAllLookOutForTransforms().Any(t => IsWithinSight(t, tag, distanceDirection) && t.GetComponent<T>() != null);
         }
 
-        public IEnumerable<Transform> GetTransformsWithinSight(bool refreshList = false, string tag = "")
+        public IEnumerable<Transform> GetTransformsWithinSight(bool refreshList = false, string tag = "", ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL)
         {
-            return GetAllLookOutForTransforms(refreshList).Where(t => IsWithinSight(t, tag));
+            return GetAllLookOutForTransforms(refreshList).Where(t => IsWithinSight(t, tag, distanceDirection));
         }
 
-        public IEnumerable<T> GetWithinSight<T>(bool refreshList = false, string tag = "") where T : MonoBehaviour
+        public IEnumerable<T> GetWithinSight<T>(bool refreshList = false, string tag = "", ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL) where T : MonoBehaviour
         {
-            return GetAllLookOutForTransforms(refreshList).Where(t => IsWithinSight(t, tag) && t.GetComponent<T>() != null).Select(t => t.GetComponent<T>()); ;
+            return GetAllLookOutForTransforms(refreshList).Where(t => IsWithinSight(t, tag, distanceDirection) && t.GetComponent<T>() != null).Select(t => t.GetComponent<T>()); ;
         }
 
-        public Transform[] DoLookoutFor(bool newTransformsOnly = true, bool refreshList = false, string tag = "")
+        public Transform[] DoLookoutFor(bool newTransformsOnly = true, bool refreshList = false, string tag = "", ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL)
         {
             IEnumerable<Transform> targets;
-            targets = GetTransformsWithinSight(refreshList, tag);
+            targets = GetTransformsWithinSight(refreshList, tag, distanceDirection);
 
             Transform[] result = new Transform[0];
 
@@ -119,10 +120,10 @@ namespace RSToolkit.AI
             return result;
         }
 
-        public T[] DoLookoutFor<T>(bool newTransformsOnly = true, bool refreshList = false, string tag = "") where T : MonoBehaviour
+        public T[] DoLookoutFor<T>(bool newTransformsOnly = true, bool refreshList = false, string tag = "", ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL) where T : MonoBehaviour
         {
             IEnumerable<T> targets;
-            targets = GetWithinSight<T>(refreshList, tag);
+            targets = GetWithinSight<T>(refreshList, tag, distanceDirection);
 
             T[] result = new T[0];
 

@@ -13,6 +13,8 @@ namespace RSToolkit.AI
     public class Bot : MonoBehaviour
     {
 
+        #region Enums
+
         public enum StatesInteraction
         {
             NotInteracting,
@@ -34,6 +36,8 @@ namespace RSToolkit.AI
             AWARENESS,
             OUTSIDE_AWARENESS
         }
+
+        #endregion Enums
 
         public StatesInteraction CurrentInteractionState { get; private set; } = StatesInteraction.NotInteracting;
 
@@ -155,6 +159,7 @@ namespace RSToolkit.AI
                 m_FocusedOnPosition = value;
             }
         }
+
         public bool IsFocused
         {
             get
@@ -331,10 +336,11 @@ namespace RSToolkit.AI
 
         #region AttractMyAttention
         
-        public bool AttractMyAttention_ToTransform(Transform target, bool force, StatesInteraction interactionState = StatesInteraction.Interactor)
+        public bool AttractMyAttention_ToTransform(Transform target, bool force, StatesInteraction interactionState = StatesInteraction.Interactor, 
+                                                    ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL)
         {
 
-            if (IsWithinDistance(DistanceType.INTERACTION, target) || force)
+            if (IsWithinDistance(DistanceType.INTERACTION, target, distanceDirection) || force)
             {
                 if (ChangeInteractionState(interactionState, force))
                 {
@@ -424,7 +430,6 @@ namespace RSToolkit.AI
 
         }
 
-
         public void ForgetTransform(Transform target)
         {
             if (DebugMode)
@@ -474,7 +479,6 @@ namespace RSToolkit.AI
             return true;
         }
 
-
         public bool IsFacing(Transform target)
         {
             return Mathf.Round(transform.rotation.eulerAngles.y * 10) == Mathf.Round(Quaternion.LookRotation(target.position - transform.position, Vector3.up).eulerAngles.y * 10);
@@ -490,7 +494,7 @@ namespace RSToolkit.AI
             return false;
         }
 
-        public bool CanInteract()
+        public virtual bool CanInteract()
         {
             return Time.time > CanInteractFromTime;
         }

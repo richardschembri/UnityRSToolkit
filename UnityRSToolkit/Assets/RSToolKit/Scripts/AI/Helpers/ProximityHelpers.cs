@@ -23,13 +23,13 @@ namespace RSToolkit.Helpers
         }
 
         // returns true if targetTransform is within sight of transform
-        public static bool IsWithinSight(Transform sourceTransform, Transform targetTransform, float fieldOfViewAngle, float sqrViewMagnitude)
+        public static bool IsWithinSight(Transform sourceTransform, Transform targetTransform, float fieldOfViewAngle, float sqrViewMagnitude, DistanceDirection distanceDirection = DistanceDirection.ALL)
         {
             Vector3 direction = targetTransform.position - sourceTransform.position;
             float angle = Vector3.Angle(direction, sourceTransform.forward);
             // an object is within sight if it is within the field of view and has a magnitude less than what the object can see
             if (IsWithinViewingAngle(sourceTransform, targetTransform, fieldOfViewAngle)
-                && IsWithinDistance(sourceTransform, targetTransform, sqrViewMagnitude, DistanceDirection.ALL ))
+                && IsWithinDistance(sourceTransform, targetTransform, sqrViewMagnitude, distanceDirection))
             {
                 return true;
 

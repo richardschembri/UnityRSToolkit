@@ -178,7 +178,6 @@ namespace RSToolkit.AI
             return BotLogicNavMeshRef.IsAboveNavMeshSurface();
         }
 
-
         private void InitStates()
         {
             FSMFlyable = new BTFiniteStateMachine<FStatesFlyable>(StartInAir ? FStatesFlyable.Flying : FStatesFlyable.NotFlying);
@@ -313,6 +312,11 @@ namespace RSToolkit.AI
             {
                 CurrentLocomotionType.MoveTowardsPosition(_fullspeed);
             }           
+        }
+
+        public override bool CanInteract()
+        {
+            return base.CanInteract() && (CurrentFlyableState == FStatesFlyable.Flying || CurrentFlyableState == FStatesFlyable.NotFlying);
         }
 
         #region MonoBehaviour Functions
