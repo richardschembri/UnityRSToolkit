@@ -17,20 +17,6 @@ namespace Demo.BehaviourTree.CTF{
 
         public CTFBot TargetEnemyBot {get; private set;}
 
-#region Behaviour Conditions
-        public bool IsWithinDefenceRadius(){
-            if(_botLocomotiveComponent.FocusedOnPosition == null){
-                return false;
-            }
-            var thisPosition = transform.position;
-            thisPosition.y = _botLocomotiveComponent.FocusedOnPosition.Value.y;
-            return Vector3.SqrMagnitude(thisPosition - _botLocomotiveComponent.FocusedOnPosition.Value) <= _botLocomotiveComponent.SqrAwarenessMagnitude;
-        }
-
-        public bool IsFocused(){
-            return _botLocomotiveComponent.IsFocused && TargetEnemyBot != null;
-        }
-#endregion Behaviour Conditions
 
 #region Behaviour Structs
 
@@ -71,7 +57,7 @@ namespace Demo.BehaviourTree.CTF{
             CTFDefend_FlagNotTakenBehaviours.IsEnemyWithinSight = new BotIsWithinSight(_botVisionComponent, CTFGameManager.TAG_OFFENCE, CTFDefend_FlagNotTakenBehaviours.DoDefend);
             CTFDefend_FlagNotTakenBehaviours.MainSelector.AddChild(CTFDefend_FlagNotTakenBehaviours.IsEnemyWithinSight);
 
-            CTFDefend_FlagNotTakenBehaviours.DoSeekStartingPosition = new BotDoSeek (_botLocomotiveComponent, Bot.DistanceType.AT_POSITION); // // BotLocomotive.StopMovementConditions.AT_POSITION );
+            CTFDefend_FlagNotTakenBehaviours.DoSeekStartingPosition = new BotDoSeek (_botGroundComponent, Bot.DistanceType.AT_POSITION); // // BotLocomotive.StopMovementConditions.AT_POSITION );
         }
 
         protected override void InitFlagTakenBehaviours(){
@@ -83,16 +69,16 @@ namespace Demo.BehaviourTree.CTF{
         }
         protected void InitDefendFlagTakenBehaviours(){
             // CTFDefend_FlagTakenBehaviours.DoSeekEnemy = new BotDoSeek(_botLocomotiveComponent, BotLocomotive.StopMovementConditions.AT_POSITION, "Do Seek Enemy");
-            CTFDefend_FlagTakenBehaviours.DoSeekEnemy = new BotDoSeek(_botLocomotiveComponent, Bot.DistanceType.AT_POSITION, "Do Seek Enemy");
+            CTFDefend_FlagTakenBehaviours.DoSeekEnemy = new BotDoSeek(_botGroundComponent, Bot.DistanceType.AT_POSITION, "Do Seek Enemy");
             CTFDefend_FlagTakenBehaviours.IsFlagNotCaptured = new BehaviourCondition(IsFlagNotCapturedCondition, CTFDefend_FlagTakenBehaviours.DoSeekEnemy);
         }
 
         protected void InitPatrolFlagTakenBehaviours(){
             CTFPatrol_FlagNotTakenBehaviours.PatrolSequence = new BehaviourSequence(false);
-            CTFPatrol_FlagNotTakenBehaviours.DoPatrol = new BotDoPatrol(_botLocomotiveComponent, CTFGameManager.TAG_OFFENCE);
+            CTFPatrol_FlagNotTakenBehaviours.DoPatrol = new BotDoPatrol(_botGroundComponent, CTFGameManager.TAG_OFFENCE);
 			CTFPatrol_FlagNotTakenBehaviours.DoPatrol.OnStopped.AddListener(DoPatrol_OnStopped);
             // CTFPatrol_FlagNotTakenBehaviours.DoSeekEnemy = new BotDoSeek(_botLocomotiveComponent, BotLocomotive.StopMovementConditions.AT_POSITION, "Do Seek Action");
-            CTFPatrol_FlagNotTakenBehaviours.DoSeekEnemy = new BotDoSeek(_botLocomotiveComponent, Bot.DistanceType.AT_POSITION, "Do Seek Action");
+            CTFPatrol_FlagNotTakenBehaviours.DoSeekEnemy = new BotDoSeek(_botGroundComponent, Bot.DistanceType.AT_POSITION, "Do Seek Action");
         }
 #endregion Init Behaviours
 
@@ -127,11 +113,11 @@ namespace Demo.BehaviourTree.CTF{
         private BehaviourAction.ActionResult DoDefend(bool cancel)
         {
             if(cancel || !IsFocused() ||!IsWithinDefenceRadius()){
-                _botLocomotiveComponent.StopMoving();
+                _botGroundComponent.StopMoving();
                 return BehaviourAction.ActionResult.FAILED;
             }
 
-            if(_botLocomotiveComponent.IsWithinDistance(Bot.DistanceType.INTERACTION)){// IsWithinInteractionDistance()){
+            if(_botGroundComponent.IsWithinDistance(Bot.DistanceType.INTERACTION)){// IsWithinInteractionDistance()){
                 return BehaviourAction.ActionResult.SUCCESS;
             }
 
@@ -145,9 +131,9 @@ namespace Demo.BehaviourTree.CTF{
 #endregion DoPatrol
 
         private void MoveToWaypoint(){
-            _botLocomotiveComponent.FocusOnTransform(_waypoints[m_waypointIndex]);
+            _botGroundComponent.FocusOnTransform(_waypoints[m_waypointIndex]);
             // _botLocomotiveComponent.MoveToTarget(BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE, false);
-            _botLocomotiveComponent.MoveToTarget(BotLocomotive.DistanceType.PERSONAL_SPACE, false);
+            _botGroundComponent.MoveToTarget(BotLocomotive.DistanceType.PERSONAL_SPACE, false);
         }
 
 
@@ -156,13 +142,28 @@ namespace Demo.BehaviourTree.CTF{
             MoveToWaypoint();
         }
 
+#region Behaviour Conditions
+        public bool IsWithinDefenceRadius(){
+            if(_botGroundComponent.FocusedOnPosition == null){
+                return false;
+            }
+            var thisPosition = transform.position;
+            thisPosition.y = _botGroundComponent.FocusedOnPosition.Value.y;
+            return Vector3.SqrMagnitude(thisPosition - _botGroundComponent.FocusedOnPosition.Value) <= _botGroundComponent.SqrAwarenessMagnitude;
+        }
+
+        public bool IsFocused(){
+            return _botGroundComponent.IsFocused && TargetEnemyBot != null;
+        }
+#endregion Behaviour Conditions
+
 #endregion Behaviour Logic
 
         private void SeekBot(){
             TargetEnemyBot = _botVisionComponent.DoLookoutFor(false, false, CTFGameManager.TAG_OFFENCE)[0].GetComponent<CTFBot>();
             TargetEnemyBot.OnDie.AddListener(OnTargetDie_Listener); 
             // _botLocomotiveComponent.MoveToTarget(BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE);
-            _botLocomotiveComponent.MoveToTarget(BotLocomotive.DistanceType.PERSONAL_SPACE);
+            _botGroundComponent.MoveToTarget(BotLocomotive.DistanceType.PERSONAL_SPACE);
         }
 
         #region Events
@@ -170,7 +171,7 @@ namespace Demo.BehaviourTree.CTF{
            target.OnDie.RemoveListener(OnTargetDie_Listener);
            if(target == TargetEnemyBot){
                TargetEnemyBot = null;
-               _botLocomotiveComponent.UnFocus();
+               _botGroundComponent.UnFocus();
            }
         }
 

@@ -26,17 +26,14 @@ namespace Demo.BehaviourTree.CTF{
 #region Components
 
         protected BehaviourManager _behaviourManagerComponent;
-        protected BotLocomotive _botLocomotiveComponent;
-        protected BotLogicLocomotion _botLocomotionComponent;
+        protected BotGround _botGroundComponent;
         protected BotPartVision _botVisionComponent;
-        protected BotLogicNavMesh _botNavMeshComponent;
 
         protected void InitComponents()
         {
-            _botLocomotiveComponent = GetComponent<BotLocomotive>();
+            _botGroundComponent = GetComponent<BotGround>();
             _behaviourManagerComponent = GetComponent<BehaviourManager>();
             _botVisionComponent = GetComponent<BotPartVision>();
-            _botNavMeshComponent = GetComponent<BotLogicNavMesh>();
             FlagHolder = gameObject.GetChild(NAME_FLAGHOLDER);
         }
 
@@ -78,7 +75,7 @@ namespace Demo.BehaviourTree.CTF{
             _behaviourManagerComponent.SetCurrentTree(GetDefaultTree(), true);
             transform.position = StartPosition;
             transform.rotation = StartRotation;
-            _botLocomotiveComponent.StopMoving();
+            _botGroundComponent.StopMoving();
         }
 
         protected abstract BehaviourRootNode GetDefaultTree();
