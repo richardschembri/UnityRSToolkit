@@ -12,11 +12,13 @@ namespace RSToolkit.AI
     {
         Bot _targetBot;
         BotLocomotive _targetBotLocomotive ;
-        Object m_waypoint;
+        Object _waypoint;
         bool _fullspeed = false;
         float _interactionCooldown = 0f;
         float _currentSpeed = 0;
+
         string _debugDistanceType = "";
+
         void OnEnable()
         {
             _targetBot = (Bot)target;
@@ -101,6 +103,10 @@ namespace RSToolkit.AI
 
                 EditorGUILayout.LabelField($"Current Speed: {_currentSpeed}", EditorStyles.boldLabel);
 
+                EditorGUILayout.LabelField($"Close to surface by [{_targetBotLocomotive.IsCloseToSurface()}]", EditorStyles.boldLabel);
+                
+
+
                 EditorGUILayout.LabelField("Bot Controls", EditorStyles.boldLabel);
                 if(_targetBotLocomotive.BotWanderManagerComponent != null){
                     if (_targetBotLocomotive.BotWanderManagerComponent.IsWandering())
@@ -121,12 +127,12 @@ namespace RSToolkit.AI
                 EditorGUILayout.LabelField("Move to Waypoint", EditorStyles.miniBoldLabel);
                 GUILayout.BeginHorizontal();
                 
-                m_waypoint = EditorGUILayout.ObjectField(m_waypoint, typeof(Transform), true);
-                EditorGUI.BeginDisabledGroup(m_waypoint == null);
+                _waypoint = EditorGUILayout.ObjectField(_waypoint, typeof(Transform), true);
+                EditorGUI.BeginDisabledGroup(_waypoint == null);
                 _fullspeed = EditorGUILayout.Toggle("Full Speed", _fullspeed);
                 if (GUILayout.Button("Move to"))
                 {
-                    _targetBotLocomotive.FocusOnTransform((Transform)m_waypoint);
+                    _targetBotLocomotive.FocusOnTransform((Transform)_waypoint);
                     // _targetBotLocomotive.MoveToTarget( BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE, _fullspeed);
                     _targetBotLocomotive.MoveToTarget(Bot.DistanceType.PERSONAL_SPACE, _fullspeed);
                 }

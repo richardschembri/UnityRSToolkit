@@ -128,6 +128,13 @@ namespace RSToolkit.AI.Locomotion
             return GroundProximityCheckerComponent.IsWithinRayDistance();
         }
 
+        float? _surfaceDistance = null;
+        public bool IsCloseToSurface(float value)
+        {
+            _surfaceDistance = GroundProximityCheckerComponent.IsWithinRayDistance();
+            return (_surfaceDistance != null && _surfaceDistance.Value <= value);
+        }
+
         public float? IsCloseToNavMeshSurface()
         {
             NavMeshHit hit;
@@ -137,6 +144,12 @@ namespace RSToolkit.AI.Locomotion
         public float? IsCloseToNavMeshSurface(out NavMeshHit hit)
         {
             return GroundProximityCheckerComponent.IsWithinRayDistance(out hit);
+        }
+
+        public bool IsCloseToNavMeshSurface(float value, out NavMeshHit hit)
+        {
+            _surfaceDistance = GroundProximityCheckerComponent.IsWithinRayDistance(out hit);
+            return (_surfaceDistance != null && _surfaceDistance.Value <= value);
         }
 
         public class OnDestinationReachedEvent : UnityEvent<Vector3> { }
@@ -463,6 +476,19 @@ namespace RSToolkit.AI.Locomotion
             InitBotWander();
             return true;
         }
+
+        public void FreezePosition()
+        {
+            RigidBodyComponent.isKinematic = true;
+            RigidBodyComponent.constraints = RigidbodyConstraints.FreezePosition;
+        }
+
+        public void UnFreezePosition()
+        {
+            RigidBodyComponent.isKinematic = false;
+            RigidBodyComponent.constraints = RigidbodyConstraints.None;
+        }
+
 
         #region MonoBehaviour Functions
 
