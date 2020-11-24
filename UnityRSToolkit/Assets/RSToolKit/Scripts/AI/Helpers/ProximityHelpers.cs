@@ -22,13 +22,27 @@ namespace RSToolkit.Helpers
             return GetDirection(origin.position, target.position);
         }
 
+
+        public static Vector3 ConvertToDistanceDirectionVector3(Vector3 value, DistanceDirection distanceDirection)
+        {
+            switch (distanceDirection)
+            {
+                case DistanceDirection.HORIZONTAL:
+                    return new Vector3(value.x, 0f, value.z);
+                case DistanceDirection.VERTICAL:
+                    return new Vector3(0, value.y, 0);
+            }
+
+            return value;
+        }
+
         // returns true if targetTransform is within sight of transform
         public static bool IsWithinSight(Transform sourceTransform, Transform targetTransform, float fieldOfViewAngle, float sqrViewMagnitude, DistanceDirection distanceDirection = DistanceDirection.ALL)
         {
             Vector3 direction = targetTransform.position - sourceTransform.position;
             float angle = Vector3.Angle(direction, sourceTransform.forward);
             // an object is within sight if it is within the field of view and has a magnitude less than what the object can see
-            if (IsWithinViewingAngle(sourceTransform, targetTransform, fieldOfViewAngle)
+            if (IsWithinViewingAngle(sourceTransform, targetTransform, fieldOfViewAngle, distanceDirection)
                 && IsWithinDistance(sourceTransform, targetTransform, sqrViewMagnitude, distanceDirection))
             {
                 return true;
@@ -39,40 +53,37 @@ namespace RSToolkit.Helpers
             return false;
         }
 
-        public static bool IsWithinViewingAngle(Transform sourceTransform, Transform targetTransform, float fieldOfViewAngle)
+        public static bool IsWithinViewingAngle(Transform sourceTransform, Transform targetTransform, float fieldOfViewAngle, DistanceDirection distanceDirection = DistanceDirection.ALL)
         {
-            Vector3 direction = targetTransform.position - sourceTransform.position;
-            float angle = Vector3.Angle(GetDirection(sourceTransform, targetTransform), sourceTransform.forward);
+            Vector3 origin = ConvertToDistanceDirectionVector3(sourceTransform.position, distanceDirection);
+            Vector3 target = ConvertToDistanceDirectionVector3(targetTransform.position, distanceDirection);
+
+
+            Vector3 direction = target - origin;
+            float angle = Vector3.Angle(GetDirection(origin, target), sourceTransform.forward);
             return angle < fieldOfViewAngle;
         }
+
         #region IsWithinDistance
-        public static bool IsWithinDistance(Transform sourceTransform, Transform targetTransform, float sqrViewMagnitude, DistanceDirection direction)
+        public static bool IsWithinDistance(Transform sourceTransform, Transform targetTransform, float sqrViewMagnitude, DistanceDirection distanceDirection)
         {
-            return IsWithinDistance(sourceTransform, targetTransform.position, sqrViewMagnitude, direction);
+            return IsWithinDistance(sourceTransform, targetTransform.position, sqrViewMagnitude, distanceDirection);
         }
 
-        public static bool IsWithinDistance(Transform sourceTransform, Vector3 position, float sqrViewMagnitude, DistanceDirection direction)
+        public static bool IsWithinDistance(Transform sourceTransform, Vector3 position, float sqrViewMagnitude, DistanceDirection distanceDirection)
         {
-            return IsWithinDistance(sourceTransform.position, position, sqrViewMagnitude, direction);
+            return IsWithinDistance(sourceTransform.position, position, sqrViewMagnitude, distanceDirection);
         }
 
-        public static bool IsWithinDistance(Collider sourceCollider, Vector3 position, float sqrViewMagnitude, DistanceDirection direction)
+        public static bool IsWithinDistance(Collider sourceCollider, Vector3 position, float sqrViewMagnitude, DistanceDirection distanceDirection)
         {
-            return IsWithinDistance(sourceCollider.ClosestPointOnBounds(position), position, sqrViewMagnitude, direction);
+            return IsWithinDistance(sourceCollider.ClosestPointOnBounds(position), position, sqrViewMagnitude, distanceDirection);
         }
 
-        public static bool IsWithinDistance(Vector3 origin, Vector3 position, float sqrViewMagnitude, DistanceDirection direction)
+        public static bool IsWithinDistance(Vector3 origin, Vector3 position, float sqrViewMagnitude, DistanceDirection distanceDirection)
         {
-            switch(direction){
-                case DistanceDirection.HORIZONTAL:
-                    origin = new Vector3(origin.x, 0f, origin.z);
-                    position = new Vector3(position.x, 0, position.z);
-                    break;
-                case DistanceDirection.VERTICAL:
-                    origin = new Vector3(0, origin.y, 0);
-                    position = new Vector3(0, position.y, 0);
-                    break;
-            }
+            origin = ConvertToDistanceDirectionVector3(origin, distanceDirection);
+            position = ConvertToDistanceDirectionVector3(position, distanceDirection);
 
             // return Vector3.SqrMagnitude(position - origin) < sqrViewMagnitude;
             return Vector3.Distance(position, origin) <= sqrViewMagnitude;
