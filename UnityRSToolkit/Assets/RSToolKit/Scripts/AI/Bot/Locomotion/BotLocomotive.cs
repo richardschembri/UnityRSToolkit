@@ -267,12 +267,7 @@ namespace RSToolkit.AI.Locomotion
 
         public bool HasReachedDestination()
         {
-            return CurrentLocomotionType.HasReachedDestination();
-            /*
-            return (StopMovementCondition == DistanceType.PERSONAL_SPACE && IsWithinDistance(DistanceType.PERSONAL_SPACE))
-                || (StopMovementCondition == DistanceType.INTERACTION && IsWithinDistance(DistanceType.INTERACTION))
-                || (StopMovementCondition == DistanceType.AT_POSITION && IsWithinDistance(DistanceType.AT_POSITION));
-            */
+            return CurrentLocomotionType.HasReachedDestination(StopMovementCondition.Value);
         }
 
         public Vector3 GetMoveAwayDestination()

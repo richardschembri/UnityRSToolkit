@@ -36,18 +36,12 @@ namespace RSToolkit.AI.Locomotion
             BotLocomotiveComponent = botLocomotion;
         }
 
-        public bool HasReachedDestinationApprox(Bot.DistanceType StopMovementCondition)
+        public bool HasReachedDestinationApprox(Bot.DistanceType StopMovementCondition )
         {
             return (BotLocomotiveComponent.StopMovementCondition == StopMovementCondition
                     && BotLocomotiveComponent.IsWithinDistance(StopMovementCondition, ProximityHelpers.DistanceDirection.VERTICAL)
                     && BotLocomotiveComponent.IsWithinDistance(StopMovementCondition, ProximityHelpers.DistanceDirection.HORIZONTAL)
                     );
-        }
-
-        protected bool HasReachedDestinationApprox(){
-            return (HasReachedDestinationApprox(Bot.DistanceType.PERSONAL_SPACE)
-                    || HasReachedDestinationApprox(Bot.DistanceType.INTERACTION)
-                    || HasReachedDestinationApprox(Bot.DistanceType.AT_POSITION));
         }
 
         public bool HasReachedDestination(Bot.DistanceType StopMovementCondition)
@@ -56,11 +50,5 @@ namespace RSToolkit.AI.Locomotion
                     && BotLocomotiveComponent.IsWithinDistance(StopMovementCondition));
         }
 
-        public bool HasReachedDestination()
-        {
-            return (HasReachedDestination(Bot.DistanceType.PERSONAL_SPACE)
-                    || HasReachedDestination(Bot.DistanceType.INTERACTION)
-                    || HasReachedDestination(Bot.DistanceType.AT_POSITION));
-        }
     }
 }
