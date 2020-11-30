@@ -220,6 +220,27 @@ namespace RSToolkit.AI.Behaviour
 
             return result;
         }
-        
+
+        public void RemoveAllListenersRecursively()
+        {
+            RemoveAllListeners();
+            BehaviourParentNode nodeparent;
+            for (int i = 0; i < Children.Count; i++)
+            {                
+                if (Children[i].State != NodeState.INACTIVE)
+                {
+                    nodeparent = Children[i] as BehaviourParentNode;
+                    if (nodeparent != null)
+                    {
+                        nodeparent.RemoveAllListenersRecursively();
+                    }
+                    else
+                    {
+                        Children[i].RemoveAllListeners();
+                    }
+                }
+            }            
+        }
+
     }
 }

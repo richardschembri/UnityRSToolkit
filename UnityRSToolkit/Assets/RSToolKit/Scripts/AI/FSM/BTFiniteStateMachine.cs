@@ -22,6 +22,7 @@ namespace RSToolkit.AI.FSM
 
         public BehaviourStateSelector<T> _stateSelector;       
         private Dictionary<T, Action> _updateActions = new Dictionary<T, Action>();
+        private List<Action<T>> _onChangeListeners = new List<Action<T>>();
 
         public BTFiniteStateMachine(T initialState, string name = "")
         {
@@ -112,18 +113,65 @@ namespace RSToolkit.AI.FSM
             _stateSelector.GetStateBehaviour(state).OnStopped.AddListener(listener);
         }
 
+        
         public void OnStateChanged_AddListener(Action<T> listener)
         {
+            _onChangeListeners.Add(listener);
             _stateSelector.OnChanged += listener;
         }
+
+        #endregion AddListener
+
+        #region RemoveAllListeners
+
+        public void RemoveAllListeners_OnStarted(T state)
+        {
+            _stateSelector.GetStateBehaviour(state).OnStarted.RemoveAllListeners();
+        }
+
+        public void RemoveAllListeners_OnStopping(T state)
+        {
+            _stateSelector.GetStateBehaviour(state).OnStopping.RemoveAllListeners();
+        }
+
+        public void RemoveAllListeners_OnStopped(T state)
+        {
+            _stateSelector.GetStateBehaviour(state).OnStopped.RemoveAllListeners();
+        }
+
+        public void RemoveAllListeners(T state)
+        {
+            RemoveAllListeners_OnStarted(state);
+            RemoveAllListeners_OnStopping(state);
+            RemoveAllListeners_OnStopped(state);
+        }
+
+        public void RemoveAllListeners_OnStateChanged()
+        {
+            for (int i = 0; i < _onChangeListeners.Count; i++)
+            {
+                _stateSelector.OnChanged -= _onChangeListeners[i];
+            }
+
+            _onChangeListeners.Clear();
+        }
+
+        public void RemoveAllListeners()
+        {
+            for(int i = 0; i < _stateSelector.States.Length; i++)
+            {
+                RemoveAllListeners((T)_stateSelector.States.GetValue(i));
+            }
+
+            RemoveAllListeners_OnStateChanged();
+        }
+
+        #endregion RemoveAllListeners
 
         public BehaviourNode GetFSMNode()
         {
             return _stateSelector;
         }
-
-        #endregion AddListener
-
         private BehaviourAction.ActionResult DoFSMState(bool cancel)
         {
             if (cancel)

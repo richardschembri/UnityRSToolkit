@@ -240,6 +240,14 @@ namespace RSToolkit.AI.Behaviour
             UpdateCommon(BehaviourNode.UpdateType.LATE);
         }
 
+        void OnDestroy()
+        {
+            for(int i = 0; i < _behaviourtrees.Count; i++)
+            {
+                _behaviourtrees[i].RemoveAllListenersRecursively();
+            }
+        }
+
         #endregion MonoBehaviour Functions
     }
 }

@@ -97,6 +97,11 @@ namespace RSToolkit.AI.FSM
             UpdateCommon(BehaviourNode.UpdateType.LATE);
         }
 
+        void OnDestroy()
+        {
+            FSMBehaviourtree?.RemoveAllListenersRecursively();
+        }
+
         #endregion Mono Functions
     }
 }

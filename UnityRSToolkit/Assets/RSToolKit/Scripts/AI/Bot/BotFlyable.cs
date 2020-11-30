@@ -178,6 +178,13 @@ namespace RSToolkit.AI
             return BotLogicNavMeshRef.IsAboveNavMeshSurface();
         }
 
+
+        public bool IsAboveNavMeshSurface(out Vector3 navPosition)
+        {
+            return BotLogicNavMeshRef.IsAboveNavMeshSurface(out navPosition);
+        }
+
+
         private void InitStates()
         {
             FSMFlyable = new BTFiniteStateMachine<FStatesFlyable>(StartInAir ? FStatesFlyable.Flying : FStatesFlyable.NotFlying);
@@ -347,6 +354,12 @@ namespace RSToolkit.AI
                     }
                 }
             }
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
         }
 
         #endregion MonoBehaviour Functions

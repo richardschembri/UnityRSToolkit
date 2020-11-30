@@ -44,7 +44,7 @@ namespace RSToolkit.AI
         public OnTransformSeenEvent OnTransformSeen = new OnTransformSeenEvent();
 
         private List<Transform> m_tagLookOutForTransforms = new List<Transform>();
-        public List<Transform> GetTagLookOutForTransforms(bool refresh = false)
+        public List<Transform> GetTagLookOutForTransforms(int? layer = null, bool refresh = false)
         {
             if (!refresh && m_tagLookOutForTransforms.Any())
             {
@@ -55,10 +55,14 @@ namespace RSToolkit.AI
             m_tagLookOutForTransforms = new List<Transform>();
             for (int i = 0; i < LookOutForTags.Length; i++)
             {
-                try{
+                try
+                {
                     m_tagLookOutForTransforms.AddRange(GameObject.FindGameObjectsWithTag(LookOutForTags[i])
+                                .Where(go => layer == null || go.layer == layer.Value)
                                 .Select(go => go.transform));
-                }catch(Exception){
+                }
+                catch (Exception)
+                {
                     // Tag does not exist
                 }
             }
@@ -66,14 +70,15 @@ namespace RSToolkit.AI
             return m_tagLookOutForTransforms;
         }
 
-        public IEnumerable<Transform> GetAllLookOutForTransforms(bool refresh = false)
+        public IEnumerable<Transform> GetAllLookOutForTransforms(int? layer = null, bool refresh = false)
         {
-            return GetTagLookOutForTransforms(refresh).Union(LookOutForTransforms);
+            return GetTagLookOutForTransforms(layer, refresh).Union(LookOutForTransforms);
         }
 
         private bool IsWithinSight(Transform target, string tag = "", ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL)
         {
-            if(!string.IsNullOrEmpty(tag) && target.tag != tag){
+            if (target == null || (!string.IsNullOrEmpty(tag) && target.tag != tag))
+            {
                 return false;
             }
 
@@ -85,25 +90,25 @@ namespace RSToolkit.AI
             return GetAllLookOutForTransforms().Any(t => IsWithinSight(t, tag, distanceDirection));
         }
 
-        public virtual bool IsWithinSight<T>(string tag = "", ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL) where T: MonoBehaviour
+        public virtual bool IsWithinSight<T>(string tag = "", ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL) where T : MonoBehaviour
         {
             return GetAllLookOutForTransforms().Any(t => IsWithinSight(t, tag, distanceDirection) && t.GetComponent<T>() != null);
         }
 
-        public IEnumerable<Transform> GetTransformsWithinSight(bool refreshList = false, string tag = "", ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL)
+        public IEnumerable<Transform> GetTransformsWithinSight(bool refreshList = false, string tag = "", int? layer = null, ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL)
         {
-            return GetAllLookOutForTransforms(refreshList).Where(t => IsWithinSight(t, tag, distanceDirection));
+            return GetAllLookOutForTransforms(layer, refreshList).Where(t => IsWithinSight(t, tag, distanceDirection));
         }
 
-        public IEnumerable<T> GetWithinSight<T>(bool refreshList = false, string tag = "", ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL) where T : MonoBehaviour
+        public IEnumerable<T> GetWithinSight<T>(bool refreshList = false, string tag = "", int? layer = null, ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL) where T : MonoBehaviour
         {
-            return GetAllLookOutForTransforms(refreshList).Where(t => IsWithinSight(t, tag, distanceDirection) && t.GetComponent<T>() != null).Select(t => t.GetComponent<T>()); ;
+            return GetAllLookOutForTransforms(layer, refreshList).Where(t => IsWithinSight(t, tag, distanceDirection) && t.GetComponent<T>() != null).Select(t => t.GetComponent<T>()); ;
         }
 
-        public Transform[] DoLookoutFor(bool newTransformsOnly = true, bool refreshList = false, string tag = "", ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL)
+        public Transform[] DoLookoutFor(bool newTransformsOnly = true, bool refreshList = false, string tag = "", int? layer = null, ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL)
         {
             IEnumerable<Transform> targets;
-            targets = GetTransformsWithinSight(refreshList, tag, distanceDirection);
+            targets = GetTransformsWithinSight(refreshList, tag, layer, distanceDirection);
 
             Transform[] result = new Transform[0];
 
@@ -120,10 +125,10 @@ namespace RSToolkit.AI
             return result;
         }
 
-        public T[] DoLookoutFor<T>(bool newTransformsOnly = true, bool refreshList = false, string tag = "", ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL) where T : MonoBehaviour
+        public T[] DoLookoutFor<T>(bool newTransformsOnly = true, bool refreshList = false, string tag = "", int? layer = null, ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL) where T : MonoBehaviour
         {
             IEnumerable<T> targets;
-            targets = GetWithinSight<T>(refreshList, tag, distanceDirection);
+            targets = GetWithinSight<T>(refreshList, tag, layer, distanceDirection);
 
             T[] result = new T[0];
 

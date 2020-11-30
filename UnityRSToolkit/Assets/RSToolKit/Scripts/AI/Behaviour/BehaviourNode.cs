@@ -213,6 +213,18 @@ namespace RSToolkit.AI.Behaviour
         public OnStoppedEvent OnStopped { get; private set; } = new OnStoppedEvent();
         public OnStoppedEvent OnStoppedSilent { get; private set; } = new OnStoppedEvent();        
 
+        public void RemoveAllListeners()
+        {
+            OnStarted.RemoveAllListeners();
+            OnStartedSilent.RemoveAllListeners();
+
+            OnStopping.RemoveAllListeners();
+            OnStoppingSilent.RemoveAllListeners();
+
+            OnStopped.RemoveAllListeners();
+            OnStoppedSilent.RemoveAllListeners();
+        }
+
         public BehaviourRootNode GetRoot()
         {
             if (this is BehaviourRootNode)

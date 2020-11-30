@@ -593,6 +593,11 @@ namespace RSToolkit.AI
 #endif
         }
 
+        protected virtual void OnDestroy()
+        {
+
+        }
+
         #endregion MonoBehaviour Functions
 
         protected void DrawGizmoPositionPoint(Vector3 position)

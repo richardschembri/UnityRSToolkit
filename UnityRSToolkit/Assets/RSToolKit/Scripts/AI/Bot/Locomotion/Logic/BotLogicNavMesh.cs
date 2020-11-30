@@ -124,13 +124,17 @@ namespace RSToolkit.AI.Locomotion
             return null;
         }
 
-        public bool CanJumpDown(out RaycastHit rayhit)
+        public bool CanJumpDown(out RaycastHit rayhit, bool pathComplete = true)
         {
             if (JumpProximityChecker.IsWithinRayDistance(out rayhit) != null)
             {
                 var jumpPath = new NavMeshPath();
                 NavMesh.CalculatePath(BotLocomotiveComponent.transform.position, rayhit.point, NavMesh.AllAreas, jumpPath);
-                return jumpPath.status == NavMeshPathStatus.PathComplete;
+                if (pathComplete)
+                {
+                    return jumpPath.status == NavMeshPathStatus.PathComplete;
+                }
+                return jumpPath.status != NavMeshPathStatus.PathInvalid;
             }
             return false;
         }
@@ -166,6 +170,11 @@ namespace RSToolkit.AI.Locomotion
         public bool IsAboveNavMeshSurface()
         {
             return NavMeshAgentComponent.IsAboveNavMeshSurface();
+        }
+
+        public bool IsAboveNavMeshSurface(out Vector3 navPosition)
+        {
+            return NavMeshAgentComponent.IsAboveNavMeshSurface(out navPosition);
         }
 
 

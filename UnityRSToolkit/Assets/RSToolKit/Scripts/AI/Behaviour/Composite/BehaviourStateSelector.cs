@@ -8,7 +8,7 @@ namespace RSToolkit.AI.Behaviour.Composite
 {
     public class BehaviourStateSelector<T> : BehaviourParentNode where T : struct, IConvertible, IComparable
     {
-        private Array _states;
+        public Array States { get; private set; }
         private Dictionary<T, BehaviourAction> _stateActions;
 
         public T CurrentState { get; private set; }
@@ -20,9 +20,9 @@ namespace RSToolkit.AI.Behaviour.Composite
         public BehaviourStateSelector(T initialState) : base("Enum Selector", NodeType.COMPOSITE){
             NextState = initialState;
             CurrentState = initialState;
-            _states = Enum.GetValues(typeof(T));
+            States = Enum.GetValues(typeof(T));
             _stateActions = new Dictionary<T, BehaviourAction>();
-            if (_states.Length < 1) { throw new ArgumentException("Enum provided to Initialize must have at least 1 visible definition"); }
+            if (States.Length < 1) { throw new ArgumentException("Enum provided to Initialize must have at least 1 visible definition"); }
             OnStarted.AddListener(OnStarted_Listener);
             OnChildNodeStopped.AddListener(OnChildNodeStopped_Listener);
         }
