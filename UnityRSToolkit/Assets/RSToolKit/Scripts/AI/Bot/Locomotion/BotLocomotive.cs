@@ -41,7 +41,7 @@ namespace RSToolkit.AI.Locomotion
         public float CurrentSpeed { get { return CurrentLocomotionType != null ? CurrentLocomotionType .CurrentSpeed : 0; } }
 
         protected bool _fullspeed = true;
-        //public StopMovementConditions StopMovementCondition { get; private set; }
+
         public DistanceType? StopMovementCondition { get; private set; } = null;
 
         public float MovingAwayDistance
@@ -104,13 +104,6 @@ namespace RSToolkit.AI.Locomotion
         public bool IsAway()
         {
             return !IsWithinDistance(DistanceType.AWARENESS);
-            /*
-            if (FocusedOnTransform != null)
-            {
-                return !ProximityHelpers.IsWithinDistance(ColliderComponent, FocusedOnTransform.position, SqrAwarenessMagnitude);
-            }
-            return !ProximityHelpers.IsWithinDistance(ColliderComponent, FocusedOnPosition.Value, SqrAwarenessMagnitude);
-            */
         }
 
         protected bool IsNotFocusedOrIsAway()
@@ -165,7 +158,6 @@ namespace RSToolkit.AI.Locomotion
             CurrentLocomotionType.MoveTowardsPosition(fullspeed);
         }
 
-        // public bool MoveToTetherPoint(BotLocomotive.StopMovementConditions stopMovementCondition = BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE, bool fullspeed = true)
         public bool MoveToTetherPoint(Bot.DistanceType? stopMovementCondition = Bot.DistanceType.PERSONAL_SPACE, bool fullspeed = true)
         {
             FocusOnTransform(TetherToTransform);
@@ -186,12 +178,7 @@ namespace RSToolkit.AI.Locomotion
             }
             catch (System.Exception ex)
             {
-
-                if (DebugMode)
-                {
-                    Debug.LogError($"Locomotion Error: {ex.Message}");
-                }
-
+                LogErrorLocomotion(ex);
                 FSM.ChangeState(FStatesLocomotion.CannotMove);
                 return false;
             }
@@ -199,13 +186,12 @@ namespace RSToolkit.AI.Locomotion
 
         #region Move
 
-        // private bool MoveCommon(FStatesLocomotion moveType, bool fullspeed = true, StopMovementConditions stopMovementCondition = StopMovementConditions.NONE)
         private bool MoveCommon(FStatesLocomotion moveType, bool fullspeed = true, DistanceType? stopMovementCondition = null)
         {            
             StopMovementCondition = stopMovementCondition;
             if (!CurrentLocomotionType.CanMove() || HasReachedDestination())
             {
-                StopMovementCondition = null; // StopMovementConditions.NONE;
+                // StopMovementCondition = null; // StopMovementConditions.NONE;
                 return false;
             }
             _fullspeed = fullspeed;
@@ -213,14 +199,11 @@ namespace RSToolkit.AI.Locomotion
             return true;
         }
 
-       
-        // public bool MoveToPosition(StopMovementConditions stopMovementCondition, bool fullspeed = true)
         public bool MoveToPosition(DistanceType? stopMovementCondition, bool fullspeed = true)
         {
             return MoveCommon(FStatesLocomotion.MovingToPosition, fullspeed, stopMovementCondition);
         }
 
-        // public bool MoveToPosition(Vector3 position, StopMovementConditions stopMovementCondition, bool fullspeed = true)
         public bool MoveToPosition(Vector3 position, DistanceType? stopMovementCondition, bool fullspeed = true)
         {
             FocusOnPosition(position);
@@ -232,13 +215,11 @@ namespace RSToolkit.AI.Locomotion
             return MoveCommon(FStatesLocomotion.MovingAwayFromPosition, fullspeed);
         }
 
-        // public bool MoveToTarget(StopMovementConditions stopMovementCondition, bool fullspeed = true)
         public bool MoveToTarget(DistanceType? stopMovementCondition, bool fullspeed = true)
         {
             return MoveCommon(FStatesLocomotion.MovingToTarget, fullspeed, stopMovementCondition);
         }
 
-        // public bool MoveToTarget(Transform transform, StopMovementConditions stopMovementCondition, bool fullspeed = true)
         public bool MoveToTarget(Transform transform, DistanceType? stopMovementCondition, bool fullspeed = true)
         {
             if (AttractMyAttention_ToTransform(transform, true))
@@ -267,7 +248,7 @@ namespace RSToolkit.AI.Locomotion
 
         public bool HasReachedDestination()
         {
-            return CurrentLocomotionType.HasReachedDestination(StopMovementCondition.Value);
+            return StopMovementCondition == null ? false : CurrentLocomotionType.HasReachedDestination(StopMovementCondition.Value);
         }
 
         public Vector3 GetMoveAwayDestination()
@@ -310,12 +291,7 @@ namespace RSToolkit.AI.Locomotion
             }
             catch (System.Exception ex)
             {
-
-                if (DebugMode)
-                {
-                    Debug.LogError($"Locomotion Error: {ex.Message}");
-                }
-
+                LogErrorLocomotion(ex);
                 FSM.ChangeState(FStatesLocomotion.CannotMove);
 
             }
@@ -359,12 +335,7 @@ namespace RSToolkit.AI.Locomotion
                 }
                 catch (System.Exception ex)
                 {
-
-                    if (DebugMode)
-                    {
-                        Debug.LogError($"Locomotion Error: {ex.Message}");
-                    }
-
+                    LogErrorLocomotion(ex);                   
                     FSM.ChangeState(FStatesLocomotion.CannotMove);
 
                 }
@@ -414,12 +385,7 @@ namespace RSToolkit.AI.Locomotion
                 }
                 catch (System.Exception ex)
                 {
-
-                    if (DebugMode)
-                    {
-                        Debug.LogError($"Locomotion Error: {ex.Message}");
-                    }
-
+                    LogErrorLocomotion(ex);
                     FSM.ChangeState(FStatesLocomotion.CannotMove);
 
                 }
@@ -453,6 +419,7 @@ namespace RSToolkit.AI.Locomotion
         #endregion NotMoving
 
         #endregion States
+
         protected abstract void InitLocomotionTypes();
         protected virtual bool InitBotWander(){
             BotWanderManagerComponent = GetComponent<BotPartWanderManager>();
@@ -502,5 +469,10 @@ namespace RSToolkit.AI.Locomotion
         }
 
         #endregion MonoBehaviour Functions
+
+        protected void LogErrorLocomotion(System.Exception ex)
+        {
+            LogErrorInDebugMode($"Locomotion Error:", ex);
+        }
     }
 }

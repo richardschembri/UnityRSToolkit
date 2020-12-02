@@ -39,6 +39,11 @@ namespace RSToolkit.AI
 
         #endregion Enums
 
+        protected virtual string GetDebugTag()
+        {    
+            return $"{gameObject.name}";
+        }
+
         public StatesInteraction CurrentInteractionState { get; private set; } = StatesInteraction.NotInteracting;
 
         public float InteractableCooldown = 0f;
@@ -608,5 +613,10 @@ namespace RSToolkit.AI
 #endif
         }
 
+
+        protected void LogErrorInDebugMode(string message, System.Exception ex = null)
+        {
+            DebugHelpers.LogErrorInDebugMode(DebugMode, GetDebugTag(), ex == null ? message : $"{message}: \n {ex.Message} \n {ex.StackTrace}");
+        }
     }
 }

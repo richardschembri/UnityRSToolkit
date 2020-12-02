@@ -33,68 +33,18 @@ namespace RSToolkit.AI.Locomotion
             Flying3DObjectComponent.YawTo(rotation.eulerAngles.y);
         }
 
-        /*
         public override bool MoveTowardsPosition(bool fullspeed = true)
         {
 
             RotateTowardsPosition();
 
             // Match height of position
-            if (Mathf.RoundToInt(BotLocomotiveComponent.FocusedOnPosition.Value.y) > Mathf.RoundToInt(BotLocomotiveComponent.transform.position.y))
-            {               
-                Flying3DObjectComponent.ApplyVerticalThrust(true);
-            }
-            if (Mathf.RoundToInt(BotLocomotiveComponent.FocusedOnPosition.Value.y) < Mathf.RoundToInt(BotLocomotiveComponent.transform.position.y))
-            {
-                Flying3DObjectComponent.ApplyVerticalThrust(false);
-            }
-
-            // Move towards position
-            if (!BotLocomotiveComponent.IsWithinInteractionDistance()){
-                Flying3DObjectComponent.ApplyForwardThrust(fullspeed ? 1f : 0.2f);
-            }
-            else if (BotLocomotiveComponent.IsWithinInteractionDistance())
-            {
-                // Slow down
-                Flying3DObjectComponent.ApplyForwardThrust(fullspeed ? 0.9f : 0.15f);
-            }
-            else if (BotLocomotiveComponent.IsWithinPersonalSpace(1.1f))
-            {
-                if (fullspeed)
-                {
-                    Flying3DObjectComponent.ApplyForwardThrust(0.1f);
-                }                
-            }
-            else if (BotLocomotiveComponent.IsWithinPersonalSpace(0.85f))
-            {
-                // Back up
-                Flying3DObjectComponent.ApplyForwardThrust(fullspeed ? -0.25f : 0.05f);
-            }else if(BotLocomotiveComponent.IsAtPosition())
-            {
-                // At position, stop all forces
-                Flying3DObjectComponent.ResetAppliedForces();
-                Flying3DObjectComponent.ResetAppliedAxis();
-                return false;
-            }
-            return true;
-        }
-        */
-
-        public override bool MoveTowardsPosition(bool fullspeed = true)
-        {
-
-            RotateTowardsPosition();
-
-            // Match height of position
-            // if (Mathf.RoundToInt(BotLocomotiveComponent.FocusedOnPosition.Value.y) > Mathf.RoundToInt(BotLocomotiveComponent.transform.position.y))
-            // if (BotLocomotiveComponent.FocusedOnPosition.Value.y > BotLocomotiveComponent.transform.position.y)
-            if (BotLocomotiveComponent.FocusedOnPosition.Value.y - BotLocomotiveComponent.transform.position.y >= BotLocomotiveComponent.SqrAtPositionErrorMargin)
+            if (BotLocomotiveComponent.FocusedOnPosition.Value.y - BotLocomotiveComponent.transform.position.y >= (BotLocomotiveComponent.SqrAtPositionErrorMargin / 2 ) )
             {
                 Flying3DObjectComponent.ApplyVerticalThrust(true);
             }
-            // if (Mathf.RoundToInt(BotLocomotiveComponent.FocusedOnPosition.Value.y) < Mathf.RoundToInt(BotLocomotiveComponent.transform.position.y))
-            // if (BotLocomotiveComponent.FocusedOnPosition.Value.y < BotLocomotiveComponent.transform.position.y)
-            if (BotLocomotiveComponent.FocusedOnPosition.Value.y - BotLocomotiveComponent.transform.position.y < -BotLocomotiveComponent.SqrAtPositionErrorMargin)
+
+            if (BotLocomotiveComponent.FocusedOnPosition.Value.y - BotLocomotiveComponent.transform.position.y < -(BotLocomotiveComponent.SqrAtPositionErrorMargin / 2) )
             {
                 Flying3DObjectComponent.ApplyVerticalThrust(false);
             }
@@ -109,7 +59,6 @@ namespace RSToolkit.AI.Locomotion
             }
             else if (BotLocomotiveComponent.IsWithinDistance(Bot.DistanceType.PERSONAL_SPACE, ProximityHelpers.DistanceDirection.ALL, 0.85f)) // .IsWithinPersonalSpace(0.85f))
             {
-                // Back up
                 Flying3DObjectComponent.ApplyForwardThrust(fullspeed ? 0.1f : 0.05f); //-0.35f : 0.05f);
             }
             else if (BotLocomotiveComponent.IsWithinDistance(Bot.DistanceType.PERSONAL_SPACE, ProximityHelpers.DistanceDirection.HORIZONTAL, 1.1f))// IsWithinPersonalSpace(1.1f))
