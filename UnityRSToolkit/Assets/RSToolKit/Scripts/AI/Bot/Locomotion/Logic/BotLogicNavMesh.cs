@@ -87,14 +87,21 @@ namespace RSToolkit.AI.Locomotion
 
         public override void MoveAway(bool fullspeed = true)
         {
+            var destination = BotLocomotiveComponent.GetMoveAwayDestination();
+
+            NavMeshHit _hit;
+            if (NavMesh.SamplePosition(destination, out _hit, BotLocomotiveComponent.SqrAwarenessMagnitude, -1))
+            {
+                destination = _hit.position;
+            }
 
             if (fullspeed)
             {
-                MoveTo(BotLocomotiveComponent.GetMoveAwayDestination(), RunSpeed, RunRotationSpeed);
+                MoveTo(destination, RunSpeed, RunRotationSpeed);
             }
             else
             {
-                MoveTo(BotLocomotiveComponent.GetMoveAwayDestination(), WalkSpeed, WalkRotationSpeed);
+                MoveTo(destination, WalkSpeed, WalkRotationSpeed);
             }
         }
 

@@ -75,6 +75,12 @@ namespace RSToolkit.AI
             return GetTagLookOutForTransforms(layer, refresh).Union(LookOutForTransforms);
         }
 
+        public void UnfocusAndForgetWhenNotInSight(ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL)
+        {
+            var target = BotComponent.FocusedOnTransform;
+            BotComponent.UnFocus(() => IsWithinSight(target, "", distanceDirection));
+        }
+
         private bool IsWithinSight(Transform target, string tag = "", ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL)
         {
             if (target == null || (!string.IsNullOrEmpty(tag) && target.tag != tag))

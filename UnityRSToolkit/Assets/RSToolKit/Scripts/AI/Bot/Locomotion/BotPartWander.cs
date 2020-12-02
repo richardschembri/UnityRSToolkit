@@ -34,16 +34,13 @@ namespace RSToolkit.AI.Locomotion
 
         }
 
-        // public virtual BotLocomotive.StopMovementConditions StopMovementCondition
         public virtual Bot.DistanceType StopMovementCondition
         {
             get
             {
-                // return BotLocomotive.StopMovementConditions.AT_POSITION;
                 return Bot.DistanceType.AT_POSITION;
             }
         }
-            //BotLocomotive.StopMovementConditions.WITHIN_PERSONAL_SPACE
 
         public abstract bool CanWander();
 

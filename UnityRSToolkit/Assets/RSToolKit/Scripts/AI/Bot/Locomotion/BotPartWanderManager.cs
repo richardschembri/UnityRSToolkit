@@ -20,6 +20,7 @@ namespace RSToolkit.AI.Locomotion
         }
 
         private const string DEBUG_TAG = "BotWanderManager";
+        
         public bool DebugMode = false;
 
         public bool _waitOnStart = true;
@@ -163,19 +164,19 @@ namespace RSToolkit.AI.Locomotion
         }
 
         #region FindNewPosition
-        private float m_findPositionTimeout = 0f;
+        private float _findPositionTimeout = 0f;
         void FindNewPosition_Enter()
         {
             BotLocomotiveComponent.UnFocus();
-            m_findPositionTimeout = GetWaitTime();
+            _findPositionTimeout = GetWaitTime();
         }
 
         Vector3? _newWanderPosition;
         void FindNewPosition_Update()
         { 
             
-            m_findPositionTimeout -= Time.deltaTime;
-            if(m_findPositionTimeout > 0){
+            _findPositionTimeout -= Time.deltaTime;
+            if(_findPositionTimeout > 0){
                 return;
             }
 
@@ -196,32 +197,35 @@ namespace RSToolkit.AI.Locomotion
             {
                 FSM.ChangeState(FStatesWander.CannotWander);
             }
-            else if ( BotLocomotiveComponent.CurrentFState == BotLocomotive.FStatesLocomotion.NotMoving && BotLocomotiveComponent.FSM.NextState != BotLocomotive.FStatesLocomotion.MovingToPosition)
+            else if ( BotLocomotiveComponent.CurrentFState == BotLocomotive.FStatesLocomotion.NotMoving 
+                        && BotLocomotiveComponent.FSM.NextState != BotLocomotive.FStatesLocomotion.MovingToPosition 
+                        && BotLocomotiveComponent.FSM.NextState != BotLocomotive.FStatesLocomotion.MovingAwayFromPosition
+                            )
             {
 
                 FSM.ChangeState(_currentBotWanderComponent.AutoWander ? FStatesWander.FindNewPosition : FStatesWander.NotWandering);
             }
 
         }
-        IEnumerator m_movingToPosition_TimeOut;
+        IEnumerator _movingToPosition_TimeOut;
         void MovingToPosition_Enter()
         {
             if (_currentBotWanderComponent.MovementTimeout > 0)
             {
-                m_movingToPosition_TimeOut = MovingToPosition_TimeOut();
+                _movingToPosition_TimeOut = MovingToPosition_TimeOut();
                 if(!BotLocomotiveComponent.MoveToPosition(_currentBotWanderComponent.StopMovementCondition, false))
                 {
                     FSM.ChangeState(FStatesWander.CannotWander);
                     return;
                 }
                 DebugHelpers.LogInDebugMode(DebugMode, DEBUG_TAG, $"{transform.name} Wandering to {BotLocomotiveComponent.FocusedOnPosition.ToString()}");
-                StartCoroutine(m_movingToPosition_TimeOut);
+                StartCoroutine(_movingToPosition_TimeOut);
             }
         }
 
         void MovingToPosition_Exit(bool success)
         {
-            StopCoroutine(m_movingToPosition_TimeOut);
+            StopCoroutine(_movingToPosition_TimeOut);
         }
 
         IEnumerator MovingToPosition_TimeOut()
@@ -258,12 +262,16 @@ namespace RSToolkit.AI.Locomotion
         #region Mono Functions
         void OnCollisionEnter(Collision collision)
         {
-            if(FSM.CurrentState == FStatesWander.MovingToPosition)
+            if(FSM.CurrentState == FStatesWander.MovingToPosition )
             {
-                BotLocomotiveComponent.StopMoving();
-                FSM.ChangeState(FStatesWander.FindNewPosition);
+
+                // BotLocomotiveComponent.StopMoving();
+                BotLocomotiveComponent.FocusOnPosition(collision.GetContact(0).point);
+                BotLocomotiveComponent.MoveAwayFromPosition(false);
+                //FSM.ChangeState(FStatesWander.FindNewPosition);
             }
         }
+
         #endregion Mono Functions
     }
 

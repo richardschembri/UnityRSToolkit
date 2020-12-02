@@ -280,6 +280,7 @@ namespace RSToolkit.AI.Locomotion
             FSM.OnStarted_AddListener(FStatesLocomotion.MovingToPosition, MovingToPositionOnStarted_Listener);
             FSM.SetUpdateAction(FStatesLocomotion.MovingToTarget, MovingToTarget_Update);
             FSM.SetUpdateAction(FStatesLocomotion.MovingAwayFromPosition, MovingAwayFromPosition_Update);
+            FSM.OnStarted_AddListener(FStatesLocomotion.MovingAwayFromPosition, MovingAwayFromPositionOnStarted_Listener);
             FSM.SetUpdateAction(FStatesLocomotion.MovingAwayFromTarget, MovingAwayFromTarget_Update);
         }
 
@@ -317,6 +318,21 @@ namespace RSToolkit.AI.Locomotion
         #endregion MovingToPosition
 
         #region MovingAwayFromPosition
+
+        private void MovingAwayFromPositionOnStarted_Listener()
+        {
+            try
+            {
+                CurrentLocomotionType.MoveAway(_fullspeed);
+            }
+            catch (System.Exception ex)
+            {
+                LogErrorLocomotion(ex);
+                FSM.ChangeState(FStatesLocomotion.CannotMove);
+
+            }
+        }
+
         private void MovingAwayFromPosition_Update()
         {
             if (!CurrentLocomotionType.CanMove())

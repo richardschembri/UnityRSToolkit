@@ -140,8 +140,9 @@ namespace RSToolkit.AI
 
         #endregion Components
 
+        public Transform PreviousFocusedTransform { get; private set; } = null;
         public Transform FocusedOnTransform { get; private set; } = null;
-        public Vector3? m_FocusedOnPosition = null;
+        public Vector3? _FocusedOnPosition = null;
 
         public HashSet<Transform> NoticedTransforms { get; private set; } = new HashSet<Transform>();
         public float forgetTransformTimeout = -1f;
@@ -154,14 +155,14 @@ namespace RSToolkit.AI
             {
                 if (FocusedOnTransform != null)
                 {
-                    m_FocusedOnPosition = null;
+                    _FocusedOnPosition = null;
                     return FocusedOnTransform.position;
                 }
-                return m_FocusedOnPosition;
+                return _FocusedOnPosition;
             }
             private set
             {
-                m_FocusedOnPosition = value;
+                _FocusedOnPosition = value;
             }
         }
 
@@ -417,19 +418,24 @@ namespace RSToolkit.AI
             return false;
         }
 
-        public void ForgetTransformAfterTiemout(Transform target)
+        public void ForgetTransformAfterTiemout(Transform target, System.Func<bool> forgetCondition = null)
         {
             if (forgetTransformTimeout > 0)
             {
-                StartCoroutine(DelayedForgetTransform(target));
+                StartCoroutine(DelayedForgetTransform(target, forgetCondition));
 
             }else{
                 ForgetTransform(target);
             }
         }
 
-        IEnumerator DelayedForgetTransform(Transform target)
+        IEnumerator DelayedForgetTransform(Transform target, System.Func<bool> forgetCondition = null)
         {
+            
+            if(forgetCondition != null)
+            {
+                yield return new WaitUntil(forgetCondition);
+            }
             yield return new WaitForSeconds(forgetTransformTimeout);
             ForgetTransform(target);
 
@@ -460,7 +466,8 @@ namespace RSToolkit.AI
 
         }
 
-        public bool UnFocus(bool forget = true)
+
+        private bool UnFocus(bool forget, System.Func<bool> forgetCondition)
         {
             if(FocusedOnPosition != null && FocusedOnTransform == null)
             {
@@ -475,13 +482,25 @@ namespace RSToolkit.AI
             {
                 Debug.Log($"{transform.name}.UnFocus: {FocusedOnTransform.name}");
             }
-            if(forget){
-                ForgetTransformAfterTiemout(FocusedOnTransform);
+            if(forget)
+            {
+                ForgetTransformAfterTiemout(FocusedOnTransform, forgetCondition);
             }
+            PreviousFocusedTransform = FocusedOnTransform;
             FocusedOnTransform = null;
             FocusedOnPosition = null;
             CurrentInteractionState = StatesInteraction.NotInteracting;
             return true;
+        }
+
+        public bool UnFocus(bool forget = true)
+        {
+            return UnFocus(forget, null);
+        }
+
+        public bool UnFocus(System.Func<bool> forgetCondition)
+        {
+            return UnFocus(true, forgetCondition);
         }
 
         public bool IsFacing(Transform target)
