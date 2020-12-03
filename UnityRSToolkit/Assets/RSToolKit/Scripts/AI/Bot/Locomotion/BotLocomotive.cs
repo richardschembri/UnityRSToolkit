@@ -106,6 +106,16 @@ namespace RSToolkit.AI.Locomotion
             return !IsWithinDistance(DistanceType.AWARENESS);
         }
 
+        public bool WillBeAway()
+        {
+            if (FocusedOnPosition == null)
+            {
+                return false;
+            }
+
+            return Vector3.Distance(FocusedOnPosition.Value, transform.position) >= MovingAwayDistance;
+        }
+
         protected bool IsNotFocusedOrIsAway()
         {
             return FocusedOnPosition == null || IsAway();
@@ -251,13 +261,18 @@ namespace RSToolkit.AI.Locomotion
             return StopMovementCondition == null ? false : CurrentLocomotionType.HasReachedDestination(StopMovementCondition.Value);
         }
 
-        public Vector3 GetMoveAwayDestination()
+        public Vector3 GetMoveAwayDestination(float moveAwayBy)
         {
             if (FocusedOnPosition != null)
             {
-                return transform.position + (transform.position - FocusedOnPosition.Value).normalized * MovingAwayDistance;
+                return transform.position + ((transform.position - FocusedOnPosition.Value).normalized * moveAwayBy);
             }
-            return transform.position + MovingAwayDistance * -transform.forward;
+            return transform.position + moveAwayBy * -transform.forward;
+        }
+
+        public Vector3 GetMoveAwayDestination()
+        {
+            return GetMoveAwayDestination(MovingAwayDistance);
         }
 
 
@@ -342,12 +357,12 @@ namespace RSToolkit.AI.Locomotion
             else if (IsNotFocusedOrIsAway())
             {
                 FSM.ChangeState(FStatesLocomotion.NotMoving);
-            }
-            else
+            }            
+            else if(!WillBeAway())
             {
                 try
                 {
-                    CurrentLocomotionType.MoveAway();
+                    CurrentLocomotionType.MoveAway(_fullspeed);
                 }
                 catch (System.Exception ex)
                 {
@@ -356,6 +371,7 @@ namespace RSToolkit.AI.Locomotion
 
                 }
             }
+           
         }
 
         #endregion MovingAwayFromPosition

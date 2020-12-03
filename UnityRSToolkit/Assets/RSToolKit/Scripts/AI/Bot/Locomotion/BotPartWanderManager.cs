@@ -25,6 +25,8 @@ namespace RSToolkit.AI.Locomotion
 
         public bool _waitOnStart = true;
 
+        public string[] CollisionWhiteListTags;
+
         #region FSM
         public BTFiniteStateMachine<FStatesWander> FSM { get; private set; } = new BTFiniteStateMachine<FStatesWander>(FStatesWander.NotWandering);
         private BTFiniteStateMachineManager _btFiniteStateMachineManagerComponent; 
@@ -262,13 +264,11 @@ namespace RSToolkit.AI.Locomotion
         #region Mono Functions
         void OnCollisionEnter(Collision collision)
         {
-            if(FSM.CurrentState == FStatesWander.MovingToPosition )
+            if(FSM.CurrentState == FStatesWander.MovingToPosition 
+                && !CollisionWhiteListTags.Contains(collision.transform.tag))
             {
-
-                // BotLocomotiveComponent.StopMoving();
                 BotLocomotiveComponent.FocusOnPosition(collision.GetContact(0).point);
                 BotLocomotiveComponent.MoveAwayFromPosition(false);
-                //FSM.ChangeState(FStatesWander.FindNewPosition);
             }
         }
 
