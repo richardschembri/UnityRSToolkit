@@ -1,31 +1,34 @@
-﻿namespace RSToolkit.Helpers
-{
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using RSToolkit.Helpers;
 
-
-    public class CSVHelpersLite
+namespace RSToolkit.Data.Helpers
+{
+    public class BasicCSVHelpers
     {
 
         [System.AttributeUsage(System.AttributeTargets.Property | System.AttributeTargets.Field)]
-        public class CSVHeader : System.Attribute {
+        public class CSVHeader : System.Attribute
+        {
             string m_header;
 
-            public CSVHeader(string header){
+            public CSVHeader(string header)
+            {
                 m_header = header;
             }
 
-            public string GetHeader(){
+            public string GetHeader()
+            {
                 return m_header;
             }
         }
 
-    static string SPLIT_RE = @",(?=(?:[^""]*""[^""]*"")*(?![^""]*""))";
+        static string SPLIT_RE = @",(?=(?:[^""]*""[^""]*"")*(?![^""]*""))";
         static string LINE_SPLIT_RE = @"\r\n|\n\r|\n|\r";
         static char[] TRIM_CHARS = { '\"' };
 
@@ -46,12 +49,14 @@ using System.Text.RegularExpressions;
         }
 
 
-        private static string NormalizeField(string csvfield){
+        private static string NormalizeField(string csvfield)
+        {
             return csvfield.TrimStart(TRIM_CHARS).TrimEnd(TRIM_CHARS).Replace("\\", "").Trim();
         }
 
 
-        public static string NormalizeHeader(string header){
+        public static string NormalizeHeader(string header)
+        {
             return NormalizeField(header);
         }
 
@@ -92,11 +97,13 @@ using System.Text.RegularExpressions;
                 for (var j = 0; j < header.Length && j < values.Length; j++)
                 {
                     string value = values[j];
-     
+
                     var multi_line = Regex.Split(value, @"\\r\\n");
-                    if (multi_line.Length > 1){
+                    if (multi_line.Length > 1)
+                    {
                         var sb = new StringBuilder();
-                        for(int ml = 0; ml < multi_line.Length; ml++){
+                        for (int ml = 0; ml < multi_line.Length; ml++)
+                        {
                             sb.AppendLine(NormalizeField(multi_line[ml]));
                         }
                         value = sb.ToString();
@@ -118,7 +125,9 @@ using System.Text.RegularExpressions;
                     else if (float.TryParse(value, out f))
                     {
                         finalvalue = f;
-                    }else if(TryParseBool(value, out b)){
+                    }
+                    else if (TryParseBool(value, out b))
+                    {
                         finalvalue = b;
                     }
                     entry[header[j]] = finalvalue;
@@ -223,7 +232,7 @@ using System.Text.RegularExpressions;
 
             var headers = fields.Select(f => f.Name).Concat(properties.Select(p => p.Name))
                                                     .Concat(headerAttributes.Select(h => ((CSVHeader)h.GetCustomAttribute(typeof(CSVHeader)))
-                                                        .GetHeader()) 
+                                                        .GetHeader())
                                                     );
 
             var tEntries = new List<T>();
@@ -237,15 +246,19 @@ using System.Text.RegularExpressions;
                     var normHeader = NormalizeHeader(h);
                     var pi = tEntry.GetType().GetProperties().FirstOrDefault(p => NormalizeHeader(((CSVHeader)p.GetCustomAttribute(typeof(CSVHeader))).GetHeader()) == normHeader);
 
-                    if(pi == null) {
+                    if (pi == null)
+                    {
                         pi = tEntry.GetType().GetProperty(h);
                     }
 
                     if (pi != null && pi.CanWrite)
                     {
-                        try{
+                        try
+                        {
                             pi.SetValue(tEntry, Convert.ChangeType(csvEntry[h], pi.PropertyType), null);
-                        }catch(Exception){
+                        }
+                        catch (Exception)
+                        {
                             //Unable to convert
                         }
                     }
@@ -256,28 +269,38 @@ using System.Text.RegularExpressions;
             return tEntries;
         }
 
-        public static string GetHeadersString<T>(string separator = ","){
+        public static string GetHeadersString<T>(string separator = ",")
+        {
             return string.Join(separator, GetHeaders<T>());
         }
-        public static IEnumerable<string> GetHeaders<T>(){
+        public static IEnumerable<string> GetHeaders<T>()
+        {
 
             FieldInfo[] fields = typeof(T).GetFields();
             PropertyInfo[] properties = typeof(T).GetProperties();
 
             List<string> headers = new List<string>();
-            for(int i = 0; i < fields.Length; i ++){
+            for (int i = 0; i < fields.Length; i++)
+            {
                 var h = fields[i].GetCustomAttribute(typeof(CSVHeader));
-                if (h != null){
-                    headers.Add((((CSVHeader)h).GetHeader())); 
-                }else{
-                    headers.Add (fields[i].Name);
+                if (h != null)
+                {
+                    headers.Add((((CSVHeader)h).GetHeader()));
+                }
+                else
+                {
+                    headers.Add(fields[i].Name);
                 }
             }
-            for(int i = 0; i < properties.Length; i ++){
+            for (int i = 0; i < properties.Length; i++)
+            {
                 var h = properties[i].GetCustomAttribute(typeof(CSVHeader));
-                if (h != null){
-                    headers.Add((((CSVHeader)h).GetHeader())); 
-                }else{
+                if (h != null)
+                {
+                    headers.Add((((CSVHeader)h).GetHeader()));
+                }
+                else
+                {
                     headers.Add(properties[i].Name);
                 }
             }
@@ -376,7 +399,7 @@ using System.Text.RegularExpressions;
             //using (TextWriter tw = File.CreateText(filepath))
             using (var tw = new StreamWriter(filepath, false, Encoding.UTF8)) // File.CreateText(filepath))
             {
-                foreach (var line in CSVHelpersLite.ToCsv(obj, separator, true))
+                foreach (var line in BasicCSVHelpers.ToCsv(obj, separator, true))
                 {
                     tw.WriteLine(line);
                 }
@@ -402,7 +425,7 @@ using System.Text.RegularExpressions;
             //using (TextWriter tw = File.CreateText(filepath))
             using (var tw = new StreamWriter(filepath, false, Encoding.UTF8)) // File.CreateText(filepath))
             {
-                foreach (var line in CSVHelpersLite.ToCsv(objectlist, separator, true))
+                foreach (var line in BasicCSVHelpers.ToCsv(objectlist, separator, true))
                 {
                     tw.WriteLine(line);
                 }
@@ -422,7 +445,7 @@ using System.Text.RegularExpressions;
             //using (TextWriter tw = File.AppendText(filepath))
             using (var tw = new StreamWriter(filepath, true, Encoding.UTF8)) // File.AppendText(filepath))
             {
-                foreach (var line in CSVHelpersLite.ToCsv(obj, separator, false))
+                foreach (var line in BasicCSVHelpers.ToCsv(obj, separator, false))
                 {
                     tw.WriteLine(line);
                 }
@@ -442,7 +465,7 @@ using System.Text.RegularExpressions;
             //using (TextWriter tw = File.AppendText(filepath))
             using (var tw = new StreamWriter(filepath, true, Encoding.UTF8)) // File.AppendText(filepath))
             {
-                foreach (var line in CSVHelpersLite.ToCsv(objectlist, separator, false))
+                foreach (var line in BasicCSVHelpers.ToCsv(objectlist, separator, false))
                 {
                     tw.WriteLine(line);
                 }
