@@ -127,11 +127,11 @@ namespace RSToolkit.Data.SQLite
                             {
                                 tableExists = reader.GetInt32(0) > 0;
                             }
-
-                            dbConnection.Close();
+                            
                             reader.Close();
-                        }
+                        }                        
                     }
+                    dbConnection.Close();
                 }
             }
             catch (Exception ex)
@@ -143,13 +143,13 @@ namespace RSToolkit.Data.SQLite
             return tableExists;
         }
 
-        public void AddColumnToTable(string columnName, DataModel dataModel)
+        public void AddColumnToTable<T>(string columnName, DataModelFactory<T> dataModelFactory, DataModel dataModel) where T : DataModel
         {
 
             var sbQuery = new StringBuilder();
-            var columnToAdd = dataModel.DataModelColumns.First(c => c.ColumnName == columnName);
+            var columnToAdd = dataModelFactory.DataModelColumnProperties.First(c => c.ColumnName == columnName);
 
-            sbQuery.AppendLine(string.Format("alter table {0} add column {1}", dataModel.TableName, columnToAdd.GetColumnCodeForCreateTable()));
+            sbQuery.AppendLine(string.Format("alter table {0} add column {1}", dataModelFactory.TableName, columnToAdd.GetColumnCodeForCreateTable()));
             if (dataModel.IsForeignKey)
             {
                 sbQuery.AppendLine(columnToAdd.GetForeignKeyCodeForCreateTable());
@@ -178,10 +178,12 @@ namespace RSToolkit.Data.SQLite
                 Debug.LogError(sbError.ToString());
             }
         }
-        public void DropTable(DataModel dataModel)
+
+        public void DropTable<T>(DataModelFactory<T> dataModel) where T : DataModel
         {
             DropTable(dataModel.TableName);
         }
+
         public void DropTable(string tableName)
         {
             var sbQuery = new StringBuilder();
@@ -211,24 +213,24 @@ namespace RSToolkit.Data.SQLite
                 Debug.LogError(sbError.ToString());
             }
         }
-        public void CreateTableAndPopulateTableIfNotExists(string tableName, DataModel dataModel)
+        public void CreateTableIfNotExists<T>(DataModelFactory<T> dataModelFactory) where T : DataModel
         {
             var sbQuery = new StringBuilder();
-            var primaryKeyColumn = dataModel.DataModelColumns.First(pk => pk.IsPrimaryKey);
+            var primaryKeyColumn = dataModelFactory.DataModelColumnProperties.First(pk => pk.IsPrimaryKey);
 
-            sbQuery.Append(string.Format("create table if not exists {0}(", tableName));
+            sbQuery.Append(string.Format("create table if not exists {0}(", dataModelFactory.TableName));
             sbQuery.AppendLine(primaryKeyColumn.GetColumnCodeForCreateTable());
 
-            for (int i = 0; i < dataModel.DataModelColumns.Count; i++)
+            for (int i = 0; i < dataModelFactory.DataModelColumnProperties.Count; i++)
             {
-                var dmc = dataModel.DataModelColumns[i];
+                var dmc = dataModelFactory.DataModelColumnProperties[i];
                 if (!dmc.IsPrimaryKey)
                 {
                     sbQuery.Append(string.Format(", {0}", dmc.GetColumnCodeForCreateTable()));
                 }
             }
 
-            var foreignKeys = dataModel.DataModelColumns.Where(dmc => !string.IsNullOrEmpty(dmc.ForeignTableName)).ToList();
+            var foreignKeys = dataModelFactory.DataModelColumnProperties.Where(dmc => !string.IsNullOrEmpty(dmc.ForeignTableName)).ToList();
             for (int i = 0; i < foreignKeys.Count; i++)
             {
                 sbQuery.AppendLine(foreignKeys[i].GetForeignKeyCodeForCreateTable());
@@ -256,6 +258,24 @@ namespace RSToolkit.Data.SQLite
                 sbError.AppendLine(ex.Message);
                 Debug.LogError(sbError.ToString());
             }
+        }
+
+        public bool CreateAndPopulateTableIfNotExists<T>(DataModelFactory<T> dataModelFactory, List<T> dataModels) where T : DataModel
+        {
+            if (!DoesExist_Table(dataModelFactory.TableName))
+            {
+                return false;
+            }
+
+            CreateTableIfNotExists(dataModelFactory);
+
+            return ExecuteCommands_Insert(dataModelFactory, dataModels);
+        }
+
+        public bool CreateAndPopulateTableIfNotExists<T>(DataModelFactory<T> dataModelFactory) where T : DataModel
+        {
+            dataModelFactory.GeneratePresets();
+            return CreateAndPopulateTableIfNotExists<T>(dataModelFactory, dataModelFactory.DataModels);
         }
 
         public void ExecuteCommand_Update(SqliteCommand updateCommand)
@@ -356,18 +376,22 @@ namespace RSToolkit.Data.SQLite
             ExecuteCommands_Insert(lstInsertCommands);
         }
 
-        public bool ExecuteCommands_Insert<T>(List<T> lstDataModel)
+        public void ExecuteCommand_Insert<T>(DataModelFactory<T> dataModelFactory, T dataModel) where T : DataModel
         {
-            if (!lstDataModel.Any())
+            ExecuteCommand_Insert(dataModelFactory.GetCommand_Insert(dataModel));
+        }
+
+        public bool ExecuteCommands_Insert<T>(DataModelFactory<T> dataModelFactory, List<T> dataModels) where T : DataModel
+        {
+            if (!dataModels.Any())
             {
                 return false;
             }
 
             var sqliteCommands = new List<SqliteCommand>();
-            for (int i = 0; i < lstDataModel.Count; i++)
+            for (int i = 0; i < dataModels.Count; i++)
             {
-                var dm = lstDataModel[i] as DataModel;
-                sqliteCommands.Add(dm.GetCommand_Insert());
+                sqliteCommands.Add(dataModelFactory.GetCommand_Insert(dataModels[i]));
             }
 
             ExecuteCommands_Insert(sqliteCommands);
@@ -410,6 +434,86 @@ namespace RSToolkit.Data.SQLite
                 }
 
                 dbConnection.Close();
+            }
+        }
+
+        public void ExecuteReader_BasicSelect<T>(DataModelFactory<T> modelFactory, bool selectAll = true, int pageSize = 0, int startIndex = 0) where T : DataModel
+        {
+            modelFactory.DataModels.Clear();
+
+            var query = modelFactory.GetCommandText_BasicSelect(selectAll, pageSize, startIndex);
+
+            try
+            {
+                using (var dbConnection = new SqliteConnection(Connection))
+                {
+                    dbConnection.Open();
+
+                    using (var dbCmd = dbConnection.CreateCommand())
+                    {
+                        dbCmd.CommandText = query;
+
+                        using (var reader = dbCmd.ExecuteReader())
+                        {
+                            int index = 0;
+                            while (reader.Read())
+                            {
+                                modelFactory.GenerateDataModel(reader, ref index);
+                            }
+                            reader.Close();
+                        }
+                    }
+
+                    dbConnection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                var sbError = new StringBuilder();
+                sbError.AppendFormat("Error with script 【{0}】", query);
+                sbError.AppendLine(ex.Message);
+                Debug.LogError(sbError.ToString());
+            }
+        }
+
+        public virtual void GetCommandText_BasicSelectWithParameters<T>(DataModelFactory<T> modelFactory, List<DataModel.IDataModelColumn> parameters, int pageSize = 0, int startIndex = 0) where T : DataModel
+        {
+            var query = modelFactory.GetCommandText_BasicSelectWithParameters(parameters, pageSize, startIndex);
+
+            try
+            {
+                using (var dbConnection = new SqliteConnection(Connection))
+                {
+                    dbConnection.Open();
+
+                    using (var dbCmd = dbConnection.CreateCommand())
+                    {
+                        dbCmd.CommandText = query;
+                        for(int i = 0; i < parameters.Count; i++)
+                        {
+                            dbCmd.Parameters.Add(parameters[i].ToParameter());
+                        }
+
+                        using (var reader = dbCmd.ExecuteReader())
+                        {
+                            int index = 0;
+                            while (reader.Read())
+                            {
+                                modelFactory.GenerateDataModel(reader, ref index);
+                            }
+                            reader.Close();
+                        }
+                    }
+
+                    dbConnection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                var sbError = new StringBuilder();
+                sbError.AppendFormat("Error with script 【{0}】", query);
+                sbError.AppendLine(ex.Message);
+                Debug.LogError(sbError.ToString());
             }
         }
 
