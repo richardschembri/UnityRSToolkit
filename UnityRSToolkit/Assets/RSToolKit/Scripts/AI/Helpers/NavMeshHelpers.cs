@@ -124,7 +124,7 @@ namespace RSToolkit.AI.Helpers
             NavMeshHit navHit;
             if (Physics.Raycast(bottomColliderPoint, Vector3.down, out rayHit))
             {
-                if (NavMesh.SamplePosition(rayHit.point, out navHit, 1f, NavMesh.AllAreas))
+                if (NavMesh.SamplePosition(rayHit.point, out navHit, 0.05f, NavMesh.AllAreas))
                 {
                     navPosition = navHit.position;
                     return true;

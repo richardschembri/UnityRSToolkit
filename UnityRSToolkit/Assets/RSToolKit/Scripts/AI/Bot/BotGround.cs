@@ -8,9 +8,17 @@ namespace RSToolkit.AI
 {
     public class BotGround : BotLocomotive
     {
+        public enum StatesGround{
+            NOTGROUNDED,
+            GROUNDED_NAVMESH_SUCCESS,
+            GROUNDED_NAVMESH_FAIL
+        }
+
+        public StatesGround CurrentStatesGround {get; private set;} = StatesGround.NOTGROUNDED; // Assume it is starting in the air
 
         public BotLogicNavMesh BotLogicNavMeshRef { get; set; }
 
+        NavMeshHit navGroundHit;
 
         #region Components
 
@@ -34,28 +42,40 @@ namespace RSToolkit.AI
 
         private void HandleFailling()
         {
-            //if (IsFarFromGround() && !m_freefall)
-            if(!IsAlmostGrounded() && !IsFreefall)
+            if (CurrentStatesGround != StatesGround.GROUNDED_NAVMESH_SUCCESS)
             {
-                IsFreefall = true;
-                NavMeshAgentComponent.enabled = false;
+                if(CheckForGround()){
+                    Land();
+                }else if(GroundProximityCheckerComponent.IsAlmostTouching(false)){
+                    CurrentStatesGround = StatesGround.GROUNDED_NAVMESH_FAIL;
+                }
+            }else if(!CheckForGround() && !GroundProximityCheckerComponent.IsAlmostTouching(false)){
+
+                CurrentStatesGround = StatesGround.NOTGROUNDED;
             }
         }
 
         private void Land(){
-            IsFreefall = false;
+            // if(NavMesh.SamplePosition())
+            // IsFreefall = false;
             RigidBodyComponent.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
             RigidBodyComponent.velocity = Vector3.zero;
             transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
             NavMeshAgentComponent.enabled = true;
+            if(NavMeshAgentComponent.isActiveAndEnabled){
+                CurrentStatesGround = StatesGround.GROUNDED_NAVMESH_SUCCESS;
+            }else{
+                CurrentStatesGround = StatesGround.GROUNDED_NAVMESH_FAIL;
+            }
         }
 
         protected override void ToggleComponentsForNetwork(bool toggleKinematic = true)
         {
             base.ToggleComponentsForNetwork(toggleKinematic);
-            if (IsFreefall && _IsNetworkPeer)
+            if (CurrentStatesGround != StatesGround.NOTGROUNDED && _IsNetworkPeer)
             {
-                IsFreefall = false;
+                // IsFreefall = false;
+                CurrentStatesGround = StatesGround.GROUNDED_NAVMESH_SUCCESS;
             }
             else if (!_IsNetworkPeer)
             {
@@ -97,25 +117,29 @@ namespace RSToolkit.AI
         {
             base.Update();
             // There must be a better way to do this
-            if (IsFreefall && IsAlmostGrounded())
-            {
-                Land();
-            }
+            HandleFailling();
         }
         protected override void OnCollisionEnter(Collision collision)
         {
-            if (IsFreefall)
+            if (CurrentStatesGround != StatesGround.GROUNDED_NAVMESH_SUCCESS)
             {
-                NavMeshHit navHit;
                 for (int i = 0; i < collision.contacts.Length; i++)
                 {
-                    if (NavMesh.SamplePosition(collision.contacts[i].point, out navHit, 1f, NavMesh.AllAreas))
-                    {
-                        Land();
+                    HandleFailling();
+                    if (CurrentStatesGround == StatesGround.GROUNDED_NAVMESH_SUCCESS){
                         break;
                     }
                 }
             }
+        }
+
+
+        private bool CheckForGround(Vector3 point){
+            return NavMesh.SamplePosition(point, out navGroundHit, GroundProximityCheckerComponent.IsAlmostTouchingDistance, NavMesh.AllAreas);
+        }
+
+        private bool CheckForGround(){
+            return CheckForGround(transform.position);
         }
         #endregion MonoBehaviour Functions
     }

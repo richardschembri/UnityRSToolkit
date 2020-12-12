@@ -15,7 +15,7 @@ namespace RSToolkit.AI.Locomotion
     [RequireComponent(typeof(BTFiniteStateMachineManager))]
     public abstract class BotLocomotive : Bot
     {
-        public bool IsFreefall { get; protected set; } = false;
+        // public bool IsFreefall { get; protected set; } = false;
 
         public enum FStatesLocomotion
         {
@@ -83,11 +83,6 @@ namespace RSToolkit.AI.Locomotion
         public bool IsCloseToGround()
         {
             return GroundProximityCheckerComponent.IsWithinRayDistance() != null;
-        }
-
-        public bool IsAlmostGrounded()
-        {
-            return GroundProximityCheckerComponent.IsAlmostTouching();
         }
 
         public bool IsMoving()

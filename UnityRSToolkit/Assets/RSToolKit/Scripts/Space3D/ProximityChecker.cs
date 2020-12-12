@@ -20,7 +20,7 @@ namespace RSToolkit.Space3D
 
         public float MinRayDistance = 0f;
         public float MaxRayDistance = 0.5f;
-
+        public float IsAlmostTouchingDistance = 0.05f;
         public RayDirectionEnum RayDirection = RayDirectionEnum.DOWN;
         public LayerMask LayerMask;
 
@@ -55,7 +55,7 @@ namespace RSToolkit.Space3D
 
         public bool IsAlmostTouching(bool checkForNavMesh = true)
         {
-            bool result = IsWithinRayDistance(checkForNavMesh) != null && IsWithinRayDistance(checkForNavMesh) < 0.05f;
+            bool result = IsWithinRayDistance(checkForNavMesh) != null && IsWithinRayDistance(checkForNavMesh) < IsAlmostTouchingDistance;
             if(result)
             {
                 if(IsTrigger && !touchEnteredTriggered)

@@ -246,7 +246,7 @@ namespace RSToolkit.AI
             {
                 Flying3DObjectComponent.ApplyVerticalThrust(false);
             }
-            if (IsAlmostGrounded())
+            if (GroundProximityCheckerComponent.IsAlmostTouching())
             {
                 FSMFlyable.ChangeState(FStatesFlyable.NotFlying);
             }

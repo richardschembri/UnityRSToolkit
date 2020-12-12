@@ -120,7 +120,7 @@ NavMeshSettings:
     accuratePlacement: 0
     debug:
       m_Flags: 0
-  m_NavMeshData: {fileID: 23800000, guid: b178b5ed50aa6b04db3b3bd3f9d699b2, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 0bdfdda1b2a7091a786ba8d89d233c64, type: 2}
 --- !u!1 &15060931
 GameObject:
   m_ObjectHideFlags: 0
@@ -455,6 +455,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MinRayDistance: 0
   MaxRayDistance: 0.5
+  IsAlmostTouchingDistance: 0.05
   RayDirection: 1
   LayerMask:
     serializedVersion: 2
@@ -2459,6 +2460,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MinRayDistance: 0
   MaxRayDistance: 0.5
+  IsAlmostTouchingDistance: 0.05
   RayDirection: 1
   LayerMask:
     serializedVersion: 2
@@ -5788,6 +5790,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MinRayDistance: 0
   MaxRayDistance: 0.5
+  IsAlmostTouchingDistance: 0.05
   RayDirection: 1
   LayerMask:
     serializedVersion: 2
@@ -5808,6 +5811,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DebugMode: 0
   _waitOnStart: 1
+  CollisionWhiteListTags: []
 --- !u!195 &1878005667
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -6355,6 +6359,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DebugMode: 0
   _waitOnStart: 1
+  CollisionWhiteListTags: []
 --- !u!136 &7990845843178055560
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -6383,6 +6388,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MinRayDistance: 0
   MaxRayDistance: 0.5
+  IsAlmostTouchingDistance: 0.05
   RayDirection: 1
   LayerMask:
     serializedVersion: 2

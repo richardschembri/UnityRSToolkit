@@ -165,16 +165,37 @@ namespace RSToolkit.AI
             }
         }
     }
+
+    [CustomEditor(typeof(BotGround), true)]
+    public class BotGroundEditor : BotEditor{
+        BotGround _targetBotGround ;
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+            _targetBotGround = (BotGround)target;
+            if (!Application.isPlaying || !_targetBotGround.DebugMode  )
+            {
+                return;
+            }
+            GUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Ground State");
+            EditorGUI.BeginDisabledGroup(true);
+            EditorGUILayout.EnumPopup(_targetBotGround.CurrentStatesGround);
+            EditorGUI.EndDisabledGroup();
+            GUILayout.EndHorizontal();
+        }
+    }
+
     [CustomEditor(typeof(BotFlyable), true)]
     public class BotFlyableEditor : BotEditor
     {
-        BotFlyable m_targetBotFlyable;
+        BotFlyable _targetBotFlyable;
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
 
-            m_targetBotFlyable = (BotFlyable)target;
-            if (!m_targetBotFlyable.DebugMode || !Application.isPlaying)
+            _targetBotFlyable = (BotFlyable)target;
+            if (!Application.isPlaying || !_targetBotFlyable.DebugMode)
             {
                 return;
             }
@@ -182,28 +203,28 @@ namespace RSToolkit.AI
             GUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Flyable State");
             EditorGUI.BeginDisabledGroup(true);
-            EditorGUILayout.EnumPopup(m_targetBotFlyable.CurrentFlyableState);
+            EditorGUILayout.EnumPopup(_targetBotFlyable.CurrentFlyableState);
             EditorGUI.EndDisabledGroup();
             GUILayout.EndHorizontal();
 
             EditorGUILayout.LabelField("Bot Flyable Controls", EditorStyles.boldLabel);
-            switch (m_targetBotFlyable.CurrentFlyableState)
+            switch (_targetBotFlyable.CurrentFlyableState)
             {
                 case BotFlyable.FStatesFlyable.Flying:
                     if (GUILayout.Button("Land", EditorStyles.miniButton))
                     {
-                        m_targetBotFlyable.Land();
+                        _targetBotFlyable.Land();
                     }
                     break;
                 case BotFlyable.FStatesFlyable.NotFlying:
                     if (GUILayout.Button("Take Off", EditorStyles.miniButton))
                     {
-                        m_targetBotFlyable.TakeOff();
+                        _targetBotFlyable.TakeOff();
                     }
                     break;
                 default:
                     EditorGUI.BeginDisabledGroup(true);
-                    GUILayout.Button(m_targetBotFlyable.CurrentFlyableState.ToString(), EditorStyles.miniButton);
+                    GUILayout.Button(_targetBotFlyable.CurrentFlyableState.ToString(), EditorStyles.miniButton);
                     EditorGUI.EndDisabledGroup();
                     break;
             }
