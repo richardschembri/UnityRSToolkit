@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 namespace RSToolkit{
-    public class SingletonMonoBehaviour<T> : MonoBehaviour where T: SingletonMonoBehaviour<T>
+    public class RSSingletonMonoBehaviour<T> : RSMonoBehaviour where T: RSSingletonMonoBehaviour<T>
     {
         public static T Instance { get; protected set; }
     

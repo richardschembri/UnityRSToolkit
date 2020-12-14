@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using RSToolkit.AI.Locomotion;
 using UnityEngine.AI;
 
@@ -58,10 +56,20 @@ namespace RSToolkit.AI
         private void Land(){
             // if(NavMesh.SamplePosition())
             // IsFreefall = false;
+
+            NavMeshAgentComponent.enabled = true;
+            if (!NavMeshAgentComponent.isOnNavMesh)
+            {
+                NavMeshAgentComponent.enabled = false;
+                CurrentStatesGround = StatesGround.GROUNDED_NAVMESH_FAIL;
+                
+                return;
+            }
+
             RigidBodyComponent.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
             RigidBodyComponent.velocity = Vector3.zero;
             transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
-            NavMeshAgentComponent.enabled = true;
+            
             if(NavMeshAgentComponent.isActiveAndEnabled){
                 CurrentStatesGround = StatesGround.GROUNDED_NAVMESH_SUCCESS;
             }else{
@@ -97,6 +105,7 @@ namespace RSToolkit.AI
         }
 
         #region MonoBehaviour Functions
+
         public override bool Initialize(bool force = false)
         {
             if (!base.Initialize(force))
@@ -133,7 +142,6 @@ namespace RSToolkit.AI
             }
         }
 
-
         private bool CheckForGround(Vector3 point){
             return NavMesh.SamplePosition(point, out navGroundHit, GroundProximityCheckerComponent.IsAlmostTouchingDistance, NavMesh.AllAreas);
         }
@@ -141,6 +149,7 @@ namespace RSToolkit.AI
         private bool CheckForGround(){
             return CheckForGround(transform.position);
         }
+
         #endregion MonoBehaviour Functions
     }
 }

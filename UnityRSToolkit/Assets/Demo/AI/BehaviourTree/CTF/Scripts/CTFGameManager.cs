@@ -5,7 +5,7 @@ using RSToolkit;
 using System.Linq;
 
 namespace Demo.BehaviourTree.CTF{
-    public class CTFGameManager : SingletonMonoBehaviour<CTFGameManager>
+    public class CTFGameManager : RSSingletonMonoBehaviour<CTFGameManager>
     {
         public const string TAG_OFFENCE = "Offence";
         public const string TAG_DEFENCE = "Defence";

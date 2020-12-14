@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -30,6 +31,16 @@ namespace RSToolkit.Helpers
             }
 
             LogError(tag, message, includeTimestamp);
+        }
+
+        public static void LogErrorInDebugMode(bool debugMode, string tag, object message, Exception ex, bool includeTimestamp = false)
+        {
+            if (!debugMode)
+            {
+                return;
+            }
+
+            LogErrorInDebugMode(debugMode, tag, $"{message} : \n {ex.Message} \n {ex.StackTrace}", includeTimestamp);
         }
 
         public static void Log(string tag, object message, bool includeTimestamp = false)

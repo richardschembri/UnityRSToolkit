@@ -7,8 +7,9 @@ using UnityEngine.Events;
 namespace RSToolkit.Data.SQLite
 {
     [DisallowMultipleComponent]
-    public abstract class DataManager : SingletonMonoBehaviour<DataManager>
+    public abstract class DataManager : RSSingletonMonoBehaviour<DataManager>
     {
+        public bool DebugMode = false;
         protected DatabaseAccess _dba { get; set; }
 
         [SerializeField]
