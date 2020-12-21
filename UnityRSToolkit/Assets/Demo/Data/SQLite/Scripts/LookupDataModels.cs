@@ -20,16 +20,17 @@ namespace Demo.Data.SQLite
 
         public DataCountries GenerateDataModel(int countryID, string countryName)
         {
-            var newModel = new DataCountries(ColumnPropertiesColumnCountryID, countryID,
+            var result = new DataCountries(ColumnPropertiesColumnCountryID, countryID,
                                                ColumnPropertiesColumnCountryName, countryName);
-            DataModels.Add(newModel);
+            DataModels.Add(result);
 
-            return newModel;
+            return result;
         }
 
         public override DataCountries GenerateDataModel()
         {
-            var result = new DataCountries();
+            var result = new DataCountries(ColumnPropertiesColumnCountryID,
+                                               ColumnPropertiesColumnCountryName);
             DataModels.Add(result);
             return result;
         }
@@ -60,6 +61,16 @@ namespace Demo.Data.SQLite
 
         public DataCountries() : base()
         {
+
+        }
+
+        public DataCountries(DataModelColumnProperties<int> countryIDProperties,
+                                DataModelColumnProperties<string> countryNameProperties)
+        {
+            ColumnCountryID = new DataModelColumn<int>(countryIDProperties);
+            DataModelColumns.Add(ColumnCountryID);
+            ColumnCountryName = new DataModelColumn<string>(countryNameProperties);
+            DataModelColumns.Add(ColumnCountryName);
 
         }
 

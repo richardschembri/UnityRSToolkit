@@ -436,9 +436,10 @@ namespace RSToolkit.Data.SQLite
 
                         using (var reader = dbCmd.ExecuteReader())
                         {
-                            int index = 0;
+                            int index; 
                             while (reader.Read())
                             {
+                                index = 0;
                                 modelFactory.GenerateDataModel(reader, ref index);
                             }
                             reader.Close();

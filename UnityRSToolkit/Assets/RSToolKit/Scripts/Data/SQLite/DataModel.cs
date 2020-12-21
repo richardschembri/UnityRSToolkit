@@ -256,6 +256,11 @@ namespace RSToolkit.Data.SQLite
             public DataModelColumnProperties<T> ColumnProperties { get; private set; }
             public T ColumnValue { get; set; }
 
+            public DataModelColumn(DataModelColumnProperties<T> columnProperties)
+            {
+                ColumnProperties = columnProperties;
+            }
+
             public DataModelColumn(DataModelColumnProperties<T> columnProperties, T columnValue)
             {
                 ColumnProperties = columnProperties;
@@ -264,7 +269,9 @@ namespace RSToolkit.Data.SQLite
 
             public void ReadFromDatabase(SqliteDataReader reader, ref int index)
             {
-                ColumnValue = (T)reader.GetValue(index++);
+                // ColumnValue = reader.GetValue(index);
+                ColumnValue = (T)Convert.ChangeType(reader.GetValue(index), typeof(T));
+                index++;
             }
 
             public IDataModelColumnProperties GetColumnProperties()
@@ -354,6 +361,7 @@ namespace RSToolkit.Data.SQLite
 
         public virtual void ReadFromDatabase(SqliteDataReader reader, ref int index)
         {            
+
             for(int i = 0; i < DataModelColumns.Count; i++)
             {
                 DataModelColumns[i].ReadFromDatabase(reader, ref index);
