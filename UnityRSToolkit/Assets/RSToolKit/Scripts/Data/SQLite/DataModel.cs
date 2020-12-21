@@ -68,7 +68,6 @@ namespace RSToolkit.Data.SQLite
         }
         */
 
-
         public interface IDataModelColumnProperties
         {
             string ColumnName { get; set; }
@@ -252,7 +251,7 @@ namespace RSToolkit.Data.SQLite
             object GetColumnValue();
         }
 
-        public class DataModelColumn<T>
+        public class DataModelColumn<T> : IDataModelColumn
         {
             public DataModelColumnProperties<T> ColumnProperties { get; private set; }
             public T ColumnValue { get; set; }
@@ -281,6 +280,11 @@ namespace RSToolkit.Data.SQLite
             public SqliteParameter ToParameter()
             {
                 return new SqliteParameter(ColumnProperties.GetParameterName(), ColumnValue);
+            }
+
+            public object GetValue()
+            {
+                return ColumnValue;
             }
         }
 

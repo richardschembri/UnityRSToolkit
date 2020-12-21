@@ -16,6 +16,7 @@ namespace Demo.Data.SQLite
        
         public override void GenerateTables()
         {
+            LogInDebugMode("GenerateTables");
             _dba.CreateAndPopulateTableIfNotExists(_dataCountriesFactory);
         }
         

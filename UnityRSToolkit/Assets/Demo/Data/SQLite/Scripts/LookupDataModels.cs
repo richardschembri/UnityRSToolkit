@@ -67,7 +67,10 @@ namespace Demo.Data.SQLite
                                 DataModelColumnProperties<string> countryNameProperties, string countryName)
         {
             ColumnCountryID = new DataModelColumn<int>(countryIDProperties, countryID);
+            DataModelColumns.Add(ColumnCountryID);
             ColumnCountryName = new DataModelColumn<string>(countryNameProperties, countryName);
+            DataModelColumns.Add(ColumnCountryName);
+
         }
     }
 }

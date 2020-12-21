@@ -13,9 +13,14 @@ namespace RSToolkit.Data.SQLite
         public const string SQLITE_DATEFORMAT = "YYYY-MM-DD HH:MM:SS.SSS";
 
         public string Connection { get; private set; }
+        public string DatabaseName { get; private set; }
 
         public bool DebugMode { get; set; } = false;
         private string DEBUG_TAG = "SQLite";
+        public virtual string GetDebugTag()
+        {
+            return $"{DEBUG_TAG}[{DatabaseName}]";
+        }
 
         public static string GetDBStreamingFilePath(string databaseName)
         {
@@ -27,8 +32,10 @@ namespace RSToolkit.Data.SQLite
             return string.Format("URI=file:{0}", filepath);
         }
 
-        public DatabaseAccess(string databaseName)
+        public DatabaseAccess(string databaseName, bool debugMode = false)
         {
+            DebugMode = debugMode;
+            DatabaseName = databaseName;
             //Connection = string.Format("URI=file:{0}/{1}.s3db", Application.dataPath,  databaseName);
             Connection = GetConnectionPath(GetDBStreamingFilePath(databaseName));
 #if UNITY_EDITOR
@@ -49,7 +56,7 @@ namespace RSToolkit.Data.SQLite
 
         }
 
-        public static bool GenerateDBFile(string databaseName)
+        protected bool GenerateDBFile(string databaseName)
         {
             try
             {
@@ -63,9 +70,7 @@ namespace RSToolkit.Data.SQLite
             }
             catch (Exception ex)
             {
-                var sbError = new StringBuilder();
-                sbError.AppendFormat("Error generated DB");
-                sbError.AppendLine(ex.Message);
+                LogErrorInDebugMode($"Failed to generate Database File for {databaseName}", ex);               
             }
             return false;
         }
@@ -101,9 +106,7 @@ namespace RSToolkit.Data.SQLite
             }
             catch (Exception ex)
             {
-                var sbError = new StringBuilder();
-                sbError.AppendFormat("Error with script 【{0}】", query);
-                sbError.AppendLine(ex.Message);
+                LogSQLQueryErrorInDebugMode(query, ex);
             }
             return columnExists;
         }
@@ -136,9 +139,7 @@ namespace RSToolkit.Data.SQLite
             }
             catch (Exception ex)
             {
-                var sbError = new StringBuilder();
-                sbError.AppendFormat("Error with script 【{0}】", query);
-                sbError.AppendLine(ex.Message);
+                LogSQLQueryErrorInDebugMode(query, ex);
             }
             return tableExists;
         }
@@ -172,10 +173,7 @@ namespace RSToolkit.Data.SQLite
             }
             catch (Exception ex)
             {
-                var sbError = new StringBuilder();
-                sbError.AppendFormat("Error with script 【{0}】", query);
-                sbError.AppendLine(ex.Message);
-                Debug.LogError(sbError.ToString());
+                LogSQLQueryErrorInDebugMode(query, ex);
             }
         }
 
@@ -191,7 +189,7 @@ namespace RSToolkit.Data.SQLite
             sbQuery.Append(string.Format("drop table if exists {0}", tableName));
 
             var query = sbQuery.ToString();
-            DebugHelpers.LogInDebugMode(DebugMode, DEBUG_TAG, query);
+            LogInDebugMode(query);
             try
             {
                 using (var dbConnection = new SqliteConnection(Connection))
@@ -207,10 +205,7 @@ namespace RSToolkit.Data.SQLite
             }
             catch (Exception ex)
             {
-                var sbError = new StringBuilder();
-                sbError.AppendFormat("Error with script 【{0}】", query);
-                sbError.AppendLine(ex.Message);
-                Debug.LogError(sbError.ToString());
+                LogSQLQueryErrorInDebugMode(query, ex);
             }
         }
         public void CreateTableIfNotExists<T>(DataModelFactory<T> dataModelFactory) where T : DataModel
@@ -253,16 +248,13 @@ namespace RSToolkit.Data.SQLite
             }
             catch (Exception ex)
             {
-                var sbError = new StringBuilder();
-                sbError.AppendFormat("Error with script 【{0}】", query);
-                sbError.AppendLine(ex.Message);
-                Debug.LogError(sbError.ToString());
+                LogSQLQueryErrorInDebugMode(query, ex);
             }
         }
 
         public bool CreateAndPopulateTableIfNotExists<T>(DataModelFactory<T> dataModelFactory, List<T> dataModels) where T : DataModel
         {
-            if (!DoesExist_Table(dataModelFactory.TableName))
+            if (DoesExist_Table(dataModelFactory.TableName))
             {
                 return false;
             }
@@ -275,6 +267,7 @@ namespace RSToolkit.Data.SQLite
         public bool CreateAndPopulateTableIfNotExists<T>(DataModelFactory<T> dataModelFactory) where T : DataModel
         {
             dataModelFactory.GeneratePresets();
+            LogInDebugMode($"Generated {dataModelFactory.DataModels.Count} Presets");
             return CreateAndPopulateTableIfNotExists<T>(dataModelFactory, dataModelFactory.DataModels);
         }
 
@@ -297,10 +290,7 @@ namespace RSToolkit.Data.SQLite
             }
             catch (Exception ex)
             {
-                var sbError = new StringBuilder();
-                sbError.AppendFormat("Error with script 【{0}】", query);
-                sbError.AppendLine(ex.Message);
-                Debug.LogError(sbError.ToString());
+                LogSQLQueryErrorInDebugMode(query, ex);
             }
         }
 
@@ -324,10 +314,7 @@ namespace RSToolkit.Data.SQLite
             }
             catch (Exception ex)
             {
-                var sbError = new StringBuilder();
-                sbError.AppendFormat("Error with script 【{0}】", query);
-                sbError.AppendLine(ex.Message);
-                Debug.LogError(sbError.ToString());
+                LogSQLQueryErrorInDebugMode(query, ex);
             }
         }
 
@@ -359,10 +346,7 @@ namespace RSToolkit.Data.SQLite
             }
             catch (Exception ex)
             {
-                var sbError = new StringBuilder();
-                sbError.AppendFormat("Error with script 【{0}】", query);
-                sbError.AppendLine(ex.Message);
-                Debug.LogError(sbError.ToString());
+                LogSQLQueryErrorInDebugMode(query, ex);
             }
 
             return rowID;
@@ -426,10 +410,7 @@ namespace RSToolkit.Data.SQLite
                     catch (Exception ex)
                     {
                         transaction.Rollback();
-                        var sbError = new StringBuilder();
-                        sbError.AppendFormat("Error with script 【{0}】", query_log);
-                        sbError.AppendLine(ex.Message);
-                        Debug.LogError(sbError.ToString());
+                        LogSQLQueryErrorInDebugMode(query_log, ex);
                     }
                 }
 
@@ -469,10 +450,7 @@ namespace RSToolkit.Data.SQLite
             }
             catch (Exception ex)
             {
-                var sbError = new StringBuilder();
-                sbError.AppendFormat("Error with script 【{0}】", query);
-                sbError.AppendLine(ex.Message);
-                Debug.LogError(sbError.ToString());
+                LogSQLQueryErrorInDebugMode(query, ex);
             }
         }
 
@@ -510,10 +488,7 @@ namespace RSToolkit.Data.SQLite
             }
             catch (Exception ex)
             {
-                var sbError = new StringBuilder();
-                sbError.AppendFormat("Error with script 【{0}】", query);
-                sbError.AppendLine(ex.Message);
-                Debug.LogError(sbError.ToString());
+                LogSQLQueryErrorInDebugMode(query, ex);
             }
         }
 
@@ -545,10 +520,7 @@ namespace RSToolkit.Data.SQLite
             }
             catch (Exception ex)
             {
-                var sbError = new StringBuilder();
-                sbError.AppendFormat("Error with script 【{0}】", query);
-                sbError.AppendLine(ex.Message);
-                Debug.LogError(sbError.ToString());
+                LogSQLQueryErrorInDebugMode(query, ex);
             }
 
             return rowCount;
@@ -563,5 +535,27 @@ namespace RSToolkit.Data.SQLite
         {
             return !DoesExist_Table(tableName) || IsTableEmpty(tableName);
         }
+
+        protected void LogInDebugMode(string message, bool includeTimestamp = false)
+        {
+            DebugHelpers.LogInDebugMode(DebugMode, GetDebugTag(), message, includeTimestamp);
+        }
+
+        protected void LogErrorInDebugMode(string message, bool includeTimestamp = false)
+        {
+            DebugHelpers.LogErrorInDebugMode(DebugMode, GetDebugTag(), message, includeTimestamp);
+        }
+
+        protected void LogErrorInDebugMode(object message, Exception ex, bool includeTimestamp = false)
+        {
+            DebugHelpers.LogErrorInDebugMode(DebugMode, GetDebugTag(), message, ex, includeTimestamp);
+        }
+
+
+        protected void LogSQLQueryErrorInDebugMode(string query, Exception ex, bool includeTimestamp = false)
+        {
+            LogErrorInDebugMode($"Error with script 【{query}】", ex, includeTimestamp);
+        }
+
     }
 }
