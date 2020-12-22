@@ -401,3 +401,4 @@ MigrationBackup/
 
 # Sqlite
 *.s3db
+*.s3db.meta
