@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace Demo.Data.SQLite
 {
-    public class UIManager : MonoBehaviour
+    public class DemoUIManager : MonoBehaviour
     {
         [SerializeField]
         private Dropdown DropdownCountries;

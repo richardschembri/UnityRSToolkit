@@ -9,7 +9,23 @@ using UnityEngine;
 
 namespace RSToolkit.Data.SQLite
 {
-    public class DataModel
+    public interface IDataModel
+    {
+
+        #region Columns
+        List<DataModel.IDataModelColumn> DataModelColumns { get; }
+        List<DataModel.IDataModelForeignKeyProperties> DataModelForeignKeyProperties { get; }
+        // List<DataModel.IDataModelColumn> Get_ForeignKeys();
+        List<DataModel.IDataModelColumn> Get_DataModelColumnsByName(string[] columnNames);
+
+        DataModel.IDataModelColumn Get_PrimaryKey();
+        SqliteCommand AddParameters_AllColumns(SqliteCommand cmd, bool includePrimaryKey = true);
+        #endregion Columns
+        void AddParameter_PrimaryKey(ref SqliteCommand cmd);
+        CSVDataModel Get_CSVRawDataModel();
+        void ReadFromDatabase(SqliteDataReader reader, ref int index);
+    }
+    public class DataModel : IDataModel
     {
         /*
         public static Dictionary<Type, DbType> _typeMap;
@@ -77,14 +93,15 @@ namespace RSToolkit.Data.SQLite
             bool IsPrimaryKey { get; set; }
             bool IsNullable { get; set; }
             bool IsAutoIncrement { get; set; }
-            string ForeignTableName { get; set; }
+            // string ForeignTableName { get; set; }
+            // IDataModelFactory ForeignTable { get; set; }
 
-            bool IsForeignKey();
+            // string GetForeignKeyAsTableName();
+            // bool IsForeignKey();
             string GetColumnCodeForCreateTable();
             string GetParameterName();
-            string GetForeignKeyCodeForCreateTable();
-            string GetForeignKeyCode();
-
+            // string GetForeignKeyCodeForCreateTable();
+            // string GetForeignKeyCode();
         }
         
         public class DataModelColumnProperties<T> : IDataModelColumnProperties
@@ -157,10 +174,21 @@ namespace RSToolkit.Data.SQLite
             public bool IsPrimaryKey { get; set; }
             public bool IsNullable { get; set; }
             public bool IsAutoIncrement { get; set; }
-            public string ForeignTableName { get; set; }
+            // public string ForeignTableName { get; set; }
+            public IDataModelFactory ForeignTable { get; set; }
+
+            public string GetForeignKeyAsTableName()
+            {
+                if (IsForeignKey())
+                {
+                    
+                    return $"{ColumnName}_TABLE";
+                }
+                return null;
+            }
 
             public DataModelColumnProperties(string columnName, bool isUnique = false, bool isPrimaryKey = false, bool isNullable = true, 
-                                                string foreignTableName = "", bool isAutoIncrement = false, object defaultValue = null)
+                                                IDataModelFactory foreignTable = null, bool isAutoIncrement = false, object defaultValue = null)
             {
                 this.ColumnName = columnName;
                 this.ColumnType = TypeMap[typeof(T)];
@@ -168,13 +196,16 @@ namespace RSToolkit.Data.SQLite
                 this.IsPrimaryKey = isPrimaryKey;
                 this.IsNullable = isNullable;
                 this.IsAutoIncrement = isAutoIncrement;
-                this.ForeignTableName = foreignTableName;
+                // this.ForeignTableName = foreignTableName;
+                this.ForeignTable = foreignTable;
                 this.DefaultValue = defaultValue;
             }
 
             public bool IsForeignKey()
             {
-                return !string.IsNullOrEmpty(this.ForeignTableName);
+                // return !string.IsNullOrEmpty(this.ForeignTableName);
+
+                return this.ForeignTable != null;
             }
 
             public string GetColumnCodeForCreateTable()
@@ -219,29 +250,60 @@ namespace RSToolkit.Data.SQLite
                 return string.Format("@{0}", ColumnName);
             }
 
-            public string GetForeignKeyCodeForCreateTable()
-            {
-
-                var foreignKeyCode = GetForeignKeyCode();
-                if (!string.IsNullOrEmpty(foreignKeyCode))
-                {
-                    return string.Format(", {0}", foreignKeyCode);
-                }
-                return string.Empty;
-            }
-
-            public string GetForeignKeyCode()
-            {
-
-                if (!string.IsNullOrEmpty(ForeignTableName))
-                {
-                    return string.Format("FOREIGN KEY ({0}) REFERENCES {1}({0})", ColumnName, ForeignTableName);
-                }
-                return string.Empty;
-            }
 
         }
 
+        public interface IDataModelForeignKeyProperties
+        {
+            string ColumnName { get; }
+            IDataModelFactory ForeignDataModelFactory { get; }
+            IDataModelForeignKeyProperties ParentForeignKeyProperties { get; }
+
+            string GetParameterName();
+            string GetForeignKeyCodeForCreateTable();
+            string GetCreateForeignKeyCode();
+            string GetJoinName();
+        }
+
+        public class DataModeForeignKeyProperties : IDataModelForeignKeyProperties
+        {
+            public string ColumnName { get; private set; }
+            public IDataModelFactory ForeignDataModelFactory { get; private set; }
+            public IDataModelForeignKeyProperties ParentForeignKeyProperties { get; private set; }
+
+            public DataModeForeignKeyProperties( IDataModelFactory foreignDataModelFactory,
+                                                    IDataModelForeignKeyProperties parentForeignKeyProperties = null)
+            {
+                ColumnName = $"{foreignDataModelFactory.TableName}_FK";
+                ForeignDataModelFactory = foreignDataModelFactory;
+                ParentForeignKeyProperties = parentForeignKeyProperties  ;
+            }
+
+            public string GetParameterName()
+            {
+                return string.Format("@{0}", ColumnName);
+            }
+
+            public string GetForeignKeyCodeForCreateTable()
+            {
+                return $", {GetCreateForeignKeyCode()}";
+            }
+
+            public string GetCreateForeignKeyCode()
+            {
+                return $"FOREIGN KEY ({ColumnName}) REFERENCES {ForeignDataModelFactory.TableName}({ColumnName})";
+            }
+
+            public string GetJoinName()
+            {
+                if(ParentForeignKeyProperties  != null)
+                {
+                    return $"{ParentForeignKeyProperties.GetJoinName()}_{ForeignDataModelFactory.TableName}";
+                }
+                return $"{ForeignDataModelFactory.TableName}";
+            }
+
+        }
         public interface IDataModelColumn
         {
             void ReadFromDatabase(SqliteDataReader reader, ref int index);
@@ -254,6 +316,7 @@ namespace RSToolkit.Data.SQLite
         public class DataModelColumn<T> : IDataModelColumn
         {
             public DataModelColumnProperties<T> ColumnProperties { get; private set; }
+
             public T ColumnValue { get; set; }
 
             public DataModelColumn(DataModelColumnProperties<T> columnProperties)
@@ -299,11 +362,16 @@ namespace RSToolkit.Data.SQLite
         //public Dictionary<string, string> TableColumnAndType{get; internal set;}
         #region Columns
         public List<IDataModelColumn> DataModelColumns { get; protected set; } = new List<IDataModelColumn>();
+        public List<IDataModelFactory> ForeignKeys { get; protected set; } = new List<IDataModelFactory>();
 
+        public List<IDataModelForeignKeyProperties> DataModelForeignKeyProperties => throw new NotImplementedException();
+
+        /*
         public List<IDataModelColumn> Get_ForeignKeys()
         {
             return DataModelColumns.Where(dc => dc.GetColumnProperties().IsForeignKey()).ToList();
         }
+        */
         public List<IDataModelColumn> Get_DataModelColumnsByName(string[] columnNames)
         {
             var enm_dmc = DataModelColumns.Where(dmc => columnNames.Contains(dmc.GetColumnProperties().ColumnName));
@@ -318,12 +386,12 @@ namespace RSToolkit.Data.SQLite
         {
             return DataModelColumns.FirstOrDefault(dmc => dmc.GetColumnProperties().IsPrimaryKey);
         }
-        #endregion
-        public bool IsForeignKey { get; set; }
+        #endregion Columns
+        // public bool IsForeignKey { get; set; }
 
         public DataModel()
         {
-            IsForeignKey = false;
+            // IsForeignKey = false;
             
         }
 

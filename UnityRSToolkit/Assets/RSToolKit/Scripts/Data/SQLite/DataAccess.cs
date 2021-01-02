@@ -144,18 +144,30 @@ namespace RSToolkit.Data.SQLite
             return tableExists;
         }
 
-        public void AddColumnToTable<T>(string columnName, DataModelFactory<T> dataModelFactory, DataModel dataModel) where T : DataModel
+        // public void AddColumnToTable<T>(string columnName, DataModelFactory<T> dataModelFactory, DataModel dataModel) where T : DataModel
+        public bool AddColumnToTable(string columnName, IDataModelFactory dataModelFactory)
         {
 
             var sbQuery = new StringBuilder();
             var columnToAdd = dataModelFactory.DataModelColumnProperties.First(c => c.ColumnName == columnName);
-
-            sbQuery.AppendLine(string.Format("alter table {0} add column {1}", dataModelFactory.TableName, columnToAdd.GetColumnCodeForCreateTable()));
-            if (dataModel.IsForeignKey)
+            if(columnToAdd != null)
+            {
+                sbQuery.AppendLine(string.Format("alter table {0} add column {1}",
+                dataModelFactory.TableName, columnToAdd.GetColumnCodeForCreateTable()));
+            }
+            else
+            {
+                //CONTINUE FROM HERE
+                //var fkToAdd = dataModelFactory..DataModelColumnProperties.First(c => c.ColumnName == columnName);
+            }
+            // if (dataModel.IsForeignKey)
+            /*
+            if (columnToAdd.IsForeignKey())
             {
                 sbQuery.AppendLine(columnToAdd.GetForeignKeyCodeForCreateTable());
                 sbQuery.AppendLine("GO");
             }
+            */
 
             var query = sbQuery.ToString();
             try
@@ -175,9 +187,11 @@ namespace RSToolkit.Data.SQLite
             {
                 LogSQLQueryErrorInDebugMode(query, ex);
             }
+            return true;
         }
 
-        public void DropTable<T>(DataModelFactory<T> dataModel) where T : DataModel
+        // public void DropTable<T>(DataModelFactory<T> dataModel) where T : DataModel
+        public void DropTable(IDataModelFactory dataModel)
         {
             DropTable(dataModel.TableName);
         }
@@ -208,7 +222,8 @@ namespace RSToolkit.Data.SQLite
                 LogSQLQueryErrorInDebugMode(query, ex);
             }
         }
-        public void CreateTableIfNotExists<T>(DataModelFactory<T> dataModelFactory) where T : DataModel
+        // public void CreateTableIfNotExists<T>(DataModelFactory<T> dataModelFactory) where T : DataModel
+        public void CreateTableIfNotExists(IDataModelFactory dataModelFactory)
         {
             var sbQuery = new StringBuilder();
             var primaryKeyColumn = dataModelFactory.DataModelColumnProperties.First(pk => pk.IsPrimaryKey);
@@ -225,13 +240,16 @@ namespace RSToolkit.Data.SQLite
                 }
             }
 
-            var foreignKeys = dataModelFactory.DataModelColumnProperties.Where(dmc => !string.IsNullOrEmpty(dmc.ForeignTableName)).ToList();
+            //CONTINUE FROM HERE
+            /*
+            // var foreignKeys = dataModelFactory.DataModelColumnProperties.Where(dmc => !string.IsNullOrEmpty(dmc.ForeignTableName)).ToList();
+            var foreignKeys = dataModelFactory.DataModelColumnProperties.Where(dmc => dmc.IsForeignKey()).ToList();
             for (int i = 0; i < foreignKeys.Count; i++)
             {
                 sbQuery.AppendLine(foreignKeys[i].GetForeignKeyCodeForCreateTable());
             }
             sbQuery.Append(")");
-
+*/
             var query = sbQuery.ToString();
             try
             {
@@ -253,6 +271,7 @@ namespace RSToolkit.Data.SQLite
         }
 
         public bool CreateAndPopulateTableIfNotExists<T>(DataModelFactory<T> dataModelFactory, List<T> dataModels) where T : DataModel
+        // public bool CreateAndPopulateTableIfNotExists(IDataModelFactory dataModelFactory, List<IDataModel> dataModels)
         {
             if (DoesExist_Table(dataModelFactory.TableName))
             {
@@ -268,7 +287,7 @@ namespace RSToolkit.Data.SQLite
         {
             dataModelFactory.GeneratePresets();
             LogInDebugMode($"Generated {dataModelFactory.DataModels.Count} Presets");
-            return CreateAndPopulateTableIfNotExists<T>(dataModelFactory, dataModelFactory.DataModels);
+            return CreateAndPopulateTableIfNotExists(dataModelFactory, dataModelFactory.DataModels);
         }
 
         public void ExecuteCommand_Update(SqliteCommand updateCommand)
@@ -375,7 +394,7 @@ namespace RSToolkit.Data.SQLite
             var sqliteCommands = new List<SqliteCommand>();
             for (int i = 0; i < dataModels.Count; i++)
             {
-                sqliteCommands.Add(dataModelFactory.GetCommand_Insert(dataModels[i]));
+                sqliteCommands.Add(dataModelFactory.GetCommand_Insert(dataModels[i] as T));
             }
 
             ExecuteCommands_Insert(sqliteCommands);
@@ -457,6 +476,7 @@ namespace RSToolkit.Data.SQLite
 
         public virtual void GetCommandText_BasicSelectWithParameters<T>(DataModelFactory<T> modelFactory, List<DataModel.IDataModelColumn> parameters, int pageSize = 0, int startIndex = 0) where T : DataModel
         {
+
             var query = modelFactory.GetCommandText_BasicSelectWithParameters(parameters, pageSize, startIndex);
 
             try

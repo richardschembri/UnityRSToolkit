@@ -40,6 +40,11 @@ namespace RSToolkit.AI
 
         private void HandleFailling()
         {
+            if (_IsNetworkPeer)
+            {
+                return;
+            }
+
             if (CurrentStatesGround != StatesGround.GROUNDED_NAVMESH_SUCCESS)
             {
                 if(CheckForGround()){
@@ -80,15 +85,21 @@ namespace RSToolkit.AI
         protected override void ToggleComponentsForNetwork(bool toggleKinematic = true)
         {
             base.ToggleComponentsForNetwork(toggleKinematic);
-            if (CurrentStatesGround != StatesGround.NOTGROUNDED && _IsNetworkPeer)
+
+            if (_IsNetworkPeer)
             {
-                // IsFreefall = false;
-                CurrentStatesGround = StatesGround.GROUNDED_NAVMESH_SUCCESS;
+                NavMeshAgentComponent.enabled = false;
+                if (CurrentStatesGround != StatesGround.NOTGROUNDED)
+                {
+                    // IsFreefall = false;
+                    CurrentStatesGround = StatesGround.GROUNDED_NAVMESH_SUCCESS;
+                }
             }
-            else if (!_IsNetworkPeer)
+            else
             {
                 HandleFailling();
             }
+
         }
 
         protected override void InitLocomotionTypes(){
