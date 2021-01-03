@@ -89,6 +89,9 @@ namespace RSToolkit.AI.Behaviour
             throw new System.Exception("Root nodes cannot have parents");
         }
 
+        /// <summary>
+        /// Update descendants and then update self (including timers)
+        /// </summary>
         public override bool UpdateRecursively(UpdateType updateType = UpdateType.DEFAULT)
         {
             if (IsSilent)
@@ -98,11 +101,16 @@ namespace RSToolkit.AI.Behaviour
             return base.UpdateRecursively(updateType);
         }
 
+        /// <summary>
+        /// Set self to not Silent
+        /// </summary>
         public void Wake()
         {
             IsSilent = false;
         }
-
+        /// <summary>
+        /// Set self to Silent (do not trigger BehaviourNode related events)
+        /// </summary>
         public void Sleep()
         {
             IsSilent = true;
@@ -115,6 +123,10 @@ namespace RSToolkit.AI.Behaviour
             PopulateDictionaryFromChildren(Children);
         }
 
+        /// <summary>
+        /// Populate the dicitonary _nodeDictionary with all nodes in this
+        /// BehaviourTree
+        /// </summary>
         private void PopulateDictionaryFromChildren(ReadOnlyCollection<BehaviourNode> children)
         {
             BehaviourParentNode parentNode;
@@ -137,6 +149,11 @@ namespace RSToolkit.AI.Behaviour
         #region SyncLeaves
         // This is used to sync behaviour trees (for example when it comes to Network play)
 
+        /// <summary>
+        /// This is used for network peers, it tries to
+        /// turn on/off behaviour nodes to match the BehaviourNodes
+        /// of the host
+        /// </summary>
         public bool SyncActiveLeaves(BehaviourNode[] activeLeaves, bool silent = true)
         {
             var myLeaves = GetLeaves(NodeState.ACTIVE).ToList();
@@ -145,14 +162,14 @@ namespace RSToolkit.AI.Behaviour
             while (myLeaves.Count() > 0)
             {
                 var ml = myLeaves[0];
-                               
+
                 if (!activeLeaves.Contains(ml))
                 {
                     var nodeParent = ml as BehaviourParentNode;
                     if (nodeParent == null || !nodeParent.IsAncestorOfOneOrMore(activeLeaves))
                     {
                         ml.RequestStopNode(true);
-                        ml.StopNode(silent);                        
+                        ml.StopNode(silent);
                     }
                 }
                 myLeaves.Remove(ml);
@@ -183,6 +200,12 @@ namespace RSToolkit.AI.Behaviour
             return true;
         }
 
+        /// <summary>
+        /// This is used for network peers, it tries to
+        /// turn on/off behaviour nodes to match the BehaviourNodes
+        /// of the host
+        /// </summary>
+        /// <param name="silent">If true will not invoke the OnStarted event</param>
         public bool SyncActiveLeaves(string[] nodeIDs, bool silent = true)
         {
             LastResyncNodeIDs = nodeIDs;
@@ -195,6 +218,12 @@ namespace RSToolkit.AI.Behaviour
             return SyncActiveLeaves(activeLeaves, silent);
         }
 
+        /// <summary>
+        /// This is used for network peers, it tries to
+        /// turn on/off behaviour nodes to match the BehaviourNodes
+        /// of the host
+        /// </summary>
+        /// <param name="silent">If true will not invoke the OnStarted event</param>
         public bool SyncActiveLeaves(string nodeIDs, char seperator = '|', bool silent = true)
         {
             var nodeIDArray = nodeIDs.Split(seperator);

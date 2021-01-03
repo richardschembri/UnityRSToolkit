@@ -213,6 +213,9 @@ namespace RSToolkit.AI.Behaviour
         public OnStoppedEvent OnStopped { get; private set; } = new OnStoppedEvent();
         public OnStoppedEvent OnStoppedSilent { get; private set; } = new OnStoppedEvent();        
 
+        /// <summary>
+        /// Remove all BehaviourNode related Event listeners
+        /// </summary>
         public void RemoveAllListeners()
         {
             OnStarted.RemoveAllListeners();
@@ -245,6 +248,9 @@ namespace RSToolkit.AI.Behaviour
             }
         }
 
+        /// <summary>
+        /// Set the parent of this BehaviourNode
+        /// </summary>
         public virtual void SetParent(BehaviourParentNode parent)
         {
             if (parent != null)
@@ -311,6 +317,10 @@ namespace RSToolkit.AI.Behaviour
             return true;
         }
 
+        /// <summary>
+        /// Starts all ancestors of this node and then starts this node
+        /// </summary>
+        /// <param name="silent">Do not trigger BehaviourNode related events</param>
         public bool StartNodePath(bool silent = true)
         {
             if(Parent != null && Parent.State != NodeState.ACTIVE)
@@ -331,6 +341,7 @@ namespace RSToolkit.AI.Behaviour
             return StartNode(silent);
         }
 
+        /// <param name="silent">Do not trigger BehaviourNode related events</param>
         public NodeTimer StartNodeOnNextTick(bool silent = false)
         {
             return RunOnNextTick(()=> { StartNode(silent); });
@@ -393,6 +404,9 @@ namespace RSToolkit.AI.Behaviour
             return RunOnNextTick(() => { StopNode(success, silent); });
         }
 
+        /// <summary>
+        /// Check if node is within path to this node
+        /// </summary>
         public bool IsMyAncestor(BehaviourNode node)
         {
             if(this.Parent == null)

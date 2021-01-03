@@ -35,6 +35,9 @@ namespace RSToolkit.AI.Behaviour
 
         }
 
+        /// <summary>
+        /// Set the parent of this BehaviourNode
+        /// </summary>
         public override void SetParent(BehaviourParentNode parent)
         {
             base.SetParent(parent);
@@ -128,6 +131,9 @@ namespace RSToolkit.AI.Behaviour
             return base.StopNode(success, silent);
         }
 
+        /// <summary>
+        /// Update descendants and then update self (including timers)
+        /// </summary>
         public virtual bool UpdateRecursively(UpdateType updateType = UpdateType.DEFAULT)
         {
             UpdateTimers(updateType);
@@ -200,7 +206,6 @@ namespace RSToolkit.AI.Behaviour
                         {
                             yield return descendantLeaves[j];
                         }
-                        
                     }
                     else
                     {
@@ -211,6 +216,9 @@ namespace RSToolkit.AI.Behaviour
             }
         }
 
+        /// <summary>
+        /// Get the deepest nodes in children
+        /// </summary>
         public BehaviourNode[] GetLeaves(NodeState? nodeState = null)
         {
             var result = GetLeavesFromChildren(nodeState).ToArray();
@@ -221,6 +229,9 @@ namespace RSToolkit.AI.Behaviour
             return result;
         }
 
+        /// <summary>
+        /// Remove all BehaviourNode related event listens from descendants and self
+        /// </summary>
         public void RemoveAllListenersRecursively()
         {
             RemoveAllListeners();
