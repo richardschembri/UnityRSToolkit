@@ -53,6 +53,10 @@ namespace RSToolkit.AI
         public bool DebugMode = false;
         public NetworkTypes NetworkType { get; private set; } = NetworkTypes.None;
 
+	/// <summary>
+	/// Is used in a network enviroment to see if this is a bot on the host
+	/// or if it is a peer 
+	/// </summary>
         protected bool _IsNetworkPeer
         {
             get
@@ -115,6 +119,10 @@ namespace RSToolkit.AI
             }
         }
 
+	/// <summary>
+	/// Turn on/off components depending if this bot is a host or a peer 
+	/// </summary>
+	/// <param name="toggleKinematic">Should the IsKinematic value of a Rigidbody be toggled as well</param>
         protected virtual void ToggleComponentsForNetwork(bool toggleKinematic = true)
         {
             //BTFiniteStateMachineManagerComponent.IsSilent = NetworkType == NetworkTypes.Peer;
@@ -186,6 +194,10 @@ namespace RSToolkit.AI
                 return m_interactionMagnitude;
             }
         }
+	
+	/// <summary>
+	/// The radius of when the bot can interact with something 
+	/// </summary>
         public float SqrInteractionMagnitude
         {
             get
@@ -196,6 +208,9 @@ namespace RSToolkit.AI
 
         [SerializeField]
         public float personalSpacePercent = .35f;
+	/// <summary>
+	/// The radius of when something is too close 
+	/// </summary>
         public float SqrPersonalSpaceMagnitude
         {
             get
@@ -211,6 +226,9 @@ namespace RSToolkit.AI
 
         [SerializeField]
         public float safeAwarenessPercent = 2f;
+	/// <summary>
+	/// The radius of when bot is aware of something 
+	/// </summary>
         public float SqrAwarenessMagnitude
         {
             get
@@ -221,6 +239,9 @@ namespace RSToolkit.AI
 
         [SerializeField]
         public float atPositionErrorMargin = 0.1f;
+	/// <summary>
+	/// The error margin of when the bot is considered at a position 
+	/// </summary>
         public float SqrAtPositionErrorMargin
         {
             get
@@ -233,6 +254,9 @@ namespace RSToolkit.AI
 
         #region IsWithinDistance
 
+	/// <summary>
+	/// Check if bot is within desired distance of a position 
+	/// </summary>
         public bool IsWithinDistance(DistanceType distanceType, Vector3 position,
             ProximityHelpers.DistanceDirection direction = ProximityHelpers.DistanceDirection.ALL,
             float percent = 1.0f)
@@ -269,12 +293,19 @@ namespace RSToolkit.AI
             return result;
         }
 
+	/// <summary>
+	/// Check if bot is within desired distance of a target 
+	/// </summary>
         public bool IsWithinDistance(DistanceType distanceType, Transform target,
             ProximityHelpers.DistanceDirection direction = ProximityHelpers.DistanceDirection.ALL,
             float percent = 1.0f)
         {
             return IsWithinDistance(distanceType, target.position, direction,  percent);
         }
+
+	/// <summary>
+	/// Check if bot is within desired distance of FocusedOnPosition or FocusedOnTransform 
+	/// </summary>
         public bool IsWithinDistance(DistanceType distanceType,
             ProximityHelpers.DistanceDirection direction = ProximityHelpers.DistanceDirection.ALL,
             float percent = 1.0f)
@@ -292,6 +323,9 @@ namespace RSToolkit.AI
 
         #endregion IsWithinDistance
 
+	/// <summary>
+	/// Get distance from FocusedOnPosition in DistanceType form 
+	/// </summary>
         public DistanceType? GetDistanceTypeFromFocusedPosition()
         {
             if(FocusedOnPosition == null)
@@ -319,11 +353,16 @@ namespace RSToolkit.AI
             return DistanceType.OUTSIDE_AWARENESS;
         }
 
+	/// <summary>
+	/// Reset the cooldown for how long the bot should wait before being able to
+	/// interact with something 
+	/// </summary>
         public void ResetInteractionCooldown(float percent = 1.0f)
         {
             CanInteractFromTime = Time.time + (InteractableCooldown * percent);
         }
 
+	/// <param name="force">Ignore the interaction cooldown if true</param>
         private bool ChangeInteractionState(StatesInteraction interactionState, bool force)
         {
             if (interactionState == StatesInteraction.NotInteracting)
@@ -342,6 +381,12 @@ namespace RSToolkit.AI
 
         #region AttractMyAttention
         
+	/// <summary>
+	/// Focus on transform and change interaction state
+	/// </summary>
+	/// <returns>
+	/// Wether or not the function was successful
+	/// </returns>
         public bool AttractMyAttention_ToTransform(Transform target, bool force, StatesInteraction interactionState = StatesInteraction.Interactor, 
                                                     ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL)
         {
@@ -359,6 +404,12 @@ namespace RSToolkit.AI
 
         }
 
+	/// <summary>
+	/// Focus on Bot and change interaction state
+	/// </summary>
+	/// <returns>
+	/// Wether or not the function was successful
+	/// </returns>
         public bool AttractMyAttention_ToBot(Bot target, bool force, StatesInteraction interactionState = StatesInteraction.Interactor)
         {
 
@@ -380,12 +431,24 @@ namespace RSToolkit.AI
 
         }
 
+	/// <summary>
+	/// Focus on Transform and change interaction state to interactor
+	/// </summary>
+	/// <returns>
+	/// Wether or not the function was successful
+	/// </returns>
         public bool AttractMyAttention_ToTransform(bool force)
         {
             return AttractMyAttention_ToTransform(FocusedOnTransform, force);
 
         }
 
+	/// <summary>
+	/// Focus on Transform and change interaction state to Interactee
+	/// </summary>
+	/// <returns>
+	/// Wether or not the function was successful
+	/// </returns>
         public bool AttractMyAttention_FromBot(Bot target, bool force)
         {
             if (target.FocusedOnTransform != transform)
@@ -395,6 +458,12 @@ namespace RSToolkit.AI
             return true;
         }
 
+	/// <summary>
+	/// Focus on Bot and change interaction state to Interactee
+	/// </summary>
+	/// <returns>
+	/// Wether or not the function was successful
+	/// </returns>
         public bool AttractMyAttention_FromBot(bool force)
         {
             return AttractMyAttention_FromBot(FocusedOnTransform.GetComponent<Bot>(), force);
@@ -408,6 +477,9 @@ namespace RSToolkit.AI
             FocusedOnPosition = target_position;
         }
 
+	/// <summary>
+	/// Add Transform to Bot's "memory"
+	/// </summary>
         public bool NoticeTransform(Transform target)
         {
             if (!NoticedTransforms.Contains(target))
@@ -418,6 +490,9 @@ namespace RSToolkit.AI
             return false;
         }
 
+	/// <summary>
+	/// Remove Transform from Bot's "memory" after a timeout
+	/// </summary>
         public void ForgetTransformAfterTiemout(Transform target, System.Func<bool> forgetCondition = null)
         {
             if (forgetTransformTimeout > 0)
@@ -429,6 +504,9 @@ namespace RSToolkit.AI
             }
         }
 
+	/// <summary>
+	/// Remove Transform from Bot's "memory" after a timeout
+	/// </summary>
         IEnumerator DelayedForgetTransform(Transform target, System.Func<bool> forgetCondition = null)
         {
             
@@ -441,6 +519,9 @@ namespace RSToolkit.AI
 
         }
 
+	/// <summary>
+	/// Remove Transform from Bot's "memory"
+	/// </summary>
         public void ForgetTransform(Transform target)
         {
             if (DebugMode)
@@ -451,6 +532,9 @@ namespace RSToolkit.AI
 
         }
 
+	/// <summary>
+	/// Add a Transform to Bot's "memory"
+	/// </summary>
         public void FocusOnTransform(Transform target)
         {
             if(target == FocusedOnTransform)
@@ -467,6 +551,15 @@ namespace RSToolkit.AI
         }
 
 
+	/// <summary>
+	/// Nullify FocusedOnPosition and FocusedOnTransform 
+	/// </summary>
+	/// <param name="forget">Wether or not the FocusedOnTransform should
+	/// be removed from Bot's "memory"</param>
+	/// <param name="forgetCondition">The condition for which FocusedOnTransform should be forgetten</param>
+	/// <returns>
+	/// Wether or not the function was successful
+	/// </returns>
         private bool UnFocus(bool forget, System.Func<bool> forgetCondition)
         {
             if(FocusedOnPosition != null && FocusedOnTransform == null)
@@ -493,22 +586,43 @@ namespace RSToolkit.AI
             return true;
         }
 
+	/// <summary>
+	/// Nullify FocusedOnPosition and FocusedOnTransform 
+	/// </summary>
+	/// <param name="forget">Wether or not the FocusedOnTransform should
+	/// be removed from Bot's "memory"</param>
+	/// <returns>
+	/// Wether or not the function was successful
+	/// </returns>
         public bool UnFocus(bool forget = true)
         {
             return UnFocus(forget, null);
         }
 
+	/// <summary>
+	/// Nullify FocusedOnPosition and FocusedOnTransform 
+	/// </summary>
+	/// <param name="forgetCondition">The condition for which FocusedOnTransform should be forgetten</param>
+	/// <returns>
+	/// Wether or not the function was successful
+	/// </returns>
         public bool UnFocus(System.Func<bool> forgetCondition)
         {
             return UnFocus(true, forgetCondition);
         }
 
+	/// <summary>
+	/// Wether or not the Bot is facing the target 
+	/// </summary>
         public bool IsFacing(Transform target)
         {
             return Mathf.Round(transform.rotation.eulerAngles.y * 10) == Mathf.Round(Quaternion.LookRotation(target.position - transform.position, Vector3.up).eulerAngles.y * 10);
             // return transform.rotation == Quaternion.LookRotation(target.position - transform.position, Vector3.up);
         }
 
+	/// <summary>
+	/// Wether or not the Bot is facing the FocusedOnTransform  
+	/// </summary>
         public bool IsFacing()
         {
             if (FocusedOnTransform != null)
@@ -518,11 +632,17 @@ namespace RSToolkit.AI
             return false;
         }
 
+	/// <summary>
+	/// Wether or not the Bot can interact with something  
+	/// </summary>
         public virtual bool CanInteract()
         {
             return Time.time > CanInteractFromTime;
         }
 
+	/// <summary>
+	/// Wether or not the Bot can interact with target Bot  
+	/// </summary>
         public bool CanInteractWith(Bot target)
         {
             return target != null && (
@@ -539,6 +659,7 @@ namespace RSToolkit.AI
         public bool AutoInitialize = true;
         public bool Initialized { get; private set; } = false;
 
+	/// <param name="force">Initialize even if already initialized</param>
         public virtual bool Initialize(bool force = false)
         {
             if(Initialized && !force)
@@ -551,6 +672,8 @@ namespace RSToolkit.AI
             return true;
         }
 
+	/// <param name="NetworkTypes ">Initialize components/values depending on NetworkType</param>
+	/// <param name="force">Initialize even if already initialized</param>
         public virtual bool Initialize(NetworkTypes networkType, bool force = false)
         {
             if (Initialize(force))
