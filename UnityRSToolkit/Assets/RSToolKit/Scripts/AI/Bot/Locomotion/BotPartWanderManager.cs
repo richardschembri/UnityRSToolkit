@@ -20,7 +20,7 @@ namespace RSToolkit.AI.Locomotion
         }
 
         private const string DEBUG_TAG = "BotWanderManager";
-        
+
         public bool DebugMode = false;
 
         public bool _waitOnStart = true;
@@ -74,6 +74,9 @@ namespace RSToolkit.AI.Locomotion
             }
         }
 
+        /// <summary>
+        /// Set the BotPartWander that will handle to Wander logic
+        /// </summary>
         public void SetCurrentBotWander(BotPartWander b)
         {
             if (_BotWanderComponents.Contains(b))
@@ -95,6 +98,9 @@ namespace RSToolkit.AI.Locomotion
             }
         }
 
+        /// <summary>
+        /// Get time to wait before wandering again
+        /// </summary>
         private float GetWaitTime()
         {
             if ((FSM.LastState == FStatesWander.NotWandering || FSM.LastState == FStatesWander.CannotWander) && !_waitOnStart)
@@ -109,11 +115,20 @@ namespace RSToolkit.AI.Locomotion
             return _currentBotWanderComponent.WaitTime;
         }
 
+        /// <summary>
+        /// Start wandering
+        /// </summary>
+        /// <param name="waitOnStart">Wether or not to wander straight away or wait before wandering</param>
         public void Wander(bool waitOnStart)
         {
             Wander(BotLocomotiveComponent.SqrAwarenessMagnitude, waitOnStart);
         }
 
+        /// <summary>
+        /// Start wandering
+        /// </summary>
+        /// <param name="radius">The radius from current position to wander in</param>
+        /// <param name="waitOnStart">Wether or not to wander straight away or wait before wandering</param>
         public bool Wander(float radius, bool waitOnStart)
         {
             _waitOnStart = waitOnStart;
@@ -153,6 +168,10 @@ namespace RSToolkit.AI.Locomotion
         }
 
         #region States
+
+        /// <summary>
+        /// Add events to FSM states and set initial state
+        /// </summary>
         private void InitStates()
         {
             FSM.OnStarted_AddListener(FStatesWander.FindNewPosition, FindNewPosition_Enter);

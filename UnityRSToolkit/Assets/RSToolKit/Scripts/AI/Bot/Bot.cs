@@ -53,10 +53,10 @@ namespace RSToolkit.AI
         public bool DebugMode = false;
         public NetworkTypes NetworkType { get; private set; } = NetworkTypes.None;
 
-	/// <summary>
-	/// Is used in a network enviroment to see if this is a bot on the host
-	/// or if it is a peer 
-	/// </summary>
+        /// <summary>
+        /// Is used in a network enviroment to see if this is a bot on the host
+        /// or if it is a peer 
+        /// </summary>
         protected bool _IsNetworkPeer
         {
             get
@@ -119,10 +119,10 @@ namespace RSToolkit.AI
             }
         }
 
-	/// <summary>
-	/// Turn on/off components depending if this bot is a host or a peer 
-	/// </summary>
-	/// <param name="toggleKinematic">Should the IsKinematic value of a Rigidbody be toggled as well</param>
+        /// <summary>
+        /// Turn on/off components depending if this bot is a host or a peer 
+        /// </summary>
+        /// <param name="toggleKinematic">Should the IsKinematic value of a Rigidbody be toggled as well</param>
         protected virtual void ToggleComponentsForNetwork(bool toggleKinematic = true)
         {
             //BTFiniteStateMachineManagerComponent.IsSilent = NetworkType == NetworkTypes.Peer;
@@ -620,9 +620,9 @@ namespace RSToolkit.AI
             // return transform.rotation == Quaternion.LookRotation(target.position - transform.position, Vector3.up);
         }
 
-	/// <summary>
-	/// Wether or not the Bot is facing the FocusedOnTransform  
-	/// </summary>
+        /// <summary>
+        /// Wether or not the Bot is facing the FocusedOnTransform  
+        /// </summary>
         public bool IsFacing()
         {
             if (FocusedOnTransform != null)
@@ -632,17 +632,17 @@ namespace RSToolkit.AI
             return false;
         }
 
-	/// <summary>
-	/// Wether or not the Bot can interact with something  
-	/// </summary>
+        /// <summary>
+        /// Wether or not the Bot can interact with something  
+        /// </summary>
         public virtual bool CanInteract()
         {
             return Time.time > CanInteractFromTime;
         }
 
-	/// <summary>
-	/// Wether or not the Bot can interact with target Bot  
-	/// </summary>
+        /// <summary>
+        /// Wether or not the Bot can interact with target Bot  
+        /// </summary>
         public bool CanInteractWith(Bot target)
         {
             return target != null && (

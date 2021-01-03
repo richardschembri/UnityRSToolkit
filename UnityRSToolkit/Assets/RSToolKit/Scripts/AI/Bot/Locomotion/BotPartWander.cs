@@ -42,13 +42,22 @@ namespace RSToolkit.AI.Locomotion
             }
         }
 
+        /// <summary>
+        /// Check if Bot is able to wander
+        /// </summary>
         public abstract bool CanWander();
 
+        /// <summary>
+        /// Set the radius of which the bot can wander from current position
+        /// </summary>
         public void SetWanderRadius(float radius)
         {
             _wanderRadius = radius;
         }
 
+        /// <summary>
+        /// Get a valid random position within the wander radius of the provided wanderCenter
+        /// </summary>
         public Vector3? GetNewWanderPosition(Transform wanderCenter){
             return GetNewWanderPosition(wanderCenter, _wanderRadius);
         }

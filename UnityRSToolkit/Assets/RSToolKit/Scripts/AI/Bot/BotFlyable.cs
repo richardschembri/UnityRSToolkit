@@ -107,6 +107,10 @@ namespace RSToolkit.AI
 
         #endregion Components
 
+        /// <summary>
+        /// Turn on/off components depending if this bot is a host or a peer 
+        /// </summary>
+        /// <param name="toggleKinematic">Should the IsKinematic value of a Rigidbody be toggled as well</param>
         protected override void ToggleComponentsForNetwork(bool toggleKinematic = true)
         {
             base.ToggleComponentsForNetwork(toggleKinematic);
@@ -122,6 +126,9 @@ namespace RSToolkit.AI
             }
         }
 
+        /// <summary>
+        /// Toggle between flight with physics and NavMeshAgent 
+        /// </summary>
         private void ToggleFlight(bool on)
         {
             if (on)
@@ -144,6 +151,12 @@ namespace RSToolkit.AI
 
         }
 
+        /// <summary>
+        /// Take off from ground
+        /// </summary>
+        /// <returns>
+        /// Wether or not the function was successful
+        /// </returns>
         public bool TakeOff()
         {
             if (CurrentFlyableState == FStatesFlyable.NotFlying)
@@ -155,6 +168,14 @@ namespace RSToolkit.AI
             return false;
         }
 
+        /// <summary>
+        /// Land on a surface
+        /// </summary>
+        /// <param name="onNavMesh">Surface must be NavMesh</param>
+        /// <param name="freefall ">Just fall down instead of gently landing</param>
+        /// <returns>
+        /// Wether or not the function was successful
+        /// </returns>
         public bool Land(bool onNavMesh = true, bool freefall = false)
         {
 
@@ -168,6 +189,9 @@ namespace RSToolkit.AI
             return true;
         }
 
+        /// <summary>
+        /// Check if the Bot is in a FStatesFlyable that allows it to move
+        /// </summary>
         public bool CanMove()
         {
             return CurrentFlyableState == FStatesFlyable.Flying || CurrentFlyableState == FStatesFlyable.NotFlying;
@@ -184,7 +208,9 @@ namespace RSToolkit.AI
             return BotLogicNavMeshRef.IsAboveNavMeshSurface(out navPosition);
         }
 
-
+        /// <summary>
+        /// Add events to FSM states and set initial state
+        /// </summary>
         private void InitStates()
         {
             FSMFlyable = new BTFiniteStateMachine<FStatesFlyable>(StartInAir ? FStatesFlyable.Flying : FStatesFlyable.NotFlying);
@@ -279,6 +305,9 @@ namespace RSToolkit.AI
 
         #endregion Flying State
 
+        /// <summary>
+        /// Initialize the LocomotionTypes used by BotFlyable
+        /// </summary>
         protected override void InitLocomotionTypes()
         {
             BotLogicNavMeshRef = new BotLogicNavMesh(BotFSMLocomotionComponent, NavMeshAgentComponent, JumpProximityChecker);
@@ -288,6 +317,9 @@ namespace RSToolkit.AI
             BTFiniteStateMachineManagerComponent.AddFSM(FSMFlyable);
         }
 
+        /// <summary>
+        /// Initialize the BotPartWanders used by BotFlyable
+        /// </summary>
         protected override bool InitBotWander()
         {
             if (!base.InitBotWander())
@@ -321,6 +353,9 @@ namespace RSToolkit.AI
             }           
         }
 
+        /// <summary>
+        /// Wether or not the Bot can interact with something  
+        /// </summary>
         public override bool CanInteract()
         {
             return base.CanInteract() && (CurrentFlyableState == FStatesFlyable.Flying || CurrentFlyableState == FStatesFlyable.NotFlying);

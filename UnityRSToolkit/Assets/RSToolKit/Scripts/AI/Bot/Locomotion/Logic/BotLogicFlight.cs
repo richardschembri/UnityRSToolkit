@@ -78,7 +78,10 @@ namespace RSToolkit.AI.Locomotion
                     
             return true;
         }
-
+            
+        /// <summary>
+        /// Move away from FocusedOnPosition
+        /// </summary>
         public override void MoveAway(bool fullspeed = true){
             RotateAwayFromPosition();
             if(!BotLocomotiveComponent.IsAway()){

@@ -38,6 +38,9 @@ namespace RSToolkit.AI
         protected BotPartWanderNavMesh BotWanderNavMeshComponent {get; private set;}
         #endregion Components
 
+        /// <summary>
+        /// Check if the Bot is in a position of falling/landing
+        /// </summary>
         private void HandleFailling()
         {
             if (_IsNetworkPeer)
@@ -58,6 +61,9 @@ namespace RSToolkit.AI
             }
         }
 
+        /// <summary>
+        /// Handle landing on the surface by enabling NavMeshAgent
+        /// </summary>
         private void Land(){
             // if(NavMesh.SamplePosition())
             // IsFreefall = false;
@@ -82,6 +88,10 @@ namespace RSToolkit.AI
             }
         }
 
+        /// <summary>
+        /// Turn on/off components depending if this bot is a host or a peer 
+        /// </summary>
+        /// <param name="toggleKinematic">Should the IsKinematic value of a Rigidbody be toggled as well</param>
         protected override void ToggleComponentsForNetwork(bool toggleKinematic = true)
         {
             base.ToggleComponentsForNetwork(toggleKinematic);
@@ -102,10 +112,17 @@ namespace RSToolkit.AI
 
         }
 
+        /// <summary>
+        /// Initialize the LocomotionTypes used by BotFlyable
+        /// </summary>
         protected override void InitLocomotionTypes(){
             BotLogicNavMeshRef = new BotLogicNavMesh(this, NavMeshAgentComponent, JumpProximityChecker);
             CurrentLocomotionType = BotLogicNavMeshRef;
         }
+
+        /// <summary>
+        /// Initialize the BotPartWanders used by BotFlyable
+        /// </summary>
         protected override bool InitBotWander(){
             if(!base.InitBotWander()){
                 return false;
@@ -153,10 +170,17 @@ namespace RSToolkit.AI
             }
         }
 
+
+        /// <summary>
+        /// Check if the is a surface at the point
+        /// </summary>
         private bool CheckForGround(Vector3 point){
             return NavMesh.SamplePosition(point, out navGroundHit, GroundProximityCheckerComponent.IsAlmostTouchingDistance, NavMesh.AllAreas);
         }
 
+        /// <summary>
+        /// Check if the is a surface at current point
+        /// </summary>
         private bool CheckForGround(){
             return CheckForGround(transform.position);
         }

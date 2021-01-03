@@ -42,11 +42,17 @@ namespace RSToolkit.AI.Locomotion
             }
         }
 
+        /// <summary>
+        /// Set y-axis of which the Bot will be flying at
+        /// </summary>
         public void SetDefaultY(float defaultY)
         {
             _defaultY = defaultY;
         }
 
+        /// <summary>
+        /// Check if Bot is able to wander
+        /// </summary>
         public override bool CanWander()
         {
             return BotLocomotiveComponent.CurrentLocomotionType is BotLogicFlight 
@@ -56,6 +62,9 @@ namespace RSToolkit.AI.Locomotion
 
         RaycastHit _wanderhit;
 
+        /// <summary>
+        /// Get a valid random position within the wander radius of the provided wanderCenter
+        /// </summary>
         protected override Vector3? GetNewWanderPosition(Transform wanderCenter, float radius)
         {
             if (_findNewPositionAttempts >= MAX_FINDNEWPOSITIONATTEMPTS || radius <= BotLocomotiveComponent.SqrInteractionMagnitude)

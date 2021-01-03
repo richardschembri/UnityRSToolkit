@@ -44,6 +44,9 @@ namespace RSToolkit.AI
         public OnTransformSeenEvent OnTransformSeen = new OnTransformSeenEvent();
 
         private List<Transform> m_tagLookOutForTransforms = new List<Transform>();
+        /// <summary>
+        /// Get transforms that have tags that is in m_tagLookOutForTransforms
+        /// </summary>
         public List<Transform> GetTagLookOutForTransforms(int? layer = null, bool refresh = false)
         {
             if (!refresh && m_tagLookOutForTransforms.Any())
@@ -81,6 +84,9 @@ namespace RSToolkit.AI
             BotComponent.UnFocus(() => IsWithinSight(target, "", distanceDirection));
         }
 
+        /// <summary>
+        /// Check if target is within line of sight
+        /// </summary>
         private bool IsWithinSight(Transform target, string tag = "", ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL)
         {
             if (target == null || (!string.IsNullOrEmpty(tag) && target.tag != tag))
@@ -91,26 +97,44 @@ namespace RSToolkit.AI
             return ProximityHelpers.IsWithinSight(transform, target, FieldOfViewAngle, SqrViewMagnitude, distanceDirection);
         }
 
+        /// <summary>
+        /// Check if transforms to look out for are within line of sight
+        /// </summary>
         public virtual bool IsWithinSight(string tag = "", ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL)
         {
             return GetAllLookOutForTransforms().Any(t => IsWithinSight(t, tag, distanceDirection));
         }
 
+        /// <summary>
+        /// Check if transforms to look out for are within line of sight
+        /// </summary>
         public virtual bool IsWithinSight<T>(string tag = "", ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL) where T : MonoBehaviour
         {
             return GetAllLookOutForTransforms().Any(t => IsWithinSight(t, tag, distanceDirection) && t.GetComponent<T>() != null);
         }
 
+        /// <summary>
+        /// Return transforms to look out for that are within line of sight
+        /// </summary>
+        /// <param name="refreshList">Check if new transforms have been spawned</param>
         public IEnumerable<Transform> GetTransformsWithinSight(bool refreshList = false, string tag = "", int? layer = null, ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL)
         {
             return GetAllLookOutForTransforms(layer, refreshList).Where(t => IsWithinSight(t, tag, distanceDirection));
         }
 
+        /// <summary>
+        /// Return transforms to look out for that are within line of sight
+        /// </summary>
+        /// <param name="refreshList">Check if new transforms have been spawned</param>
         public IEnumerable<T> GetWithinSight<T>(bool refreshList = false, string tag = "", int? layer = null, ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL) where T : MonoBehaviour
         {
             return GetAllLookOutForTransforms(layer, refreshList).Where(t => IsWithinSight(t, tag, distanceDirection) && t.GetComponent<T>() != null).Select(t => t.GetComponent<T>()); ;
         }
 
+        /// <summary>
+        /// Return transforms within sight that are being looked out for
+        /// </summary>
+        /// <param name="newTransformsOnly">Only return transforms that have not been "noticed" before</param>
         public Transform[] DoLookoutFor(bool newTransformsOnly = true, bool refreshList = false, string tag = "", int? layer = null, ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL)
         {
             IEnumerable<Transform> targets;
@@ -131,6 +155,10 @@ namespace RSToolkit.AI
             return result;
         }
 
+        /// <summary>
+        /// Return transforms within sight that are being looked out for
+        /// </summary>
+        /// <param name="newTransformsOnly">Only return transforms that have not been "noticed" before</param>
         public T[] DoLookoutFor<T>(bool newTransformsOnly = true, bool refreshList = false, string tag = "", int? layer = null, ProximityHelpers.DistanceDirection distanceDirection = ProximityHelpers.DistanceDirection.ALL) where T : MonoBehaviour
         {
             IEnumerable<T> targets;

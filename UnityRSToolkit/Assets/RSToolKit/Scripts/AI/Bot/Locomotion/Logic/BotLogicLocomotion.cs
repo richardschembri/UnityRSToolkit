@@ -13,7 +13,7 @@ namespace RSToolkit.AI.Locomotion
     public abstract class BotLogicLocomotion
     {
         public BotLocomotive BotLocomotiveComponent { get; private set;}
-        
+
         public abstract float CurrentSpeed { get; }
 
         public abstract bool MoveTowardsPosition(bool fullspeed = true);
@@ -24,6 +24,9 @@ namespace RSToolkit.AI.Locomotion
 
         public abstract void RotateAwayFromPosition();
 
+        /// <summary>
+        /// Check if Bot is able to move
+        /// </summary>
         public virtual bool CanMove()
         {
             return true;
@@ -36,6 +39,9 @@ namespace RSToolkit.AI.Locomotion
             BotLocomotiveComponent = botLocomotion;
         }
 
+        /// <summary>
+        /// Check if Bot has approximately reached destination
+        /// </summary>
         public bool HasReachedDestinationApprox(Bot.DistanceType StopMovementCondition )
         {
             return (BotLocomotiveComponent.StopMovementCondition == StopMovementCondition
@@ -44,6 +50,9 @@ namespace RSToolkit.AI.Locomotion
                     );
         }
 
+        /// <summary>
+        /// Check if Bot has reached destination
+        /// </summary>
         public bool HasReachedDestination(Bot.DistanceType StopMovementCondition)
         {
             return (BotLocomotiveComponent.StopMovementCondition == StopMovementCondition

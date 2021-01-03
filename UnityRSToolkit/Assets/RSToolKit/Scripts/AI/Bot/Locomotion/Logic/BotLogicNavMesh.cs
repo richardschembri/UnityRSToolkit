@@ -131,6 +131,9 @@ namespace RSToolkit.AI.Locomotion
             return null;
         }
 
+        /// <summary>
+        /// Use JumpProximityChecker to check if the bot is within jumping down distance
+        /// </summary>
         public bool CanJumpDown(out RaycastHit rayhit, bool pathComplete = true)
         {
             if (JumpProximityChecker.IsWithinRayDistance(out rayhit) != null)
@@ -153,6 +156,9 @@ namespace RSToolkit.AI.Locomotion
         }
 
         private NavMeshHelpers.OffMeshLinkPosition m_linkposition;
+        /// <summary>
+        /// Update the current OffMeshLinkPosition
+        /// </summary>
         private void CheckUpdateOffMeshLinkPosition()
         {
             m_linkposition = NavMeshAgentComponent.GetOffMeshLinkPosition();
@@ -167,6 +173,9 @@ namespace RSToolkit.AI.Locomotion
 
         }
 
+        /// <summary>
+        /// Check if Bot is able to move
+        /// </summary>
         public override bool CanMove()
         {
             return (NavMeshAgentComponent.speed > 0
