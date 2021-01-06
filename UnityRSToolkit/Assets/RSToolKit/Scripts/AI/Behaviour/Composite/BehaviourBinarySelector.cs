@@ -85,8 +85,6 @@ namespace RSToolkit.AI.Behaviour.Composite
             return FalseNode.State == NodeState.ACTIVE && TrueNode.State == NodeState.INACTIVE;
         }
 
-
-
         public override void Update(UpdateType updateType = UpdateType.DEFAULT)
         {
             base.Update(updateType);

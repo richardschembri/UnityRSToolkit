@@ -260,6 +260,8 @@ namespace RSToolkit.Data.SQLite
             IDataModelForeignKeyProperties ParentForeignKeyProperties { get; }
 
             string GetParameterName();
+            string GetForeignTablePK();
+            string GetColumnsForSelectQuery();
             string GetForeignKeyCodeForCreateTable();
             string GetCreateForeignKeyCode();
             string GetJoinName();
@@ -272,9 +274,17 @@ namespace RSToolkit.Data.SQLite
             public IDataModelForeignKeyProperties ParentForeignKeyProperties { get; private set; }
 
             public DataModeForeignKeyProperties( IDataModelFactory foreignDataModelFactory,
-                                                    IDataModelForeignKeyProperties parentForeignKeyProperties = null)
+                                                    IDataModelForeignKeyProperties parentForeignKeyProperties = null,
+                                                    string columnName = "")
             {
-                ColumnName = $"{foreignDataModelFactory.TableName}_FK";
+                if (string.IsNullOrEmpty(columnName))
+                {
+                    ColumnName = $"{foreignDataModelFactory.TableName}_FK";
+                }
+                else
+                {
+                    ColumnName = columnName;
+                }
                 ForeignDataModelFactory = foreignDataModelFactory;
                 ParentForeignKeyProperties = parentForeignKeyProperties  ;
             }
@@ -284,6 +294,21 @@ namespace RSToolkit.Data.SQLite
                 return string.Format("@{0}", ColumnName);
             }
 
+            public string GetColumnsForSelectQuery()
+            {
+                var result = new StringBuilder();
+                for(int i = 0; i < ForeignDataModelFactory.DataModelColumnProperties.Count; i++)
+                {
+                    result.Append($", {GetJoinName()}.{ForeignDataModelFactory.DataModelColumnProperties[i].ColumnName}"); 
+                }
+
+                return result.ToString();
+            }
+
+            public string GetForeignTablePK()
+            {
+                return $"{GetJoinName()}.{ForeignDataModelFactory.Get_PrimaryKeyProperties().ColumnName}";
+            }
             public string GetForeignKeyCodeForCreateTable()
             {
                 return $", {GetCreateForeignKeyCode()}";

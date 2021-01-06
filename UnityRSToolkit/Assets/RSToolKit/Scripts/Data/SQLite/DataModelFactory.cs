@@ -123,7 +123,6 @@ namespace RSToolkit.Data.SQLite
             
             sbQuery.Append($"SELECT {GetColumnNamesAsCommandText()}");
 
-
             for(int i = 0; i < DataModelForeignKeyProperties.Count(); i++)
             {
                 sbQueryJoin.AppendLine($" {GetForeignKeyCommandText(DataModelForeignKeyProperties[i])}");
@@ -134,22 +133,29 @@ namespace RSToolkit.Data.SQLite
             return sbQuery.ToString();
         }
 
-        public virtual string GetCommandText_BasicSelect(bool selectAll = true, int pageSize = 0, int startIndex = 0)
+        public virtual string GetCommandText_BasicSelect(bool selectAll = true, int pageSize = 0, int startIndex = 0, bool includeJoins = true)
         {
             var sbQuery = new StringBuilder();
+            var sbSelect = new StringBuilder();
             
-            sbQuery.AppendFormat("SELECT {0}", DataModelColumnProperties[0].ColumnName);
+            sbSelect.AppendFormat("SELECT {0}", DataModelColumnProperties[0].ColumnName);
             for (int i = 1; i < DataModelColumnProperties.Count; i++)
             {
-                sbQuery.AppendFormat(", {0}", DataModelColumnProperties[i].ColumnName);
+                sbSelect.AppendFormat(", {0}", DataModelColumnProperties[i].ColumnName);
             }
 
             var primaryKey = DataModelColumnProperties.First(dmc => dmc.IsPrimaryKey);
             sbQuery.AppendFormat(" FROM {0}", TableName);
 
-            for(int i = 0; i < DataModelForeignKeyProperties.Count(); i++)
+            if (includeJoins)
             {
-                //sbQuery.Append($" JOIN {DataModelForeignKeyProperties[i].ForeignTable.TableName} ON {TableName}.{foreignKeys[i].ColumnName} = {foreignKeys[i].ForeignTable.TableName}.{foreignKeys[i].ForeignTable.Get_PrimaryKeyProperties().ColumnName}");
+                for (int i = 0; i < DataModelForeignKeyProperties.Count(); i++)
+                {
+                    sbSelect.Append(DataModelForeignKeyProperties[i].GetColumnsForSelectQuery());
+                    // sbQuery.Append($" JOIN {DataModelForeignKeyProperties[i].ForeignTable.TableName} ON {TableName}.{foreignKeys[i].ColumnName} = {foreignKeys[i].ForeignTable.TableName}.{foreignKeys[i].ForeignTable.Get_PrimaryKeyProperties().ColumnName}");
+                    sbQuery.Append($" JOIN {DataModelForeignKeyProperties[i].GetJoinName()}");
+                    sbQuery.Append($" ON {DataModelForeignKeyProperties[i].ColumnName} = {DataModelForeignKeyProperties[i].GetForeignTablePK()}");
+                }
             }
 
             if (!selectAll)
@@ -161,7 +167,7 @@ namespace RSToolkit.Data.SQLite
             {
                 sbQuery.AppendLine(string.Format(" LIMIT {0}, {1}", pageSize, startIndex));
             }
-            return sbQuery.ToString();
+            return $"{sbSelect.ToString()} {sbQuery.ToString()}";
         }
 
         public virtual string GetCommandText_BasicSelectWithParameters(List<DataModel.IDataModelColumn> parameters, int pageSize = 0, int startIndex = 0)

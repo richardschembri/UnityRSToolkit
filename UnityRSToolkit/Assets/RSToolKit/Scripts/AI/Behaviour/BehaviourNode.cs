@@ -41,6 +41,9 @@ namespace RSToolkit.AI.Behaviour
             ALWAYS_TRUE
         }
 
+        /// <summary>
+        /// The MonoBehaviour Update functions to be used by BehaviourNode
+        /// </summary>
         public enum UpdateType
         {
             DEFAULT,
@@ -162,16 +165,25 @@ namespace RSToolkit.AI.Behaviour
             return _timers[updateType].AsReadOnly();           
         }
 
+        /// <summary>
+        /// Get count of timers for respective "Update" type
+        /// </summary>
         public int GetTimerCount(UpdateType updateType)
         {
             return _timers[updateType].Count;
         }
 
+        /// <summary>
+        /// Get count of timers for all "Update" types
+        /// </summary>
         public int GetAllTimerCount()
         {
             return _timers[UpdateType.DEFAULT].Count + _timers[UpdateType.FIXED].Count + _timers[UpdateType.LATE].Count;
         }
 
+        /// <summary>
+        /// Get count of either active or non active timers for all "Update" types
+        /// </summary>
         public int GetAllTimerCount(bool active)
         {
             return _timers[UpdateType.DEFAULT].Count(t => t.IsActive == active) + _timers[UpdateType.FIXED].Count(t => t.IsActive == active) + _timers[UpdateType.LATE].Count(t => t.IsActive == active);
@@ -228,6 +240,9 @@ namespace RSToolkit.AI.Behaviour
             OnStoppedSilent.RemoveAllListeners();
         }
 
+        /// <summary>
+        /// Recursively gets the Root node by going through all the ancestors
+        /// </summary>
         public BehaviourRootNode GetRoot()
         {
             if (this is BehaviourRootNode)
@@ -277,6 +292,9 @@ namespace RSToolkit.AI.Behaviour
             return AddTimer(time, 0f, repeat, timeoutAction, autoRemove);
         }
 
+        /// <summary>
+        /// Execute System.Action on next tick
+        /// </summary>
         protected NodeTimer RunOnNextTick(System.Action timeoutAction, UpdateType updateType = UpdateType.DEFAULT)
         {
             return AddTimer(0, 0, timeoutAction, true);

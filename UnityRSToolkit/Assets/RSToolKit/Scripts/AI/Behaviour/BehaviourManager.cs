@@ -39,10 +39,6 @@ namespace RSToolkit.AI.Behaviour
             Paused = false;
         }
 
-        /// <summary>
-        /// Used for when the Behaviour Tree is mimicking another tree (ex: network peer)
-        /// </summary>
-
         /*
         public void AddBehaviourTree(BehaviourNode behaviourtree)
         {
@@ -172,16 +168,25 @@ namespace RSToolkit.AI.Behaviour
 
         #region SyncLeaves
 
+        /// <summary>
+        /// Used for when the Behaviour Tree is mimicking another tree (ex: network peer)
+        /// </summary>
         public bool SyncActiveLeaves(BehaviourNode[] activeLeaves, bool silent = true)
         {
             return CurrentTree.SyncActiveLeaves(activeLeaves, silent);
         }
 
+        /// <summary>
+        /// Used for when the Behaviour Tree is mimicking another tree (ex: network peer)
+        /// </summary>
         public bool SyncActiveLeaves(string[] nodeIDs, bool silent = true)
         {
             return CurrentTree.SyncActiveLeaves(nodeIDs, silent); ;
         }
 
+        /// <summary>
+        /// Used for when the Behaviour Tree is mimicking another tree (ex: network peer)
+        /// </summary>
         public bool SyncActiveLeaves(string nodeIDs, char seperator = '|', bool silent = true)
         {
             return CurrentTree.SyncActiveLeaves(nodeIDs, seperator, silent);
@@ -211,6 +216,10 @@ namespace RSToolkit.AI.Behaviour
         }
         #endregion Events
 
+        /// <summary>
+        /// Common logic for all MonoBehaviour Update functions
+        /// </summary>
+        /// <param name="updateType"></param>
         private void UpdateCommon(BehaviourNode.UpdateType updateType)
         {
             if (Paused)
