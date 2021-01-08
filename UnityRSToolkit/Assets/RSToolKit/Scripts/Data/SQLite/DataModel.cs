@@ -24,6 +24,7 @@ namespace RSToolkit.Data.SQLite
         void AddParameter_PrimaryKey(ref SqliteCommand cmd);
         CSVDataModel Get_CSVRawDataModel();
         void ReadFromDatabase(SqliteDataReader reader, ref int index);
+        void ReadPKFromDatabase(SqliteDataReader reader, ref int index);
     }
     public class DataModel : IDataModel
     {
@@ -258,6 +259,8 @@ namespace RSToolkit.Data.SQLite
             string ColumnName { get; }
             IDataModelFactory ForeignDataModelFactory { get; }
             IDataModelForeignKeyProperties ParentForeignKeyProperties { get; }
+            
+            bool PerformJoin { get; }
 
             string GetParameterName();
             string GetForeignTablePK();
@@ -272,8 +275,9 @@ namespace RSToolkit.Data.SQLite
             public string ColumnName { get; private set; }
             public IDataModelFactory ForeignDataModelFactory { get; private set; }
             public IDataModelForeignKeyProperties ParentForeignKeyProperties { get; private set; }
+            public bool PerformJoin { get; private set; }
 
-            public DataModeForeignKeyProperties( IDataModelFactory foreignDataModelFactory,
+            public DataModeForeignKeyProperties( IDataModelFactory foreignDataModelFactory, bool performJoin,
                                                     IDataModelForeignKeyProperties parentForeignKeyProperties = null,
                                                     string columnName = "")
             {
@@ -287,6 +291,7 @@ namespace RSToolkit.Data.SQLite
                 }
                 ForeignDataModelFactory = foreignDataModelFactory;
                 ParentForeignKeyProperties = parentForeignKeyProperties  ;
+                PerformJoin = performJoin;
             }
 
             public string GetParameterName()
@@ -387,7 +392,7 @@ namespace RSToolkit.Data.SQLite
         //public Dictionary<string, string> TableColumnAndType{get; internal set;}
         #region Columns
         public List<IDataModelColumn> DataModelColumns { get; protected set; } = new List<IDataModelColumn>();
-        public List<IDataModelFactory> ForeignKeys { get; protected set; } = new List<IDataModelFactory>();
+        // public List<IDataModelFactory> ForeignKeys { get; protected set; } = new List<IDataModelFactory>();
 
         public List<IDataModelForeignKeyProperties> DataModelForeignKeyProperties => throw new NotImplementedException();
 
@@ -451,13 +456,31 @@ namespace RSToolkit.Data.SQLite
             throw new NotImplementedException("GetCSVRawDataModel");
         }
 
-
         public virtual void ReadFromDatabase(SqliteDataReader reader, ref int index)
         {            
-
             for(int i = 0; i < DataModelColumns.Count; i++)
             {
                 DataModelColumns[i].ReadFromDatabase(reader, ref index);
+            }
+
+            for(int i = 0; i < DataModelForeignKeyProperties.Count; i++)
+            {
+                if (DataModelForeignKeyProperties[i].PerformJoin)
+                {
+                    DataModelForeignKeyProperties[i].ForeignDataModelFactory.GenerateDataModel(reader, ref index);
+                }
+            }
+        }
+
+        public void ReadPKFromDatabase(SqliteDataReader reader, ref int index)
+        {            
+            for(int i = 0; i < DataModelColumns.Count; i++)
+            {
+                if (DataModelColumns[i].GetColumnProperties().IsPrimaryKey)
+                {
+                    DataModelColumns[i].ReadFromDatabase(reader, ref index);
+                    return;
+                }
             }
         }
 

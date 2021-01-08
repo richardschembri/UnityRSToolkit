@@ -64,7 +64,7 @@ namespace Demo.Data.SQLite
             return result;
         }
 
-        public override DataCountries GenerateDataModel()
+        public override DataCountries GenerateAndGetDataModel()
         {
             var result = new DataCountries(ColumnPropertiesColumnCountryID,
                                                ColumnPropertiesColumnCountryName);

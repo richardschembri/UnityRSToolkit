@@ -15,6 +15,8 @@ namespace RSToolkit.Data.SQLite
         // List<IDataModel> DataModels { get; }
         void GenerateDataColumnProperties();
         void GeneratePresets();
+        void GenerateDataModel(SqliteDataReader reader, ref int index);
+        void GenerateDataModelWithOnlyPK(SqliteDataReader reader, ref int index);
         string GetCommandText_Insert();
         string GetCommandText_BasicSelect(bool selectAll = true, int pageSize = 0, int startIndex = 0);
         string GetCommandText_BasicSelectWithParameters(List<DataModel.IDataModelColumn> parameters, int pageSize = 0, int startIndex = 0);
@@ -65,7 +67,7 @@ namespace RSToolkit.Data.SQLite
         public List<T> DataModels { get; private set; } = new List<T>();
         // public List<IDataModel> DataModels { get; private set; } = new List<IDataModel>();
 
-        public abstract T GenerateDataModel();
+        public abstract T GenerateAndGetDataModel();
 
         public abstract void GenerateDataColumnProperties();
         
@@ -75,11 +77,22 @@ namespace RSToolkit.Data.SQLite
             GenerateDataColumnProperties();
         }
 
-        public T GenerateDataModel(SqliteDataReader reader, ref int index)
+        public T GenerateAndGetDataModel(SqliteDataReader reader, ref int index)
         {
-            T result = GenerateDataModel();
+            T result = GenerateAndGetDataModel();
             result.ReadFromDatabase(reader, ref index);
             return result;
+        }
+
+        public void GenerateDataModelWithOnlyPK(SqliteDataReader reader, ref int index)
+        {
+            var result = GenerateAndGetDataModel();
+            result.ReadPKFromDatabase(reader, ref index);    
+        }
+
+        public void GenerateDataModel(SqliteDataReader reader, ref int index)
+        {
+            GenerateAndGetDataModel(reader, ref index);
         }
 
         public virtual void GeneratePresets()
@@ -116,6 +129,8 @@ namespace RSToolkit.Data.SQLite
         {
             return $"JOIN {fk.ForeignDataModelFactory.TableName} as {fk.GetJoinName()} ON {TableName}.{fk.ColumnName} = {fk.GetJoinName()}.{fk.ColumnName}";
         }
+
+        /*
         protected virtual string GetCommandText_BasicSelectCommon()
         {
             var sbQuery = new StringBuilder();
@@ -132,8 +147,9 @@ namespace RSToolkit.Data.SQLite
             sbQuery.Append(sbQueryJoin.ToString());
             return sbQuery.ToString();
         }
+        */
 
-        public virtual string GetCommandText_BasicSelect(bool selectAll = true, int pageSize = 0, int startIndex = 0, bool includeJoins = true)
+        public virtual string GetCommandText_BasicSelect(bool selectAll = true, int pageSize = 0, int startIndex = 0)
         {
             var sbQuery = new StringBuilder();
             var sbSelect = new StringBuilder();
@@ -147,14 +163,16 @@ namespace RSToolkit.Data.SQLite
             var primaryKey = DataModelColumnProperties.First(dmc => dmc.IsPrimaryKey);
             sbQuery.AppendFormat(" FROM {0}", TableName);
 
-            if (includeJoins)
+            for (int i = 0; i < DataModelForeignKeyProperties.Count(); i++)
             {
-                for (int i = 0; i < DataModelForeignKeyProperties.Count(); i++)
-                {
+                if (DataModelForeignKeyProperties[i].PerformJoin) {
                     sbSelect.Append(DataModelForeignKeyProperties[i].GetColumnsForSelectQuery());
-                    // sbQuery.Append($" JOIN {DataModelForeignKeyProperties[i].ForeignTable.TableName} ON {TableName}.{foreignKeys[i].ColumnName} = {foreignKeys[i].ForeignTable.TableName}.{foreignKeys[i].ForeignTable.Get_PrimaryKeyProperties().ColumnName}");
                     sbQuery.Append($" JOIN {DataModelForeignKeyProperties[i].GetJoinName()}");
                     sbQuery.Append($" ON {DataModelForeignKeyProperties[i].ColumnName} = {DataModelForeignKeyProperties[i].GetForeignTablePK()}");
+                }
+                else
+                {
+                    sbSelect.Append($", {DataModelForeignKeyProperties[i].ColumnName}");
                 }
             }
 
@@ -162,11 +180,14 @@ namespace RSToolkit.Data.SQLite
             {
                 sbQuery.AppendLine(string.Format(" WHERE {0} = @{0}", primaryKey.ColumnName));
             }
+
             sbQuery.AppendLine(string.Format(" ORDER BY {0}", primaryKey.ColumnName));
+
             if (pageSize > 0)
             {
                 sbQuery.AppendLine(string.Format(" LIMIT {0}, {1}", pageSize, startIndex));
             }
+
             return $"{sbSelect.ToString()} {sbQuery.ToString()}";
         }
 

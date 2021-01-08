@@ -459,7 +459,7 @@ namespace RSToolkit.Data.SQLite
                             while (reader.Read())
                             {
                                 index = 0;
-                                modelFactory.GenerateDataModel(reader, ref index);
+                                modelFactory.GenerateAndGetDataModel(reader, ref index);
                             }
                             reader.Close();
                         }
@@ -498,7 +498,7 @@ namespace RSToolkit.Data.SQLite
                             int index = 0;
                             while (reader.Read())
                             {
-                                modelFactory.GenerateDataModel(reader, ref index);
+                                modelFactory.GenerateAndGetDataModel(reader, ref index);
                             }
                             reader.Close();
                         }
