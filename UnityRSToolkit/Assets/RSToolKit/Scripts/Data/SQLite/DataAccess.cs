@@ -226,17 +226,16 @@ namespace RSToolkit.Data.SQLite
         public void CreateTableIfNotExists(IDataModelFactory dataModelFactory)
         {
             var sbQuery = new StringBuilder();
-            var primaryKeyColumn = dataModelFactory.DataModelColumnProperties.First(pk => pk.IsPrimaryKey);
 
-            sbQuery.Append(string.Format("create table if not exists {0}(", dataModelFactory.TableName));
-            sbQuery.AppendLine(primaryKeyColumn.GetColumnCodeForCreateTable());
+            sbQuery.AppendLine($"CREATE TABLE IF NOT EXISTS {dataModelFactory.TableName}(");
+            sbQuery.AppendLine(dataModelFactory.Get_PrimaryKeyProperties().GetColumnCodeForCreateTable());
 
             for (int i = 0; i < dataModelFactory.DataModelColumnProperties.Count; i++)
             {
                 var dmc = dataModelFactory.DataModelColumnProperties[i];
                 if (!dmc.IsPrimaryKey)
                 {
-                    sbQuery.Append(string.Format(", {0}", dmc.GetColumnCodeForCreateTable()));
+                    sbQuery.Append($", {dmc.GetColumnCodeForCreateTable()}");
                 }
             }
 
@@ -248,8 +247,10 @@ namespace RSToolkit.Data.SQLite
             {
                 sbQuery.AppendLine(foreignKeys[i].GetForeignKeyCodeForCreateTable());
             }
+            */
+
             sbQuery.Append(")");
-*/
+
             var query = sbQuery.ToString();
             try
             {
@@ -285,9 +286,9 @@ namespace RSToolkit.Data.SQLite
 
         public bool CreateAndPopulateTableIfNotExists<T>(DataModelFactory<T> dataModelFactory) where T : DataModel
         {
-            dataModelFactory.GeneratePresets();
-            LogInDebugMode($"Generated {dataModelFactory.DataModels.Count} Presets");
-            return CreateAndPopulateTableIfNotExists(dataModelFactory, dataModelFactory.DataModels);
+            var presets = dataModelFactory.GeneratePresets();
+            LogInDebugMode($"Generated {presets.Count} Presets");
+            return CreateAndPopulateTableIfNotExists(dataModelFactory, presets);
         }
 
         public void ExecuteCommand_Update(SqliteCommand updateCommand)
@@ -437,6 +438,7 @@ namespace RSToolkit.Data.SQLite
             }
         }
 
+        /*
         public void ExecuteReader_BasicSelect<T>(DataModelFactory<T> modelFactory, bool selectAll = true, int pageSize = 0, int startIndex = 0) where T : DataModel
         {
             modelFactory.DataModels.Clear();
@@ -473,11 +475,12 @@ namespace RSToolkit.Data.SQLite
                 LogSQLQueryErrorInDebugMode(query, ex);
             }
         }
+        */
 
-        public virtual void GetCommandText_BasicSelectWithParameters<T>(DataModelFactory<T> modelFactory, List<DataModel.IDataModelColumn> parameters, int pageSize = 0, int startIndex = 0) where T : DataModel
+        public virtual List<T> ExecuteReader_Select<T>(DataModelFactory<T> modelFactory, List<DataModel.IDataModelColumn> parameters = null, int pageSize = 0, int startIndex = 0) where T : DataModel
         {
-
-            var query = modelFactory.GetCommandText_BasicSelectWithParameters(parameters, pageSize, startIndex);
+            var result = new List<T>();
+            var query = modelFactory.GetCommandText_Select(parameters, pageSize, startIndex);
 
             try
             {
@@ -488,17 +491,20 @@ namespace RSToolkit.Data.SQLite
                     using (var dbCmd = dbConnection.CreateCommand())
                     {
                         dbCmd.CommandText = query;
-                        for(int i = 0; i < parameters.Count; i++)
-                        {
-                            dbCmd.Parameters.Add(parameters[i].ToParameter());
+                        if(parameters != null){
+                            for (int i = 0; i < parameters.Count; i++)
+                            {
+                                dbCmd.Parameters.Add(parameters[i].ToParameter());
+                            }
                         }
 
                         using (var reader = dbCmd.ExecuteReader())
                         {
-                            int index = 0;
+                            int index;
                             while (reader.Read())
                             {
-                                modelFactory.GenerateAndGetDataModel(reader, ref index);
+                                index = 0;
+                                result.Add(modelFactory.GenerateAndGetDataModel(reader, ref index));
                             }
                             reader.Close();
                         }
@@ -511,6 +517,8 @@ namespace RSToolkit.Data.SQLite
             {
                 LogSQLQueryErrorInDebugMode(query, ex);
             }
+
+            return result;
         }
 
         public int Get_RowCount(string tableName)

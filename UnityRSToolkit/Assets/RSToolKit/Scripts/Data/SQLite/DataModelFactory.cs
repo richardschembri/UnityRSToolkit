@@ -1,9 +1,7 @@
 ﻿using Mono.Data.Sqlite;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEngine;
 
 namespace RSToolkit.Data.SQLite
 { 
@@ -14,13 +12,16 @@ namespace RSToolkit.Data.SQLite
         string GetColumnNamesAsCommandText(string tableNamePrefix = "");
         // List<IDataModel> DataModels { get; }
         void GenerateDataColumnProperties();
-        void GeneratePresets();
-        void GenerateDataModel(SqliteDataReader reader, ref int index);
+        // void GeneratePresets();
+        // void GenerateDataModel(SqliteDataReader reader, ref int index);
+        IDataModel GenerateAndGetIDataModel(SqliteDataReader reader, ref int index);
         void GenerateDataModelWithOnlyPK(SqliteDataReader reader, ref int index);
         string GetCommandText_Insert();
-        string GetCommandText_BasicSelect(bool selectAll = true, int pageSize = 0, int startIndex = 0);
-        string GetCommandText_BasicSelectWithParameters(List<DataModel.IDataModelColumn> parameters, int pageSize = 0, int startIndex = 0);
-        string GetCommandText_SelectByPrimaryKey();
+        // string GetCommandText_BasicSelect(bool selectAll = true, int pageSize = 0, int startIndex = 0);
+        string GetCommandText_Select(List<DataModel.IDataModelColumn> parameters = null,
+                                        int pageSize = 0, int startIndex = 0,
+                                        List<DataModel.IDataModelColumnProperties> orderby = null);
+        // string GetCommandText_SelectByPrimaryKey();
         string GetCommandText_Update();
         string GetCommandText_Delete();
         string GetCommandText_Delete(List<DataModel.IDataModelColumnProperties> parameters);
@@ -36,7 +37,7 @@ namespace RSToolkit.Data.SQLite
     public abstract class DataModelFactory<T> : IDataModelFactory where T : DataModel 
     {
         public List<DataModel.IDataModelColumnProperties> DataModelColumnProperties { get; protected set; } = new List<DataModel.IDataModelColumnProperties>();
-        public List<DataModel.IDataModelForeignKeyProperties> DataModelForeignKeyProperties { get; }
+        public List<DataModel.IDataModelForeignKeyProperties> DataModelForeignKeyProperties { get; private set; } = new List<DataModel.IDataModelForeignKeyProperties>();
         public string TableName { get; private set; }
 
         public string GetColumnNamesAsCommandText(string overrideTableName = "")
@@ -64,7 +65,7 @@ namespace RSToolkit.Data.SQLite
             return sbCommandText.ToString();
         }
 
-        public List<T> DataModels { get; private set; } = new List<T>();
+        // public List<T> DataModels { get; private set; } = new List<T>();
         // public List<IDataModel> DataModels { get; private set; } = new List<IDataModel>();
 
         public abstract T GenerateAndGetDataModel();
@@ -77,6 +78,10 @@ namespace RSToolkit.Data.SQLite
             GenerateDataColumnProperties();
         }
 
+        public IDataModel GenerateAndGetIDataModel(SqliteDataReader reader, ref int index)
+        {
+            return (IDataModel)GenerateAndGetDataModel(reader, ref index);
+        }
         public T GenerateAndGetDataModel(SqliteDataReader reader, ref int index)
         {
             T result = GenerateAndGetDataModel();
@@ -90,12 +95,14 @@ namespace RSToolkit.Data.SQLite
             result.ReadPKFromDatabase(reader, ref index);    
         }
 
+        /*
         public void GenerateDataModel(SqliteDataReader reader, ref int index)
         {
             GenerateAndGetDataModel(reader, ref index);
         }
+        */
 
-        public virtual void GeneratePresets()
+        public virtual List<T> GeneratePresets()
         {
             throw new System.Exception("Not implemented");
         }
@@ -149,6 +156,81 @@ namespace RSToolkit.Data.SQLite
         }
         */
 
+        public virtual string GetCommandText_Select(List<DataModel.IDataModelColumn> parameters = null,
+                                                       int pageSize = 0, int startIndex = 0,
+                                                       List<DataModel.IDataModelColumnProperties> orderby = null)
+        {
+            var sbQuery = new StringBuilder();
+            var sbSelect = new StringBuilder();
+            
+
+            sbSelect.AppendFormat("SELECT {0}", DataModelColumnProperties[0].ColumnName);
+            // Iterate the Factory's Columns(exluding foreign keys) to add them to select query
+            for (int i = 1; i < DataModelColumnProperties.Count; i++)
+            {
+                sbSelect.AppendFormat(", {0}", DataModelColumnProperties[i].ColumnName);
+            }
+
+            sbQuery.AppendFormat(" FROM {0}", TableName);
+
+            // Iterate the Factory's Foreign Keys to add them to select query and to join to their
+            // respective tables
+            for (int i = 0; i < DataModelForeignKeyProperties.Count(); i++)
+            {
+                if (DataModelForeignKeyProperties[i].PerformJoin) {
+                    sbSelect.Append(DataModelForeignKeyProperties[i].GetColumnsForSelectQuery());
+                    sbQuery.Append($" JOIN {DataModelForeignKeyProperties[i].GetJoinName()}");
+                    sbQuery.Append($" ON {DataModelForeignKeyProperties[i].ColumnName} = {DataModelForeignKeyProperties[i].GetForeignTablePK()}");
+                }
+                else
+                {
+                    sbSelect.Append($", {DataModelForeignKeyProperties[i].ColumnName}");
+                }
+            }
+
+            // If parameters have been provided include WHERE to the SELECT query
+            if(parameters != null && parameters.Count > 0){
+                sbQuery.AppendLine(" WHERE");
+                // Iterate all parameters to add to the WHERE query
+                for (int pi = 0; pi < parameters.Count; pi++)
+                {
+                    if (pi > 0)
+                    {
+                        sbQuery.Append(" AND");
+                    }
+                    sbQuery.AppendLine(string.Format(" {0} = @{0}", parameters[pi].GetColumnProperties().ColumnName));
+                }
+            }
+
+            sbQuery.AppendLine(" ORDER BY");
+
+            // Add Order By
+            if (orderby != null)
+            {
+                for (int i = 0; i < orderby.Count; i++)
+                {
+                    if (i > 0)
+                    {
+                        sbQuery.Append(", ");
+                    }
+                    sbQuery.Append($"{orderby[i].ColumnName}");
+                }
+            }
+            else
+            {
+                // If Order By not provided, order by primary key 
+                sbQuery.AppendLine($"{Get_PrimaryKeyProperties().ColumnName}");
+            }
+
+            if (pageSize > 0)
+            {
+                sbQuery.AppendLine(string.Format(" LIMIT {0}, {1}", pageSize, startIndex));
+            }
+
+            return $"{sbSelect.ToString()} {sbQuery.ToString()}";
+        }
+
+/*
         public virtual string GetCommandText_BasicSelect(bool selectAll = true, int pageSize = 0, int startIndex = 0)
         {
             var sbQuery = new StringBuilder();
@@ -191,7 +273,7 @@ namespace RSToolkit.Data.SQLite
             return $"{sbSelect.ToString()} {sbQuery.ToString()}";
         }
 
-        public virtual string GetCommandText_BasicSelectWithParameters(List<DataModel.IDataModelColumn> parameters, int pageSize = 0, int startIndex = 0)
+        public virtual string GetCommandText_BasicSelect(List<DataModel.IDataModelColumn> parameters, int pageSize = 0, int startIndex = 0)
         {
             var sbQuery = new StringBuilder();
             sbQuery.AppendFormat("SELECT {0}", DataModelColumnProperties[0].ColumnName);
@@ -201,14 +283,17 @@ namespace RSToolkit.Data.SQLite
             }
 
             var primaryKey = DataModelColumnProperties.First(dmc => dmc.IsPrimaryKey);
-            sbQuery.AppendFormat(" FROM {0} WHERE ", TableName);
-            for (int pi = 0; pi < parameters.Count; pi++)
-            {
-                if (pi > 0)
+            sbQuery.Append($" FROM {TableName}");
+            if(parameters.Count > 0){
+                sbQuery.Append(" WHERE");
+                for (int pi = 0; pi < parameters.Count; pi++)
                 {
-                    sbQuery.Append(" AND");
+                    if (pi > 0)
+                    {
+                        sbQuery.Append(" AND");
+                    }
+                    sbQuery.AppendLine(string.Format(" {0} = @{0}", parameters[pi].GetColumnProperties().ColumnName));
                 }
-                sbQuery.AppendLine(string.Format(" {0} = @{0}", parameters[pi].GetColumnProperties().ColumnName));
             }
             sbQuery.AppendLine(string.Format(" ORDER BY {0}", primaryKey.ColumnName));
             if (pageSize > 0)
@@ -233,6 +318,7 @@ namespace RSToolkit.Data.SQLite
             sbQuery.AppendFormat(" FROM {0} ORDER BY {1}", TableName, primaryKey.ColumnName);
             return sbQuery.ToString();
         }
+*/
 
         public string GetCommandText_Update()
         {
@@ -244,8 +330,7 @@ namespace RSToolkit.Data.SQLite
             {
                 sbQuery.AppendFormat(",{0} = @{0} ", lstDMC[i].ColumnName);
             }
-            var primaryKey = DataModelColumnProperties.First(dmc => dmc.IsPrimaryKey);
-            sbQuery.AppendFormat("WHERE {0} = @{0}", primaryKey.ColumnName);
+            sbQuery.AppendFormat("WHERE {0} = @{0}", Get_PrimaryKeyProperties().ColumnName);
             return sbQuery.ToString();
         }
 
@@ -253,7 +338,7 @@ namespace RSToolkit.Data.SQLite
         {
             var sbQuery = new StringBuilder();
             var primaryKey = DataModelColumnProperties.First(dmc => dmc.IsPrimaryKey);
-            sbQuery.AppendFormat("DELETE FROM {0} WHERE {1} = @{1} ", TableName, primaryKey.ColumnName);
+            sbQuery.AppendLine($"DELETE FROM {TableName} WHERE {Get_PrimaryKeyProperties().ColumnName} = @{Get_PrimaryKeyProperties().ColumnName} ");
 
             return sbQuery.ToString();
         }
@@ -261,10 +346,11 @@ namespace RSToolkit.Data.SQLite
         public string GetCommandText_Delete(List<DataModel.IDataModelColumnProperties> parameters)
         {
             var sbQuery = new StringBuilder();
-            sbQuery.AppendFormat("DELETE FROM {0} WHERE {1} = @{1} ", TableName, parameters[0].ColumnName);
+            sbQuery.AppendFormat($"DELETE FROM {TableName}");
+            sbQuery.AppendLine($"WHERE {parameters[0].ColumnName} = @{parameters[0].ColumnName}");
             for (int i = 1; i < parameters.Count; i++)
             {
-                sbQuery.AppendFormat("AND {0} = @{0} ", parameters[i].ColumnName);
+                sbQuery.Append($" AND {parameters[i].ColumnName} = @{parameters[i].ColumnName}");
             }
 
             return sbQuery.ToString();
@@ -273,7 +359,8 @@ namespace RSToolkit.Data.SQLite
         public string GetCommandText_Delete(SqliteParameterCollection parameters)
         {
             var sbQuery = new StringBuilder();
-            sbQuery.AppendFormat("DELETE FROM {0} WHERE {1} = @{1} ", TableName, parameters[0].ParameterName);
+            sbQuery.AppendLine($"DELETE FROM {TableName}");
+            sbQuery.AppendLine($"WHERE {parameters[0].ParameterName} = @{parameters[0].ParameterName} ");
             for (int i = 1; i < parameters.Count; i++)
             {
                 sbQuery.AppendFormat("AND {0} = @{0} ", parameters[i].ParameterName);
@@ -286,10 +373,14 @@ namespace RSToolkit.Data.SQLite
         {
             return string.Format("DELETE FROM {0}", TableName);
         }
-
+        DataModel.IDataModelColumnProperties _primaryKeyProperties = null;
         public DataModel.IDataModelColumnProperties Get_PrimaryKeyProperties()
         {
-            return DataModelColumnProperties.FirstOrDefault(dmc => dmc.IsPrimaryKey);
+            if(_primaryKeyProperties == null){
+                _primaryKeyProperties = DataModelColumnProperties.FirstOrDefault(dmc => dmc.IsPrimaryKey);
+            }
+
+            return _primaryKeyProperties;
         }
 
         public string GetCommandText_LatestPrimaryKey()

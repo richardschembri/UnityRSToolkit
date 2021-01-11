@@ -14,7 +14,8 @@ namespace RSToolkit.Data.SQLite
 
         #region Columns
         List<DataModel.IDataModelColumn> DataModelColumns { get; }
-        List<DataModel.IDataModelForeignKeyProperties> DataModelForeignKeyProperties { get; }
+        // List<DataModel.IDataModelForeignKeyProperties> DataModelForeignKeyProperties { get; }
+        Dictionary<DataModel.IDataModelForeignKeyProperties, List<IDataModel>> DataModelForeignKeys { get; }
         // List<DataModel.IDataModelColumn> Get_ForeignKeys();
         List<DataModel.IDataModelColumn> Get_DataModelColumnsByName(string[] columnNames);
 
@@ -394,7 +395,9 @@ namespace RSToolkit.Data.SQLite
         public List<IDataModelColumn> DataModelColumns { get; protected set; } = new List<IDataModelColumn>();
         // public List<IDataModelFactory> ForeignKeys { get; protected set; } = new List<IDataModelFactory>();
 
-        public List<IDataModelForeignKeyProperties> DataModelForeignKeyProperties => throw new NotImplementedException();
+        // public List<IDataModelForeignKeyProperties> DataModelForeignKeyProperties => throw new NotImplementedException();
+        //public List<IDataModelForeignKeyProperties> DataModelForeignKeyProperties { get; protected set; } = new List<IDataModelForeignKeyProperties>();
+        public Dictionary<IDataModelForeignKeyProperties, List<IDataModel>> DataModelForeignKeys { get; protected set; } = new Dictionary<IDataModelForeignKeyProperties, List<IDataModel>>();
 
         /*
         public List<IDataModelColumn> Get_ForeignKeys()
@@ -463,12 +466,19 @@ namespace RSToolkit.Data.SQLite
                 DataModelColumns[i].ReadFromDatabase(reader, ref index);
             }
 
+            /*
             for(int i = 0; i < DataModelForeignKeyProperties.Count; i++)
             {
                 if (DataModelForeignKeyProperties[i].PerformJoin)
                 {
                     DataModelForeignKeyProperties[i].ForeignDataModelFactory.GenerateDataModel(reader, ref index);
                 }
+            }
+            */
+
+            foreach (var k in DataModelForeignKeys.Keys){
+               var fk =  DataModelForeignKeys[k];
+               fk.Add(k.ForeignDataModelFactory.GenerateAndGetIDataModel(reader, ref index));
             }
         }
 

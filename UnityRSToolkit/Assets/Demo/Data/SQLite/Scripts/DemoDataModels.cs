@@ -55,11 +55,11 @@ namespace Demo.Data.SQLite
             DataModelColumnProperties.Add(ColumnPropertiesColumnCountryName);
         }
 
-        public DataCountries GenerateDataModel(int countryID, string countryName)
+        public DataCountries GenerateAndGetDataModel(int countryID, string countryName)
         {
             var result = new DataCountries(ColumnPropertiesColumnCountryID, countryID,
                                                ColumnPropertiesColumnCountryName, countryName);
-            DataModels.Add(result);
+            //DataModels.Add(result);
 
             return result;
         }
@@ -68,21 +68,27 @@ namespace Demo.Data.SQLite
         {
             var result = new DataCountries(ColumnPropertiesColumnCountryID,
                                                ColumnPropertiesColumnCountryName);
-            DataModels.Add(result);
+            //DataModels.Add(result);
             return result;
         }
 
-        public override void GeneratePresets()
+        public override List<DataCountries> GeneratePresets()
         {     
-            GenerateDataModel(0, "Japan");
-            GenerateDataModel(1, "Korea");
-            GenerateDataModel(2, "Thailand");
-            GenerateDataModel(3, "Vietnam");
-            GenerateDataModel(4, "Napal");
+            var result = new List<DataCountries>();
+            result.Add(GenerateAndGetDataModel(0, "Japan"));
+            result.Add(GenerateAndGetDataModel(1, "Korea"));
+            result.Add(GenerateAndGetDataModel(2, "Thailand"));
+            result.Add(GenerateAndGetDataModel(3, "Vietnam"));
+            result.Add(GenerateAndGetDataModel(4, "Napal"));
 
+            return result;
+        }
+        public override string GetCommandText_Select(List<DataModel.IDataModelColumn> parameters = null, int pageSize = 0, int startIndex = 0, List<DataModel.IDataModelColumnProperties> orderby = null)
+        {
+            return base.GetCommandText_Select(parameters, pageSize, startIndex, orderby);
         }
 
-        public DataCountriesFactory() : base("Countries")
+        public DataCountriesFactory() : base(DataCountries.TABLE_NAME)
         {
 
         }
@@ -100,12 +106,20 @@ namespace Demo.Data.SQLite
         public DataModelColumn<int> ColumnUserID { get; private set;}
         public DataModelColumn<string> ColumnFirstName { get; set; }
         public DataModelColumn<string> ColumnLastName { get; set; }
-        public DataModelColumn<int> ColumnCountry { get; set; }
+        DataModeForeignKeyProperties _fkCountryProperties;
+        public DataCountries FKCountry { 
+            get{
+                return (DataCountries)DataModelForeignKeys[_fkCountryProperties][0];
+            }
+            set{
+                DataModelForeignKeys[_fkCountryProperties][0] = value;
+            }
+        } 
 
         private void Init(DataModelColumnProperties<int> columnUserIDProperties,
                                 DataModelColumnProperties<string> columnFirstNameProperties,
                                 DataModelColumnProperties<string> columnLastNameProperties,
-                                DataModelColumnProperties<int> columnCountryProperties)
+                                DataModeForeignKeyProperties fkCountryProperties)
         {
             ColumnUserID  = new DataModelColumn<int>(columnUserIDProperties);
             DataModelColumns.Add(ColumnUserID);
@@ -113,33 +127,79 @@ namespace Demo.Data.SQLite
             DataModelColumns.Add(ColumnFirstName);
             ColumnLastName = new DataModelColumn<string>(columnLastNameProperties);
             DataModelColumns.Add(ColumnFirstName);
-            ColumnCountry = new DataModelColumn<int>(columnCountryProperties);
-            DataModelColumns.Add(ColumnCountry);
+
+            DataModelForeignKeys.Add(fkCountryProperties, new List<IDataModel>());
         }
 
         public DataUsers (DataModelColumnProperties<int> columnUserIDProperties,
                                 DataModelColumnProperties<string> columnFirstNameProperties,
                                 DataModelColumnProperties<string> columnLastNameProperties,
-                                DataModelColumnProperties<int> columnCountryProperties)
+                                DataModeForeignKeyProperties fkCountryProperties)
         {
-            Init(columnUserIDProperties, columnFirstNameProperties, columnLastNameProperties, columnCountryProperties);
+            Init(columnUserIDProperties, columnFirstNameProperties, columnLastNameProperties, fkCountryProperties);
 
         }
 
-        /*
-        public DataCountries(DataModelColumnProperties<int> columnUserIDProperties, int countryID,
+        public DataUsers (DataModelColumnProperties<int> columnUserIDProperties,
                                 DataModelColumnProperties<string> columnFirstNameProperties, string firstName,
                                 DataModelColumnProperties<string> columnLastNameProperties, string lastName,
-                                DataModelColumnProperties<int> columnCountryProperties, DataCountriesFactory countriesFactory)
+                                DataModeForeignKeyProperties fkCountryProperties, DataCountries country)
         {
-
-            Init(columnUserIDProperties, columnFirstNameProperties, columnLastNameProperties, columnCountryProperties);
+            Init(columnUserIDProperties, columnFirstNameProperties, columnLastNameProperties, fkCountryProperties);
             ColumnFirstName.ColumnValue = firstName;
             ColumnLastName.ColumnValue = lastName;
-            ColumnCountry.ColumnValue = countriesFactory.DataModels[0].ColumnCountryID.;
+            FKCountry = country;
         }
-        */
     }
 
+    public class DataUsersFactory : DataModelFactory<DataUsers>
+    {
+
+        public DataModel.DataModelColumnProperties<int> ColumnPropertiesUserID { get; private set;} = new DataModel.DataModelColumnProperties<int>("UserID", true, true, false);
+        public DataModel.DataModelColumnProperties<string> ColumnPropertiesFirstName { get; set; } = new DataModel.DataModelColumnProperties<string>("FirstName", true, false, false);
+        public DataModel.DataModelColumnProperties<string> ColumnPropertiesLastName { get; set; } = new DataModel.DataModelColumnProperties<string>("LastName", true, false, false);
+        public DataModel.DataModeForeignKeyProperties FKCountryProperties;
+        public override void GenerateDataColumnProperties()
+        {
+            DataModelColumnProperties.Clear();
+            DataModelColumnProperties.Add(ColumnPropertiesUserID);
+            DataModelColumnProperties.Add(ColumnPropertiesFirstName);
+            DataModelColumnProperties.Add(ColumnPropertiesLastName);
+
+            DataModelForeignKeyProperties.Clear();
+            DataModelForeignKeyProperties.Add(FKCountryProperties);
+        }
+
+        public DataUsers GenerateDataModel(string firstName, string lastName, DataCountries country)
+        {
+            var result = new DataUsers(ColumnPropertiesUserID,
+                                        ColumnPropertiesFirstName, firstName,
+                                        ColumnPropertiesLastName, lastName,
+                                        FKCountryProperties, country);
+            // DataModels.Add(result);
+
+            return result;
+        }
+
+        public override DataUsers GenerateAndGetDataModel()
+        {
+            var result = new DataUsers(ColumnPropertiesUserID,
+                                        ColumnPropertiesFirstName,
+                                        ColumnPropertiesLastName,
+                                        FKCountryProperties);
+            // DataModels.Add(result);
+            return result;
+        }
+
+        public override string GetCommandText_Select(List<DataModel.IDataModelColumn> parameters = null, int pageSize = 0, int startIndex = 0, List<DataModel.IDataModelColumnProperties> orderby = null)
+        {
+            return base.GetCommandText_Select(parameters, pageSize, startIndex, orderby);
+        }
+
+        public DataUsersFactory () : base(DataUsers.TABLE_NAME)
+        {
+
+        }
+    }
     #endregion Users
 }
