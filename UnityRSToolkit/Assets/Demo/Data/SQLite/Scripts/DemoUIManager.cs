@@ -7,6 +7,16 @@ namespace Demo.Data.SQLite
 {
     public class DemoUIManager : MonoBehaviour
     {
+
+        [SerializeField]
+        private Text FieldUserID;
+
+        [SerializeField]
+        private InputField FieldFirstName;
+
+        [SerializeField]
+        private InputField FieldLastName;
+
         [SerializeField]
         private Dropdown DropdownCountries;
 
@@ -18,13 +28,13 @@ namespace Demo.Data.SQLite
         {
             DropdownCountries.ClearOptions();
             _countries = DemoDataManager.GetInstance().Select_Countries();
-            for(int i = 0; i < countries.Count; i++)
+            for(int i = 0; i < _countries.Count; i++)
             {
-                DropdownCountries.options.Add(new Dropdown.OptionData(countries[i].ColumnCountryName.ColumnValue));
+                DropdownCountries.options.Add(new Dropdown.OptionData(_countries[i].ColumnCountryName.ColumnValue));
             }
         }
 
-        public DataUsers SelectedCountry{
+        public DataCountries SelectedCountry{
             get{
                 if(DropdownCountries.value <= 0){
                     return null;
@@ -38,10 +48,10 @@ namespace Demo.Data.SQLite
             DropdownUsers.ClearOptions();
             _users = DemoDataManager.GetInstance().Select_Users();
 
-            DropdownCountries.options.Add(new Dropdown.OptionData(-1, "Please Select"));
-            for(int i = 0; i < users.Count; i++)
+            DropdownUsers.options.Add(new Dropdown.OptionData("Please Select"));
+            for(int i = 0; i < _users.Count; i++)
             {
-                DropdownCountries.options.Add(new Dropdown.OptionData($"{users[i].ColumnUserID.ColumnValue, users[i].ColumnFirstName.ColumnValue}/{users[i].ColumnLastName.ColumnValue}/{users[i].FKCountry.ColumnCountryName.ColumnValue}"));
+                DropdownCountries.options.Add(new Dropdown.OptionData($"{_users[i].ColumnFirstName.ColumnValue}/{_users[i].ColumnLastName.ColumnValue}/{_users[i].FKCountry.ColumnCountryName.ColumnValue}"));
             }
         }
         public DataUsers SelectedUser{
@@ -62,6 +72,20 @@ namespace Demo.Data.SQLite
         public void OnInitDatabase_Listener()
         {
             RefreshUI();
+        }
+
+        public void SaveUserData()
+        {
+           if(!string.IsNullOrEmpty(FieldFirstName.text)
+                && !string.IsNullOrEmpty(FieldLastName.text)
+                && SelectedCountry != null)
+            {
+                if(DemoDataManager.GetInstance().Insert_User(FieldFirstName.text,
+                    FieldLastName.text, SelectedCountry))
+                {
+                    PopulateDropdownUsers();
+                }
+            }
         }
 
 

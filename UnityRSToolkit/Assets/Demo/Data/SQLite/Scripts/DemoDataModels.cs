@@ -165,9 +165,6 @@ namespace Demo.Data.SQLite
             DataModelColumnProperties.Add(ColumnPropertiesUserID);
             DataModelColumnProperties.Add(ColumnPropertiesFirstName);
             DataModelColumnProperties.Add(ColumnPropertiesLastName);
-
-            DataModelForeignKeyProperties.Clear();
-            DataModelForeignKeyProperties.Add(FKCountryProperties);
         }
 
         public DataUsers GenerateDataModel(string firstName, string lastName, DataCountries country)
@@ -196,9 +193,12 @@ namespace Demo.Data.SQLite
             return base.GetCommandText_Select(parameters, pageSize, startIndex, orderby);
         }
 
-        public DataUsersFactory () : base(DataUsers.TABLE_NAME)
+        public DataUsersFactory (DataCountriesFactory dataCountriesFactory) : base(DataUsers.TABLE_NAME)
         {
+            FKCountryProperties = new DataModel.DataModeForeignKeyProperties(dataCountriesFactory, true);
 
+            DataModelForeignKeyProperties.Clear();
+            DataModelForeignKeyProperties.Add(FKCountryProperties);
         }
     }
     #endregion Users

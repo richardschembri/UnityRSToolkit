@@ -8,6 +8,7 @@ namespace RSToolkit.Data.SQLite
     public interface IDataModelFactory
     {
         List<DataModel.IDataModelColumnProperties> DataModelColumnProperties { get; }
+        List<DataModel.IDataModelForeignKeyProperties> DataModelForeignKeyProperties { get; } 
         string TableName { get; }
         string GetColumnNamesAsCommandText(string tableNamePrefix = "");
         // List<IDataModel> DataModels { get; }
@@ -104,7 +105,7 @@ namespace RSToolkit.Data.SQLite
 
         public virtual List<T> GeneratePresets()
         {
-            throw new System.Exception("Not implemented");
+            return null;
         }
 
         public string GetCommandText_Insert()

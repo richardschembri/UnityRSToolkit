@@ -226,6 +226,7 @@ namespace RSToolkit.Data.SQLite
         public void CreateTableIfNotExists(IDataModelFactory dataModelFactory)
         {
             var sbQuery = new StringBuilder();
+            var sbQueryFKCode = new StringBuilder();
 
             sbQuery.AppendLine($"CREATE TABLE IF NOT EXISTS {dataModelFactory.TableName}(");
             sbQuery.AppendLine(dataModelFactory.Get_PrimaryKeyProperties().GetColumnCodeForCreateTable());
@@ -249,6 +250,13 @@ namespace RSToolkit.Data.SQLite
             }
             */
 
+            for(int i = 0; i < dataModelFactory.DataModelForeignKeyProperties.Count; i++)
+            {
+                sbQuery.Append($", {dataModelFactory.DataModelForeignKeyProperties[i].GetCreateForeignKeyColumnCode()}");
+                sbQueryFKCode.Append($"{dataModelFactory.DataModelForeignKeyProperties[i].GetForeignKeyCodeForCreateTable()}");
+            }
+
+            sbQuery.AppendLine(sbQueryFKCode.ToString());
             sbQuery.Append(")");
 
             var query = sbQuery.ToString();
@@ -280,14 +288,19 @@ namespace RSToolkit.Data.SQLite
             }
 
             CreateTableIfNotExists(dataModelFactory);
+            if(dataModels != null)
+            {
+                LogInDebugMode($"Generated {dataModels.Count} Rows");
+                return ExecuteCommands_Insert(dataModelFactory, dataModels);
+            }
 
-            return ExecuteCommands_Insert(dataModelFactory, dataModels);
+            return true;
         }
 
         public bool CreateAndPopulateTableIfNotExists<T>(DataModelFactory<T> dataModelFactory) where T : DataModel
         {
             var presets = dataModelFactory.GeneratePresets();
-            LogInDebugMode($"Generated {presets.Count} Presets");
+
             return CreateAndPopulateTableIfNotExists(dataModelFactory, presets);
         }
 
@@ -400,6 +413,11 @@ namespace RSToolkit.Data.SQLite
 
             ExecuteCommands_Insert(sqliteCommands);
             return true;
+        }
+
+        public bool ExecuteCommands_Insert<T>(DataModelFactory<T> dataModelFactory, T dataModel) where T : DataModel
+        {
+            return ExecuteCommands_Insert<T>(dataModelFactory, new List<T> { dataModel });
         }
 
         public void ExecuteCommands_Insert(List<SqliteCommand> lstInsertCommands)

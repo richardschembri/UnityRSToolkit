@@ -213,7 +213,8 @@ namespace RSToolkit.Data.SQLite
             public string GetColumnCodeForCreateTable()
             {
                 var sbColumnCode = new StringBuilder();
-                sbColumnCode.Append(string.Format("{0} {1} ", ColumnName, ColumnType));
+                sbColumnCode.Append($"{ColumnName} {ColumnType} ");
+
                 if (IsPrimaryKey)
                 {
                     sbColumnCode.Append("PRIMARY KEY ");
@@ -267,6 +268,7 @@ namespace RSToolkit.Data.SQLite
             string GetForeignTablePK();
             string GetColumnsForSelectQuery();
             string GetForeignKeyCodeForCreateTable();
+            string GetCreateForeignKeyColumnCode();
             string GetCreateForeignKeyCode();
             string GetJoinName();
         }
@@ -320,9 +322,14 @@ namespace RSToolkit.Data.SQLite
                 return $", {GetCreateForeignKeyCode()}";
             }
 
+            public string GetCreateForeignKeyColumnCode()
+            {
+                return $"{ColumnName} {ForeignDataModelFactory.Get_PrimaryKeyProperties().ColumnType} ";
+            }
+
             public string GetCreateForeignKeyCode()
             {
-                return $"FOREIGN KEY ({ColumnName}) REFERENCES {ForeignDataModelFactory.TableName}({ColumnName})";
+                return $"FOREIGN KEY ({ColumnName}) REFERENCES {ForeignDataModelFactory.TableName}({ForeignDataModelFactory.Get_PrimaryKeyProperties().ColumnName})";
             }
 
             public string GetJoinName()
