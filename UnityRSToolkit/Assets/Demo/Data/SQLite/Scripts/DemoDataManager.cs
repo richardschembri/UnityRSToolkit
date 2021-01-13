@@ -43,5 +43,10 @@ namespace Demo.Data.SQLite
         {
             return _dba.ExecuteCommands_Insert(_dataUsersFactory, _dataUsersFactory.GenerateDataModel(firstName, lastName, country));
         }
+
+        public void Delete_User(DataUsers user)
+        {
+            _dba.ExecuteCommand_Delete(_dataUsersFactory.GetCommand_Delete(user));
+        }
     }
 }

@@ -17,14 +17,10 @@ namespace Demo.Data.SQLite
         public DataModelColumn<int> ColumnCountryID { get; private set;}
         public DataModelColumn<string> ColumnCountryName { get; set; }
 
-        public DataCountries() : base()
-        {
-
-        }
-
         public DataCountries(DataModelColumnProperties<int> countryIDProperties,
                                 DataModelColumnProperties<string> countryNameProperties)
         {
+
             ColumnCountryID = new DataModelColumn<int>(countryIDProperties);
             DataModelColumns.Add(ColumnCountryID);
             ColumnCountryName = new DataModelColumn<string>(countryNameProperties);
@@ -45,20 +41,20 @@ namespace Demo.Data.SQLite
 
     public class DataCountriesFactory : DataModelFactory<DataCountries>
     {
-        public DataModel.DataModelColumnProperties<int> ColumnPropertiesColumnCountryID { get; private set; } = new DataModel.DataModelColumnProperties<int>("CountryID", true, true, false);
-        public DataModel.DataModelColumnProperties<string> ColumnPropertiesColumnCountryName { get; set; } = new DataModel.DataModelColumnProperties<string>("CountryName", true, false, false);
+        public DataModel.DataModelColumnProperties<int> ColumnPropertiesCountryID { get; private set; } = new DataModel.DataModelColumnProperties<int>("CountryID", true, true, false);
+        public DataModel.DataModelColumnProperties<string> ColumnPropertiesCountryName { get; set; } = new DataModel.DataModelColumnProperties<string>("CountryName", true, false, false);
 
         public override void GenerateDataColumnProperties()
         {
             DataModelColumnProperties.Clear();
-            DataModelColumnProperties.Add(ColumnPropertiesColumnCountryID);
-            DataModelColumnProperties.Add(ColumnPropertiesColumnCountryName);
+            DataModelColumnProperties.Add(ColumnPropertiesCountryID);
+            DataModelColumnProperties.Add(ColumnPropertiesCountryName);
         }
 
         public DataCountries GenerateAndGetDataModel(int countryID, string countryName)
         {
-            var result = new DataCountries(ColumnPropertiesColumnCountryID, countryID,
-                                               ColumnPropertiesColumnCountryName, countryName);
+            var result = new DataCountries(ColumnPropertiesCountryID, countryID,
+                                               ColumnPropertiesCountryName, countryName);
             //DataModels.Add(result);
 
             return result;
@@ -66,8 +62,8 @@ namespace Demo.Data.SQLite
 
         public override DataCountries GenerateAndGetDataModel()
         {
-            var result = new DataCountries(ColumnPropertiesColumnCountryID,
-                                               ColumnPropertiesColumnCountryName);
+            var result = new DataCountries(ColumnPropertiesCountryID,
+                                               ColumnPropertiesCountryName);
             //DataModels.Add(result);
             return result;
         }
@@ -85,6 +81,7 @@ namespace Demo.Data.SQLite
         }
         public override string GetCommandText_Select(List<DataModel.IDataModelColumn> parameters = null, int pageSize = 0, int startIndex = 0, List<DataModel.IDataModelColumnProperties> orderby = null)
         {
+
             return base.GetCommandText_Select(parameters, pageSize, startIndex, orderby);
         }
 
@@ -106,35 +103,31 @@ namespace Demo.Data.SQLite
         public DataModelColumn<int> ColumnUserID { get; private set;}
         public DataModelColumn<string> ColumnFirstName { get; set; }
         public DataModelColumn<string> ColumnLastName { get; set; }
-        DataModeForeignKeyProperties _fkCountryProperties;
-        public DataCountries FKCountry { 
-            get{
-                return (DataCountries)DataModelForeignKeys[_fkCountryProperties][0];
-            }
-            set{
-                DataModelForeignKeys[_fkCountryProperties][0] = value;
-            }
-        } 
+        private DataModeForeignKey FKCountry { get; set; }
+        public DataCountries Country {
+            get { return (DataCountries)FKCountry.ColumnValue; }
+            private set { FKCountry.ColumnValue = value; }
+        }
 
         private void Init(DataModelColumnProperties<int> columnUserIDProperties,
                                 DataModelColumnProperties<string> columnFirstNameProperties,
                                 DataModelColumnProperties<string> columnLastNameProperties,
-                                DataModeForeignKeyProperties fkCountryProperties)
+                                DataModeForeignKey fkCountry)
         {
             ColumnUserID  = new DataModelColumn<int>(columnUserIDProperties);
             DataModelColumns.Add(ColumnUserID);
             ColumnFirstName  = new DataModelColumn<string>(columnFirstNameProperties);
             DataModelColumns.Add(ColumnFirstName);
             ColumnLastName = new DataModelColumn<string>(columnLastNameProperties);
-            DataModelColumns.Add(ColumnFirstName);
-
-            DataModelForeignKeys.Add(fkCountryProperties, new List<IDataModel>());
+            DataModelColumns.Add(ColumnLastName);
+            FKCountry  = fkCountry;
+            DataModelForeignKeys.Add(FKCountry);
         }
 
         public DataUsers (DataModelColumnProperties<int> columnUserIDProperties,
                                 DataModelColumnProperties<string> columnFirstNameProperties,
                                 DataModelColumnProperties<string> columnLastNameProperties,
-                                DataModeForeignKeyProperties fkCountryProperties)
+                                DataModeForeignKey fkCountryProperties)
         {
             Init(columnUserIDProperties, columnFirstNameProperties, columnLastNameProperties, fkCountryProperties);
 
@@ -143,22 +136,23 @@ namespace Demo.Data.SQLite
         public DataUsers (DataModelColumnProperties<int> columnUserIDProperties,
                                 DataModelColumnProperties<string> columnFirstNameProperties, string firstName,
                                 DataModelColumnProperties<string> columnLastNameProperties, string lastName,
-                                DataModeForeignKeyProperties fkCountryProperties, DataCountries country)
+                                DataModeForeignKey fkCountry, DataCountries country)
         {
-            Init(columnUserIDProperties, columnFirstNameProperties, columnLastNameProperties, fkCountryProperties);
+            Init(columnUserIDProperties, columnFirstNameProperties, columnLastNameProperties, fkCountry);
             ColumnFirstName.ColumnValue = firstName;
             ColumnLastName.ColumnValue = lastName;
-            FKCountry = country;
+            FKCountry = fkCountry;
+            Country = country;
         }
     }
 
     public class DataUsersFactory : DataModelFactory<DataUsers>
     {
 
-        public DataModel.DataModelColumnProperties<int> ColumnPropertiesUserID { get; private set;} = new DataModel.DataModelColumnProperties<int>("UserID", true, true, false);
+        public DataModel.DataModelColumnProperties<int> ColumnPropertiesUserID { get; private set;} = new DataModel.DataModelColumnProperties<int>("UserID", true, true, false, null, true);
         public DataModel.DataModelColumnProperties<string> ColumnPropertiesFirstName { get; set; } = new DataModel.DataModelColumnProperties<string>("FirstName", true, false, false);
         public DataModel.DataModelColumnProperties<string> ColumnPropertiesLastName { get; set; } = new DataModel.DataModelColumnProperties<string>("LastName", true, false, false);
-        public DataModel.DataModeForeignKeyProperties FKCountryProperties;
+        public DataModel.DataModeForeignKey FKCountryProperties;
         public override void GenerateDataColumnProperties()
         {
             DataModelColumnProperties.Clear();
@@ -195,7 +189,7 @@ namespace Demo.Data.SQLite
 
         public DataUsersFactory (DataCountriesFactory dataCountriesFactory) : base(DataUsers.TABLE_NAME)
         {
-            FKCountryProperties = new DataModel.DataModeForeignKeyProperties(dataCountriesFactory, true);
+            FKCountryProperties = new DataModel.DataModeForeignKey(dataCountriesFactory, true);
 
             DataModelForeignKeyProperties.Clear();
             DataModelForeignKeyProperties.Add(FKCountryProperties);

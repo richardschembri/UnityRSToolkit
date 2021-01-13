@@ -15,12 +15,12 @@ namespace RSToolkit.Data.SQLite
         #region Columns
         List<DataModel.IDataModelColumn> DataModelColumns { get; }
         // List<DataModel.IDataModelForeignKeyProperties> DataModelForeignKeyProperties { get; }
-        Dictionary<DataModel.IDataModelForeignKeyProperties, List<IDataModel>> DataModelForeignKeys { get; }
+        List<DataModel.IDataModelForeignKey> DataModelForeignKeys { get; }
         // List<DataModel.IDataModelColumn> Get_ForeignKeys();
         List<DataModel.IDataModelColumn> Get_DataModelColumnsByName(string[] columnNames);
 
         DataModel.IDataModelColumn Get_PrimaryKey();
-        SqliteCommand AddParameters_AllColumns(SqliteCommand cmd, bool includePrimaryKey = true);
+        void AddParameters_AllColumns(SqliteCommand cmd, bool includePrimaryKey = true);
         #endregion Columns
         void AddParameter_PrimaryKey(ref SqliteCommand cmd);
         CSVDataModel Get_CSVRawDataModel();
@@ -256,15 +256,18 @@ namespace RSToolkit.Data.SQLite
 
         }
 
-        public interface IDataModelForeignKeyProperties
+        public interface IDataModelForeignKey
         {
             string ColumnName { get; }
+            IDataModel ColumnValue { get; set; }
             IDataModelFactory ForeignDataModelFactory { get; }
-            IDataModelForeignKeyProperties ParentForeignKeyProperties { get; }
+            IDataModelForeignKey ParentForeignKeyProperties { get; }
             
             bool PerformJoin { get; }
 
+            void ReadFromDatabase(SqliteDataReader reader, ref int index);
             string GetParameterName();
+            SqliteParameter ToParameter();
             string GetForeignTablePK();
             string GetColumnsForSelectQuery();
             string GetForeignKeyCodeForCreateTable();
@@ -273,15 +276,16 @@ namespace RSToolkit.Data.SQLite
             string GetJoinName();
         }
 
-        public class DataModeForeignKeyProperties : IDataModelForeignKeyProperties
+        public class DataModeForeignKey : IDataModelForeignKey
         {
             public string ColumnName { get; private set; }
+            public IDataModel ColumnValue { get; set; }
             public IDataModelFactory ForeignDataModelFactory { get; private set; }
-            public IDataModelForeignKeyProperties ParentForeignKeyProperties { get; private set; }
+            public IDataModelForeignKey ParentForeignKeyProperties { get; private set; }
             public bool PerformJoin { get; private set; }
 
-            public DataModeForeignKeyProperties( IDataModelFactory foreignDataModelFactory, bool performJoin,
-                                                    IDataModelForeignKeyProperties parentForeignKeyProperties = null,
+            public DataModeForeignKey( IDataModelFactory foreignDataModelFactory, bool performJoin,
+                                                    IDataModelForeignKey parentForeignKeyProperties = null,
                                                     string columnName = "")
             {
                 if (string.IsNullOrEmpty(columnName))
@@ -297,9 +301,29 @@ namespace RSToolkit.Data.SQLite
                 PerformJoin = performJoin;
             }
 
+
+            public void ReadFromDatabase(SqliteDataReader reader, ref int index)
+            {
+                if (PerformJoin)
+                {
+                    ColumnValue = ForeignDataModelFactory.GenerateAndGetIDataModel(reader, ref index);
+                }
+                else
+                {
+
+                    ColumnValue = ForeignDataModelFactory.GenerateDataModelWithOnlyPK(reader, ref index);
+                }
+                index++;
+            }
+
             public string GetParameterName()
             {
                 return string.Format("@{0}", ColumnName);
+            }
+
+            public SqliteParameter ToParameter()
+            {
+                return new SqliteParameter(GetParameterName(), ColumnValue.Get_PrimaryKey().GetColumnValue());
             }
 
             public string GetColumnsForSelectQuery()
@@ -404,7 +428,7 @@ namespace RSToolkit.Data.SQLite
 
         // public List<IDataModelForeignKeyProperties> DataModelForeignKeyProperties => throw new NotImplementedException();
         //public List<IDataModelForeignKeyProperties> DataModelForeignKeyProperties { get; protected set; } = new List<IDataModelForeignKeyProperties>();
-        public Dictionary<IDataModelForeignKeyProperties, List<IDataModel>> DataModelForeignKeys { get; protected set; } = new Dictionary<IDataModelForeignKeyProperties, List<IDataModel>>();
+        public List<IDataModelForeignKey> DataModelForeignKeys { get; protected set; } = new List<IDataModelForeignKey>();
 
         /*
         public List<IDataModelColumn> Get_ForeignKeys()
@@ -435,7 +459,7 @@ namespace RSToolkit.Data.SQLite
             
         }
 
-        public virtual SqliteCommand AddParameters_AllColumns(SqliteCommand cmd, bool includePrimaryKey = true)
+        public virtual void AddParameters_AllColumns(SqliteCommand cmd, bool includePrimaryKey = true)
         {
             for(int i = 0; i < DataModelColumns.Count; i++)
             {
@@ -446,7 +470,10 @@ namespace RSToolkit.Data.SQLite
                 }                
             }
 
-            return cmd;
+            for(int i = 0; i < DataModelForeignKeys.Count; i++)
+            {
+                cmd.Parameters.Add(DataModelForeignKeys[i].ToParameter());
+            }
         }
 
         public virtual void AddParameter_PrimaryKey(ref SqliteCommand cmd)
@@ -483,10 +510,11 @@ namespace RSToolkit.Data.SQLite
             }
             */
 
-            foreach (var k in DataModelForeignKeys.Keys){
-               var fk =  DataModelForeignKeys[k];
-               fk.Add(k.ForeignDataModelFactory.GenerateAndGetIDataModel(reader, ref index));
+            for(int i = 0; i < DataModelForeignKeys.Count; i++)
+            {
+                DataModelForeignKeys[i].ReadFromDatabase(reader, ref index);
             }
+
         }
 
         public void ReadPKFromDatabase(SqliteDataReader reader, ref int index)

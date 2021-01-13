@@ -23,6 +23,12 @@ namespace Demo.Data.SQLite
         [SerializeField]
         private Dropdown DropdownUsers;
 
+        [SerializeField]
+        private Button ButtonSave;
+
+        [SerializeField]
+        private Button ButtonRemove;
+
         List<DataCountries> _countries;
         private void PopulateDropdownCountries()
         {
@@ -36,10 +42,10 @@ namespace Demo.Data.SQLite
 
         public DataCountries SelectedCountry{
             get{
-                if(DropdownCountries.value <= 0){
+                if(DropdownCountries.options.Count <= 0){
                     return null;
                 }
-                return _countries[DropdownCountries.value - 1];
+                return _countries[DropdownCountries.value];
             }
         }
         
@@ -51,7 +57,7 @@ namespace Demo.Data.SQLite
             DropdownUsers.options.Add(new Dropdown.OptionData("Please Select"));
             for(int i = 0; i < _users.Count; i++)
             {
-                DropdownCountries.options.Add(new Dropdown.OptionData($"{_users[i].ColumnFirstName.ColumnValue}/{_users[i].ColumnLastName.ColumnValue}/{_users[i].FKCountry.ColumnCountryName.ColumnValue}"));
+                DropdownUsers.options.Add(new Dropdown.OptionData($"{_users[i].ColumnFirstName.ColumnValue}/{_users[i].ColumnLastName.ColumnValue}/{_users[i].Country.ColumnCountryName.ColumnValue}"));
             }
         }
         public DataUsers SelectedUser{
@@ -74,6 +80,24 @@ namespace Demo.Data.SQLite
             RefreshUI();
         }
 
+        public void DropdownUsers_OnValueChanged()
+        {
+            if (SelectedUser != null)
+            {
+                FieldUserID.text = SelectedUser.ColumnUserID.ColumnValue.ToString();
+                FieldFirstName.text = SelectedUser.ColumnFirstName.ColumnValue.ToString();
+                FieldLastName.text = SelectedUser.ColumnLastName.ColumnValue.ToString();
+                DropdownCountries.value = _countries.IndexOf(SelectedUser.Country);
+            }
+            ButtonRemove.interactable = !string.IsNullOrEmpty(FieldUserID.text);
+        }
+
+        public void RemoveUserData()
+        {
+            DemoDataManager.GetInstance().Delete_User(SelectedUser);
+            PopulateDropdownUsers();
+        }
+
         public void SaveUserData()
         {
            if(!string.IsNullOrEmpty(FieldFirstName.text)
@@ -88,12 +112,11 @@ namespace Demo.Data.SQLite
             }
         }
 
-
         #region Mono Functions
         // Start is called before the first frame update
         void Start()
         {
-
+            DropdownUsers_OnValueChanged();
         }
 
         // Update is called once per frame

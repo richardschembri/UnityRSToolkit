@@ -8,7 +8,7 @@ namespace RSToolkit.Data.SQLite
     public interface IDataModelFactory
     {
         List<DataModel.IDataModelColumnProperties> DataModelColumnProperties { get; }
-        List<DataModel.IDataModelForeignKeyProperties> DataModelForeignKeyProperties { get; } 
+        List<DataModel.IDataModelForeignKey> DataModelForeignKeyProperties { get; } 
         string TableName { get; }
         string GetColumnNamesAsCommandText(string tableNamePrefix = "");
         // List<IDataModel> DataModels { get; }
@@ -16,7 +16,8 @@ namespace RSToolkit.Data.SQLite
         // void GeneratePresets();
         // void GenerateDataModel(SqliteDataReader reader, ref int index);
         IDataModel GenerateAndGetIDataModel(SqliteDataReader reader, ref int index);
-        void GenerateDataModelWithOnlyPK(SqliteDataReader reader, ref int index);
+        IDataModel GenerateDataModelWithOnlyPK(SqliteDataReader reader, ref int index);
+
         string GetCommandText_Insert();
         // string GetCommandText_BasicSelect(bool selectAll = true, int pageSize = 0, int startIndex = 0);
         string GetCommandText_Select(List<DataModel.IDataModelColumn> parameters = null,
@@ -38,7 +39,7 @@ namespace RSToolkit.Data.SQLite
     public abstract class DataModelFactory<T> : IDataModelFactory where T : DataModel 
     {
         public List<DataModel.IDataModelColumnProperties> DataModelColumnProperties { get; protected set; } = new List<DataModel.IDataModelColumnProperties>();
-        public List<DataModel.IDataModelForeignKeyProperties> DataModelForeignKeyProperties { get; private set; } = new List<DataModel.IDataModelForeignKeyProperties>();
+        public List<DataModel.IDataModelForeignKey> DataModelForeignKeyProperties { get; private set; } = new List<DataModel.IDataModelForeignKey>();
         public string TableName { get; private set; }
 
         public string GetColumnNamesAsCommandText(string overrideTableName = "")
@@ -81,8 +82,9 @@ namespace RSToolkit.Data.SQLite
 
         public IDataModel GenerateAndGetIDataModel(SqliteDataReader reader, ref int index)
         {
-            return (IDataModel)GenerateAndGetDataModel(reader, ref index);
+            return GenerateAndGetDataModel(reader, ref index);
         }
+
         public T GenerateAndGetDataModel(SqliteDataReader reader, ref int index)
         {
             T result = GenerateAndGetDataModel();
@@ -90,10 +92,11 @@ namespace RSToolkit.Data.SQLite
             return result;
         }
 
-        public void GenerateDataModelWithOnlyPK(SqliteDataReader reader, ref int index)
+        public IDataModel GenerateDataModelWithOnlyPK(SqliteDataReader reader, ref int index)
         {
             var result = GenerateAndGetDataModel();
-            result.ReadPKFromDatabase(reader, ref index);    
+            result.ReadPKFromDatabase(reader, ref index);
+            return result;
         }
 
         /*
@@ -118,22 +121,29 @@ namespace RSToolkit.Data.SQLite
                 index++;
             }
             sbQuery.AppendFormat("INSERT INTO {0}({1}", TableName, DataModelColumnProperties[index].ColumnName);
-            var sbQ = new StringBuilder();
+            var sbParameters = new StringBuilder();
 
 
-            sbQ.AppendFormat("@{0}", DataModelColumnProperties[index].ColumnName);
+            sbParameters.Append(DataModelColumnProperties[index].GetParameterName());
             for (int i = index + 1; i < DataModelColumnProperties.Count; i++)
             {
-                sbQuery.AppendFormat(", {0}", DataModelColumnProperties[i].ColumnName);
-                sbQ.AppendFormat(",@{0}", DataModelColumnProperties[i].ColumnName);
+                sbQuery.Append($", {DataModelColumnProperties[i].ColumnName}");
+                sbParameters.Append($", {DataModelColumnProperties[i].GetParameterName()}"); //.AppendFormat(",@{0}", DataModelColumnProperties[i].ColumnName);
             }
+
+            for (int i = 0; i < DataModelForeignKeyProperties.Count; i++)
+            {
+                sbQuery.Append($", {DataModelForeignKeyProperties[i].ColumnName}");
+                sbParameters.Append($", {DataModelForeignKeyProperties[i].GetParameterName()}");
+            }
+
             sbQuery.Append(") VALUES (");
-            sbQuery.Append(sbQ.ToString());
+            sbQuery.Append(sbParameters.ToString());
             sbQuery.Append(")");
 
             return sbQuery.ToString();
         }
-        public string GetForeignKeyCommandText(DataModel.IDataModelForeignKeyProperties fk)
+        public string GetForeignKeyCommandText(DataModel.IDataModelForeignKey fk)
         {
             return $"JOIN {fk.ForeignDataModelFactory.TableName} as {fk.GetJoinName()} ON {TableName}.{fk.ColumnName} = {fk.GetJoinName()}.{fk.ColumnName}";
         }
@@ -404,7 +414,7 @@ namespace RSToolkit.Data.SQLite
             {
                 includePK = !pk.IsAutoIncrement;
             }
-            insertSQL = dataModel.AddParameters_AllColumns(insertSQL, includePK);
+            dataModel.AddParameters_AllColumns(insertSQL, includePK);
             return insertSQL;
         }
 
@@ -412,7 +422,7 @@ namespace RSToolkit.Data.SQLite
         {
             var query = GetCommandText_Update();
             var updateSQL = new SqliteCommand(query);
-            updateSQL = dataModel.AddParameters_AllColumns(updateSQL);
+            dataModel.AddParameters_AllColumns(updateSQL);
             return updateSQL;
         }
 
