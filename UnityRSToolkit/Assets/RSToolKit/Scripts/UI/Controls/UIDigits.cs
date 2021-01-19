@@ -1,5 +1,4 @@
-﻿namespace RSToolkit.UI.Controls{
-    using System.Collections;
+﻿    using System.Collections;
     using System.Collections.Generic;
     using RSToolkit.Controls;
     using RSToolkit.Helpers;
@@ -7,66 +6,39 @@
     using UnityEngine.Serialization;
     using UnityEngine.UI;
 
-    [RequireComponent(typeof(Spawner))]
+namespace RSToolkit.UI.Controls{
     [RequireComponent(typeof(HorizontalLayoutGroup))]
-    public class UIDigits : MonoBehaviour
+    public class UIDigits : Spawner<UIDigit>
     {
-        private Spawner m_spawnerComponent;
-        private Spawner SpawnerComponent{
-            get{
-                if (m_spawnerComponent == null){
-                    m_spawnerComponent = this.GetComponent<Spawner>();
-                }
-                return m_spawnerComponent;
-            }
-        }
 
-        [FormerlySerializedAs("Digits")]
         [SerializeField]
-        private uint m_digits = 0;
+        private uint _digits = 0;
         public uint Digits{
             get{
-                return m_digits;
+                return _digits;
             }set{
-                if (m_digits != value){
-                    m_digits = value;
+                if (_digits != value){
+                    _digits = value;
                     SeperateDigits();
                 }
             }
-        }
-        private List<UIDigit> m_UIDigits = new List<UIDigit>();
-
-        // Start is called before the first frame update
-        void Start()
-        {
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-            
-        }
-
-        void OnEnable(){
-            SeperateDigits();
         }
 
         private void SeperateDigits(){
             var digitsArr = Digits.ToUIntArray();
             for(int i = 0; i < digitsArr.Length; i++){
                 UIDigit uidigit;
-                if (SpawnerComponent.SpawnedGameObjects.Count > i){
-                    uidigit = SpawnerComponent.SpawnedGameObjects[i].GetComponent<UIDigit>();
+                if (SpawnedGameObjects.Count > i){
+                    uidigit = SpawnedGameObjects[i].GetComponent<UIDigit>();
                 }else{
-                    uidigit = SpawnerComponent.SpawnAndGetGameObject().GetComponent<UIDigit>();
+                    uidigit = SpawnAndGetGameObject().GetComponent<UIDigit>();
                 }
                 uidigit.Digit = digitsArr[i];
                 uidigit.transform.SetAsLastSibling();
             }
             int extraIndex = digitsArr.Length;
-            while ( SpawnerComponent.SpawnedGameObjects.Count > digitsArr.Length ){
-                SpawnerComponent.DestroySpawnedGameObject(SpawnerComponent.SpawnedGameObjects[extraIndex]);
+            while ( SpawnedGameObjects.Count > digitsArr.Length ){
+                DestroySpawnedGameObject(SpawnedGameObjects[extraIndex]);
                 extraIndex++;
             }
             
@@ -75,5 +47,13 @@
         private void OnInspectorGUI(){
             SeperateDigits();
         }
+
+        #region MonoBehaviour Functions
+
+        void OnEnable(){
+            SeperateDigits();
+        }
+
+        #endregion MonoBehaviour Functions
     }
 }

@@ -11,7 +11,7 @@
     using System.Linq;
 
     [RequireComponent(typeof(ScrollRect))]
-    public class UIListBox : MonoBehaviour
+    public class UIListBox<T> : Spawner<T> where T : MonoBehaviour
     {
         private enum ManualScroll{
             NONE, LEFT, RIGHT, UP, DOWN
@@ -59,38 +59,36 @@
            }
        } 
 
-
+       /*
        private Spawner m_ListItemSpawner;
        public Spawner ListItemSpawner { 
            get { 
                if(m_ListItemSpawner == null){
-                   m_ListItemSpawner = ContentRectTransform.GetComponent<Spawner>();
+                   m_ListItemSpawner = ContentRectTransform.GetComponent<Spawner<GameObject>>();
                }
                return m_ListItemSpawner; 
             } 
        }
+       */
 
        public class OnShiftMostHorizontalEvent : UnityEvent<RectTransform, RectTransformHelpers.HorizontalPosition>{}
        public OnShiftMostHorizontalEvent OnShiftMostHorizontal = new OnShiftMostHorizontalEvent();
        
        public class OnShiftMostVerticalEvent : UnityEvent<RectTransform, RectTransformHelpers.VerticalPosition>{}
        public OnShiftMostVerticalEvent OnShiftMostVertical = new OnShiftMostVerticalEvent();
-       public virtual GameObject AddListItem(){
-            if(ListItemSpawner == null){
-                return null;
-            }
-            var result = ListItemSpawner.SpawnAndGetGameObject();
+       public virtual T AddListItem(){
+            var result = SpawnAndGetGameObject();
             Refresh();
             return result;
        }
 
        public void ClearSpawnedListItems(){
-            ListItemSpawner.DestroyAllSpawns();
+            DestroyAllSpawns();
             Refresh();
        }
 
        public int VisibleSpawnedListItemCount(){
-           return ListItemSpawner.SpawnedGameObjects.Where(li => li.gameObject.activeSelf).Count();
+           return SpawnedGameObjects.Where(li => li.gameObject.activeSelf).Count();
        }
 
        public void Refresh(){

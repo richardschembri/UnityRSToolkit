@@ -4,15 +4,15 @@
     using System.Collections.Generic;
     using UnityEngine;
 
-    public class MultiSpawner : SpawnerCore
+    public class MultiSpawner<T> : SpawnerCore<T> where T : MonoBehaviour
     {
-        public GameObject[] GameObjectsToSpawn;
-        public GameObject SpawnAndGetGameObject(int gameObjectToSpawnIndex = 0 ,bool useSpawnerTransformValues = true)
+        public T[] GameObjectsToSpawn;
+        public T SpawnAndGetGameObject(int gameObjectToSpawnIndex = 0 ,bool useSpawnerTransformValues = true)
         {
             return SpawnAndGetGameObject(GameObjectsToSpawn[gameObjectToSpawnIndex] ,useSpawnerTransformValues);
         }
 
-        public GameObject SpawnAndGetRandomGameObject(bool useSpawnerTransformValues = true)
+        public T SpawnAndGetRandomGameObject(bool useSpawnerTransformValues = true)
         {
             int randomIndex = Random.Range(0, GameObjectsToSpawn.Length);
             return SpawnAndGetGameObject(randomIndex ,useSpawnerTransformValues);

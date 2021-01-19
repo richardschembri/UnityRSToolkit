@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace RSToolkit.Rythm
 {
-    public class RythmScroller : MonoBehaviour
+    public class RythmScroller : Spawner<RythmPrompt>
     {
 
         public float tempo = 5f;
@@ -36,19 +36,6 @@ namespace RSToolkit.Rythm
             }
         }
 
-        private Spawner m_rythmPromptSpawner;
-        public Spawner RythmPromptSpawner
-        {
-            get
-            {
-                if(m_rythmPromptSpawner == null)
-                {
-                    m_rythmPromptSpawner = GetComponentInChildren<Spawner>();
-                }
-                return m_rythmPromptSpawner;
-            }
-        }
-
         public void StartScrolling()
         {
             HasStarted = true;
@@ -61,11 +48,11 @@ namespace RSToolkit.Rythm
 
         public void SpawnPrompts()
         {
-            RythmPromptSpawner.DestroyAllSpawns();
+            DestroyAllSpawns();
             
             for (int i = 0; i < 10; i++)
             {
-                RythmPromptSpawner.SpawnGameObject();
+                SpawnGameObject();
             }
         }
 

@@ -40,11 +40,11 @@ public class UIListBoxPage : UIPage
     public void ButtonGenerate(){
         for(int i = 0; i < 5; i++){
            var vb = uiEditableListBox.AddEditableListItem();
-           vb.name = string.Format("List Item {0}", uiEditableListBox.ListItemSpawner.SpawnedGameObjects.Count);
-           vb.SetModeTextComponent(UIEditableListBoxItem.ListBoxItemMode.VIEW, "Text", string.Format( "View {0}", uiEditableListBox.ListItemSpawner.SpawnedGameObjects.Count));
-           vb.SetModeTextComponent(UIEditableListBoxItem.ListBoxItemMode.SELECT, "Text", string.Format( "Select {0}", uiEditableListBox.ListItemSpawner.SpawnedGameObjects.Count));
-           vb.SetModeTextComponent(UIEditableListBoxItem.ListBoxItemMode.EDIT, "Text", string.Format( "Edit {0}", uiEditableListBox.ListItemSpawner.SpawnedGameObjects.Count));
-           vb.SetModeTextComponent(UIEditableListBoxItem.ListBoxItemMode.DELETE, "Text", string.Format( "Delete {0}", uiEditableListBox.ListItemSpawner.SpawnedGameObjects.Count));
+           vb.name = string.Format("List Item {0}", uiEditableListBox.SpawnedGameObjects.Count);
+           vb.SetModeTextComponent(UIEditableListBoxItem.ListBoxItemMode.VIEW, "Text", string.Format( "View {0}", uiEditableListBox.SpawnedGameObjects.Count));
+           vb.SetModeTextComponent(UIEditableListBoxItem.ListBoxItemMode.SELECT, "Text", string.Format( "Select {0}", uiEditableListBox.SpawnedGameObjects.Count));
+           vb.SetModeTextComponent(UIEditableListBoxItem.ListBoxItemMode.EDIT, "Text", string.Format( "Edit {0}", uiEditableListBox.SpawnedGameObjects.Count));
+           vb.SetModeTextComponent(UIEditableListBoxItem.ListBoxItemMode.DELETE, "Text", string.Format( "Delete {0}", uiEditableListBox.SpawnedGameObjects.Count));
         }
     }
 

@@ -4,7 +4,7 @@
     using UnityEditor;
     using RSToolkit.UI.Controls;
 
-    [CustomEditor(typeof(UIListBox))]
+    [CustomEditor(typeof(UIListBox<MonoBehaviour>))]
     [CanEditMultipleObjects]
     public class UIListBoxEditor : Editor
     {

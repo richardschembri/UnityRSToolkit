@@ -1,18 +1,15 @@
-﻿namespace RSToolkit.Controls
-{
-    using System.Collections;
-    using System.Collections.Generic;
-    using UnityEngine;
-    using RSToolkit.Helpers;
+﻿using UnityEngine;
 
-    public class Spawner : SpawnerCore
+namespace RSToolkit.Controls
+{
+    public class Spawner<T> : SpawnerCore<T> where T : MonoBehaviour
     {
-        public GameObject GameObjectToSpawn;
+        public T GameObjectToSpawn;
         public void SpawnGameObject(bool useSpawnerTransformValues = true){
             SpawnAndGetGameObject(useSpawnerTransformValues);
         }
 
-        public GameObject SpawnAndGetGameObject(bool useSpawnerTransformValues = true)
+        public T SpawnAndGetGameObject(bool useSpawnerTransformValues = true)
         {
             return SpawnAndGetGameObject(GameObjectToSpawn, useSpawnerTransformValues);
         }

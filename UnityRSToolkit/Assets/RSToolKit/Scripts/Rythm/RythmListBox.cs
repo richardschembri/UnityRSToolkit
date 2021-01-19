@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace RSToolkit.Rythm
 {
-    public class RythmListBox : UIListBox
+    public class RythmListBox : UIListBox<RythmPrompt>
     {
         public KeyCode promptKey;
 
@@ -84,7 +84,7 @@ namespace RSToolkit.Rythm
 
         public bool HasPrompts()
         {
-            return ListItemSpawner.SpawnedGameObjects.Count > 0;
+            return SpawnedGameObjects.Count > 0;
         }
 
         private void OnShiftMostVertical_Listener(RectTransform toPlace, RectTransformHelpers.VerticalPosition verticalPosition)

@@ -6,8 +6,9 @@ namespace RSToolkit{
     {
         public static T Instance { get; protected set; }
     
-        protected virtual void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             if (Instance != null && Instance != this)
             {
                 Destroy(this);

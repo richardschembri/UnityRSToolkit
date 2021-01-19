@@ -5,10 +5,27 @@ namespace RSToolkit
     public class RSMonoBehaviour : MonoBehaviour
     {
         public bool DebugMode = false;
-        
+        public bool InitOnAwake = false;
+        public bool Initialized { get; protected set; } = false;
+
+        protected virtual void Init()
+        {
+            Initialized = true;
+        }
+
+        #region MonoBehaviour Functions
+        protected virtual void Awake()
+        {
+            if (InitOnAwake)
+            {
+                Init();
+            }
+        }
+        #endregion MonoBehaviour Functions
+
         public virtual string GetDebugTag()
         {
-            throw new System.Exception("GetDebugTag not implemented");
+            return string.Empty;
         }
 
         protected void LogInDebugMode(string message, bool includeTimestamp = false)

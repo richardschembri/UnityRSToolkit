@@ -5,24 +5,29 @@
     using UnityEngine;
     using RSToolkit.Helpers;
     using UnityEngine.Events;
+    using System.Collections.ObjectModel;
 
-    public abstract class SpawnerCore : MonoBehaviour
+    public abstract class SpawnerCore<T> : RSMonoBehaviour where T : MonoBehaviour
     {
         public int SpawnLimit = -1;
-        public bool isParent = false;
-        private List<GameObject> m_spawnedGameObjects;
-        public List<GameObject> SpawnedGameObjects
+        // public bool isParent = false;
+        public Transform SpawnParent = null;
+        private List<T> _spawnedGameObjects;
+
+        public bool CollectChildrenAlreadyInScene = true;
+
+        public ReadOnlyCollection<T> SpawnedGameObjects
         {
             get
             {
-                if(m_spawnedGameObjects == null){
-                    m_spawnedGameObjects = new List<GameObject>();
+                if(_spawnedGameObjects == null){
+                    _spawnedGameObjects = new List<T>();
                 }
-                return m_spawnedGameObjects;
+                return _spawnedGameObjects.AsReadOnly();
             }
         }
 
-        public class SpawnerEvent : UnityEvent<GameObject> { }
+        public class SpawnerEvent : UnityEvent<T> { }
 
         public SpawnerEvent OnSpawnEvent = new SpawnerEvent();
 
@@ -35,11 +40,11 @@
             }
         }
 
-        public void DestroySpawnedGameObject(GameObject spawnedGameObject)
+        public void DestroySpawnedGameObject(T spawnedGameObject)
         {
             if (spawnedGameObject != null && SpawnedGameObjects.Contains(spawnedGameObject)){
                 DestroyImmediate(spawnedGameObject);
-                SpawnedGameObjects.Remove(spawnedGameObject);
+                _spawnedGameObjects.Remove(spawnedGameObject);
             }
         }
         public void DestroyAllSpawns(){
@@ -48,7 +53,7 @@
                 DestroyAllSpawns();
             }
         }
-        public GameObject SpawnAndGetGameObject(GameObject gameObjectToSpawn ,bool useSpawnerTransformValues = true)
+        public T SpawnAndGetGameObject(T gameObjectToSpawn ,bool useSpawnerTransformValues = true)
         {
             if (SpawnLimit > 0 && SpawnedGameObjects.Count >= SpawnLimit){
                 return null;
@@ -56,11 +61,8 @@
 
             var spawnedGameObject = Instantiate(gameObjectToSpawn);
 
-            if(isParent){
-                spawnedGameObject.transform.SetParent(transform);
-            }else{
-                spawnedGameObject.transform.SetParent(transform.parent);
-            }
+            ValidateSpawnParent();
+            spawnedGameObject.transform.SetParent(SpawnParent);
 
             if (useSpawnerTransformValues)
             {
@@ -72,10 +74,39 @@
                 spawnedGameObject.transform.localPosition = transform.localPosition;
             }
 
-            SpawnedGameObjects.Add(spawnedGameObject);
+            _spawnedGameObjects.Add(spawnedGameObject);
             OnSpawnEvent.Invoke(spawnedGameObject);
             return spawnedGameObject;
         }
+
+        private void ValidateSpawnParent()
+        {
+
+            if (SpawnParent == null)
+            {
+                SpawnParent = this.transform;
+            } 
+        }
+
+        public void CollectChildren()
+        {
+            var spawnchildren = SpawnParent.GetTopLevelChildren<T>();
+            for(int i = 0; i <  spawnchildren.Length; i++)
+            {
+                if (!_spawnedGameObjects.Contains(spawnchildren[i]))
+                {
+                    _spawnedGameObjects.Add(spawnchildren[i]);
+                }
+            }
+        }
+
+        #region RSMonoBehaviour Functions
+        protected override void Init()
+        {
+            ValidateSpawnParent();
+            CollectChildren();
+        }
+        #endregion RSMonoBehaviour Functions
 
     }
 }

@@ -5,7 +5,7 @@ using RSToolkit.Helpers;
 
 namespace RSToolkit.Controls
 {
-    public class AutoSpawner : AutoSpawnerCore 
+    public class AutoSpawner<T> : AutoSpawnerCore<T> where T : MonoBehaviour 
     {
 
         public int spawnAmount_Min = 2;

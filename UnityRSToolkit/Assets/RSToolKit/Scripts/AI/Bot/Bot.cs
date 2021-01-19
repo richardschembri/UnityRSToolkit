@@ -65,7 +65,9 @@ namespace RSToolkit.AI
             }
         }
 
-        public UnityEvent OnAwake = new UnityEvent();
+        public class BotEvent : UnityEvent<Bot> { }
+        public BotEvent OnAwake = new BotEvent();
+        public BotEvent OnDestroyed = new BotEvent();
 
         public void SetNetworkType(NetworkTypes networkType, bool toggleKinematic = true)
         {
@@ -695,7 +697,7 @@ namespace RSToolkit.AI
             {
                 Initialize();
             }
-            OnAwake.Invoke();
+            OnAwake.Invoke(this);
         }
 
         protected virtual void Start()
@@ -742,7 +744,7 @@ namespace RSToolkit.AI
 
         protected virtual void OnDestroy()
         {
-
+            OnDestroyed.Invoke(this);
         }
 
         #endregion MonoBehaviour Functions

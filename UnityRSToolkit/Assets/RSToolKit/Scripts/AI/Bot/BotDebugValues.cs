@@ -15,13 +15,13 @@ namespace RSToolkit.AI
         public float CurrentSpeed; // = 0;
         public string DebugDistanceType; // = "";
 
-        public BotDebugValues(Bot targetBot, BotLocomotive targetBotLocomotive = null,
+        public BotDebugValues(Bot targetBot,
                                 Object waypoint = null, bool fullspeed = false,
                                 float interactionCooldown = 0f, float currentSpeed = 0,
                                 string debugDistanceType = "")
         {
             TargetBot = targetBot;
-            TargetBotLocomotive = targetBotLocomotive;
+            TargetBotLocomotive = (BotLocomotive)TargetBot ;
             Waypoint = waypoint;
             Fullspeed = fullspeed;
             InteractionCooldown = interactionCooldown;

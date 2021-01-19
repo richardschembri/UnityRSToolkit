@@ -9,25 +9,26 @@ using RSToolkit.Helpers;
 
 public class ScrollListPage : UIPage
 {
-    public UIListBox VerticalListBox;
-    public UIListBox HorizontalListBox;
+    public UIListBox<Button> VerticalListBox;
+    public UIListBox<Button> HorizontalListBox;
 
-    private Spawner m_verticalButtonSpawner;
-    public Spawner VerticalButtonSpawner{
+    private Spawner<Button> _verticalButtonSpawner;
+    public Spawner<Button> VerticalButtonSpawner{
         get{
-            if(m_verticalButtonSpawner == null){
-                m_verticalButtonSpawner = VerticalListBox.GetComponentInChildren<Spawner>();
+            if(_verticalButtonSpawner == null){
+                _verticalButtonSpawner = VerticalListBox.GetComponentInChildren<Spawner<Button>>();
             }
-            return m_verticalButtonSpawner;
+            return _verticalButtonSpawner;
         }
     }
-    private Spawner m_horizontalButtonSpawner;
-    public Spawner HorizontalButtonSpawner{
+
+    private Spawner<Button> _horizontalButtonSpawner;
+    public Spawner<Button> HorizontalButtonSpawner{
         get{
-            if(m_horizontalButtonSpawner == null){
-                m_horizontalButtonSpawner = HorizontalListBox.GetComponentInChildren<Spawner>();
+            if(_horizontalButtonSpawner == null){
+                _horizontalButtonSpawner = HorizontalListBox.GetComponentInChildren<Spawner<Button>>();
             }
-            return m_horizontalButtonSpawner;
+            return _horizontalButtonSpawner;
         }
     }
 
@@ -40,7 +41,7 @@ public class ScrollListPage : UIPage
     public void AddButtonsVertical(){
        for(int i = 0; i < 5; i++){
            var vb = VerticalListBox.AddListItem().GetComponent<Button>();
-           vb.name = string.Format("Button {0}", VerticalListBox.ListItemSpawner.SpawnedGameObjects.Count);
+           vb.name = string.Format("Button {0}", VerticalListBox.SpawnedGameObjects.Count);
            vb.GetComponentInChildren<Text>().text = vb.name;
        }
     }
@@ -50,7 +51,7 @@ public class ScrollListPage : UIPage
         for (int i = 0; i < 5; i++)
         {
             var hb = HorizontalListBox.AddListItem().GetComponent<Button>();
-            hb.name = string.Format("Button {0}", HorizontalListBox.ListItemSpawner.SpawnedGameObjects.Count);
+            hb.name = string.Format("Button {0}", HorizontalListBox.SpawnedGameObjects.Count);
             hb.GetComponentInChildren<Text>().text = hb.name;
         }
     }

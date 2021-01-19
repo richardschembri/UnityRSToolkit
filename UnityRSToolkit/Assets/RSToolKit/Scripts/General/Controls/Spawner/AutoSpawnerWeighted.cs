@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace RSToolkit.Controls
 {
-    public class AutoSpawnerWeighted : AutoSpawnerCore
+    public class AutoSpawnerWeighted<T> : AutoSpawnerCore<T> where T : MonoBehaviour
     {
         [System.Serializable]
         public struct SpawnAmountWeight

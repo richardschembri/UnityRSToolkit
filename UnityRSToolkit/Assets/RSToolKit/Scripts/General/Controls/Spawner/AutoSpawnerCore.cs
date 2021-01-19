@@ -5,7 +5,7 @@ using RSToolkit.Helpers;
 
 namespace RSToolkit.Controls
 {
-    public abstract class AutoSpawnerCore : Spawner
+    public abstract class AutoSpawnerCore<T> : Spawner<T> where T : MonoBehaviour
     {
         public float time_From = 3f;
         public float time_To = 4f;

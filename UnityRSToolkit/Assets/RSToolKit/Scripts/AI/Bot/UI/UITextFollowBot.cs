@@ -7,8 +7,7 @@ using RSToolkit.AI.Locomotion;
 
 namespace RSToolkit.AI
 {
-
-    public class UITextFollowBot : UITextFollow3D 
+    public class UITextFollowBot<T> : UITextFollow3D<T> where T : Bot 
     {
         protected BotDebugValues _botDebugValues;
 
@@ -29,14 +28,11 @@ namespace RSToolkit.AI
             }
         }
 
-        #region MonoBehaviour Functions
-
-        protected override void Awake()
+        protected override void SetTarget(T target)
         {
-            base.Awake();
-            _botDebugValues = new BotDebugValues(Target.GetComponent<Bot>(), Target.GetComponent<BotLocomotive>());
+            base.SetTarget(target);
+            _botDebugValues = new BotDebugValues(Target);
         }
 
-        #endregion MonoBehaviour Functions
     }
 }
