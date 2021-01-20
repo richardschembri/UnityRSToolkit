@@ -1,4 +1,5 @@
 ﻿using RSToolkit.Controls;
+using RSToolkit.Space3D.Cameras;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,9 +12,12 @@ namespace RSToolkit.UI.Controls
         where T : UITextFollow3D<J>
         where J : MonoBehaviour
     {
+        bool KeepPrefabTransformValues = true;
 
         [SerializeField]
         private J[] _predefinedTargets;
+
+        public Vector3 OffsetPosition = Vector3.zero;
 
         public void AddTarget(J target)
         {
@@ -25,7 +29,13 @@ namespace RSToolkit.UI.Controls
             T tf3d = SpawnedGameObjects.FirstOrDefault(sgo => sgo.Target == null);
             if(tf3d == null)
             {
-                tf3d = SpawnAndGetGameObject();
+                tf3d = SpawnAndGetGameObject(!KeepPrefabTransformValues);
+                tf3d.OffsetPosition = OffsetPosition;
+                var cfb = tf3d.GetComponent<CameraFacingBillboard>();
+                if(cfb != null)
+                {
+                    cfb.OffsetRotation = GameObjectToSpawn.transform.localRotation.eulerAngles;
+                }
             }
             tf3d.Target = target;
             LogInDebugMode($"Added Target {target.name}");

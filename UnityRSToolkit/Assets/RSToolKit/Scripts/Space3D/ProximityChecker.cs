@@ -3,25 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
+using RSToolkit.Space3D.Helpers;
 
 namespace RSToolkit.Space3D
 {
     public class ProximityChecker : MonoBehaviour
     {
-        public enum RayDirectionEnum
-        {
-            UP,
-            DOWN,
-            LEFT,
-            RIGHT,
-            FORWARD,
-            BACK
-        }
 
         public float MinRayDistance = 0f;
         public float MaxRayDistance = 0.5f;
         public float IsAlmostTouchingDistance = 0.05f;
-        public RayDirectionEnum RayDirection = RayDirectionEnum.DOWN;
+        public AxisHelpers.Axis RayDirection = AxisHelpers.Axis.DOWN;
         public LayerMask LayerMask = 1 << 0; // default | ~0; // everything
 
         public bool IsTrigger = true;
@@ -34,6 +26,7 @@ namespace RSToolkit.Space3D
         bool proximityEnteredTriggered = false;
         bool touchEnteredTriggered = false;
         Color _rayColor = Color.green;
+        /*
         private Vector3 GetRayDirectionVector()
         {
             switch (RayDirection)
@@ -53,6 +46,7 @@ namespace RSToolkit.Space3D
             }
             return Vector3.zero;
         }
+        */
 
         float? _currentRayDistance = null;
         public bool IsAlmostTouching(bool checkForNavMesh = true)
@@ -106,7 +100,7 @@ namespace RSToolkit.Space3D
         {
             float? hitDistance = null;
             _rayColor = Color.green;
-            if (Physics.Raycast(transform.position, GetRayDirectionVector(), out hit, MaxRayDistance, LayerMask, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(transform.position, RayDirection.ToVector3() /* GetRayDirectionVector() */, out hit, MaxRayDistance, LayerMask, QueryTriggerInteraction.Ignore))
             {
                 if (hit.distance >= MinRayDistance)
                 {
@@ -166,7 +160,7 @@ namespace RSToolkit.Space3D
             if (DebugMode)
             {
                 IsWithinRayDistance(DebugNavMesh);
-                Debug.DrawLine(transform.position, transform.TransformPoint(GetRayDirectionVector() * MaxRayDistance), _rayColor);
+                Debug.DrawLine(transform.position, transform.TransformPoint(/* GetRayDirectionVector() */ RayDirection.ToVector3() * MaxRayDistance), _rayColor);
             }
 #endif
         }

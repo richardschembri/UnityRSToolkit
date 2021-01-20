@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3176417241136845964
+--- !u!1 &2503822328365344546
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,12 +8,12 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 276858640237951573}
-  - component: {fileID: 7154953349766479864}
-  - component: {fileID: 176015339897824461}
-  - component: {fileID: 6833291150902145925}
-  - component: {fileID: 8684631122147661167}
-  - component: {fileID: 7752569695388103804}
+  - component: {fileID: 2503822328365344558}
+  - component: {fileID: 2503822328365344559}
+  - component: {fileID: 2503822328365344556}
+  - component: {fileID: 2503822328365344557}
+  - component: {fileID: 2503822328365344552}
+  - component: {fileID: 2503822328365344553}
   m_Layer: 5
   m_Name: BotDebugLabelMeshCanvas
   m_TagString: Untagged
@@ -21,13 +21,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &276858640237951573
+--- !u!224 &2503822328365344558
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3176417241136845964}
+  m_GameObject: {fileID: 2503822328365344546}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
@@ -40,13 +40,13 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!223 &7154953349766479864
+--- !u!223 &2503822328365344559
 Canvas:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3176417241136845964}
+  m_GameObject: {fileID: 2503822328365344546}
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
@@ -61,13 +61,13 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
---- !u!114 &176015339897824461
+--- !u!114 &2503822328365344556
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3176417241136845964}
+  m_GameObject: {fileID: 2503822328365344546}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
@@ -83,13 +83,13 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
---- !u!114 &6833291150902145925
+--- !u!114 &2503822328365344557
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3176417241136845964}
+  m_GameObject: {fileID: 2503822328365344546}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
@@ -100,13 +100,13 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &8684631122147661167
+--- !u!114 &2503822328365344552
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3176417241136845964}
+  m_GameObject: {fileID: 2503822328365344546}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e9ca8aa1372eb6142b540455aa846752, type: 3}
@@ -117,16 +117,17 @@ MonoBehaviour:
   SpawnLimit: -1
   SpawnParent: {fileID: 0}
   CollectChildrenAlreadyInScene: 1
-  GameObjectToSpawn: {fileID: 99226218570272422, guid: 091ddbd1f8f194e4da30cb7fe042355b,
+  GameObjectToSpawn: {fileID: 3764483948687202108, guid: 091ddbd1f8f194e4da30cb7fe042355b,
     type: 3}
   _predefinedTargets: []
---- !u!114 &7752569695388103804
+  OffsetPosition: {x: 0, y: 1, z: 0}
+--- !u!114 &2503822328365344553
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3176417241136845964}
+  m_GameObject: {fileID: 2503822328365344546}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 95ff864f0413c4c4aa08a420edc88dc6, type: 3}
@@ -137,6 +138,7 @@ MonoBehaviour:
   SpawnLimit: -1
   SpawnParent: {fileID: 0}
   CollectChildrenAlreadyInScene: 1
-  GameObjectToSpawn: {fileID: 7692776764063738574, guid: 8197bea04302b254999613ea1f69e01c,
+  GameObjectToSpawn: {fileID: 9016243320196963447, guid: 8197bea04302b254999613ea1f69e01c,
     type: 3}
   _predefinedTargets: []
+  OffsetPosition: {x: 0, y: 1, z: 0}

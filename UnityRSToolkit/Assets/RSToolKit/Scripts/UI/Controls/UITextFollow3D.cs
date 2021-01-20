@@ -19,7 +19,7 @@ namespace RSToolkit.UI.Controls
             }
         }
 
-        public Vector3 Offset = Vector3.zero;
+        public Vector3 OffsetPosition = Vector3.zero;
         protected StringBuilder _sbDebugText;
         protected Text _text;
         protected TextMesh _textMesh;
@@ -56,21 +56,25 @@ namespace RSToolkit.UI.Controls
         protected override void Awake()
         {
             base.Awake();
+
             _text = GetComponent<Text>();
             if(_text == null)
             {
                 _text = GetComponentInChildren<Text>();
             }
 
+            _textMeshPro = GetComponent<TextMeshPro>(); ;
             if (_textMeshPro == null)
             {
                 _textMeshPro = GetComponentInChildren<TextMeshPro>();;
             }
 
+            _textMesh = GetComponent<TextMesh>(); ;
             if (_textMesh == null)
             {
                 _textMesh = GetComponentInChildren<TextMesh>();;
             }
+
             _sbDebugText = new StringBuilder();
         }
 
@@ -80,10 +84,11 @@ namespace RSToolkit.UI.Controls
             if(Target != null && Camera.allCamerasCount > 0 && Vector3.Distance(Camera.allCameras[0].transform.position, Target.transform.position ) <= DisplayAtDistance)
             {
                 GenerateDebugText();
-
+                bool is3D = true;
                 if (_text != null)
                 {
                     _text.text = _sbDebugText.ToString();
+                    is3D = false;
                 } else if (_textMeshPro != null)
                 {
                     _textMeshPro.text = _sbDebugText.ToString();
@@ -92,9 +97,16 @@ namespace RSToolkit.UI.Controls
                     _textMesh.text = _sbDebugText.ToString();
                 }
 
-                // transform.position = Camera.main.WorldToScreenPoint(Target.position) + Offset;
-                transform.position = Camera.allCameras[0].WorldToScreenPoint(Target.transform.position) + Offset;
-                
+                if (is3D)
+                {
+                    transform.position = Target.transform.position + OffsetPosition;
+                }
+                else
+                {
+                    // transform.position = Camera.main.WorldToScreenPoint(Target.position) + Offset;
+                    transform.position = Camera.allCameras[0].WorldToScreenPoint(Target.transform.position) + OffsetPosition;
+                }
+
             }
         }
         #endregion MonoBehaviour Functions

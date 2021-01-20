@@ -70,8 +70,9 @@
             }
             else
             {
-                spawnedGameObject.transform.ResetScaleAndRotation();
-                spawnedGameObject.transform.localPosition = transform.localPosition;
+                gameObjectToSpawn.transform.CopyValuesTo(spawnedGameObject.transform, false);
+                // spawnedGameObject.transform.ResetScaleAndRotation();
+                spawnedGameObject.transform.localPosition = Vector3.zero; //transform.localPosition;
             }
 
             _spawnedGameObjects.Add(spawnedGameObject);
