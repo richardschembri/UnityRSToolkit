@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -14,7 +12,8 @@ namespace RSToolkit.UI.Controls
 
         [SerializeField]
         private T _target;
-        public T Target {
+        public T Target
+        {
             get { return _target; }
             set
             {
@@ -37,14 +36,12 @@ namespace RSToolkit.UI.Controls
             CheckActive();
         }
 
-        // public float DisplayAtDistance = 100f;
-
         protected virtual void GenerateDebugText()
         {
             _sbDebugText.Clear();
             _sbDebugText.AppendLine($"-=[{Target.name}]=-");
         }
-       
+
         protected override void Init()
         {
             base.Init();
@@ -61,13 +58,13 @@ namespace RSToolkit.UI.Controls
         protected override void Awake()
         {
             base.Awake();
-            if(_targetCamera == null)
+            if (_targetCamera == null)
             {
                 _targetCamera = Camera.allCameras[0];
             }
 
             _text = GetComponent<Text>();
-            if(_text == null)
+            if (_text == null)
             {
                 _text = GetComponentInChildren<Text>();
             }
@@ -75,21 +72,22 @@ namespace RSToolkit.UI.Controls
             _textMeshPro = GetComponent<TextMeshPro>(); ;
             if (_textMeshPro == null)
             {
-                _textMeshPro = GetComponentInChildren<TextMeshPro>();;
+                _textMeshPro = GetComponentInChildren<TextMeshPro>(); ;
             }
 
             _textMesh = GetComponent<TextMesh>(); ;
 
             if (_textMesh == null)
             {
-                _textMesh = GetComponentInChildren<TextMesh>();;
+                _textMesh = GetComponentInChildren<TextMesh>(); ;
             }
 
-            if(_text != null)
+            if (_text != null)
             {
                 _is3D = false;
                 SetText = (string value) => { _text.text = value; };
-            }else if (_textMeshPro != null)
+            }
+            else if (_textMeshPro != null)
             {
                 _is3D = true;
                 SetText = (string value) => { _textMeshPro.text = value; };
@@ -106,8 +104,8 @@ namespace RSToolkit.UI.Controls
         // Update is called once per frame
         protected virtual void Update()
         {
-            if(Target != null && _targetCamera != null)
-                // && Vector3.Distance(_targetCamera.transform.position, Target.transform.position ) <= DisplayAtDistance)
+            if (Target != null && _targetCamera != null)
+            // && Vector3.Distance(_targetCamera.transform.position, Target.transform.position ) <= DisplayAtDistance)
             {
                 GenerateDebugText();
                 SetText(_sbDebugText.ToString());
@@ -121,6 +119,10 @@ namespace RSToolkit.UI.Controls
                     transform.position = _targetCamera.WorldToScreenPoint(Target.transform.position) + OffsetPosition;
                 }
 
+            }
+            else
+            {
+                this.gameObject.SetActive(false);
             }
         }
         #endregion MonoBehaviour Functions
