@@ -8,7 +8,7 @@ namespace RSToolkit.Space3D.Cameras
 {
     public class CameraFacingBillboard : RSMonoBehaviour
     {
-        Camera targetCamera = null;
+        private Camera _targetCamera = null;
 
         public bool reverseFace = false;
         public AxisHelpers.Axis axis = AxisHelpers.Axis.UP;
@@ -18,9 +18,9 @@ namespace RSToolkit.Space3D.Cameras
         protected override void Awake()
         {
             base.Awake();
-            if(targetCamera == null)
+            if(_targetCamera == null)
             {
-                targetCamera = Camera.allCameras[0];
+                _targetCamera = Camera.allCameras[0];
             }
         }
 
@@ -28,8 +28,8 @@ namespace RSToolkit.Space3D.Cameras
         void LateUpdate()
         {
             // rotates the object relative to the camera
-            Vector3 targetPos = transform.position + targetCamera.transform.rotation * (reverseFace ? Vector3.back : Vector3.forward);
-            Vector3 targetOrientation = targetCamera.transform.rotation * axis.ToVector3();
+            Vector3 targetPos = transform.position + _targetCamera.transform.rotation * (reverseFace ? Vector3.back : Vector3.forward);
+            Vector3 targetOrientation = _targetCamera.transform.rotation * axis.ToVector3();
             transform.LookAt(targetPos, targetOrientation);
             transform.rotation =  Quaternion.Euler(transform.rotation.eulerAngles + OffsetRotation);
         }
