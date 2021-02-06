@@ -52,5 +52,30 @@ namespace RSToolkit{
                     ExportPackageOptions.Recurse);
             Debug.Log("Exported UI Controls Popup");
         }
+    
+        [UnityEditor.MenuItem("Tools/RSToolkit/Export Package/AI/Bot")]
+        public static void ExportBotAI(){
+
+            Debug.Log("Exporting Bot AI");
+            var spawnerPaths = new string[]{
+                "Assets/RSToolKit/Scripts/AI",
+                "Assets/RSToolKit/Scripts/General/Helpers/DebugHelpers.cs",
+                "Assets/RSToolKit/Scripts/General/Helpers/PhysicsHelpers.cs",
+                "Assets/RSToolKit/Scripts/General/Helpers/RandomHelpers.cs",
+                "Assets/RSToolKit/Scripts/General/Helpers/TransformHelpers.cs",
+                "Assets/RSToolKit/Scripts/Space3D/Draggable3DObject.cs",
+                "Assets/RSToolKit/Scripts/Space3D/Flying3DObject.cs",
+                "Assets/RSToolKit/Scripts/Space3D/GameObjectNavSpawnerMarker.cs",
+                "Assets/RSToolKit/Scripts/Space3D/LightNavSpawnerMarker.cs",
+                "Assets/RSToolKit/Scripts/Space3D/NavSpawnerMarker.cs",
+                "Assets/RSToolKit/Scripts/Space3D/SpawnerMarker.cs",
+                "Assets/RSToolKit/Scripts/Space3D/ProximityChecker.cs"
+            };
+            AssetDatabase.ExportPackage(
+                    spawnerPaths,
+                    "rstoolkit-botai.unitypackage",
+                    ExportPackageOptions.Recurse);
+            Debug.Log("Exported Bot AI");
+        }
     }
 }
