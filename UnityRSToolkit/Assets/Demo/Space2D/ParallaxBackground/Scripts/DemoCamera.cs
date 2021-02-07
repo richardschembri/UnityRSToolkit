@@ -14,9 +14,9 @@ public class DemoCamera : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        if(Input.GetKey(KeyCode.D)){
+        if(Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)){
             this.transform.position =  this.transform.position + new Vector3(_speed, 0f, 0f);
-        }else if(Input.GetKey(KeyCode.A)){
+        }else if(Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)){
             this.transform.position =  this.transform.position + new Vector3(-_speed, 0f, 0f);
         }
         

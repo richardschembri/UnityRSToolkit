@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace RSToolkit.Space2D
 {
-    public class ParallaxBackground : MonoBehaviour
+    [RequireComponent(typeof(SpriteRenderer))]
+    public class SpriteParallax : MonoBehaviour
     {
         [SerializeField] private float _parallaxEffectMultiplier; 
 
