@@ -21,7 +21,7 @@
                 var presets = GetPresetScreenDimensions(settings[i].ScreenDimensionsType, settings[i].OtherScreenDimensions);
                 if(presets.Any( p => IsDimensions(p))){
                     this.transform.localScale = settings[i].Scale;
-                    m_adjusted = true;
+                    _adjusted = true;
                     break;
                 }
             }

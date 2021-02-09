@@ -17,7 +17,7 @@
                 var presets = GetPresetScreenDimensions(settings[i].ScreenDimensionsType, settings[i].OtherScreenDimensions);
                 if(presets.Any( p => IsDimensions(p))){
                     m_texture2D = settings[i].texture2D;
-                    m_adjusted = true;
+                    _adjusted = true;
                     break;
                 }
             }
@@ -37,7 +37,7 @@
 
         public Texture2D GetTexture2D(){
 
-            if(!m_adjusted){
+            if(!_adjusted){
                 Adjust();
             }
             if(m_texture2D == null){

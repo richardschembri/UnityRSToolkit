@@ -22,7 +22,7 @@
                     this.GetComponent<RectTransform>().anchoredPosition = new Vector2(ap.x , settings[i].PosY);
                     this.GetComponent<RectTransform>().SetStretch_Left(settings[i].Left);
                     this.GetComponent<RectTransform>().SetStretch_Right(settings[i].Right);
-                    m_adjusted = true;
+                    _adjusted = true;
                     break;
                 }
             }

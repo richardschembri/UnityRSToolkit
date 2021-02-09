@@ -16,7 +16,7 @@
                 var presets = GetPresetScreenDimensions(settings[i].ScreenDimensionsType, settings[i].OtherScreenDimensions);
                 if(presets.Any( p => IsDimensions(p))){
                     this.GetComponent<RawImage>().texture = settings[i].rawImageTexture;
-                    m_adjusted = true;
+                    _adjusted = true;
                     if(SetNativeSize){
                         this.GetComponent<RawImage>().SetNativeSize();
                     }

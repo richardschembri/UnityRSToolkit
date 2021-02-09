@@ -18,7 +18,7 @@
                 if(presets.Any( p => IsDimensions(p))){
                     this.GetComponent<RectTransform>().SetStretch_LeftBottom(settings[i].NewLeft, settings[i].NewBottom);
                     this.GetComponent<RectTransform>().SetStretch_RightTop(settings[i].NewRight, settings[i].NewTop);
-                    m_adjusted = true;
+                    _adjusted = true;
                     break;
                 }
             }

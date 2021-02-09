@@ -15,7 +15,7 @@
                 if(presets.Any( p => IsDimensions(p))){
                     this.GetComponent<Image>().sprite = settings[i].imageSprite;
                     this.GetComponent<Image>().preserveAspect = settings[i].preserveAspect;
-                    m_adjusted = true;
+                    _adjusted = true;
                     break;
                 }
             }

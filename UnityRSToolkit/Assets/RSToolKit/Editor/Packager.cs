@@ -8,7 +8,7 @@ namespace RSToolkit{
         public static void ExportSpawner()
         {
             Debug.Log("Exporting Spawner");
-            var spawnerPaths = new string[]{
+            var toExportPaths = new string[]{
                 "Assets/RSToolKit/Scripts/General/Controls/Spawner",
                 "Assets/RSToolKit/Scripts/General/RSMonoBehaviour.cs",
                 "Assets/RSToolKit/Scripts/General/Helpers/TransformHelpers.cs",
@@ -16,7 +16,7 @@ namespace RSToolkit{
                 "Assets/RSToolKit/Scripts/General/Helpers/DebugHelpers.cs"
             };
             AssetDatabase.ExportPackage(
-                    spawnerPaths,
+                    toExportPaths,
                     "rstoolkit-spawner.unitypackage",
                     ExportPackageOptions.Recurse);
             Debug.Log("Exported Spawner");
@@ -26,13 +26,13 @@ namespace RSToolkit{
         public static void ExportUIPaging(){
 
             Debug.Log("Exporting UI Paging");
-            var spawnerPaths = new string[]{
+            var toExportPaths  = new string[]{
                 "Assets/RSToolKit/Scripts/UI/Paging",
                 "Assets/RSToolKit/Prefabs/UI/Paging",
                 "Assets/RSToolKit/Scripts/General/Collections/SizedStack.cs"
             };
             AssetDatabase.ExportPackage(
-                    spawnerPaths,
+                    toExportPaths,
                     "rstoolkit-uipaging.unitypackage",
                     ExportPackageOptions.Recurse);
             Debug.Log("Exported UI Paging");
@@ -42,12 +42,12 @@ namespace RSToolkit{
         public static void ExportUIControlsPopup(){
 
             Debug.Log("Exporting UI Controls Popup");
-            var spawnerPaths = new string[]{
+            var toExportPaths = new string[]{
                 "Assets/RSToolKit/Scripts/UI/Controls/UIPopup.cs",
                 "Assets/RSToolKit/Prefabs/UI/Controls/UI Popup.prefab"
             };
             AssetDatabase.ExportPackage(
-                    spawnerPaths,
+                    toExportPaths,
                     "rstoolkit-uipopup.unitypackage",
                     ExportPackageOptions.Recurse);
             Debug.Log("Exported UI Controls Popup");
@@ -57,7 +57,7 @@ namespace RSToolkit{
         public static void ExportBotAI(){
 
             Debug.Log("Exporting Bot AI");
-            var spawnerPaths = new string[]{
+            var toExportPaths = new string[]{
                 "Assets/RSToolKit/Scripts/AI",
                 "Assets/RSToolKit/Scripts/General/Helpers/DebugHelpers.cs",
                 "Assets/RSToolKit/Scripts/General/Helpers/PhysicsHelpers.cs",
@@ -72,10 +72,25 @@ namespace RSToolkit{
                 "Assets/RSToolKit/Scripts/Space3D/ProximityChecker.cs"
             };
             AssetDatabase.ExportPackage(
-                    spawnerPaths,
+                    toExportPaths,
                     "rstoolkit-botai.unitypackage",
                     ExportPackageOptions.Recurse);
             Debug.Log("Exported Bot AI");
         }
+
+        [UnityEditor.MenuItem("Tools/RSToolkit/Export Package/UI/Adjust Layout Tools")]
+        public static void ExportAdjustLayoutTools(){
+            Debug.Log("Exporting Adjust Layout Tools");
+            var toExportPaths = new string[]{
+                "Assets/RSToolKit/Scripts/UI/Layout",
+            };
+            AssetDatabase.ExportPackage(
+                    toExportPaths,
+                    "rstoolkit-adjustlayouttools.unitypackage",
+                    ExportPackageOptions.Recurse);
+            Debug.Log("Exported Adjust Layout Tools");
+        }
+
+// 
     }
 }

@@ -16,7 +16,7 @@
                 var presets = GetPresetScreenDimensions(settings[i].ScreenDimensionsType, settings[i].OtherScreenDimensions);
                 if(presets.Any( p => IsDimensions(p))){
                     m_sprite = settings[i].sprite;
-                    m_adjusted = true;
+                    _adjusted = true;
                     break;
                 }
             }
@@ -36,7 +36,7 @@
 
         public Sprite GetSprite(){
 
-            if(!m_adjusted){
+            if(!_adjusted){
                 Adjust();
             }
             if(m_sprite == null){

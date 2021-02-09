@@ -14,7 +14,7 @@
                 var presets = GetPresetScreenDimensions(settings[i].ScreenDimensionsType, settings[i].OtherScreenDimensions);
                 if(presets.Any( p => IsDimensions(p))){
                     this.GetComponent<RectTransform>().anchoredPosition = new Vector2(settings[i].PosX, settings[i].PosY);
-                    m_adjusted = true;
+                    _adjusted = true;
                     break;
                 }
             }

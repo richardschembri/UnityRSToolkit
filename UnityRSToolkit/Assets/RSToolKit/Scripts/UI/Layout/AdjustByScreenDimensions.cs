@@ -7,7 +7,7 @@
     public abstract class AdjustByScreenDimensions : MonoBehaviour
     {
         public bool AdjustOnStart = true;
-        protected bool m_adjusted = false;
+        protected bool _adjusted = false;
 
         public enum ResolutionAspectType{
             iPhonePremium,
@@ -38,17 +38,17 @@
 
             switch(rat){
                 case ResolutionAspectType.iPhonePremium:
-                result.Add(new ScreenDimensions(false, 90, 185));
-                result.Add(new ScreenDimensions(true, 1125, 2436));
-                result.Add(new ScreenDimensions(true, 1242, 2688));
+                result.Add(new ScreenDimensions(false, new Vector2(90, 185)));
+                result.Add(new ScreenDimensions(true, new Vector2(1125, 2436)));
+                result.Add(new ScreenDimensions(true, new Vector2(1242, 2688)));
                 break;
                 case ResolutionAspectType.iPhoneBudget:
-                result.Add(new ScreenDimensions(true, 828, 1792));
+                result.Add(new ScreenDimensions(true, new Vector2(828, 1792)));
                 break;
                 case ResolutionAspectType.iPad:
-                result.Add(new ScreenDimensions(false, 3, 4));
-                result.Add(new ScreenDimensions(false, 512, 683));
-                result.Add(new ScreenDimensions(true, 1668, 2388));
+                result.Add(new ScreenDimensions(false, new Vector2(3, 4)));
+                result.Add(new ScreenDimensions(false, new Vector2(512, 683)));
+                result.Add(new ScreenDimensions(true, new Vector2(1668, 2388)));
                 break;
                 case ResolutionAspectType.Other:
                 result.Add(other);
@@ -57,47 +57,45 @@
 
             return result;
         }
+
         public bool IsDimensions(ScreenDimensions sd){
-            return IsDimensions(sd.ResolutionOrAspectRatio, sd.Width, sd.Height);
+            return IsDimensions(sd.ResolutionOrAspectRatio, sd.Dimensions);
         }
 
-        public bool IsDimensions(bool resolutionOrAspectRatio, float width, float height){
+        public bool IsDimensions(bool resolutionOrAspectRatio, Vector2 dimensions){
             if(resolutionOrAspectRatio){
-                return CheckResolution(width, height);
+                return CheckResolution(dimensions);
             }else{
-                return CheckAspectRatio(width, height);
+                return CheckAspectRatio(dimensions);
             }
         }
 
-        public bool CheckResolution(float reswidth, float resheight){
-            return (reswidth == Screen.width && resheight == Screen.height); 
+        public bool CheckResolution(Vector2 resolution){
+            return (resolution.x == Screen.width && resolution.y == Screen.height); 
         }
 
-        public bool CheckAspectRatio(float ratiowidth, float ratioheight){
-            return (((float)Screen.width / (float)Screen.height) == (ratiowidth / ratioheight));
+        public bool CheckAspectRatio(Vector2 ratio){
+            return (((float)Screen.width / (float)Screen.height) == (ratio.x / ratio.y));
         }
 
         public virtual void Adjust(){
-            m_adjusted = true;
+            _adjusted = true;
         }
 
         public bool IsAdjusted{
             get{
-                return m_adjusted;
+                return _adjusted;
             }
         }
-
     }
 
     [System.Serializable]
     public struct ScreenDimensions {
         public bool ResolutionOrAspectRatio;
-        public float Width;
-        public float Height;
-        public ScreenDimensions(bool resolutionOrAspectRatio, float width, float height){
+        public Vector2 Dimensions;
+        public ScreenDimensions(bool resolutionOrAspectRatio, Vector2 dimensions){
             ResolutionOrAspectRatio = resolutionOrAspectRatio;
-            Width = width;
-            Height = height;
+            Dimensions = dimensions;
         }
     }
 }
