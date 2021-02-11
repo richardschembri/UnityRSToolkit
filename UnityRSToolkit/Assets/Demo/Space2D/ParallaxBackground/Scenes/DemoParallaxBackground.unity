@@ -309,10 +309,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 245509906}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 584c00c78a970d4f5990408b537da7d4, type: 3}
+  m_Script: {fileID: 11500000, guid: b17ac20caf0734bd9a84c4545fb9c933, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 0.1
+  target: {fileID: 252810686}
+  offset: {x: 0, y: 0, z: 0}
+  smoothFactor: 5
 --- !u!1 &252810683
 GameObject:
   m_ObjectHideFlags: 0
@@ -324,6 +326,9 @@ GameObject:
   - component: {fileID: 252810686}
   - component: {fileID: 252810685}
   - component: {fileID: 252810684}
+  - component: {fileID: 252810687}
+  - component: {fileID: 252810689}
+  - component: {fileID: 252810688}
   m_Layer: 0
   m_Name: Wizard
   m_TagString: Untagged
@@ -389,7 +394,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 10
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: -411378906735354078, guid: d99a46f131e9140c38cc5f433f2ce3a7,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -409,11 +415,60 @@ Transform:
   m_GameObject: {fileID: 252810683}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -1.91, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: -3, y: 3, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!50 &252810687
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 252810683}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!114 &252810688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 252810683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2140f1a7eb8891017bb362f064f9bc44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _controller: {fileID: 252810689}
+  _animator: {fileID: 252810684}
+  _moveSpeed: 40
+--- !u!114 &252810689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 252810683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45a26dabe4ea803c396756f13d7698ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _movementSmoothing: 0.05
 --- !u!1 &695189158
 GameObject:
   m_ObjectHideFlags: 0
