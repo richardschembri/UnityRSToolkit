@@ -25,6 +25,8 @@ namespace RSToolkit
             return true;
         }
 
+        public virtual void ResetValues(){}
+
         #region MonoBehaviour Functions
         protected virtual void Awake()
         {

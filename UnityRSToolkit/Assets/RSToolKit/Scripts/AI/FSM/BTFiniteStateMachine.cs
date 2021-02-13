@@ -40,6 +40,10 @@ namespace RSToolkit.AI.FSM
         {
             _stateSelector.ChangeState(newState, silent);
         }
+        public void ChangeStateIn(float time, T newState, bool silent = false)
+        {
+            _stateSelector.ChangeStateIn(time, newState, silent);
+        }
 
         public string GetName()
         {

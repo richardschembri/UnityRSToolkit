@@ -623,15 +623,12 @@ namespace RSToolkit.AI
 	/// <param name="force">Initialize even if already initialized</param>
         public override bool Init(bool force = false)
         {
-            if(Initialized && !force)
+            if(Init(force))
             {
-                return false;
+                BTFiniteStateMachineManagerComponent = GetComponent<BTFiniteStateMachineManager>();           
+                return true;
             }
-            Initialized = false;
-            BTFiniteStateMachineManagerComponent = GetComponent<BTFiniteStateMachineManager>();           
-
-            Initialized = true;
-            return true;
+            return false;
         }
 
         #endregion Intialize
