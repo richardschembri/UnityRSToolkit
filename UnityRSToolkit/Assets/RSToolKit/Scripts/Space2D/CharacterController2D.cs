@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using RSToolkit.Character;
 
 namespace RSToolkit.Space2D
 {
-    public class CharacterController2D : MonoBehaviour
+    public class CharacterController2D : RSCharacterController
     {
         [Range(0, .3f)] [SerializeField] private float _movementSmoothing = .05f;	// How much to smooth out the movement
 
@@ -12,9 +13,14 @@ namespace RSToolkit.Space2D
         private bool _facingRight = true;  // For determining which way the player is currently facing.
         private Vector3 _velocity = Vector3.zero;
 
-        private void Awake()
+        public override bool Init(bool force = false)
         {
-            _rigidbody2D = GetComponent<Rigidbody2D>();
+            if(base.Init(force )){
+                _rigidbody2D = GetComponent<Rigidbody2D>();
+                return true;
+            }
+            
+            return false;
         }
 
         public void Move(float move)

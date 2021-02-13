@@ -468,6 +468,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45a26dabe4ea803c396756f13d7698ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DebugMode: 0
+  InitOnAwake: 1
   _movementSmoothing: 0.05
 --- !u!1 &695189158
 GameObject:

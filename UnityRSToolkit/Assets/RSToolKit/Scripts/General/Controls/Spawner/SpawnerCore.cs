@@ -102,10 +102,15 @@
         }
 
         #region RSMonoBehaviour Functions
-        protected override void Init()
+        public override bool Init(bool force = false)
         {
-            ValidateSpawnParent();
-            CollectChildren();
+            if(base.Init(force)){
+                ValidateSpawnParent();
+                CollectChildren();
+                return true;
+            }
+
+            return false;
         }
         #endregion RSMonoBehaviour Functions
 

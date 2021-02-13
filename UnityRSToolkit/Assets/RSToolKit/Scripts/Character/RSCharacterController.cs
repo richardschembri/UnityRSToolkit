@@ -1,15 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace RSToolkit.Character
 {
-    public abstract class RSCharacterController : ScriptableObject
+    public abstract class RSCharacterController : RSMonoBehaviour
     {
-        
-        public CharacterBase CharacterComponent {get; set;}
-        public abstract void Init();
-		public abstract void OnCharacterUpdate();
-		public abstract void OnCharacterFixedUpdate();
+        public class RSCharacterEvent :UnityEvent<RSCharacterController> {}
     }
 }

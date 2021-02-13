@@ -41,7 +41,7 @@ namespace RSToolkit.AI
         /// <summary>
         /// Check if the Bot is in a position of falling/landing
         /// </summary>
-        private void HandleFailling()
+        public void HandleFailling()
         {
             if (_IsNetworkPeer)
             {
@@ -88,6 +88,7 @@ namespace RSToolkit.AI
             }
         }
 
+        /*
         /// <summary>
         /// Turn on/off components depending if this bot is a host or a peer 
         /// </summary>
@@ -111,6 +112,7 @@ namespace RSToolkit.AI
             }
 
         }
+        */
 
         /// <summary>
         /// Initialize the LocomotionTypes used by BotFlyable
@@ -134,9 +136,9 @@ namespace RSToolkit.AI
 
         #region MonoBehaviour Functions
 
-        public override bool Initialize(bool force = false)
+        public override bool Init(bool force = false)
         {
-            if (!base.Initialize(force))
+            if (!base.Init(force))
             {
                 return false;
             }
@@ -186,5 +188,23 @@ namespace RSToolkit.AI
         }
 
         #endregion MonoBehaviour Functions
+
+
+        #region RSMonoBehaviour Functions
+        protected override void OnRSShadowChanged_Listener(bool isShadow){
+            base.OnRSShadowChanged_Listener(isShadow);
+            if(isShadow){
+                NavMeshAgentComponent.enabled = false;
+                if (CurrentStatesGround != StatesGround.NOTGROUNDED)
+                {
+                    // IsFreefall = false;
+                    CurrentStatesGround = StatesGround.GROUNDED_NAVMESH_SUCCESS;
+                }
+            }else{
+                HandleFailling();
+            }
+        }
+
+        #endregion RSMonoBehaviour Functions
     }
 }
