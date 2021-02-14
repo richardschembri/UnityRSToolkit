@@ -11,6 +11,7 @@ using RSToolkit.AI.Behaviour.Composite;
 using RSToolkit.AI.Behaviour.Task;
 using RSToolkit.AI.Behaviour.Decorator;
 using RSToolkit.UI.Controls;
+using RSToolkit.Helpers;
 
 namespace Demo.BehaviourTree.TurnBased{
     public class BattleManager : RSMonoBehaviour
@@ -21,8 +22,12 @@ namespace Demo.BehaviourTree.TurnBased{
             public BehaviourWaitForCondition WaitForTurn;
             public BehaviourSequence SequencePlayTurn;
 
-            public BehaviourAction ActionDoAnnounceAttack;
-            public BehaviourWait WaitBeforeAttack;
+            public BehaviourAction ActionDoAnnounceAction;
+            public BehaviourWait WaitBeforeAction;
+
+            public BehaviourSelector SelectorDecideAction;
+            public BehaviourCondition ConditionShouldHeal;
+            public BehaviourAction ActionDoHeal;
             public BehaviourAction ActionDoAttack;
 
         }
@@ -30,8 +35,8 @@ namespace Demo.BehaviourTree.TurnBased{
 
 #region Behaviour Logic
 #region DoAnnounceAttack
-    private void DoAnnounceAttack(){
-        BattleText.text = $"{BattleEnemy.DisplayName} attacks";
+    private void DoAnnounceAction(){
+        BattleText.text = $"It's {BattleEnemy.DisplayName} turn!";
     }
         public BTFiniteStateMachine<FStatesBattle> FSM { get; private set; } 
         #region Components
@@ -83,14 +88,24 @@ namespace Demo.BehaviourTree.TurnBased{
             EnemyBehaviourTree.SequencePlayTurn.Name = "Play Turn";
             EnemyBehaviourTree.WaitForTurn.AddChild(EnemyBehaviourTree.SequencePlayTurn);
 
-            EnemyBehaviourTree.ActionDoAnnounceAttack = new BehaviourAction(DoAnnounceAttack, "Do Announce Attack");
-            EnemyBehaviourTree.SequencePlayTurn.AddChild(EnemyBehaviourTree.ActionDoAnnounceAttack);
-            EnemyBehaviourTree.WaitBeforeAttack = new BehaviourWait(1f);
-            EnemyBehaviourTree.SequencePlayTurn.AddChild(EnemyBehaviourTree.WaitBeforeAttack);
+            EnemyBehaviourTree.ActionDoAnnounceAction = new BehaviourAction(DoAnnounceAction, "Do Announce Attack");
+            EnemyBehaviourTree.SequencePlayTurn.AddChild(EnemyBehaviourTree.ActionDoAnnounceAction);
+
+            EnemyBehaviourTree.WaitBeforeAction = new BehaviourWait(1f);
+            EnemyBehaviourTree.SequencePlayTurn.AddChild(EnemyBehaviourTree.WaitBeforeAction);
+
+            EnemyBehaviourTree.SelectorDecideAction = new BehaviourSelector(false);
+            EnemyBehaviourTree.ActionDoHeal = new BehaviourAction(DoHeal, "Do Heal");
+            EnemyBehaviourTree.ActionDoHeal.OnStarted.AddListener(DoHealOnStarted_Listener);
+            EnemyBehaviourTree.ConditionShouldHeal = new BehaviourCondition(ShouldEnemyHeal, EnemyBehaviourTree.ActionDoHeal);
+            EnemyBehaviourTree.ConditionShouldHeal.Name = "Should Heal";
+            EnemyBehaviourTree.SelectorDecideAction.AddChild(EnemyBehaviourTree.ConditionShouldHeal);
+
             EnemyBehaviourTree.ActionDoAttack = new BehaviourAction(DoAttack, "Do Attack");
             EnemyBehaviourTree.ActionDoAttack.OnStarted.AddListener(DoAttackOnStarted_Listener);
 
-            EnemyBehaviourTree.SequencePlayTurn.AddChild(EnemyBehaviourTree.ActionDoAttack);
+            EnemyBehaviourTree.SelectorDecideAction.AddChild(EnemyBehaviourTree.ActionDoAttack);
+            EnemyBehaviourTree.SequencePlayTurn.AddChild(EnemyBehaviourTree.SelectorDecideAction);
             _behaviourManagerComponent.SetCurrentTree(EnemyBehaviourTree.Root, true);
         }
 
@@ -187,6 +202,10 @@ namespace Demo.BehaviourTree.TurnBased{
             return FSM.CurrentState == FStatesBattle.ENEMYTURN;
         }
 
+        private bool ShouldEnemyHeal(){
+            return BattleEnemy.HealthComponent.CurrentHealthPercent < 40 && RandomHelpers.PercentTrue(30);
+        }
+
 #endregion DoAnnounceAttack
 #region DoAttack
         private void DoAttackOnStarted_Listener(){
@@ -209,6 +228,22 @@ namespace Demo.BehaviourTree.TurnBased{
             return BehaviourAction.ActionResult.PROGRESS;
         }
 #endregion DoAttack
+#region DoHeal
+        private void DoHealOnStarted_Listener(){
+            BattleEnemy.HealthComponent.Heal(7);
+            FSM.ChangeStateIn(1f, FStatesBattle.PLAYERTURN);
+        }
+        private BehaviourAction.ActionResult DoHeal(bool cancel){
+            if(cancel){
+                return BehaviourAction.ActionResult.FAILED;
+            }
+            if(!IsEnemyTurn()){
+                return BehaviourAction.ActionResult.SUCCESS;
+            }
+
+            return BehaviourAction.ActionResult.PROGRESS;
+        }
+#endregion DoHeal
 #endregion Behaviour Logic
     }
 
