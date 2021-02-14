@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using RSToolkit.Character;
 
-namespace RSToolkit.TurnBased{
+namespace Demo.BehaviourTree.TurnBased{
     public class BattleCharacterController : RSCharacterController
     {
         public uint level;

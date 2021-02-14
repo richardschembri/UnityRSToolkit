@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using RSToolkit.Controls;
 using UnityEngine;
 
-namespace RSToolkit.TurnBased{
+namespace Demo.BehaviourTree.TurnBased{
     public class BattleSpawner : Spawner<BattleCharacterController>
     {
     }

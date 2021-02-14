@@ -2,18 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using RSToolkit.AI.FSM;
 using RSToolkit.Controls;
 using RSToolkit.Character;
+using RSToolkit;
+using RSToolkit.AI.FSM;
 using RSToolkit.AI.Behaviour;
 using RSToolkit.AI.Behaviour.Composite;
 using RSToolkit.AI.Behaviour.Task;
 using RSToolkit.AI.Behaviour.Decorator;
+using RSToolkit.UI.Controls;
 
-namespace RSToolkit.TurnBased{
+namespace Demo.BehaviourTree.TurnBased{
     public class BattleManager : RSMonoBehaviour
     {
-        public enum FStatesBattle { START, PLAYERTURN, ENEMYTURN, WON, LOST}
+        public enum FStatesBattle { MENU, START, PLAYERTURN, ENEMYTURN, PLAYERWIN, ENEMYWIN}
         public struct EnemyBehaviours{
             public BehaviourRootNode Root;
             public BehaviourWaitForCondition WaitForTurn;
@@ -45,6 +47,7 @@ namespace RSToolkit.TurnBased{
         public BattleHUD HUDPlayer;
         public BattleHUD HUDEnemy;
 
+        public UIPopup PopupMenu;
         public Text BattleText;
         public CanvasGroup BattleButtons;
         public override bool Init(bool force = false)
@@ -60,12 +63,14 @@ namespace RSToolkit.TurnBased{
 
         private void InitFSM(){
             _btFiniteStateMachineManagerComponent = GetComponent<BTFiniteStateMachineManager>();           
-            FSM = new BTFiniteStateMachine<FStatesBattle>(FStatesBattle.START);
+            FSM = new BTFiniteStateMachine<FStatesBattle>(FStatesBattle.MENU);
+            FSM.OnStarted_AddListener(FStatesBattle.MENU, Menu_Enter);
             FSM.OnStarted_AddListener(FStatesBattle.START, Start_Enter);
             FSM.OnStarted_AddListener(FStatesBattle.PLAYERTURN, PlayerTurn_Enter);
             FSM.OnStarted_AddListener(FStatesBattle.ENEMYTURN, EnemyTurn_Enter);
-            FSM.OnStarted_AddListener(FStatesBattle.WON, Won_Enter);
-            FSM.OnStarted_AddListener(FStatesBattle.LOST, Lose_Enter);
+            FSM.OnStarted_AddListener(FStatesBattle.PLAYERWIN, PlayerWin_Enter);
+            FSM.OnStarted_AddListener(FStatesBattle.ENEMYWIN, EnemyWin_Enter);
+            FSM.OnStateChanged_AddListener(FSMOnStateChanged_Listener);
             _btFiniteStateMachineManagerComponent.AddFSM(FSM);
         }
 
@@ -100,9 +105,11 @@ namespace RSToolkit.TurnBased{
             _behaviourManagerComponent.StartTree();
         }
 
+        protected void Menu_Enter(){
+            PopupMenu.OpenPopup();
+        }
+
         protected void Start_Enter(){
-            // BattleButtons.interactable = false; 
-            BattleButtons.gameObject.SetActive(false); 
             playerBattleStation.DestroyAllSpawns();
             enemyBattleStation.DestroyAllSpawns();
             BattlePlayer = playerBattleStation.SpawnAndGetGameObject();
@@ -111,59 +118,67 @@ namespace RSToolkit.TurnBased{
             BattleEnemy.HealthComponent.HealFull();
             HUDPlayer.SetValues(BattlePlayer);
             HUDEnemy.SetValues(BattleEnemy);
-            BattleText.text = $"A wild {BattleEnemy.name} approaches...";
+            BattleText.text = $"A wild {BattleEnemy.DisplayName} approaches...";
             
             FSM.ChangeStateIn(2f, FStatesBattle.PLAYERTURN);
         }
 
         protected void PlayerTurn_Enter(){
             BattleText.text = "Choose an action:";
-            BattleButtons.gameObject.SetActive(true); 
         }
 
         protected void EnemyTurn_Enter(){
-            //BattleButtons.interactable = false; 
-            BattleButtons.gameObject.SetActive(false); 
         }
 
-        protected void Won_Enter(){
+        protected void PlayerWin_Enter(){
             BattleText.text = "You won the battle!";
+            FSM.ChangeStateIn(2f, FStatesBattle.MENU);
         }
 
-        protected void Lose_Enter(){
+        protected void EnemyWin_Enter(){
             BattleText.text = "You were defeated";
+            FSM.ChangeStateIn(2f, FStatesBattle.MENU);
         }
 
-        public void OnClickHealButton_Listener(){
+        public void HealButtonOnClick_Listener(){
             if(FSM.CurrentState != FStatesBattle.PLAYERTURN){
                 return;
             }
             PlayerHeal();
         }
 
-        public void OnClickAttackButton_Listener(){
+        public void AttackButtonOnClick_Listener(){
             if(FSM.CurrentState != FStatesBattle.PLAYERTURN){
                 return;
             }
             PlayerAttack();
         }
 
+        public void NewGameButtonOnClick_Listener(){
+            PopupMenu.ClosePopup();
+            FSM.ChangeState(FStatesBattle.START);
+        }
+
+        public void FSMOnStateChanged_Listener(FStatesBattle state){
+            BattleButtons.gameObject.SetActive(state == FStatesBattle.PLAYERTURN); 
+        }
+
         private void PlayerHeal(){
+            BattleButtons.gameObject.SetActive(false); 
             BattlePlayer.HealthComponent.Heal(5);
             BattleText.text = "You feel renewed strength!";
-            //BattleButtons.interactable = false; 
-            BattleButtons.gameObject.SetActive(false); 
             FSM.ChangeStateIn(2f, FStatesBattle.ENEMYTURN);
         }
 
         private void PlayerAttack(){
+            BattleButtons.gameObject.SetActive(false); 
             BattleEnemy.HealthComponent.TakeDamage(BattlePlayer.damage);
-
             BattleText.text = "The attack is successful!";
             if(BattleEnemy.HealthComponent.IsAlive){
                 FSM.ChangeStateIn(2f, FStatesBattle.ENEMYTURN);
             }else{
-                FSM.ChangeStateIn(2f, FStatesBattle.WON);
+                BattleEnemy.gameObject.SetActive(false);
+                FSM.ChangeStateIn(2f, FStatesBattle.PLAYERWIN);
             }
 
         }
@@ -179,7 +194,8 @@ namespace RSToolkit.TurnBased{
             if(BattlePlayer.HealthComponent.IsAlive){
                 FSM.ChangeStateIn(1f, FStatesBattle.PLAYERTURN);
             }else{
-                FSM.ChangeStateIn(1f, FStatesBattle.LOST);
+                BattlePlayer.gameObject.SetActive(false);
+                FSM.ChangeStateIn(1f, FStatesBattle.ENEMYWIN);
             }
         }
         private BehaviourAction.ActionResult DoAttack(bool cancel){

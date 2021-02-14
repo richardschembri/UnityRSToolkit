@@ -76,10 +76,13 @@ namespace RSToolkit.Character
 		public virtual void Heal(uint health){
 
 			CurrentHealth += (int)health;
+			if(CurrentHealth > MaxHealth){
+				CurrentHealth = (int)MaxHealth;
+			}
 		}
 
 		public virtual void HealFull(){
-			Heal(MaxHealth);
+			CurrentHealth = (int)MaxHealth;
 		}
 		bool Die()
 		{

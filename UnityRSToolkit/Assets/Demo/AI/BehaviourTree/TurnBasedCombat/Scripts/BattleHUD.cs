@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using RSToolkit;
 using RSToolkit.Character;
 
-namespace RSToolkit.TurnBased{
+namespace Demo.BehaviourTree.TurnBased{
     public class BattleHUD : RSMonoBehaviour
     {
         public Text nameText;
