@@ -72,7 +72,8 @@ A simple toolkit for the Unity Engine. Controls / Components are designed to be 
 * Various 3D Models: [Quaternius](http://www.quaternius.com/index.html)
 * The Dawn parallax background: [https://saurabhkgp.itch.io/](https://saurabhkgp.itch.io/the-dawn-parallax-background)
 * The Dawn parallax background: [https://saurabhkgp.itch.io/](https://saurabhkgp.itch.io/the-dawn-parallax-background)
-* Wizard Sprite: [https://lionheart963.itch.io/wizard]()
+* Wizard Sprite: [lionheart963](https://lionheart963.itch.io/wizard)
+* Turn based combat assets: [Brackeys Turn based combat project](https://github.com/Brackeys/Turn-based-combat)
 
 ## License
 
