@@ -155,7 +155,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 3.9}
+  m_AnchoredPosition: {x: 0, y: 3.8999996}
   m_SizeDelta: {x: 0, y: -0.00000023841858}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &230098318
@@ -211,7 +211,7 @@ GameObject:
   - component: {fileID: 309123958}
   - component: {fileID: 309123957}
   m_Layer: 0
-  m_Name: PlayerBattleStation
+  m_Name: EnemyBattleStation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -234,7 +234,7 @@ MonoBehaviour:
   SpawnLimit: 1
   SpawnParent: {fileID: 0}
   CollectChildrenAlreadyInScene: 1
-  GameObjectToSpawn: {fileID: 2992061901615898927, guid: bd8c8f707b4ee17d78146e4570b2d647,
+  GameObjectToSpawn: {fileID: 7285101959291504605, guid: 3741f5a89c89753ad86990fb0a98dc20,
     type: 3}
 --- !u!212 &309123958
 SpriteRenderer:
@@ -274,7 +274,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -10
   m_Sprite: {fileID: 21300000, guid: 4bfc8a9c83687ba44b598ed3af6049ce, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -310,6 +310,7 @@ GameObject:
   m_Component:
   - component: {fileID: 411159424}
   - component: {fileID: 411159425}
+  - component: {fileID: 411159426}
   m_Layer: 5
   m_Name: BattleButtons
   m_TagString: Untagged
@@ -363,6 +364,18 @@ MonoBehaviour:
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!225 &411159426
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 411159423}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1001 &443625384
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -503,7 +516,7 @@ PrefabInstance:
     - target: {fileID: 4640293489663104636, guid: 0d0285e51bafcff80921e809604c7822,
         type: 3}
       propertyPath: m_Name
-      value: PlayerBattleHud
+      value: EnemyBattleHud
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0d0285e51bafcff80921e809604c7822, type: 3}
@@ -702,6 +715,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1152839379}
   - component: {fileID: 1152839378}
+  - component: {fileID: 1152839381}
+  - component: {fileID: 1152839380}
   m_Layer: 0
   m_Name: Battle Manager
   m_TagString: Untagged
@@ -723,9 +738,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DebugMode: 0
   InitOnAwake: 1
-  HUDPlayer: {fileID: 443625386}
-  HUDEnemy: {fileID: 1390350902}
+  playerBattleStation: {fileID: 309123957}
+  enemyBattleStation: {fileID: 1665214597}
+  HUDPlayer: {fileID: 1390350902}
+  HUDEnemy: {fileID: 443625386}
   BattleText: {fileID: 1609317110}
+  BattleButtons: {fileID: 411159426}
 --- !u!4 &1152839379
 Transform:
   m_ObjectHideFlags: 0
@@ -740,6 +758,31 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1152839380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1152839377}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ea68243e005331478b114e930d501c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1152839381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1152839377}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 419e95672819d40b49efa83de376a945, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IsSilent: 0
 --- !u!1 &1234611586
 GameObject:
   m_ObjectHideFlags: 0
@@ -775,8 +818,8 @@ Camera:
   m_GameObject: {fileID: 1234611586}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.21266466, g: 0.5566038, b: 0.26256207, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -859,7 +902,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -212}
+  m_AnchoredPosition: {x: 0, y: -220}
   m_SizeDelta: {x: 800, y: 135}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1291510026
@@ -1039,7 +1082,7 @@ PrefabInstance:
     - target: {fileID: 4640293489663104636, guid: 0d0285e51bafcff80921e809604c7822,
         type: 3}
       propertyPath: m_Name
-      value: EnemyBattleHud
+      value: PlayerBattleHud
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0d0285e51bafcff80921e809604c7822, type: 3}
@@ -1072,6 +1115,7 @@ GameObject:
   - component: {fileID: 1515310418}
   - component: {fileID: 1515310420}
   - component: {fileID: 1515310419}
+  - component: {fileID: 1515310421}
   m_Layer: 5
   m_Name: AttackButton
   m_TagString: Untagged
@@ -1136,6 +1180,60 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1515310417}
   m_CullTransparentMesh: 0
+--- !u!114 &1515310421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1515310417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 1515310419}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1152839378}
+        m_MethodName: OnClickAttackButton_Listener
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1609317108
 GameObject:
   m_ObjectHideFlags: 0
@@ -1226,7 +1324,7 @@ GameObject:
   - component: {fileID: 1665214598}
   - component: {fileID: 1665214597}
   m_Layer: 0
-  m_Name: EnemyBattleStation
+  m_Name: PlayerBattleStation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1249,7 +1347,7 @@ MonoBehaviour:
   SpawnLimit: 1
   SpawnParent: {fileID: 0}
   CollectChildrenAlreadyInScene: 1
-  GameObjectToSpawn: {fileID: 7285101959291504605, guid: 3741f5a89c89753ad86990fb0a98dc20,
+  GameObjectToSpawn: {fileID: 2992061901615898927, guid: bd8c8f707b4ee17d78146e4570b2d647,
     type: 3}
 --- !u!212 &1665214598
 SpriteRenderer:
@@ -1289,7 +1387,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -10
   m_Sprite: {fileID: 21300000, guid: 4bfc8a9c83687ba44b598ed3af6049ce, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -1326,6 +1424,7 @@ GameObject:
   - component: {fileID: 1810030356}
   - component: {fileID: 1810030358}
   - component: {fileID: 1810030357}
+  - component: {fileID: 1810030359}
   m_Layer: 5
   m_Name: HealButton
   m_TagString: Untagged
@@ -1390,6 +1489,60 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1810030355}
   m_CullTransparentMesh: 0
+--- !u!114 &1810030359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1810030355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 1810030357}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1152839378}
+        m_MethodName: OnClickHealButton_Listener
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &2123150547
 GameObject:
   m_ObjectHideFlags: 0
@@ -1424,7 +1577,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 3.9}
+  m_AnchoredPosition: {x: 0, y: 3.8999996}
   m_SizeDelta: {x: 0, y: -0.00000023841858}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2123150549

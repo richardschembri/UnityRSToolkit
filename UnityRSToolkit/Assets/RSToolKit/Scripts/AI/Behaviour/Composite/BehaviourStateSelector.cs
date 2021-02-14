@@ -63,10 +63,7 @@ namespace RSToolkit.AI.Behaviour.Composite
         }
         public void ChangeStateIn(float time, T newState, bool silent = false)
         {
-            if(ChangeStateTimer != null){
-                RemoveTimer(ChangeStateTimer);
-            }
-            ChangeStateTimer = AddTimer(time, 0f, 0, () => ChangeState(newState, silent));
+            ChangeStateTimer = AddTimer(time, 0f, 0, () => ChangeState(newState, silent), true);
         }
 
         private void ChangeState()

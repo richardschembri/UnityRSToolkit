@@ -48,7 +48,7 @@ MonoBehaviour:
   DebugMode: 0
   InitOnAwake: 1
   DisplayName: Actual Rock
-  level: 0
+  level: 3
   damage: 10
 --- !u!114 &2302521931607205477
 MonoBehaviour:
