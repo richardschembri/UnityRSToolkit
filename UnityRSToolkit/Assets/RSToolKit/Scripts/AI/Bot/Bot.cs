@@ -1,4 +1,5 @@
 ﻿using RSToolkit.Helpers;
+using RSToolkit.Network;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,7 +11,7 @@ using UnityEngine.Events;
 namespace RSToolkit.AI
 {
     [DisallowMultipleComponent]
-    public class Bot : MonoBehaviour
+    public class Bot : RSMonoBehaviour
     {
 
         #region Enums
@@ -20,13 +21,6 @@ namespace RSToolkit.AI
             NotInteracting,
             Interactor,
             Interactee
-        }
-
-        public enum NetworkTypes
-        {
-            None,
-            Owner,
-            Peer
         }
 
         public enum DistanceType{
@@ -39,19 +33,11 @@ namespace RSToolkit.AI
 
         #endregion Enums
 
-        protected virtual string GetDebugTag()
-        {    
-            return $"{gameObject.name}";
-        }
-
         public StatesInteraction CurrentInteractionState { get; private set; } = StatesInteraction.NotInteracting;
 
         public float InteractableCooldown = 0f;
         public float CanInteractFromTime { get; private set; } = 0f;
         public Transform TetherToTransform;
-
-        public bool DebugMode = false;
-        public NetworkTypes NetworkType { get; private set; } = NetworkTypes.None;
 
         /// <summary>
         /// Is used in a network enviroment to see if this is a bot on the host
@@ -61,18 +47,8 @@ namespace RSToolkit.AI
         {
             get
             {
-                return NetworkType == NetworkTypes.Peer;
+                return RSNetworkObject.NetworkType == RSNetworkObject.NetworkTypes.Peer;
             }
-        }
-
-        public class BotEvent : UnityEvent<Bot> { }
-        public BotEvent OnAwake = new BotEvent();
-        public BotEvent OnDestroyed = new BotEvent();
-
-        public void SetNetworkType(NetworkTypes networkType, bool toggleKinematic = true)
-        {
-            NetworkType = networkType;
-            ToggleComponentsForNetwork(toggleKinematic);
         }
 
         #region Components
@@ -121,33 +97,18 @@ namespace RSToolkit.AI
             }
         }
 
-        /// <summary>
-        /// Turn on/off components depending if this bot is a host or a peer 
-        /// </summary>
-        /// <param name="toggleKinematic">Should the IsKinematic value of a Rigidbody be toggled as well</param>
-        protected virtual void ToggleComponentsForNetwork(bool toggleKinematic = true)
+        private RSShadow _rsShadowComponent;
+        public RSShadow RSShadowComponent
         {
-            //BTFiniteStateMachineManagerComponent.IsSilent = NetworkType == NetworkTypes.Peer;
-            if(NetworkType == NetworkTypes.Peer)
+            get
             {
-                BTFiniteStateMachineManagerComponent.IsSilent = true;
-
-                if (toggleKinematic)
+                if(_rsShadowComponent == null)
                 {
-                    RigidBodyComponent.isKinematic = true;
-                }                
-            }
-            else
-            {
-                BTFiniteStateMachineManagerComponent.IsSilent = false;
-
-                if (toggleKinematic)
-                {
-                    RigidBodyComponent.isKinematic = false;
+                   _rsShadowComponent = GetComponent<RSShadow>();
                 }
+                return _rsShadowComponent;
             }
         }
-
         #endregion Components
 
         public Transform PreviousFocusedTransform { get; private set; } = null;
@@ -658,47 +619,21 @@ namespace RSToolkit.AI
 
         #region Intialize
 
-        public bool AutoInitialize = true;
-        public bool Initialized { get; private set; } = false;
 
 	/// <param name="force">Initialize even if already initialized</param>
-        public virtual bool Initialize(bool force = false)
+        public override bool Init(bool force = false)
         {
-            if(Initialized && !force)
+            if(Init(force))
             {
-                return false;
-            }
-            Initialized = false;
-            BTFiniteStateMachineManagerComponent = GetComponent<BTFiniteStateMachineManager>();           
-            Initialized = true;
-            return true;
-        }
-
-	/// <param name="NetworkTypes ">Initialize components/values depending on NetworkType</param>
-	/// <param name="force">Initialize even if already initialized</param>
-        public virtual bool Initialize(NetworkTypes networkType, bool force = false)
-        {
-            if (Initialize(force))
-            {
-                SetNetworkType(networkType);
+                BTFiniteStateMachineManagerComponent = GetComponent<BTFiniteStateMachineManager>();           
                 return true;
             }
-            
             return false;
         }
 
         #endregion Intialize
 
         #region MonoBehaviour Functions
-
-        protected virtual void Awake()
-        {
-            if (AutoInitialize)
-            {
-                Initialize();
-            }
-            OnAwake.Invoke(this);
-        }
 
         protected virtual void Start()
         {
@@ -710,9 +645,13 @@ namespace RSToolkit.AI
             BTFiniteStateMachineManagerComponent.StartFSMs();
         }
 
-        protected virtual void Update()
+        protected override void Awake()
         {
-
+            RSShadowComponent.OnRSShadowChanged.AddListener(OnRSShadowChanged_Listener);
+            if(RSShadowComponent.Initialized){
+                OnRSShadowChanged_Listener(RSShadowComponent.IsShadow());
+            }
+            base.Awake();
         }
 
         protected virtual void OnCollisionEnter(Collision collision){
@@ -742,13 +681,29 @@ namespace RSToolkit.AI
 #endif
         }
 
-        protected virtual void OnDestroy()
-        {
-            OnDestroyed.Invoke(this);
-        }
-
         #endregion MonoBehaviour Functions
 
+        public bool ToggleShadowKinematic = true;
+        #region RSMonoBehaviour Functions
+        protected virtual void OnRSShadowChanged_Listener(bool isShadow){
+            if(isShadow){
+                BTFiniteStateMachineManagerComponent.IsSilent = false;
+
+                if (ToggleShadowKinematic)
+                {
+                    RigidBodyComponent.isKinematic = false;
+                }
+            }else{
+
+                BTFiniteStateMachineManagerComponent.IsSilent = true;
+
+                if (ToggleShadowKinematic)
+                {
+                    RigidBodyComponent.isKinematic = true;
+                }                
+            }
+        } 
+        #endregion RSMonoBehaviour Functions
         protected void DrawGizmoPositionPoint(Vector3 position)
         {
 #if UNITY_EDITOR

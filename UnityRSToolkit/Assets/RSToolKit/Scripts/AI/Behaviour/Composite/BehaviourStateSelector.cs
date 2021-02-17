@@ -10,6 +10,7 @@ namespace RSToolkit.AI.Behaviour.Composite
     {
         public Array States { get; private set; }
         private Dictionary<T, BehaviourAction> _stateActions;
+        public NodeTimer ChangeStateTimer {get; private set;} 
 
         public T CurrentState { get; private set; }
         public T LastState { get; private set; }
@@ -50,12 +51,19 @@ namespace RSToolkit.AI.Behaviour.Composite
 
         public void ChangeState(T newState, bool silent = false)
         {
+            if(ChangeStateTimer != null){
+                RemoveTimer(ChangeStateTimer);
+            }
             NextState = newState;
             if(_stateActions[CurrentState].State == NodeState.INACTIVE || silent){
                 ChangeState(silent);
             }else if(_stateActions[CurrentState].State == NodeState.ACTIVE){
                 _stateActions[CurrentState].RequestStopNode();
             }
+        }
+        public void ChangeStateIn(float time, T newState, bool silent = false)
+        {
+            ChangeStateTimer = AddTimer(time, 0f, 0, () => ChangeState(newState, silent), true);
         }
 
         private void ChangeState()

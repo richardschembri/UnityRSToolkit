@@ -107,6 +107,7 @@ namespace RSToolkit.AI
 
         #endregion Components
 
+        /*
         /// <summary>
         /// Turn on/off components depending if this bot is a host or a peer 
         /// </summary>
@@ -125,6 +126,23 @@ namespace RSToolkit.AI
                 ToggleFlight(CurrentFlyableState != FStatesFlyable.NotFlying);
             }
         }
+        */
+        #region RSMonoBehaviour Functions
+        protected override void OnRSShadowChanged_Listener(bool isShadow){
+            base.OnRSShadowChanged_Listener(isShadow);
+            if (isShadow)
+            {
+                NavMeshAgentComponent.enabled = false;
+                Flying3DObjectComponent.enabled = false;
+            }
+            else
+            {
+                BotFSMLocomotionComponent.GroundProximityCheckerComponent.enabled = true;
+                ToggleFlight(CurrentFlyableState != FStatesFlyable.NotFlying);
+            }
+        }
+
+        #endregion RSMonoBehaviour Functions
 
         /// <summary>
         /// Toggle between flight with physics and NavMeshAgent 

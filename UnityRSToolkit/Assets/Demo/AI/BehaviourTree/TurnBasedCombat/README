@@ -1,0 +1,8 @@
+# Turn-based Combat
+A clone of the Turn-based Combat game in [Brackeys tutorial](https://www.youtube.com/watch?v=_1pz_ohupPs)
+
+However this game uses the RSToolkit BehaviourTree system for the enemy AI and also
+the RSToolkit FSM along with other RSToolkit components.
+
+A notable difference is that the Enemy decides wether to attack or heal rather than
+constantly attack.

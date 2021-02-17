@@ -42,11 +42,14 @@ namespace RSToolkit.UI.Controls
             _sbDebugText.AppendLine($"-=[{Target.name}]=-");
         }
 
-        protected override void Init()
+        public override bool Init(bool force = false)
         {
-            base.Init();
+            if(base.Init(force)){
+                CheckActive();
+                return true;
+            }
 
-            CheckActive();
+            return false;
         }
 
         public void CheckActive()

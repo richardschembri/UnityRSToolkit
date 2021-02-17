@@ -91,6 +91,21 @@ namespace RSToolkit{
             Debug.Log("Exported Adjust Layout Tools");
         }
 
+        [UnityEditor.MenuItem("Tools/RSToolkit/Export Package/Character/2D")]
+        public static void ExportCharacter2D(){
+
+            Debug.Log("Exporting Character 2D");
+            var toExportPaths = new string[]{
+                "Assets/RSToolKit/Scripts/Character/.",
+                "Assets/RSToolKit/Scripts/Space2D/CharacterController2D.cs",
+                "Assets/RSToolKit/Scripts/Space2D/PlayerMovement2D.cs"
+            };
+            AssetDatabase.ExportPackage(
+                    toExportPaths,
+                    "rstoolkit-character2d.unitypackage",
+                    ExportPackageOptions.Recurse);
+            Debug.Log("Exporting Character 2D");
+        }
 // 
     }
 }

@@ -71,6 +71,9 @@ A simple toolkit for the Unity Engine. Controls / Components are designed to be 
 * Motorcycle Photo by Gijs Coolen from [Pexels](https://www.pexels.com/photo/selective-focus-photo-of-parked-blue-and-black-cafe-racer-motorcycle-2549941/)
 * Various 3D Models: [Quaternius](http://www.quaternius.com/index.html)
 * The Dawn parallax background: [https://saurabhkgp.itch.io/](https://saurabhkgp.itch.io/the-dawn-parallax-background)
+* The Dawn parallax background: [https://saurabhkgp.itch.io/](https://saurabhkgp.itch.io/the-dawn-parallax-background)
+* Wizard Sprite: [lionheart963](https://lionheart963.itch.io/wizard)
+* Turn based combat assets: [Brackeys Turn based combat project](https://github.com/Brackeys/Turn-based-combat)
 
 ## License
 

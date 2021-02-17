@@ -48,7 +48,7 @@ namespace RSToolkit.AI
             EditorGUILayout.LabelField("Network Type");
             EditorGUI.BeginDisabledGroup(true);
             // EditorGUILayout.EnumPopup(_targetBot.NetworkType);
-            EditorGUILayout.EnumPopup(_botDebugValues.TargetBot.NetworkType);
+            // EditorGUILayout.EnumPopup(_botDebugValues.TargetBot.NetworkType);
             EditorGUI.EndDisabledGroup();
             GUILayout.EndHorizontal();
 

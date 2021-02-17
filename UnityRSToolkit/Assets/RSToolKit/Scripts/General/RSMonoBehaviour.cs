@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using RSToolkit.Helpers;
+using UnityEngine.Events;
+
 namespace RSToolkit
 {
     public class RSMonoBehaviour : MonoBehaviour
@@ -8,10 +10,22 @@ namespace RSToolkit
         public bool InitOnAwake = false;
         public bool Initialized { get; protected set; } = false;
 
-        protected virtual void Init()
+
+        public class RSMonoBehaviourEvent : UnityEvent<RSMonoBehaviour> {}
+        public RSMonoBehaviourEvent OnAwake = new RSMonoBehaviourEvent();
+        public RSMonoBehaviourEvent OnDestroyed = new RSMonoBehaviourEvent();
+
+        public virtual bool Init(bool force = false)
         {
+            if(Initialized && !force)
+            {
+                return false;
+            }
             Initialized = true;
+            return true;
         }
+
+        public virtual void ResetValues(){}
 
         #region MonoBehaviour Functions
         protected virtual void Awake()
@@ -20,12 +34,20 @@ namespace RSToolkit
             {
                 Init();
             }
+
+            OnAwake.Invoke(this);
+        }
+        protected virtual void OnDestroy()
+        {
+            OnDestroyed.Invoke(this);
         }
         #endregion MonoBehaviour Functions
 
+        #region  Debug
+
         public virtual string GetDebugTag()
         {
-            return string.Empty;
+            return $"{gameObject.name}";
         }
 
         protected void LogInDebugMode(string message, bool includeTimestamp = false)
@@ -37,6 +59,8 @@ namespace RSToolkit
         {
             DebugHelpers.LogErrorInDebugMode(DebugMode, GetDebugTag(), message, includeTimestamp);
         }
+
+        #endregion Debug
 
     }
 }

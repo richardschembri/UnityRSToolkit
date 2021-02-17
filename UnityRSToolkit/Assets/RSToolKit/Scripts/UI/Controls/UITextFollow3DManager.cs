@@ -41,13 +41,16 @@ namespace RSToolkit.UI.Controls
             LogInDebugMode($"Added Target {target.name}");
         }
 
-        protected override void Init()
+        public override bool Init(bool force = false)
         {
-            base.Init();
-            for(int i = 0; i < _predefinedTargets.Length; i++)
-            {
-                AddTarget(_predefinedTargets[i]);
+            if(base.Init()){
+                for(int i = 0; i < _predefinedTargets.Length; i++)
+                {
+                    AddTarget(_predefinedTargets[i]);
+                }
+                return true;
             }
+            return false;
         }
 
     }

@@ -453,9 +453,9 @@ namespace RSToolkit.AI.Locomotion
             return BotWanderManagerComponent != null;
         }
 
-        public override bool Initialize(bool force = false)
+        public override bool Init(bool force = false)
         {
-            if (!base.Initialize(force))
+            if (!base.Init(force))
             {
                 return false;
             }
@@ -489,9 +489,8 @@ namespace RSToolkit.AI.Locomotion
             //_btFiniteStateMachineManagerComponent.StartFSMs();
         }
 
-        protected override void Update()
+        protected virtual void Update()
         {
-            base.Update();
             AnimateLocomotion();
         }
 
