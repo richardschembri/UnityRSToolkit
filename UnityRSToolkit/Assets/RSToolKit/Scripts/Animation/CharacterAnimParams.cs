@@ -49,6 +49,7 @@ namespace RSToolkit.Animation
         }
 
         public static readonly int Speed = Animator.StringToHash("Speed");
+        public static readonly int SpeedPercent = Animator.StringToHash("SpeedPercent");
         public static readonly int IsGrounded = Animator.StringToHash("IsGrounded");
         public static readonly int HorizontalSpeed = Animator.StringToHash("HorizontalSpeed");
         public static readonly int VerticalSpeed = Animator.StringToHash("VerticalSpeed");
@@ -71,6 +72,14 @@ namespace RSToolkit.Animation
 
         }
 
+        public static void TrySetSpeedPercent(Animator target, float value)
+        {
+            if (target != null)
+            {
+                target.SetFloat(SpeedPercent, value);
+            }
+
+        }
         public static void TrySetIsGrounded(Animator target, bool value)
         {
             if (target != null)

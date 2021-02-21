@@ -4,108 +4,148 @@ using System;
 namespace RSToolkit{
     public class Packager
     {
+
+        #region TOOLS
+        private enum PATH_TYPE{
+            SCRIPTS,
+            PREFABS
+        }
+        const string RS_PATH = "Assets/RSToolKit";
+        static readonly string rsPathScripts = $"{RS_PATH}/Scripts";
+        static readonly string rsPathPrefabs = $"{RS_PATH}/Prefabs";
+        const string RS_SUBPATH_GENERAL = "General"; 
+        const string RS_SUBPATH_SPACE2D = "Space2D"; 
+        const string RS_SUBPATH_SPACE3D = "Space3D"; 
+        const string RS_SUBPATH_CHARACTER = "Character"; 
+        const string RS_SUBPATH_UI = "UI"; 
+        private static string GetPath(PATH_TYPE pathType, string subPath = ""){
+            string basePath = string.Empty;
+            switch(pathType){
+                case PATH_TYPE.SCRIPTS:
+                basePath = rsPathScripts;
+                break;
+                case PATH_TYPE.PREFABS:
+                basePath = rsPathPrefabs;
+                break;
+            }
+
+            return $"{basePath}/{subPath}";
+        }
+
+        private static string GetPackageName(string name){
+            return $"rstoolkit-{name}.unitypackage";
+        }
+        private static void DebugLogExportStart(string packageName){
+            Debug.Log($"Exporting {packageName}");
+        } 
+        private static void DebugLogExportEnd(string packageName){
+            Debug.Log($"Exported {packageName}");
+        } 
+
+        #endregion TOOLS
+
         [UnityEditor.MenuItem("Tools/RSToolkit/Export Package/Spawner")]
         public static void ExportSpawner()
         {
-            Debug.Log("Exporting Spawner");
+            DebugLogExportStart("Spawner");
             var toExportPaths = new string[]{
-                "Assets/RSToolKit/Scripts/General/Controls/Spawner",
-                "Assets/RSToolKit/Scripts/General/RSMonoBehaviour.cs",
-                "Assets/RSToolKit/Scripts/General/Helpers/TransformHelpers.cs",
-                "Assets/RSToolKit/Scripts/General/Helpers/RandomHelpers.cs",
-                "Assets/RSToolKit/Scripts/General/Helpers/DebugHelpers.cs"
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/Controls/Spawner",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/RSMonoBehaviour.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/Helpers/TransformHelpers.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/Helpers/RandomHelpers.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/Helpers/DebugHelpers.cs"
             };
             AssetDatabase.ExportPackage(
                     toExportPaths,
-                    "rstoolkit-spawner.unitypackage",
+                    GetPackageName("spawner"),
                     ExportPackageOptions.Recurse);
-            Debug.Log("Exported Spawner");
+            DebugLogExportEnd("Spawner");
         }
     
         [UnityEditor.MenuItem("Tools/RSToolkit/Export Package/UI/Paging")]
         public static void ExportUIPaging(){
 
-            Debug.Log("Exporting UI Paging");
+            DebugLogExportStart("UI Paging");
             var toExportPaths  = new string[]{
-                "Assets/RSToolKit/Scripts/UI/Paging",
-                "Assets/RSToolKit/Prefabs/UI/Paging",
-                "Assets/RSToolKit/Scripts/General/Collections/SizedStack.cs"
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_UI) }/Paging",
+                $"{GetPath(PATH_TYPE.PREFABS, RS_SUBPATH_UI)}/Paging",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/Collections/SizedStack.cs"
             };
             AssetDatabase.ExportPackage(
                     toExportPaths,
-                    "rstoolkit-uipaging.unitypackage",
+                    GetPackageName("uipaging"),
                     ExportPackageOptions.Recurse);
-            Debug.Log("Exported UI Paging");
+            DebugLogExportEnd("UI Paging");
         }
     
         [UnityEditor.MenuItem("Tools/RSToolkit/Export Package/UI/Controls/Popup")]
         public static void ExportUIControlsPopup(){
 
-            Debug.Log("Exporting UI Controls Popup");
+            DebugLogExportStart("UI Controls Popup");
             var toExportPaths = new string[]{
-                "Assets/RSToolKit/Scripts/UI/Controls/UIPopup.cs",
-                "Assets/RSToolKit/Prefabs/UI/Controls/UI Popup.prefab"
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_UI)}/Controls/UIPopup.cs",
+                $"{GetPath(PATH_TYPE.PREFABS, RS_SUBPATH_UI)}/Controls/UI Popup.prefab"
             };
             AssetDatabase.ExportPackage(
                     toExportPaths,
-                    "rstoolkit-uipopup.unitypackage",
+                    GetPackageName("uipopup"),
                     ExportPackageOptions.Recurse);
-            Debug.Log("Exported UI Controls Popup");
+            DebugLogExportEnd("UI Controls Popup");
         }
     
         [UnityEditor.MenuItem("Tools/RSToolkit/Export Package/AI/Bot")]
         public static void ExportBotAI(){
 
-            Debug.Log("Exporting Bot AI");
+            DebugLogExportStart("Bot AI");
             var toExportPaths = new string[]{
-                "Assets/RSToolKit/Scripts/AI",
-                "Assets/RSToolKit/Scripts/General/Helpers/DebugHelpers.cs",
-                "Assets/RSToolKit/Scripts/General/Helpers/PhysicsHelpers.cs",
-                "Assets/RSToolKit/Scripts/General/Helpers/RandomHelpers.cs",
-                "Assets/RSToolKit/Scripts/General/Helpers/TransformHelpers.cs",
-                "Assets/RSToolKit/Scripts/Space3D/Draggable3DObject.cs",
-                "Assets/RSToolKit/Scripts/Space3D/Flying3DObject.cs",
-                "Assets/RSToolKit/Scripts/Space3D/GameObjectNavSpawnerMarker.cs",
-                "Assets/RSToolKit/Scripts/Space3D/LightNavSpawnerMarker.cs",
-                "Assets/RSToolKit/Scripts/Space3D/NavSpawnerMarker.cs",
-                "Assets/RSToolKit/Scripts/Space3D/SpawnerMarker.cs",
-                "Assets/RSToolKit/Scripts/Space3D/ProximityChecker.cs"
+                $"Assets/RSToolKit/Scripts/AI",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/Helpers/DebugHelpers.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/Helpers/PhysicsHelpers.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/Helpers/RandomHelpers.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/Helpers/TransformHelpers.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_SPACE3D)}/Draggable3DObject.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_SPACE3D)}/Flying3DObject.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_SPACE3D)}/GameObjectNavSpawnerMarker.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_SPACE3D)}/LightNavSpawnerMarker.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_SPACE3D)}/NavSpawnerMarker.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_SPACE3D)}/SpawnerMarker.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_SPACE3D)}/ProximityChecker.cs"
             };
             AssetDatabase.ExportPackage(
                     toExportPaths,
-                    "rstoolkit-botai.unitypackage",
+                    GetPackageName("botai"),
                     ExportPackageOptions.Recurse);
-            Debug.Log("Exported Bot AI");
+            DebugLogExportEnd("Bot AI");
         }
 
         [UnityEditor.MenuItem("Tools/RSToolkit/Export Package/UI/Adjust Layout Tools")]
         public static void ExportAdjustLayoutTools(){
-            Debug.Log("Exporting Adjust Layout Tools");
+            DebugLogExportStart("Adjust Layout Tools");
             var toExportPaths = new string[]{
                 "Assets/RSToolKit/Scripts/UI/Layout",
             };
             AssetDatabase.ExportPackage(
                     toExportPaths,
-                    "rstoolkit-adjustlayouttools.unitypackage",
+                    GetPackageName("adjustlayouttools"),
                     ExportPackageOptions.Recurse);
-            Debug.Log("Exported Adjust Layout Tools");
+            DebugLogExportEnd("Adjust Layout Tools");
         }
 
         [UnityEditor.MenuItem("Tools/RSToolkit/Export Package/Character/2D")]
         public static void ExportCharacter2D(){
 
-            Debug.Log("Exporting Character 2D");
+            DebugLogExportStart("Character 2D");
             var toExportPaths = new string[]{
-                "Assets/RSToolKit/Scripts/Character/.",
-                "Assets/RSToolKit/Scripts/Space2D/CharacterController2D.cs",
-                "Assets/RSToolKit/Scripts/Space2D/PlayerMovement2D.cs"
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_CHARACTER)}/.",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_SPACE2D)}/CharacterController2D.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_SPACE2D)}/PlayerMovement2D.cs"
             };
             AssetDatabase.ExportPackage(
                     toExportPaths,
-                    "rstoolkit-character2d.unitypackage",
+                    GetPackageName("character2d"),
                     ExportPackageOptions.Recurse);
-            Debug.Log("Exporting Character 2D");
+            DebugLogExportEnd("Character 2D");
         }
-// 
+
     }
 }

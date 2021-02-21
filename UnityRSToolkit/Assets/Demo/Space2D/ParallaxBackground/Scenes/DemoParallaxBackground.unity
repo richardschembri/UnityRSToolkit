@@ -312,8 +312,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b17ac20caf0734bd9a84c4545fb9c933, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DebugMode: 0
+  InitOnAwake: 0
   target: {fileID: 252810686}
-  offset: {x: 0, y: 0, z: 0}
+  offset: {x: 0, y: 2, z: 0}
   smoothFactor: 5
 --- !u!1 &252810683
 GameObject:
@@ -450,12 +452,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 252810683}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2140f1a7eb8891017bb362f064f9bc44, type: 3}
+  m_Script: {fileID: 11500000, guid: 687905faeec093b01a4af6553d45146a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _controller: {fileID: 252810689}
-  _animator: {fileID: 252810684}
-  _moveSpeed: 40
+  DebugMode: 0
+  InitOnAwake: 1
+  Speed: 250
 --- !u!114 &252810689
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -468,8 +470,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45a26dabe4ea803c396756f13d7698ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DebugMode: 0
+  DebugMode: 1
   InitOnAwake: 1
+  DisplayName: 
+  _maxSpeed: 250
   _movementSmoothing: 0.05
 --- !u!1 &695189158
 GameObject:
