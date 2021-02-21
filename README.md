@@ -75,6 +75,10 @@ A simple toolkit for the Unity Engine. Controls / Components are designed to be 
 * Wizard Sprite: [lionheart963](https://lionheart963.itch.io/wizard)
 * Turn based combat assets: [Brackeys Turn based combat project](https://github.com/Brackeys/Turn-based-combat)
 
+### OpenGameArt
+* Top down character assets: [Fleurman](https://opengameart.org/content/tiny-characters-set)
+* Gameboy Tileset: [ArMM1998](https://opengameart.org/content/gameboy-tileset)
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
