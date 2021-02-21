@@ -1,3 +1,4 @@
+<<<<<<< HEAD:UnityRSToolkit/Assets/RSToolKit/Scripts/Character/Editor/RSCharacterControllerEditor.cs.meta
 fileFormatVersion: 2
 guid: cf3d62b7e88e6b9f6bfc7a3144988eab
 MonoImporter:
@@ -9,3 +10,16 @@ MonoImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+=======
+fileFormatVersion: 2
+guid: 2140f1a7eb8891017bb362f064f9bc44
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+>>>>>>> dfa7bc39c549895533d19d6e45d5922c55741787:UnityRSToolkit/Assets/RSToolKit/Scripts/Space2D/PlayerMovement2D.cs.meta
