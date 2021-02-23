@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using RSToolkit.Character;
 using UnityEngine;
+using RSToolkit.Animation;
 
 namespace RSToolkit.Space2D
 {
@@ -34,12 +35,16 @@ namespace RSToolkit.Space2D
                 _directionAxis.y = Vector2.down.y;
             }else{
                 _directionAxis.x = Input.GetAxisRaw("Horizontal");
-                _directionAxis.x = Input.GetAxisRaw("Vertical");
+                _directionAxis.y = Input.GetAxisRaw("Vertical");
             }          
+            if(_directionAxis.x != 0f || _directionAxis.y != 0f){
+                CharacterAnimParams.TrySetAxisHorizontal(ControllerComponent.AnimatorComponent ,_directionAxis.x);
+                CharacterAnimParams.TrySetAxisVertical(ControllerComponent.AnimatorComponent ,_directionAxis.y);
+            }
         }
 
         protected virtual void FixedUpdate(){
-            ControllerComponent.Move(_directionAxis, Speed * Time.fixedDeltaTime);
+            ControllerComponent.Move(_directionAxis, Speed);
         }
     }
 }

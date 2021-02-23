@@ -3463,10 +3463,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdc98929b563d646098568a1521f62c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DebugMode: 0
+  DebugMode: 1
   InitOnAwake: 1
   DisplayName: Player
-  _maxSpeed: 2
+  _maxSpeed: 0.02
 --- !u!114 &962058955
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3481,7 +3481,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DebugMode: 0
   InitOnAwake: 1
-  Speed: 1
+  Speed: 0.01
 --- !u!50 &962058956
 Rigidbody2D:
   serializedVersion: 4
@@ -3587,8 +3587,8 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!61 &962058960
-BoxCollider2D:
+--- !u!58 &962058960
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3600,19 +3600,9 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.16, y: 0.17}
-    newSize: {x: 0.16, y: 0.17}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
+  m_Offset: {x: 0, y: -0.01}
   serializedVersion: 2
-  m_Size: {x: 0.08, y: 0.08}
-  m_EdgeRadius: 0
+  m_Radius: 0.05
 --- !u!1 &1951866220
 GameObject:
   m_ObjectHideFlags: 0

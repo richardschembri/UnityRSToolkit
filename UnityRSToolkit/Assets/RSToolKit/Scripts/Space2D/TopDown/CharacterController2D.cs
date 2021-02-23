@@ -20,6 +20,9 @@ namespace RSToolkit.Space2D.TopDown
 
         public override void Move(Vector2 directionAxis, float speed)
         {
+            if(directionAxis == Vector2.zero){
+                speed = 0f;
+            }
             base.Move(directionAxis, speed);
             Rigidbody2DComponent.MovePosition(Rigidbody2DComponent.position + directionAxis * CurrentSpeed);
         }

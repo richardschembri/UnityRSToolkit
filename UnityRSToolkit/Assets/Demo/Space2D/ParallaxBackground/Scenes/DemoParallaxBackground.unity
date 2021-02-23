@@ -317,6 +317,10 @@ MonoBehaviour:
   target: {fileID: 252810686}
   offset: {x: 0, y: 2, z: 0}
   smoothFactor: 5
+  _boundRight: {fileID: 0}
+  _boundLeft: {fileID: 0}
+  _boundTop: {fileID: 0}
+  _boundBottom: {fileID: 0}
 --- !u!1 &252810683
 GameObject:
   m_ObjectHideFlags: 0
@@ -327,7 +331,6 @@ GameObject:
   m_Component:
   - component: {fileID: 252810686}
   - component: {fileID: 252810685}
-  - component: {fileID: 252810684}
   - component: {fileID: 252810687}
   - component: {fileID: 252810689}
   - component: {fileID: 252810688}
@@ -338,25 +341,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!95 &252810684
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 252810683}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: c20fb6c8be05a3644a919b0d5fae256a, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!212 &252810685
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -457,7 +441,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DebugMode: 0
   InitOnAwake: 1
-  Speed: 250
+  Speed: 15
 --- !u!114 &252810689
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -473,7 +457,7 @@ MonoBehaviour:
   DebugMode: 1
   InitOnAwake: 1
   DisplayName: 
-  _maxSpeed: 250
+  _maxSpeed: 15
   _movementSmoothing: 0.05
 --- !u!1 &695189158
 GameObject:
