@@ -13,7 +13,7 @@ public class ImagePage : UIPage
     // Start is called before the first frame update
     async void Start()
     {
-        var pi = await LoadImageTools.LoadSprite("Images/sample/caferacer.jpg", true);
+        var pi = await LoadImageTools.LoadSprite("Demo/UI/Images/sample/caferacer.jpg", true);
         
         previewImage.SetImageSprite(pi);
         displayImage.SetImageSprite(pi);

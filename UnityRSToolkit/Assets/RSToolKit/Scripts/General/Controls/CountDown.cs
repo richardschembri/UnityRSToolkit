@@ -6,24 +6,14 @@
     using UnityEngine;
     using UnityEngine.Events;
 
-    public class CountDown : MonoBehaviour
+    public class CountDown : RSMonoBehaviour
     {
         public int CountFrom = 10;
 
-        private bool m_isRunning = false;
-        public bool IsRunning{
-            get{
-                return m_isRunning;
-            }
-            private set{
-                m_isRunning = value;
-            }
-        }
-        private int m_Count = 0;
-        public int Count{
-            get{ return m_Count; }
-            private set { m_Count = value; }
-        }
+        public bool IsRunning { get; private set; }
+
+        public int Count { get; private set; }
+
         public float SecondsInterval = 1;
 
         public UnityEvent OnStart = new UnityEvent();
@@ -31,9 +21,11 @@
         public UnityEvent OnReset = new UnityEvent();
         public UnityEvent OnComplete = new UnityEvent();
 
-        void Start(){
+        #region MonoBehaviour Functions
+        protected virtual void Start(){
             ResetCounter();
         }
+        #endregion MonoBehaviour Functions
 
         public void ResetCounter(){
             Count = CountFrom;

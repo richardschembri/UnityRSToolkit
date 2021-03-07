@@ -44,7 +44,7 @@ namespace RSToolkit{
 
         #endregion TOOLS
 
-        [UnityEditor.MenuItem("Tools/RSToolkit/Export Package/Spawner")]
+        [UnityEditor.MenuItem("Tools/RSToolkit/Export Package/Controls/Spawner")]
         public static void ExportSpawner()
         {
             DebugLogExportStart("Spawner");
@@ -146,6 +146,23 @@ namespace RSToolkit{
                     ExportPackageOptions.Recurse);
             DebugLogExportEnd("Character 2D");
         }
+
+        [UnityEditor.MenuItem("Tools/RSToolkit/Export Package/Controls/Countdown")]
+        public static void ExportCountDown(){
+
+            DebugLogExportStart("Count Down");
+            var toExportPaths = new string[]{
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/RSMonoBehaviour.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/Controls/CountDown.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_UI)}/Controls/UICountDownText.cs"
+            };
+            AssetDatabase.ExportPackage(
+                    toExportPaths,
+                    GetPackageName("countdown"),
+                    ExportPackageOptions.Recurse);
+            DebugLogExportEnd("Count Down");
+        }
+
 
     }
 }

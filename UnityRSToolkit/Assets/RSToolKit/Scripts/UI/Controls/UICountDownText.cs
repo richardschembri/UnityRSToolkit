@@ -10,26 +10,27 @@
     [RequireComponent(typeof(Text))]
     public class UICountDownText : CountDown
     {
+
+        private Text _textComponent;
+
         // Start is called before the first frame update
-        void Start()
+        protected sealed override void Start()
         {
+            base.Start();
             OnStart.AddListener(updateText);
             OnTick.AddListener(updateText);
             OnReset.AddListener(updateText);
             ResetCountdown();
         }
 
-        // Update is called once per frame
-        void Update()
+        protected sealed override void Awake()
         {
-            
-        }
-
-        void Awake(){
+            base.Awake();
+            _textComponent = this.GetComponent<Text>();
         }
 
         void updateText(){
-            this.GetComponent<Text>().text = Count.ToString();
+            _textComponent.text = Count.ToString();
         }
     }
 }
