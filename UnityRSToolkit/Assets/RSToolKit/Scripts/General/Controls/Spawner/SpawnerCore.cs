@@ -12,7 +12,7 @@
         public int SpawnLimit = -1;
         // public bool isParent = false;
         public Transform SpawnParent = null;
-        private List<T> _spawnedGameObjects;
+        private List<T> _spawnedGameObjects = new List<T>();
 
         public bool CollectChildrenAlreadyInScene = true;
 
@@ -20,9 +20,6 @@
         {
             get
             {
-                if(_spawnedGameObjects == null){
-                    _spawnedGameObjects = new List<T>();
-                }
                 return _spawnedGameObjects.AsReadOnly();
             }
         }
