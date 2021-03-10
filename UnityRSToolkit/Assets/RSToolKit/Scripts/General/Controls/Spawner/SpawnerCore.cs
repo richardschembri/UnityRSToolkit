@@ -40,7 +40,7 @@
         public void DestroySpawnedGameObject(T spawnedGameObject)
         {
             if (spawnedGameObject != null && SpawnedGameObjects.Contains(spawnedGameObject)){
-                DestroyImmediate(spawnedGameObject);
+                DestroyImmediate(spawnedGameObject.gameObject);
                 _spawnedGameObjects.Remove(spawnedGameObject);
             }
         }
