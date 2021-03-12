@@ -623,7 +623,7 @@ namespace RSToolkit.AI
 	/// <param name="force">Initialize even if already initialized</param>
         public override bool Init(bool force = false)
         {
-            if(Init(force))
+            if(base.Init(force))
             {
                 BTFiniteStateMachineManagerComponent = GetComponent<BTFiniteStateMachineManager>();           
                 return true;
@@ -647,9 +647,12 @@ namespace RSToolkit.AI
 
         protected override void Awake()
         {
-            RSShadowComponent.OnRSShadowChanged.AddListener(OnRSShadowChanged_Listener);
-            if(RSShadowComponent.Initialized){
-                OnRSShadowChanged_Listener(RSShadowComponent.IsShadow());
+            if(RSShadowComponent != null)
+            {
+                RSShadowComponent.OnRSShadowChanged.AddListener(OnRSShadowChanged_Listener);
+                if(RSShadowComponent.Initialized){
+                    OnRSShadowChanged_Listener(RSShadowComponent.IsShadow());
+                }
             }
             base.Awake();
         }

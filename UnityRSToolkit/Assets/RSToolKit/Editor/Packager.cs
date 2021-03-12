@@ -16,8 +16,11 @@ namespace RSToolkit{
         const string RS_SUBPATH_GENERAL = "General"; 
         const string RS_SUBPATH_SPACE2D = "Space2D"; 
         const string RS_SUBPATH_SPACE3D = "Space3D"; 
+        const string RS_SUBPATH_AI = "AI"; 
         const string RS_SUBPATH_CHARACTER = "Character"; 
         const string RS_SUBPATH_UI = "UI"; 
+        const string RS_SUBPATH_ANIMATION = "Animation"; 
+        const string RS_SUBPATH_NETWORK = "Network"; 
         private static string GetPath(PATH_TYPE pathType, string subPath = ""){
             string basePath = string.Empty;
             switch(pathType){
@@ -98,18 +101,31 @@ namespace RSToolkit{
 
             DebugLogExportStart("Bot AI");
             var toExportPaths = new string[]{
-                $"Assets/RSToolKit/Scripts/AI",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_AI)}",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_ANIMATION)}",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_NETWORK)}",
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/Helpers/DebugHelpers.cs",
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/Helpers/PhysicsHelpers.cs",
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/Helpers/RandomHelpers.cs",
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/Helpers/TransformHelpers.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/Helpers/CollectionHelpers.cs",
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_SPACE3D)}/Draggable3DObject.cs",
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_SPACE3D)}/Flying3DObject.cs",
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_SPACE3D)}/GameObjectNavSpawnerMarker.cs",
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_SPACE3D)}/LightNavSpawnerMarker.cs",
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_SPACE3D)}/NavSpawnerMarker.cs",
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_SPACE3D)}/SpawnerMarker.cs",
-                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_SPACE3D)}/ProximityChecker.cs"
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_SPACE3D)}/ProximityChecker.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_SPACE3D)}/Helpers",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_SPACE3D)}/Cameras",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_UI)}/Controls/UITextFollow3D.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_UI)}/Controls/UITextFollow3DManager.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/RSMonoBehaviour.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/RSSingletonMonoBehaviour.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/RSShadow.cs",
+                "Assets/Demo/AI/Bot",
+                "Assets/Materials",
+
             };
             AssetDatabase.ExportPackage(
                     toExportPaths,

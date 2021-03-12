@@ -28,29 +28,36 @@
 
         public SpawnerEvent OnSpawnEvent = new SpawnerEvent();
 
-        public void DestroyLastSpawnedGameObject()
+        public void DestroyLastSpawnedGameObject(float? time = null)
         {
             if (SpawnedGameObjects.Count > 0)
             {
                 var spawnedGameObject = SpawnedGameObjects[SpawnedGameObjects.Count - 1];
-                DestroySpawnedGameObject(spawnedGameObject);
+                DestroySpawnedGameObject(spawnedGameObject, time);
             }
         }
 
-        public void DestroySpawnedGameObject(T spawnedGameObject)
+        public void DestroySpawnedGameObject(T spawnedGameObject, float? time = null)
         {
             if (spawnedGameObject != null && SpawnedGameObjects.Contains(spawnedGameObject)){
-                DestroyImmediate(spawnedGameObject.gameObject);
+                if(time != null)
+                {
+                    Destroy(spawnedGameObject.gameObject, time.Value);
+                }
+                else
+                {
+                    Destroy(spawnedGameObject.gameObject);
+                }
                 _spawnedGameObjects.Remove(spawnedGameObject);
             }
         }
-        public void DestroyAllSpawns(){
+        public void DestroyAllSpawns(float? time = null){
             if (SpawnedGameObjects.Count > 0){
-                DestroySpawnedGameObject(SpawnedGameObjects[SpawnedGameObjects.Count -1]);
-                DestroyAllSpawns();
+                DestroySpawnedGameObject(SpawnedGameObjects[SpawnedGameObjects.Count -1], time);
+                DestroyAllSpawns(time);
             }
         }
-        public T SpawnAndGetGameObject(T gameObjectToSpawn ,bool useSpawnerTransformValues = true)
+        public T SpawnAndGetGameObject(T gameObjectToSpawn, bool useSpawnerTransformValues = true)
         {
             if (SpawnLimit > 0 && SpawnedGameObjects.Count >= SpawnLimit){
                 return null;
