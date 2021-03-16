@@ -24,6 +24,8 @@ namespace RSToolkit.AI.FSM
         private Dictionary<T, Action> _updateActions = new Dictionary<T, Action>();
         private List<Action<T>> _onChangeListeners = new List<Action<T>>();
 
+#region Constructor
+
         public BTFiniteStateMachine(T initialState, string name = "")
         {
             _stateSelector = new BehaviourStateSelector<T>(initialState);
@@ -36,6 +38,9 @@ namespace RSToolkit.AI.FSM
             }
         }
 
+#endregion Constructor
+
+#region Change State
         public void ChangeState(T newState, bool silent = false)
         {
             _stateSelector.ChangeState(newState, silent);
@@ -44,6 +49,7 @@ namespace RSToolkit.AI.FSM
         {
             _stateSelector.ChangeStateIn(time, newState, silent);
         }
+#endregion Change State
 
         public string GetName()
         {

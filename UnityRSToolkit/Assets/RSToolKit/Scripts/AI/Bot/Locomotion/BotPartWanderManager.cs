@@ -8,7 +8,7 @@ using System.Linq;
 namespace RSToolkit.AI.Locomotion
 {
     [RequireComponent(typeof(BotLocomotive))]
-    public class BotPartWanderManager : MonoBehaviour
+    public class BotPartWanderManager : RSMonoBehaviour
     {
 
         public enum FStatesWander
@@ -21,26 +21,33 @@ namespace RSToolkit.AI.Locomotion
 
         private const string DEBUG_TAG = "BotWanderManager";
 
-        public bool DebugMode = false;
-
         public bool _waitOnStart = true;
 
         public string[] CollisionWhiteListTags;
 
-        private float _findNewPositionTimeStamp;
-        [SerializeField] private float _findNewPositionSpamTreshold = 0.25f;
-        private int _findNewPositionSpamCount = 0;
-        [SerializeField] private int _findNewPositionSpamLimit = 10;
+#region FindNewPosition Spam Values
+        private float _timeStampFindNewPosition;
+        [SerializeField] private float _spamTresholdFindNewPosition = 0.25f;
+        private int _spamCountFindNewPosition = 0;
 
+        private bool _wanderAutoRetry = true;
+        public bool WanderAutoRetry {get{return _wanderAutoRetry; }}
+        [SerializeField] private int _spamLimitfindNewPosition = 10;
+#endregion FindNewPosition Spam Values
+
+#region FindNewPosition Spam Functions
         private bool IsFindNewPositionOverSpamLimit()
         {
-            return _findNewPositionSpamCount >= _findNewPositionSpamLimit;
+            return _spamCountFindNewPosition >= _spamLimitfindNewPosition;
         }
         private void ResetFindNewPositionSpamValues()
         {
-            _findNewPositionSpamCount = 0;
-            _findNewPositionTimeStamp = Time.time;
+            LogInDebugMode("ResetFindNewPositionSpamValues");
+            _spamCountFindNewPosition = 0;
+            _timeStampFindNewPosition = Time.time;
         }
+#endregion FindNewPosition Spam Functions
+
         #region FSM
         public BTFiniteStateMachine<FStatesWander> FSM { get; private set; } = new BTFiniteStateMachine<FStatesWander>(FStatesWander.NotWandering);
         private BTFiniteStateMachineManager _btFiniteStateMachineManagerComponent; 
@@ -147,7 +154,7 @@ namespace RSToolkit.AI.Locomotion
         {
             _waitOnStart = waitOnStart;
             _currentBotWanderComponent.SetWanderRadius(radius);
-
+            _wanderAutoRetry = true;
             if (!_currentBotWanderComponent.CanWander())
             {
                 FSM.ChangeState(FStatesWander.CannotWander);
@@ -202,7 +209,8 @@ namespace RSToolkit.AI.Locomotion
 
         #region NotWandering
         void NotWandering_Exit(bool success)
-        {
+        { 
+            LogInDebugMode("NotWandering_Exit");
             ResetFindNewPositionSpamValues();
         }
         #endregion NotWandering
@@ -213,19 +221,23 @@ namespace RSToolkit.AI.Locomotion
         {
             BotLocomotiveComponent.UnFocus();
             // RICHARD
-            if(Time.time - _findNewPositionTimeStamp  < _findNewPositionSpamTreshold)
+            if(Time.time - _timeStampFindNewPosition  < _spamTresholdFindNewPosition)
             {
-                _findNewPositionSpamCount++;
-                if(_findNewPositionSpamCount >= _findNewPositionSpamLimit)
+                _spamCountFindNewPosition++;
+                LogInDebugMode($"_spamCountFindNewPosition: {_spamCountFindNewPosition}");
+                if(IsFindNewPositionOverSpamLimit())
                 {
+                    _wanderAutoRetry = false;
+                    LogInDebugMode($"_spamCountFindNewPosition  > _findNewPositionSpamLimit: {_spamCountFindNewPosition} > {_spamLimitfindNewPosition}");
                     FSM.ChangeState(FStatesWander.CannotWander);
                     return;
                 }
             }
             else
             {
-                _findNewPositionSpamCount = 0;
-                _findNewPositionTimeStamp = Time.time;
+                _spamCountFindNewPosition = 0;
+                _timeStampFindNewPosition = Time.time;
+                LogInDebugMode($"_timeStampFindNewPosition: {_timeStampFindNewPosition}");
             }
 
             _findPositionTimeout = GetWaitTime();
@@ -241,10 +253,13 @@ namespace RSToolkit.AI.Locomotion
             }
 
             _newWanderPosition = _currentBotWanderComponent.GetNewWanderPosition(WanderCenter);
+            
             if(_newWanderPosition != null){
                 BotLocomotiveComponent.FocusOnPosition(_newWanderPosition.Value );
                 FSM.ChangeState(FStatesWander.MovingToPosition);
             }else{
+                LogInDebugMode("_newWanderPosition != null");
+                _wanderAutoRetry = false;
                 FSM.ChangeState(FStatesWander.CannotWander);
             }
         }
@@ -295,7 +310,7 @@ namespace RSToolkit.AI.Locomotion
             {
                 if (DebugMode)
                 {
-                    Debug.Log("Movement timeout!");
+                    LogInDebugMode("Movement timeout!");
                 }
                 FSM.ChangeState(FStatesWander.FindNewPosition);
             }
@@ -305,14 +320,16 @@ namespace RSToolkit.AI.Locomotion
         #region CannotWander
         void CannotWander_Update()
         {
-            if (_currentBotWanderComponent.CanWander() && !IsFindNewPositionOverSpamLimit())
+            if (_currentBotWanderComponent.CanWander() && _wanderAutoRetry)
             {
+                LogInDebugMode("_currentBotWanderComponent.CanWander() && !IsFindNewPositionOverSpamLimit()");
                 FSM.ChangeState(FStatesWander.FindNewPosition);
             }
         }
 
         void CannotWander_Exit(bool success)
         {
+            LogInDebugMode($"CannotWander_Exit {FSM.CurrentState} -> {FSM.NextState}");
             ResetFindNewPositionSpamValues();
         }
         #endregion CannotWander
