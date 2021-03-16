@@ -6,6 +6,7 @@
     using RSToolkit.Helpers;
     using UnityEngine.Events;
     using System.Collections.ObjectModel;
+    using RSToolkit.Collections;
 
     public abstract class SpawnerCore<T> : RSMonoBehaviour where T : MonoBehaviour
     {
@@ -13,7 +14,8 @@
         // public bool isParent = false;
         public Transform SpawnParent = null;
         private List<T> _spawnedGameObjects = new List<T>();
-
+        private SizedStack<T> _pooledGameObjects;
+        public int PoolSize = -1;
         public bool CollectChildrenAlreadyInScene = true;
 
         public ReadOnlyCollection<T> SpawnedGameObjects
@@ -37,33 +39,66 @@
             }
         }
 
+        void NotDelayedDestroySpawnedGameObject(T spawnedGameObject){
+            if (PoolSize > 0 && !_pooledGameObjects.IsFull())
+            {
+                spawnedGameObject.gameObject.SetActive(false);
+                _pooledGameObjects.Push(spawnedGameObject);
+            }
+            else
+            {
+                Destroy(spawnedGameObject.gameObject);
+            }
+        }
+
+        IEnumerator DelayedDestroySpawnedGameObject(T spawnedGameObject, float time){
+            yield return new WaitForSeconds(time);
+            NotDelayedDestroySpawnedGameObject(spawnedGameObject);
+        }
+
         public void DestroySpawnedGameObject(T spawnedGameObject, float? time = null)
         {
             if (spawnedGameObject != null && SpawnedGameObjects.Contains(spawnedGameObject)){
                 if(time != null)
                 {
-                    Destroy(spawnedGameObject.gameObject, time.Value);
+                    StartCoroutine(DelayedDestroySpawnedGameObject(spawnedGameObject, time.Value));
                 }
                 else
                 {
-                    Destroy(spawnedGameObject.gameObject);
+                    NotDelayedDestroySpawnedGameObject(spawnedGameObject);
                 }
                 _spawnedGameObjects.Remove(spawnedGameObject);
             }
         }
-        public void DestroyAllSpawns(float? time = null){
+
+        IEnumerator DelayedDestroyAllSpawns(float time){
+            yield return new WaitForSeconds(time);
+            DestroyAllSpawns();
+        }
+
+        public void DestroyAllSpawns(float time){
+            StartCoroutine(DelayedDestroyAllSpawns(time));
+        }
+        public void DestroyAllSpawns(){
             if (SpawnedGameObjects.Count > 0){
-                DestroySpawnedGameObject(SpawnedGameObjects[SpawnedGameObjects.Count -1], time);
-                DestroyAllSpawns(time);
+                DestroySpawnedGameObject(SpawnedGameObjects[SpawnedGameObjects.Count -1]);
+                DestroyAllSpawns();
             }
         }
+
         public T SpawnAndGetGameObject(T gameObjectToSpawn, bool useSpawnerTransformValues = true)
         {
             if (SpawnLimit > 0 && SpawnedGameObjects.Count >= SpawnLimit){
                 return null;
             }
 
-            var spawnedGameObject = Instantiate(gameObjectToSpawn);
+            T spawnedGameObject;
+            if(PoolSize > 0 && _pooledGameObjects.Any()){
+               spawnedGameObject = _pooledGameObjects.Pop(); 
+               spawnedGameObject.gameObject.SetActive(true);
+            }else{
+                spawnedGameObject = Instantiate(gameObjectToSpawn);
+            }
 
             ValidateSpawnParent();
             spawnedGameObject.transform.SetParent(SpawnParent);
@@ -111,6 +146,9 @@
             if(base.Init(force)){
                 ValidateSpawnParent();
                 CollectChildren();
+                if(PoolSize > 0){
+                    _pooledGameObjects = new SizedStack<T>(PoolSize);
+                }
                 return true;
             }
 

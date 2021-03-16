@@ -1,13 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace RSToolkit.Space2D
 {
     [RequireComponent(typeof(SpriteRenderer))]
     public class SpriteParallax : MonoBehaviour
     {
-        [SerializeField] private float _parallaxEffectMultiplier; 
+        [Range(0f, 1f)][SerializeField] private float _parallaxEffectMultiplier; 
 
         private Transform _cameraTransform;
         private Vector3 _lastCameraPosition;        

@@ -150,7 +150,7 @@
                 PreviousPage = CurrentPage;
                 CurrentPage.OnNavigatedFrom.Invoke(CurrentPage);
             }
-            NavigationHistory.Push(CurrentPage);
+            NavigationHistory.Push(CurrentPage, true);
             //NavigatedFromPage = CurrentPage;
             CurrentPage = page;
             CloseOtherPages(page);

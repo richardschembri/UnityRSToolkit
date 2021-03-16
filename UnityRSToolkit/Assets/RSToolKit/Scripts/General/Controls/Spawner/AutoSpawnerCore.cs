@@ -7,8 +7,8 @@ namespace RSToolkit.Controls
 {
     public abstract class AutoSpawnerCore<T> : Spawner<T> where T : MonoBehaviour
     {
-        public float time_From = 3f;
-        public float time_To = 4f;
+        public float timeFrom = 3f;
+        public float timeTo = 4f;
         public float spawnOffset = 0.1f;
 
         public bool IsSpawning { get; private set; } = false; 
@@ -28,7 +28,7 @@ namespace RSToolkit.Controls
         protected abstract int GetSpawnCount();
 
         IEnumerator AutoSpawn(bool useSpawnerTransformValues = true) {
-           yield return new WaitForSeconds(RandomHelpers.RandomFloatWithinRange(time_From, time_To));
+           yield return new WaitForSeconds(RandomHelpers.RandomFloatWithinRange(timeFrom, timeTo));
            if(IsSpawning)
            {
                int spawnCount = GetSpawnCount();

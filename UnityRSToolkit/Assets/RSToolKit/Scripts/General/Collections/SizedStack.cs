@@ -8,8 +8,8 @@
     {
         #region Fields
  
-        private int m_capacity;
-        private LinkedList<T> m_list;
+        private int _capacity;
+        private LinkedList<T> _list;
          
         #endregion
  
@@ -17,33 +17,38 @@
  
         public SizedStack(int capacity)
         {
-            m_capacity = capacity;
-            m_list = new LinkedList<T>();
+            _capacity = capacity;
+            _list = new LinkedList<T>();
              
         }
  
         #endregion
 
         private T pop(){
-            var value = m_list.First.Value;
-            m_list.RemoveFirst();
+            var value = _list.First.Value;
+            _list.RemoveFirst();
             return value;
         }
  
         #region Public Stack Implementation
  
-        public void Push(T value)
+        public bool Push(T value, bool force = false)
         {
-            if (m_list.Count == m_capacity)
+            if (IsFull())
             {
-                m_list.RemoveLast();
+                if(force){
+                    _list.RemoveLast();
+                }else{
+                    return false;
+                }
             }
-            m_list.AddFirst(value);
+            _list.AddFirst(value);
+            return true;
         }
  
         public T Pop()
         {
-            if (m_list.Count > 0)
+            if (_list.Count > 0)
             {
                 return pop();
             }
@@ -69,7 +74,7 @@
         {
             if (Any())
             {
-                return m_list.First.Value;
+                return _list.First.Value;
             }
             else
             {
@@ -81,7 +86,7 @@
         {
             if (Any())
             {
-                return m_list.First.Value;
+                return _list.First.Value;
             }
             else
             {
@@ -90,18 +95,18 @@
         }
 
         public bool Any(){
-            return m_list.Count > 0;
+            return _list.Count > 0;
         }
  
         public void Clear()
         {
-            m_list.Clear();
+            _list.Clear();
              
         }
  
         public int Count
         {
-            get { return m_list.Count; }
+            get { return _list.Count; }
         }
  
         /// <summary>
@@ -122,14 +127,18 @@
         {
             if (this.Count > 0)
             {
-                return m_list.Contains(value);
+                return _list.Contains(value);
             }
             return false;
+        }
+
+        public bool IsFull(){
+            return Count == _capacity;
         }
  
     public IEnumerator GetEnumerator()
     {
-            return m_list.GetEnumerator();
+            return _list.GetEnumerator();
     }
  
         #endregion
