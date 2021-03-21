@@ -155,6 +155,7 @@ namespace RSToolkit{
             var toExportPaths = new string[]{
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_CHARACTER)}/.",
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_SPACE2D)}/CharacterController2D.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_SPACE2D)}/SpriteParallax.cs",
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_SPACE2D)}/PlayerLocomotion2D.cs"
             };
             AssetDatabase.ExportPackage(

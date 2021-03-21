@@ -8,12 +8,12 @@ namespace RSToolkit.Controls
     public class AutoSpawner<T> : AutoSpawnerCore<T> where T : MonoBehaviour 
     {
 
-        public int spawnAmount_Min = 2;
-        public int spawnAmount_Max = 3;
+        public int spawnBatchMin = 2;
+        public int spawnBatchMax = 3;
 
         protected override int GetSpawnCount()
         {
-           return RandomHelpers.RandomIntWithinRange(spawnAmount_Min, spawnAmount_Max + 1);
+           return RandomHelpers.RandomIntWithinRange(spawnBatchMin, spawnBatchMax + 1);
         }
 
     }
