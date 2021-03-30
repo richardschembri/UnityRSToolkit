@@ -28,7 +28,9 @@ namespace RSToolkit.Character
             {
                 return;
             }
-            EditorGUILayout.LabelField($"Current Speed: {targetController.CurrentSpeed}/{targetController.MaxSpeed}({targetController.CurrentSpeedPercent}%)", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField($"Debug Values:" , EditorStyles.largeLabel);
+            EditorGUILayout.LabelField($"Current Speed Horizontal: {targetController.CurrentSpeedHorizontal}/{targetController.SettingsLocomotion.MaxSpeedHorizontal}({targetController.CurrentSpeedPercentHorizontal}%)", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField($"Direction Axis: {targetController.DirectionAxis }", EditorStyles.boldLabel);
         }
     }
 #endif

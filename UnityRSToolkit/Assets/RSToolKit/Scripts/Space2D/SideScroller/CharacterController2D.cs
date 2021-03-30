@@ -12,7 +12,10 @@ namespace RSToolkit.Space2D.SideScroller
         public Rigidbody2D Rigidbody2DComponent{get; private set;}
         public bool FacingRight {get; private set;} = true;  // For determining which way the player is currently facing.
         private Vector3 _velocity = Vector3.zero;
-        protected override void InitRigidBody(){
+
+        protected override void InitComponents()
+        {
+            base.InitComponents();
             Rigidbody2DComponent = GetComponent<Rigidbody2D>();
         }
 
@@ -20,7 +23,7 @@ namespace RSToolkit.Space2D.SideScroller
         {
             base.Move(directionAxis, directionAxis.x * speed);
             // Move the character by finding the target velocity
-            Vector3 targetVelocity = new Vector2(CurrentSpeed, Rigidbody2DComponent.velocity.y);
+            Vector3 targetVelocity = new Vector2(CurrentSpeedHorizontal, Rigidbody2DComponent.velocity.y);
             // And then smoothing it out and applying it to the character
             Rigidbody2DComponent.velocity = Vector3.SmoothDamp(Rigidbody2DComponent.velocity, targetVelocity, ref _velocity, _movementSmoothing);
 

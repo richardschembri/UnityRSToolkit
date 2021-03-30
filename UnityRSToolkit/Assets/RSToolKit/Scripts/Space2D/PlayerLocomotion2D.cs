@@ -12,6 +12,7 @@ namespace RSToolkit.Space2D
         public RSCharacterController ControllerComponent{ get; private set; }
         Vector2 _directionAxis = Vector2.zero;
         public float Speed = 40f;
+        public float MoveAxisDeadZone = 0.2f;
 
         public override bool Init(bool force = false)
         {
@@ -37,7 +38,8 @@ namespace RSToolkit.Space2D
                 _directionAxis.x = Input.GetAxisRaw("Horizontal");
                 _directionAxis.y = Input.GetAxisRaw("Vertical");
             }          
-            if(_directionAxis.x != 0f || _directionAxis.y != 0f){
+            if(Mathf.Abs(_directionAxis.x) >= MoveAxisDeadZone
+                || Mathf.Abs(_directionAxis.y) >= MoveAxisDeadZone){
                 CharacterAnimParams.TrySetAxisHorizontal(ControllerComponent.AnimatorComponent ,_directionAxis.x);
                 CharacterAnimParams.TrySetAxisVertical(ControllerComponent.AnimatorComponent ,_directionAxis.y);
             }

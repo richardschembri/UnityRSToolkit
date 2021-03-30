@@ -1,13 +1,12 @@
-﻿namespace RSToolkit.Helpers
-{
-    using UnityEngine;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using UnityEngine.Networking;
-    using System.Threading.Tasks;
+﻿using UnityEngine;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using UnityEngine.Networking;
+using System.Threading.Tasks;
 
+namespace RSToolkit.Tools
+{
     public class LoadImageTools
     {
         // Start is called before the first frame update

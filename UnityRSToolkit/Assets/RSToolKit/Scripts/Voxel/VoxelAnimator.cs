@@ -38,14 +38,12 @@ namespace RSToolkit.Voxel{
 
         #region RSMonoBehaviour Functions
 
-        public override bool Init(bool force = false){
-            if(!base.Init(force)){
-                return false;
-            }
-
+        protected override void InitComponents()
+        {
+            base.InitComponents();
             _meshFilterComponent = GetComponent<MeshFilter>();
-            return true;
         }
+
         #endregion RSMonoBehaviour Functions
 
         void AdjustMeshIndexForLoop(int nextMeshIndex){

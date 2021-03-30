@@ -7,7 +7,7 @@ namespace RSToolkit
     public class RSMonoBehaviour : MonoBehaviour
     {
         public bool DebugMode = false;
-        public bool InitOnAwake = false;
+        public bool InitOnAwake = true;
         public bool Initialized { get; protected set; } = false;
 
 
@@ -21,8 +21,14 @@ namespace RSToolkit
             {
                 return false;
             }
+            InitComponents();
             Initialized = true;
             return true;
+        }
+
+        protected virtual void InitComponents()
+        {
+
         }
 
         public virtual void ResetValues(){}
