@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using RSToolkit.UI.Paging;
-using RSToolkit.Helpers;
+using RSToolkit.Tools;
 using RSToolkit.UI.Controls;
 
 public class ImagePage : UIPage

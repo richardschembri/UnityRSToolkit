@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine.Networking;
 using System.Threading.Tasks;
+using RSToolkit.Helpers;
 
 namespace RSToolkit.Tools
 {

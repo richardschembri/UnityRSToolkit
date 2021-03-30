@@ -1,29 +1,26 @@
-﻿namespace RSToolkit.UI.Controls{
-    using System.Collections;
-    using System.Collections.Generic;
-    using UnityEngine;
-    using UnityEngine.UI;
-    using RSToolkit.Helpers;
-    using UnityEngine.Serialization;
+﻿using UnityEngine;
+using UnityEngine.UI;
+using RSToolkit.Tools;
+using UnityEngine.Serialization;
 
+namespace RSToolkit.UI.Controls{
     [RequireComponent(typeof(Image))]
     public class UIDigit : MonoBehaviour
     {
-        private LoadImageTools lit;
         [SerializeField]
         private Sprite[] _digitSprites = null;
 
         [FormerlySerializedAs("Digit")]
         [SerializeField]
         [Range(0, 9)]
-        private uint m_digit = 0;
+        private uint _digit = 0;
 
         public uint Digit{
             get{
-                return m_digit;
+                return _digit;
             }set{
-                if (m_digit != value){
-                    m_digit = value;
+                if (_digit != value){
+                    _digit = value;
                     RefreshImage();
                 }
             }
@@ -37,30 +34,21 @@
             }
         }
 
-        private Image m_imageComponent;
+        private Image _imageComponent;
         public Image ImageComponent{
             get{
-                if (m_imageComponent == null){
-                    m_imageComponent = this.GetComponent<Image>();
+                if (_imageComponent == null){
+                    _imageComponent = this.GetComponent<Image>();
                 }
-                return m_imageComponent;
+                return _imageComponent;
             }
         }
 
-    // Start is called before the first frame update
-        void Start()
-        {
-            
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-            
-        }
+        #region MonoBehaviour Functions
         private void OnGUI(){
             RefreshImage();
         }
+        #endregion MonoBehaviour Functions
 
         private void OnInspectorGUI(){
             RefreshImage();
