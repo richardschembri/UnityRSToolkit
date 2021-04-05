@@ -181,6 +181,19 @@ namespace RSToolkit{
             DebugLogExportEnd("Count Down");
         }
 
+        [UnityEditor.MenuItem("Tools/RSToolkit/Export Package/Tools/Server Upload Tools")]
+        public static void ExportServerUploadTools(){
+
+            DebugLogExportStart("Server Upload Tools");
+            var toExportPaths = new string[]{
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/Tools/ServerUploadTools.cs"
+            };
+            AssetDatabase.ExportPackage(
+                    toExportPaths,
+                    GetPackageName("countdown"),
+                    ExportPackageOptions.Recurse);
+            DebugLogExportEnd("Count Down");
+        }
 
     }
 }
