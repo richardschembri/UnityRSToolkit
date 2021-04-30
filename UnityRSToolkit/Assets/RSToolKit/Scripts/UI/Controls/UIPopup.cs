@@ -2,18 +2,13 @@
 {
     using UnityEngine;
     using UnityEngine.EventSystems;
-    using RSToolkit.Helpers;
     using UnityEngine.Events;
     using System.Linq;
     using System.Collections;
 
     [AddComponentMenu("RSToolKit/Controls/UIPopup")]
-    public class UIPopup : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler {
+    public class UIPopup : RSMonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler {
 
-        public class OnOpenPopupEvent : UnityEvent<UIPopup, bool> { }
-        public class OnClosePopupEvent : UnityEvent<UIPopup> { }
-        public OnOpenPopupEvent OnOpenPopup = new OnOpenPopupEvent();
-        public OnClosePopupEvent OnClosePopup = new OnClosePopupEvent();
         public bool Draggable = false;
         public bool ShowOnTop = true;
 
@@ -21,6 +16,11 @@
         public UIPopup[] HigherPriorityPopups;
         public float PopupTimeoutSeconds = -1f;
 
+        public class OnOpenPopupEvent : UnityEvent<UIPopup, bool> { }
+        public class OnClosePopupEvent : UnityEvent<UIPopup> { }
+        [Header("Events")]
+        public OnOpenPopupEvent OnOpenPopup = new OnOpenPopupEvent();
+        public OnClosePopupEvent OnClosePopup = new OnClosePopupEvent();
         // Use this for initialization
 
         protected virtual void Start(){

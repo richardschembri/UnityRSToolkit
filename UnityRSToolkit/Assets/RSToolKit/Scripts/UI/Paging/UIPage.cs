@@ -1,9 +1,9 @@
-﻿namespace RSToolkit.UI.Paging
+﻿using UnityEngine;
+using UnityEngine.Events;
+
+namespace RSToolkit.UI.Paging
 {
-    using UnityEngine;
-    using System.Collections;
-    using UnityEngine.Events;
-    public class UIPage : MonoBehaviour
+    public class UIPage : RSMonoBehaviour
     {
         public bool ShowInMenu = true;
         public bool DisplayHeader = true;
@@ -16,31 +16,39 @@
         public Sprite BackgroundImage;
         public Color BackgroundColor = Color.white;
 
-        public KeyCode NavigateShortCut;
-
         public bool ShowCursor = true;
 
+        [Header("Shortcuts")]
+        public KeyCode NavigateShortCut;
         public KeyCode NavigateToNextPageShortCut = KeyCode.None;
+
+        [Header("Page Navigation")]
         public UIPage PrevPage;
         public UIPage NextPage;
 
         public class OnNavigatedToEvent : UnityEvent<UIPage, bool> {}
+        [Header("Events")]
         public OnNavigatedToEvent OnNavigatedTo = new OnNavigatedToEvent();
         public class OnNavigatedFromEvent : UnityEvent<UIPage> { }
         public OnNavigatedFromEvent OnNavigatedFrom = new OnNavigatedFromEvent();
 
-        #region Unity Event
-        // Start is called before the first frame update
-        protected virtual void Awake()
+
+        #region RSMonoBehaviour Functions
+        protected override void InitEvents()
         {
+            base.InitEvents();
+
             OnNavigatedTo.AddListener(onNavigatedTo);
             OnNavigatedFrom.AddListener(onNavigatedFrom);
         }
+        #endregion RSMonoBehaviour Functions
+
+        #region MonoBehaviour Functions
         protected virtual void OnEnable()
         {
             Cursor.visible = ShowCursor;
         }
-        #endregion
+        #endregion MonoBehaviour Functions
         public bool IsCurrentPage()
         {
             return UIPageManager.Instance.IsCurrentPage(this);

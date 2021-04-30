@@ -71,6 +71,7 @@ namespace RSToolkit{
 
             DebugLogExportStart("UI Paging");
             var toExportPaths  = new string[]{
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/RSMonoBehaviour.cs",
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_UI) }/Paging",
                 $"{GetPath(PATH_TYPE.PREFABS, RS_SUBPATH_UI)}/Paging",
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/Collections/SizedStack.cs"
@@ -87,6 +88,7 @@ namespace RSToolkit{
 
             DebugLogExportStart("UI Controls Popup");
             var toExportPaths = new string[]{
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/RSMonoBehaviour.cs",
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_UI)}/Controls/UIPopup.cs",
                 $"{GetPath(PATH_TYPE.PREFABS, RS_SUBPATH_UI)}/Controls/UI Popup.prefab"
             };

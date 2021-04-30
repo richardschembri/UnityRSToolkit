@@ -22,11 +22,17 @@ namespace RSToolkit
                 return false;
             }
             InitComponents();
+            InitEvents();
             Initialized = true;
             return true;
         }
 
         protected virtual void InitComponents()
+        {
+
+        }
+
+        protected virtual void InitEvents()
         {
 
         }
