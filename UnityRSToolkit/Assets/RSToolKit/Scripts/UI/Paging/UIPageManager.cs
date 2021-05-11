@@ -6,7 +6,7 @@
     using RSToolkit.Collections;
     
 
-    public class UIPageManager : MonoBehaviour
+    public class UIPageManager : RSSingletonMonoBehaviour<UIPageManager> // MonoBehaviour
     {
 
 
@@ -18,7 +18,7 @@
  
         public UIPage CurrentPage { get; private set;}
 
-        private static UIPageManager m_instance;
+        // private static UIPageManager m_instance;
 
         private UIPage[] m_pages;
 
@@ -28,6 +28,7 @@
 
         public SizedStack<UIPage> NavigationHistory = new SizedStack<UIPage>(5);
 
+        /*
         private bool m_initComplete = false;
         public bool InitComplete
         {
@@ -40,15 +41,18 @@
                 m_initComplete = value;
             }
         }
+        */
    
 
         #endregion
 
         #region Properties
 
+        /*
         public static UIPageManager Instance{
             get{ return m_instance; }
         }
+        */
        
         public UIPage[] Pages{
             get{
@@ -65,8 +69,9 @@
         }
 
         #endregion
-        #region Unity Events
+        #region MonoBehaviour Functions
 
+        /*
         protected virtual void Awake(){
             m_instance = this;
         }
@@ -76,6 +81,7 @@
             InitPages();
             InitComplete = true;
         }
+        */
 
         // Update is called once per frame
         protected virtual void Update()
@@ -90,7 +96,7 @@
                }
            } 
         }
-        #endregion
+        #endregion MonoBehaviour Functions
 
         public void InitPages(){
             
@@ -108,6 +114,18 @@
             NavigateTo(launchPage);
         }
 
+        #region RSMonoBehaviour Functions
+        public override bool Init(bool force = false)
+        {
+            if (base.Init(force))
+            {
+                InitPages();
+                return true;
+            }
+            return false;
+
+        }
+        #endregion RSMonoBehaviour Functions
 
         #region Page Functions
 

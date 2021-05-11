@@ -1,13 +1,13 @@
-﻿namespace RSToolkit.UI.Paging
-{
-    using System.Linq;
-    using System.Collections;
-    using System.Collections.Generic;
-    using UnityEngine;
-    using UnityEngine.UI;
-    using RSToolkit.Helpers;
+﻿using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using RSToolkit.Helpers;
 
-    public class UIPageMenu : MonoBehaviour
+namespace RSToolkit.UI.Paging
+{
+    public class UIPageMenu : RSSingletonMonoBehaviour<UIPageMenu>
     {
         public struct UIMenuButton
         {
@@ -16,12 +16,6 @@
         }
 
         public RectTransform Container;
-
-        private static UIPageMenu m_instance;
-        public static UIPageMenu Instance
-        {
-            get { return m_instance; }
-        }
 
         public bool AutoGenerate = true;
         public bool AutoShow = false;
@@ -45,6 +39,7 @@
 
         }
 
+        #region MonoBehaviour Functions
         void Start()
         {
             if(Container == null){
@@ -52,11 +47,7 @@
             }
             StartCoroutine(Init());
         }
-
-        void Awake()
-        {
-            m_instance = this;
-        }
+        #endregion MonoBehaviour Functions
 
         private void GenerateMenuButton(UIPage page)
         {
@@ -104,7 +95,7 @@
 
         IEnumerator Init()
         {
-            yield return new WaitUntil(() => UIPageManager.Instance.InitComplete);
+            yield return new WaitUntil(() => UIPageManager.Instance != null && UIPageManager.Instance.Initialized); //InitComplete);
             if(AutoGenerate){
                 GenerateMenuButtons();
             }else{

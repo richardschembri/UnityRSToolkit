@@ -72,6 +72,7 @@ namespace RSToolkit{
             DebugLogExportStart("UI Paging");
             var toExportPaths  = new string[]{
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/RSMonoBehaviour.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/RSSingletonMonoBehaviour.cs",
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_UI) }/Paging",
                 $"{GetPath(PATH_TYPE.PREFABS, RS_SUBPATH_UI)}/Paging",
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/Collections/SizedStack.cs"
@@ -197,5 +198,19 @@ namespace RSToolkit{
             DebugLogExportEnd("Count Down");
         }
 
+        [UnityEditor.MenuItem("Tools/RSToolkit/Export Package/Singleton")]
+        public static void ExportSingleton()
+        {
+            DebugLogExportStart("Singleton");
+            var toExportPaths = new string[]{
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/RSMonoBehaviour.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/RSSingletonMonoBehaviour.cs",
+            };
+            AssetDatabase.ExportPackage(
+                    toExportPaths,
+                    GetPackageName("singleton"),
+                    ExportPackageOptions.Recurse);
+            DebugLogExportEnd("Singleton");
+        }
     }
 }

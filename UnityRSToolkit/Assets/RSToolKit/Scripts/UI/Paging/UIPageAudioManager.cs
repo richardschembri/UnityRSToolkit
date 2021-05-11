@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using UnityEngine;
 
-    public class UIPageAudioManager : MonoBehaviour
+    public class UIPageAudioManager : RSSingletonMonoBehaviour<UIPageAudioManager>
     {
         public AudioClip DefaultNavigationAudioClip;
         public AudioClip DefaultBGMAudioClip;
@@ -15,26 +15,18 @@
 
         public void SkipNavigationSound(){
             m_skipNavigationSound = true;
-        } 
-
-        private static UIPageAudioManager m_instance;
-
-        public static UIPageAudioManager Instance{
-            get{ return m_instance; }
         }
-        
+
+        #region MonoBehaviour Functions 
         protected virtual void Start()
         {
             StartCoroutine(Init());
         }
-
-        protected virtual void Awake(){
-            m_instance = this;
-        }
+        #endregion MonoBehaviour Functions 
 
         IEnumerator Init()
         {
-            yield return new WaitUntil(() => UIPageManager.Instance.InitComplete);
+            yield return new WaitUntil(() => UIPageManager.Instance != null && UIPageManager.Instance.Initialized);
             for (int i = 0; i < UIPageManager.Instance.Pages.Length; i++)
             {
                 var page = UIPageManager.Instance.Pages[i];

@@ -1,35 +1,25 @@
-﻿namespace RSToolkit.UI.Paging
-{
-    using System.Collections;
-    using System.Collections.Generic;
-    using UnityEngine;
-    using UnityEngine.UI;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
 
-    public class UIPageBackground : MonoBehaviour
+namespace RSToolkit.UI.Paging
+{
+    public class UIPageBackground : RSSingletonMonoBehaviour<UIPageBackground>
     {
         public Sprite DefaultBackgroundSprite;
         public Image TargetGraphic;
 
         public bool SetNativeSize = false;
-        private static UIPageBackground m_instance;
-        public static UIPageBackground Instance{
-            get{ return m_instance; }
-        }
         // Start is called before the first frame update
         void Start()
         {
             StartCoroutine(Init());
         }
 
-        // Update is called once per frame
-        void Awake()
-        {
-            m_instance = this;
-        }
-
         IEnumerator Init()
         {
-            yield return new WaitUntil(() => UIPageManager.Instance.InitComplete);
+            yield return new WaitUntil(() => UIPageManager.Instance != null && UIPageManager.Instance.Initialized);
             for (int i = 0; i < UIPageManager.Instance.Pages.Length; i++)
             {
                 var page = UIPageManager.Instance.Pages[i];

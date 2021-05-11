@@ -8,7 +8,6 @@ namespace RSToolkit{
     
         protected override void Awake()
         {
-            base.Awake();
             if (Instance != null && Instance != this)
             {
                 Destroy(this);
@@ -18,6 +17,7 @@ namespace RSToolkit{
             {
                 Instance = (T)this;
             }
+            base.Awake();
         }
     }
 

@@ -18,7 +18,7 @@
 
         IEnumerator Init()
         {
-            yield return new WaitUntil(() => UIPageManager.Instance.InitComplete);
+            yield return new WaitUntil(() => UIPageManager.Instance != null && UIPageManager.Instance.Initialized); //InitComplete);
             for (int i = 0; i < UIPageManager.Instance.Pages.Length; i++)
             {
                 var page = UIPageManager.Instance.Pages[i];
