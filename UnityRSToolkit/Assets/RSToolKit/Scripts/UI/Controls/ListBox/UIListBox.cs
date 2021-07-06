@@ -16,25 +16,24 @@
         private enum ManualScroll{
             NONE, LEFT, RIGHT, UP, DOWN
         }
-        ManualScroll m_manualScroll = ManualScroll.NONE;
+        ManualScroll _manualScroll = ManualScroll.NONE;
 
-        private bool m_initDelayedCullingComplete = false;
-        bool m_init = false;
+        private bool _initDelayedCullingComplete = false;
 
         bool m_CullingOn = false;
 
-        public float manualScrollSpeed { get { return m_ManualScrollSpeed; } set { m_ManualScrollSpeed = value; }}
+        public float manualScrollSpeed { get { return _ManualScrollSpeed; } set { _ManualScrollSpeed = value; }}
 
         [SerializeField]
-        private float m_ManualScrollSpeed = 0.01f;
+        private float _ManualScrollSpeed = 0.01f;
 
-        public bool isVertical  { get { return m_IsVertical; } set { m_IsVertical = value; }}
+        public bool isVertical  { get { return _IsVertical; } set { _IsVertical = value; }}
         [SerializeField]
-        private bool m_IsVertical = true;
+        private bool _IsVertical = true;
 
-        public bool occlusionCulling { get { return m_OcclusionCulling; } set { m_OcclusionCulling = value; CheckCulling(); }}
+        public bool occlusionCulling { get { return _OcclusionCulling; } set { _OcclusionCulling = value; CheckCulling(); }}
         [SerializeField]
-        private bool m_OcclusionCulling = true;
+        private bool _OcclusionCulling = true;
         private ScrollRect m_scrollRectComponent = null;
         public ScrollRect ScrollRectComponent{
             get{
@@ -50,26 +49,14 @@
            }
        }
 
-       protected RectTransform[] m_contentChildren ;
-       protected virtual RectTransform[] m_ContentChildren{
+       protected RectTransform[] _contentChildren ;
+       protected virtual RectTransform[] _ContentChildren{
            get{
-            if (m_contentChildren == null)
-                m_contentChildren = ContentRectTransform.GetTopLevelChildren<RectTransform>().ToArray();
-            return m_contentChildren;
+            if (_contentChildren == null)
+                _contentChildren = ContentRectTransform.GetTopLevelChildren<RectTransform>().ToArray();
+            return _contentChildren;
            }
        } 
-
-       /*
-       private Spawner m_ListItemSpawner;
-       public Spawner ListItemSpawner { 
-           get { 
-               if(m_ListItemSpawner == null){
-                   m_ListItemSpawner = ContentRectTransform.GetComponent<Spawner<GameObject>>();
-               }
-               return m_ListItemSpawner; 
-            } 
-       }
-       */
 
        public class OnShiftMostHorizontalEvent : UnityEvent<RectTransform, RectTransformHelpers.HorizontalPosition>{}
        public OnShiftMostHorizontalEvent OnShiftMostHorizontal = new OnShiftMostHorizontalEvent();
@@ -92,15 +79,38 @@
        }
 
        public void Refresh(){
-           m_contentChildren = null;
+           _contentChildren = null;
            m_scrollRectComponent = null;
            SetLayout();
            ScrollRectComponent.velocity = new Vector2(0f, 0f);
            ScrollRectComponent.content.anchoredPosition = new Vector2(0f, 0f);
            CheckCulling();
        }
-        int m_culling_countdown = 5;
-        protected void Start(){
+        int _culling_countdown = 5;
+
+
+        #region RSMonoBehaviour Functions
+
+        public override bool Init(bool force = false)
+        {
+            if (base.Init(force))
+            {
+                SetLayout();
+                return true;
+            }
+
+            return false;
+        }
+
+        protected override void InitEvents()
+        {
+            ScrollRectComponent.onValueChanged.AddListener(m_onValueChanged);
+        }
+
+        #endregion RSMonoBehaviour Functions
+
+        #region MonoBehaviour Functions
+         protected void Start(){
             ScrollRectComponent.vertical = isVertical;
             ScrollRectComponent.horizontal = !isVertical;
 
@@ -129,45 +139,38 @@
             }
 
         }
-        protected virtual void Awake(){
-            if(!m_init){
-                m_init = true;
 
-
-                ScrollRectComponent.onValueChanged.AddListener(m_onValueChanged);
-                SetLayout();
-            }
-        }
         protected virtual void Update(){
-            if (m_culling_countdown > 0){
-                m_culling_countdown--;
-            }else if(m_culling_countdown == 0){
-                m_culling_countdown--;
-                if(!m_initDelayedCullingComplete){
-                    m_initDelayedCullingComplete = true;
+            if (_culling_countdown > 0){
+                _culling_countdown--;
+            }else if(_culling_countdown == 0){
+                _culling_countdown--;
+                if(!_initDelayedCullingComplete){
+                    _initDelayedCullingComplete = true;
                     TurnOnCulling();
                 }
             }
         }
+        #endregion MonoBehaviour Functions
 
        void m_onValueChanged(Vector2 value){
             ViewportOcclusionCulling();
-            if (m_manualScroll == ManualScroll.NONE){
+            if (_manualScroll == ManualScroll.NONE){
                 InfiniteVerticalScroll(ScrollRectComponent.velocity.y < 0);
                 InfiniteHorizontalScroll(ScrollRectComponent.velocity.x > 0);
             }else{
-                switch(m_manualScroll){
+                switch(_manualScroll){
                     case ManualScroll.DOWN:
                     case ManualScroll.UP:
-                    InfiniteVerticalScroll(m_manualScroll == ManualScroll.DOWN);
+                    InfiniteVerticalScroll(_manualScroll == ManualScroll.DOWN);
                     break;
                     case ManualScroll.LEFT:
                     case ManualScroll.RIGHT:
-                    InfiniteHorizontalScroll(m_manualScroll == ManualScroll.RIGHT);
+                    InfiniteHorizontalScroll(_manualScroll == ManualScroll.RIGHT);
                     break;
                 }
             }
-            m_manualScroll = ManualScroll.NONE;
+            _manualScroll = ManualScroll.NONE;
        }
 
        public void TurnOnCulling(){
@@ -178,16 +181,16 @@
        }
 
        void DelayedTurnOnCulling(){
-            m_initDelayedCullingComplete = false;
-            m_culling_countdown = 5;
+            _initDelayedCullingComplete = false;
+            _culling_countdown = 5;
        }
 
        public void TurnOffCulling(){
            if(m_CullingOn ){
             m_CullingOn = false; 
             ViewportOcclusionCulling();
-            for(int i = 0; i < m_ContentChildren.Length; i++){
-                m_ContentChildren[i].gameObject.SetActive(true);
+            for(int i = 0; i < _ContentChildren.Length; i++){
+                _ContentChildren[i].gameObject.SetActive(true);
             }
            }
        }
@@ -205,19 +208,21 @@
                 return;
             }
             if(m_CullingOn){
-                for(int i = 0; i < m_ContentChildren.Length; i++){
-                    m_ContentChildren[i].gameObject.SetActive(ScrollRectComponent.viewport.HasWithinBounds(m_ContentChildren[i]));
+                for(int i = 0; i < _ContentChildren.Length; i++){
+                    _ContentChildren[i].gameObject.SetActive(ScrollRectComponent.viewport.HasWithinBounds(_ContentChildren[i]));
                 }
             }
        }
 
        public Vector2 ListItemsSize(){
-           var x = m_ContentChildren.Sum(r => r.ScaledSize().x);
-           var y = m_ContentChildren.Sum(r => r.ScaledSize().y);
+           var x = _ContentChildren.Sum(r => r.ScaledSize().x);
+           var y = _ContentChildren.Sum(r => r.ScaledSize().y);
            return new Vector2(x, y);
        }
 
-       private void ShiftListItemAbove(RectTransform toshift){
+        #region Shift List
+
+        private void ShiftListItemAbove(RectTransform toshift){
             ShiftListItemAbove(toshift, toshift);
        }
        private void ShiftListItemAbove(RectTransform toshift, RectTransform target ){
@@ -234,15 +239,6 @@
        }
        private void ShiftListItemLeft(RectTransform toshift, RectTransform target){
             toshift.localPosition = target.ShiftLeftLocalPosition(spacing);
-       }
-       private void PlaceListItemLeftMost(RectTransform toplace, float padding){
-            var toplacePos = GetPositionWithinViewPort(toplace, padding); 
-            while(toplacePos.horizontalPostion != RectTransformHelpers.HorizontalPosition.LEFT){
-                ShiftListItemLeft(toplace);                    
-                toplacePos = ScrollRectComponent.viewport.PositionWithinBounds(toplace, new Vector2(padding, 0), Vector2.zero); 
-            }
-            toplace.SetAsFirstSibling();
-            OnShiftMostHorizontal.Invoke(toplace, RectTransformHelpers.HorizontalPosition.LEFT); 
        }
 
        private void ShiftListItemRight(RectTransform toshift){
@@ -281,15 +277,28 @@
             OnShiftMostVertical.Invoke(toplace, RectTransformHelpers.VerticalPosition.BELOW); 
        }
 
+       #endregion Shift List
+
        private RectTransformHelpers.RectTransformPosition GetPositionWithinViewPort(RectTransform toplace, float padding){
             return ScrollRectComponent.viewport.PositionWithinBounds(toplace, new Vector2(0, padding), Vector2.zero); 
        }
 
+       private void PlaceListItemLeftMost(RectTransform toplace, float padding){
+            var toplacePos = GetPositionWithinViewPort(toplace, padding); 
+            while(toplacePos.horizontalPostion != RectTransformHelpers.HorizontalPosition.LEFT){
+                ShiftListItemLeft(toplace);                    
+                toplacePos = ScrollRectComponent.viewport.PositionWithinBounds(toplace, new Vector2(padding, 0), Vector2.zero); 
+            }
+            toplace.SetAsFirstSibling();
+            OnShiftMostHorizontal.Invoke(toplace, RectTransformHelpers.HorizontalPosition.LEFT); 
+       }
+
+        #region Infinite Scroll
         public void InfiniteVerticalScroll(bool isScrollDown){
             if (!ScrollRectComponent.vertical || ScrollRectComponent.movementType != ScrollRect.MovementType.Unrestricted){
                 return;
             } 
-            var vertList = m_ContentChildren.OrderByDescending(rt => rt.GetComponent<RectTransform>().position.y).ToArray();
+            var vertList = _ContentChildren.OrderByDescending(rt => rt.GetComponent<RectTransform>().position.y).ToArray();
             if(!vertList.Any()){
                 return;
             }
@@ -319,7 +328,7 @@
             if (!ScrollRectComponent.horizontal || ScrollRectComponent.movementType != ScrollRect.MovementType.Unrestricted){
                 return;
             } 
-            var horizList = m_ContentChildren.OrderByDescending(rt => rt.GetComponent<RectTransform>().position.x).ToArray();
+            var horizList = _ContentChildren.OrderByDescending(rt => rt.GetComponent<RectTransform>().position.x).ToArray();
             if(!horizList.Any()){
                 return;
             }
@@ -343,26 +352,31 @@
                 }
             }
         }
+        #endregion Infinite Scroll
+
+        #region Scroll Direction
 
         public void ScrollLeft(){
-            m_manualScroll = ManualScroll.LEFT; 
-            ScrollRectComponent.horizontalNormalizedPosition += m_ManualScrollSpeed;
+            _manualScroll = ManualScroll.LEFT; 
+            ScrollRectComponent.horizontalNormalizedPosition += _ManualScrollSpeed;
         }
 
         public void ScrollRight(){
-            m_manualScroll = ManualScroll.RIGHT; 
-            ScrollRectComponent.horizontalNormalizedPosition -= m_ManualScrollSpeed;
+            _manualScroll = ManualScroll.RIGHT; 
+            ScrollRectComponent.horizontalNormalizedPosition -= _ManualScrollSpeed;
         }
 
         public void ScrollDown(){
-            m_manualScroll = ManualScroll.DOWN; 
-            ScrollRectComponent.verticalNormalizedPosition += m_ManualScrollSpeed;
+            _manualScroll = ManualScroll.DOWN; 
+            ScrollRectComponent.verticalNormalizedPosition += _ManualScrollSpeed;
         }
 
         public void ScrollUp(){
-            m_manualScroll = ManualScroll.UP; 
-            ScrollRectComponent.verticalNormalizedPosition -= m_ManualScrollSpeed;
+            _manualScroll = ManualScroll.UP; 
+            ScrollRectComponent.verticalNormalizedPosition -= _ManualScrollSpeed;
         }
+
+        #endregion Scroll Direction
 
         #region Content Size Fitter
         protected DrivenRectTransformTracker m_ContentSizeTracker; // m_Tracker
@@ -507,8 +521,8 @@
             bool alongOtherAxis = (isVertical ^ (axis == 1));
             if(alongOtherAxis){
                 float innerSize = size - (axis == 0 ? padding.horizontal : padding.vertical);
-                for (int i = 0; i < m_ContentChildren.Length; i++){
-                    RectTransform child = m_ContentChildren[i];
+                for (int i = 0; i < _ContentChildren.Length; i++){
+                    RectTransform child = _ContentChildren[i];
                     float scaleFactor = child.localScale[axis];
                     float requiredSpace = Mathf.Clamp(innerSize, 0, size);
                     float startOffset = GetStartOffset(axis, requiredSpace * scaleFactor);
@@ -522,8 +536,8 @@
 
             } else {
                 float pos = (axis == 0 ? padding.left : padding.top);
-                for (int i = 0; i < m_ContentChildren.Length; i++){
-                    RectTransform child = m_ContentChildren[i];
+                for (int i = 0; i < _ContentChildren.Length; i++){
+                    RectTransform child = _ContentChildren[i];
                     float scaleFactor = child.localScale[axis];
 
                     float childSize = axis == 0 ? child.rect.width : child.rect.height;

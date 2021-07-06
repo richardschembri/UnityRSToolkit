@@ -9,9 +9,10 @@ using RSToolkit.Helpers;
 
 public class ScrollListPage : UIPage
 {
-    public UIListBox<Button> VerticalListBox;
-    public UIListBox<Button> HorizontalListBox;
+    public UIListBoxButtons VerticalListBox;
+    public UIListBoxButtons HorizontalListBox;
 
+    /*
     private Spawner<Button> _verticalButtonSpawner;
     public Spawner<Button> VerticalButtonSpawner{
         get{
@@ -31,6 +32,7 @@ public class ScrollListPage : UIPage
             return _horizontalButtonSpawner;
         }
     }
+    */
 
     // Start is called before the first frame update
     void Start()
@@ -40,7 +42,7 @@ public class ScrollListPage : UIPage
 
     public void AddButtonsVertical(){
        for(int i = 0; i < 5; i++){
-           var vb = VerticalListBox.AddListItem().GetComponent<Button>();
+           var vb = VerticalListBox.AddListItem();
            vb.name = string.Format("Button {0}", VerticalListBox.SpawnedGameObjects.Count);
            vb.GetComponentInChildren<Text>().text = vb.name;
        }
@@ -50,7 +52,7 @@ public class ScrollListPage : UIPage
     {
         for (int i = 0; i < 5; i++)
         {
-            var hb = HorizontalListBox.AddListItem().GetComponent<Button>();
+            var hb = HorizontalListBox.AddListItem();
             hb.name = string.Format("Button {0}", HorizontalListBox.SpawnedGameObjects.Count);
             hb.GetComponentInChildren<Text>().text = hb.name;
         }

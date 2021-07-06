@@ -14,17 +14,17 @@
         private UIEditableListBoxItem.ListBoxItemMode m_ListMode = UIEditableListBoxItem.ListBoxItemMode.VIEW; 
 
 
-       protected override RectTransform[] m_ContentChildren{
+       protected override RectTransform[] _ContentChildren{
            get{
-            if (m_contentChildren == null)
+            if (_contentChildren == null)
                 if(orderAscending){
-                    m_contentChildren = ContentRectTransform.GetTopLevelChildren<RectTransform>()
+                    _contentChildren = ContentRectTransform.GetTopLevelChildren<RectTransform>()
                                          .OrderBy(rt => rt.GetComponent<UIEditableListBoxItem>().OrderIndex).ToArray();
                 }else{
-                    m_contentChildren = ContentRectTransform.GetTopLevelChildren<RectTransform>()
+                    _contentChildren = ContentRectTransform.GetTopLevelChildren<RectTransform>()
                                          .OrderByDescending(rt => rt.GetComponent<UIEditableListBoxItem>().OrderIndex).ToArray();
                 }
-            return m_contentChildren;
+            return _contentChildren;
            }
        } 
 

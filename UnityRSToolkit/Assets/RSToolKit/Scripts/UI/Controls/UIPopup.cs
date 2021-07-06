@@ -1,11 +1,12 @@
-﻿namespace RSToolkit.UI.Controls
-{
-    using UnityEngine;
-    using UnityEngine.EventSystems;
-    using UnityEngine.Events;
-    using System.Linq;
-    using System.Collections;
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.Events;
+using System.Linq;
+using System.Collections;
 
+namespace RSToolkit.UI.Controls
+{
+    [DisallowMultipleComponent]
     [AddComponentMenu("RSToolKit/Controls/UIPopup")]
     public class UIPopup : RSMonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler {
 
@@ -21,15 +22,14 @@
         [Header("Events")]
         public OnOpenPopupEvent OnOpenPopup = new OnOpenPopupEvent();
         public OnClosePopupEvent OnClosePopup = new OnClosePopupEvent();
-        // Use this for initialization
+
+        #region MonoBehaviour Functions
 
         protected virtual void Start(){
             PopupOnTop();
         }
 
-        protected virtual void Update(){
-
-        }
+        #endregion MonoBehaviour Functions
 
         protected virtual IEnumerator PopupTimeout(){
             yield return new WaitForSeconds(PopupTimeoutSeconds);
@@ -73,29 +73,40 @@
                 ControlsToHide[i].SetActive(!IsOpen());                
             }
         }
-
         public virtual void OpenPopup(bool keepCache = false)
+        {
+            OpenPopup(keepCache, false);
+        }
+        public virtual void OpenPopup(bool keepCache, bool silent)
         {
             if(IsOpen() || HigherPriorityPopups.Any(p => p.IsOpen())){
                 return; 
             }
 
+
             this.gameObject.SetActive(true);
             ToggleControls();
             PopupOnTop();
-            OnOpenPopup.Invoke(this, keepCache);
+            if (!silent)
+            {
+                OnOpenPopup.Invoke(this, keepCache);
+            }
             if(PopupTimeoutSeconds > 0){
                 StartCoroutine("PopupTimeout");
             }
         }
 
-        public virtual void ClosePopup(bool showControls = true)
+        public virtual void ClosePopup(bool showControls = true, bool silent = false)
         {
             this.gameObject.SetActive(false);
             if(showControls){
                 ToggleControls();
             }
-            OnClosePopup.Invoke(this);
+
+            if (!silent)
+            {
+                OnClosePopup.Invoke(this);
+            }
             
             StopCoroutine("PopupTimeout");
         }
@@ -142,5 +153,6 @@
         public bool IsOpen(){
             return gameObject.activeSelf;
         }
+
     }
 }
