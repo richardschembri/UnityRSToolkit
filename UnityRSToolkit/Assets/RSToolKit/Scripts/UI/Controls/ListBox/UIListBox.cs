@@ -34,12 +34,12 @@
         public bool occlusionCulling { get { return _OcclusionCulling; } set { _OcclusionCulling = value; CheckCulling(); }}
         [SerializeField]
         private bool _OcclusionCulling = true;
-        private ScrollRect m_scrollRectComponent = null;
+        private ScrollRect _scrollRectComponent = null;
         public ScrollRect ScrollRectComponent{
             get{
-                if (m_scrollRectComponent == null)
-                    m_scrollRectComponent = this.GetComponent<ScrollRect>();
-                return m_scrollRectComponent;
+                if (_scrollRectComponent == null)
+                    _scrollRectComponent = this.GetComponent<ScrollRect>();
+                return _scrollRectComponent;
             }
         }
        // private RectTransform m_contentRectTransform;
@@ -80,7 +80,7 @@
 
        public void Refresh(){
            _contentChildren = null;
-           m_scrollRectComponent = null;
+           _scrollRectComponent = null;
            SetLayout();
            ScrollRectComponent.velocity = new Vector2(0f, 0f);
            ScrollRectComponent.content.anchoredPosition = new Vector2(0f, 0f);
@@ -419,18 +419,20 @@
         #endregion
 
         #region LayoutGroup code
-        [SerializeField] protected TextAnchor m_ChildAlignment = TextAnchor.UpperLeft;
-        public TextAnchor childAlignment { get { return m_ChildAlignment; } set { SetProperty(ref m_ChildAlignment, value); }}
-        [SerializeField] protected RectOffset m_Padding = new RectOffset();
+        [SerializeField] protected TextAnchor _ChildAlignment = TextAnchor.UpperLeft;
+        public TextAnchor childAlignment { get { return _ChildAlignment; } set { SetProperty(ref _ChildAlignment, value); }}
+        [SerializeField] protected RectOffset _Padding = new RectOffset();
         protected DrivenRectTransformTracker m_LayoutGroupTracker; // m_Tracker
 
-        public RectOffset padding { get { return m_Padding; } set { SetProperty(ref m_Padding, value); }}
+        public RectOffset padding { get { return _Padding; } set { SetProperty(ref _Padding, value); }}
 
+        /*
         private Vector2 m_TotalMinSize = Vector2.zero;
         private Vector2 m_TotalPreferredSize = Vector2.zero;
+        */
 
-        [SerializeField] protected float m_Spacing = 0;
-        public float spacing {get {return m_Spacing;} set { SetProperty(ref m_Spacing, value); }}
+        [SerializeField] protected float _Spacing = 0;
+        public float spacing {get {return _Spacing;} set { SetProperty(ref _Spacing, value); }}
 
         /// <summary>
         /// Returns the alignment on the specified axis as a fraction where 0 is left/top, 0.5 is middle, and 1 is right/bottom.

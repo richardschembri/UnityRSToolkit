@@ -9,9 +9,9 @@
     public class UIEditableListBox : UIListBox<UIEditableListBoxItem>
     {
         [SerializeField]
-        private bool m_OrderAscending = true;
-        public bool orderAscending { get { return m_OrderAscending; } set { m_OrderAscending = value; Refresh(); }}
-        private UIEditableListBoxItem.ListBoxItemMode m_ListMode = UIEditableListBoxItem.ListBoxItemMode.VIEW; 
+        private bool _OrderAscending = true;
+        public bool orderAscending { get { return _OrderAscending; } set { _OrderAscending = value; Refresh(); }}
+        private UIEditableListBoxItem.ListBoxItemMode _ListMode = UIEditableListBoxItem.ListBoxItemMode.VIEW; 
 
 
        protected override RectTransform[] _ContentChildren{
@@ -76,7 +76,7 @@
             var li = AddEditableListItem(orderIndex);
             if(li != null){
                 li.name = name;
-                li.SetMode(m_ListMode);
+                li.SetMode(_ListMode);
                 li.SetCommonTextComponents(nametexts);
                 li.Value = value;
                 return li;
@@ -85,14 +85,14 @@
         }
 
         public void SetMode(UIEditableListBoxItem.ListBoxItemMode mode){
-            m_ListMode = mode;
+            _ListMode = mode;
             for(int i = 0; i < SpawnedGameObjects.Count; i++){
                 SpawnedGameObjects[i].SetMode(mode);
             }
         }
 
         public UIEditableListBoxItem.ListBoxItemMode GetMode(){
-            return m_ListMode;
+            return _ListMode;
         }
 
     }
