@@ -9,11 +9,13 @@ namespace RSToolkit{
         #region TOOLS
         private enum PATH_TYPE{
             SCRIPTS,
-            PREFABS
+            PREFABS,
+            MATERIALS
         }
         const string RS_PATH = "Assets/RSToolKit";
         static readonly string rsPathScripts = $"{RS_PATH}/Scripts";
         static readonly string rsPathPrefabs = $"{RS_PATH}/Prefabs";
+        static readonly string rsPathMaterials = $"{RS_PATH}/Materials";
         const string RS_SUBPATH_GENERAL = "General"; 
         const string RS_SUBPATH_SPACE2D = "Space2D"; 
         const string RS_SUBPATH_SPACE3D = "Space3D"; 
@@ -30,6 +32,9 @@ namespace RSToolkit{
                 break;
                 case PATH_TYPE.PREFABS:
                 basePath = rsPathPrefabs;
+                break;
+                case PATH_TYPE.MATERIALS:
+                basePath = rsPathMaterials;
                 break;
             }
 
@@ -120,6 +125,21 @@ namespace RSToolkit{
                     GetPackageName("uipopup"),
                     ExportPackageOptions.Recurse);
             DebugLogExportEnd("UI Controls Popup");
+        }
+    
+        [UnityEditor.MenuItem("Tools/RSToolkit/Export Package/AI/Debug/NavMeshVisualizer")]
+        public static void ExportNavMeshVisualizer(){
+            DebugLogExportStart("NavMeshVisualizer");
+            var toExportPaths = new string[]{
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_AI)}/NavMeshVisualizer.cs",
+                $"{GetPath(PATH_TYPE.MATERIALS)}/NavMeshVisualizer.mat",
+                $"{GetPath(PATH_TYPE.PREFABS, RS_SUBPATH_AI)}/NavMeshVisualizer.prefab"
+            };
+            AssetDatabase.ExportPackage(
+                    toExportPaths,
+                    GetPackageName("navmeshvisualizer"),
+                    ExportPackageOptions.Recurse);
+            DebugLogExportEnd("NavMeshVisualizer");
         }
     
         [UnityEditor.MenuItem("Tools/RSToolkit/Export Package/AI/Bot")]
