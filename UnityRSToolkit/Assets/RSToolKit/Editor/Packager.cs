@@ -101,6 +101,8 @@ namespace RSToolkit{
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/RSSingletonMonoBehaviour.cs",
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_UI) }/Paging",
                 $"{GetPath(PATH_TYPE.PREFABS, RS_SUBPATH_UI)}/Paging",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/Helpers/TransformHelpers.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/Helpers/DebugHelpers.cs",
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/Collections/SizedStack.cs"
             };
             AssetDatabase.ExportPackage(
