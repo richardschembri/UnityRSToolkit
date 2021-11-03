@@ -11,10 +11,13 @@
         public AudioSource NavigateAudioSource;
         public AudioSource BGMAudioSource;
 
-        public bool m_skipNavigationSound = false;
+        [SerializeField]
+        private UIPageManager _UIPageManagerInstance;
+
+        public bool _skipNavigationSound = false;
 
         public void SkipNavigationSound(){
-            m_skipNavigationSound = true;
+            _skipNavigationSound = true;
         }
 
         #region MonoBehaviour Functions 
@@ -26,10 +29,14 @@
 
         IEnumerator Init()
         {
-            yield return new WaitUntil(() => UIPageManager.Instance != null && UIPageManager.Instance.Initialized);
-            for (int i = 0; i < UIPageManager.Instance.Pages.Length; i++)
+            if(_UIPageManagerInstance == null){
+                yield return new WaitUntil(() => UIPageManager.Instance != null); //InitComplete);
+                _UIPageManagerInstance = UIPageManager.Instance;
+            }
+            yield return new WaitUntil(() => _UIPageManagerInstance.Initialized); //InitComplete);
+            for (int i = 0; i < _UIPageManagerInstance.Core.Pages.Length; i++)
             {
-                var page = UIPageManager.Instance.Pages[i];
+                var page = _UIPageManagerInstance.Core.Pages[i];
                 if(page.GetComponent<UIPageAudio>() != null){
                     page.OnNavigatedTo.AddListener(onNavigatedTo);
                 }
@@ -58,10 +65,10 @@
                 return;
             }
             var pageAudio = page.GetComponent<UIPageAudio>();
-            if(!m_skipNavigationSound){
+            if(!_skipNavigationSound){
                 PlayPageAudio(NavigateAudioSource, pageAudio.NavigationAudioClip, DefaultNavigationAudioClip);
             }
-            m_skipNavigationSound = false;
+            _skipNavigationSound = false;
             PlayPageAudio(BGMAudioSource, pageAudio.BGMAudioClip, DefaultBGMAudioClip);
         }
 
@@ -76,7 +83,7 @@
         bool canPlayAudio(UIPage page){
             var pageAudio = page.GetComponent<UIPageAudio>();
             return (!pageAudio.IgnoreSelfNavigation || 
-                (pageAudio.IgnoreSelfNavigation && page != UIPageManager.Instance.PreviousPage)
+                (pageAudio.IgnoreSelfNavigation && page != _UIPageManagerInstance.Core.PreviousPage)
             );
         }
         #endregion Page Events

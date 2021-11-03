@@ -5,10 +5,13 @@ using UnityEngine.UI;
 
 namespace RSToolkit.UI.Paging
 {
-    public class UIPageBackground : RSSingletonMonoBehaviour<UIPageBackground>
+    public class UIPageBackground : RSMonoBehaviour
     {
         public Sprite DefaultBackgroundSprite;
         public Image TargetGraphic;
+
+        [SerializeField]
+        private UIPageManager _UIPageManagerInstance;
 
         public bool SetNativeSize = false;
         // Start is called before the first frame update
@@ -19,10 +22,14 @@ namespace RSToolkit.UI.Paging
 
         IEnumerator Init()
         {
-            yield return new WaitUntil(() => UIPageManager.Instance != null && UIPageManager.Instance.Initialized);
-            for (int i = 0; i < UIPageManager.Instance.Pages.Length; i++)
+            if(_UIPageManagerInstance == null){
+                yield return new WaitUntil(() => UIPageManager.Instance != null); //InitComplete);
+                _UIPageManagerInstance = UIPageManager.Instance;
+            }
+            yield return new WaitUntil(() => _UIPageManagerInstance.Initialized); //InitComplete);
+            for (int i = 0; i < _UIPageManagerInstance.Core.Pages.Length; i++)
             {
-                var page = UIPageManager.Instance.Pages[i];
+                var page = _UIPageManagerInstance.Core.Pages[i];
                 page.OnNavigatedTo.AddListener(onNavigatedTo);
                 if (page.LaunchPage)
                 {

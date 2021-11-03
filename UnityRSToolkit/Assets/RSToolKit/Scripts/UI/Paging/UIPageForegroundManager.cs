@@ -1,32 +1,38 @@
-﻿namespace RSToolkit.UI.Paging
-{
-    using System.Collections;
-    using System.Collections.Generic;
+﻿    using System.Collections;
     using UnityEngine;
 
+namespace RSToolkit.UI.Paging
+{
     public class UIPageForegroundManager : MonoBehaviour
     {
-        private UIPageHeader m_uiPageHeader;
-        private UIPageHeader m_UIPageHeader{
+        private UIPageHeader _uiPageHeader;
+        private UIPageHeader _UIPageHeader{
             get{
-                if(m_uiPageHeader == null){
-                    m_uiPageHeader = this.GetComponentInChildren<UIPageHeader>();
+                if(_uiPageHeader == null){
+                    _uiPageHeader = this.GetComponentInChildren<UIPageHeader>();
                 }
-                return m_uiPageHeader;
+                return _uiPageHeader;
             }
         }
 
+        [SerializeField]
+        private UIPageManager _UIPageManagerInstance;
+
         IEnumerator Init()
         {
-            yield return new WaitUntil(() => UIPageManager.Instance != null && UIPageManager.Instance.Initialized); //InitComplete);
-            for (int i = 0; i < UIPageManager.Instance.Pages.Length; i++)
+            if(_UIPageManagerInstance == null){
+                yield return new WaitUntil(() => UIPageManager.Instance != null); //InitComplete);
+                _UIPageManagerInstance = UIPageManager.Instance;
+            }
+            yield return new WaitUntil(() => _UIPageManagerInstance.Initialized); //InitComplete);
+            for (int i = 0; i < _UIPageManagerInstance.Core.Pages.Length; i++)
             {
-                var page = UIPageManager.Instance.Pages[i];
+                var page = _UIPageManagerInstance.Core.Pages[i];
                 page.OnNavigatedTo.AddListener(onNavigatedTo);
                 
             }
 
-            SetHeader(UIPageManager.Instance.CurrentPage);
+            SetHeader(_UIPageManagerInstance.Core.CurrentPage);
         }
         // Start is called before the first frame update
         void Start()
@@ -34,18 +40,13 @@
            StartCoroutine(Init()); 
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-            
-        }
         public void SetHeader(UIPage page)
         {
-            if(m_UIPageHeader != null){
+            if(_UIPageHeader != null){
                 if(page.DisplayHeader){
-                    m_UIPageHeader.SetHeaderText(page); 
+                    _UIPageHeader.SetHeaderText(page); 
                 }
-                m_UIPageHeader.gameObject.SetActive(page.DisplayHeader);
+                _UIPageHeader.gameObject.SetActive(page.DisplayHeader);
             }
         }
         #region Page Events

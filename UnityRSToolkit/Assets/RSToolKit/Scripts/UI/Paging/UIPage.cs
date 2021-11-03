@@ -32,6 +32,7 @@ namespace RSToolkit.UI.Paging
         public class OnNavigatedFromEvent : UnityEvent<UIPage> { }
         public OnNavigatedFromEvent OnNavigatedFrom = new OnNavigatedFromEvent();
 
+        public UIPageManagerCore UIPageManagerCoreInstance{get; private set;}
 
         #region RSMonoBehaviour Functions
         protected override void InitEvents()
@@ -49,13 +50,21 @@ namespace RSToolkit.UI.Paging
             Cursor.visible = ShowCursor;
         }
         #endregion MonoBehaviour Functions
+
+        public void SetUIPageManagerCore(UIPageManagerCore target){
+            UIPageManagerCoreInstance = target;
+        }
         public bool IsCurrentPage()
         {
-            return UIPageManager.Instance.IsCurrentPage(this);
+            return UIPageManagerCoreInstance.IsCurrentPage(this);
         }
 
         public string GetHeader(){
             return string.IsNullOrEmpty(PageHeader) ? name : PageHeader;
+        }
+
+        public void Close(){
+            gameObject.SetActive(false);
         }
 
         #region Page Events
@@ -65,7 +74,7 @@ namespace RSToolkit.UI.Paging
         }
         public void NavigateToPrevPage(bool keepCache)
         {
-            UIPageManager.Instance.NavigateTo(PrevPage, keepCache);
+            UIPageManagerCoreInstance.NavigateTo(PrevPage, keepCache);
         }
 
         public void NavigateToNextPage()
@@ -74,12 +83,12 @@ namespace RSToolkit.UI.Paging
         }
         public void NavigateToNextPage(bool keepCache)
         {
-            UIPageManager.Instance.NavigateTo(NextPage, keepCache);
+            UIPageManagerCoreInstance.NavigateTo(NextPage, keepCache);
         }
 
         public void NavigateTo(bool keepCache = false)
         {
-            UIPageManager.Instance.NavigateTo(this, keepCache);
+            UIPageManagerCoreInstance.NavigateTo(this, keepCache);
         }
         #endregion
 

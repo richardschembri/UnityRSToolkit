@@ -7,7 +7,7 @@ using RSToolkit.Helpers;
 
 namespace RSToolkit.UI.Paging
 {
-    public class UIPageMenu : RSSingletonMonoBehaviour<UIPageMenu>
+    public class UIPageMenu : RSMonoBehaviour//RSSingletonMonoBehaviour<UIPageMenu>
     {
         public struct UIMenuButton
         {
@@ -16,6 +16,9 @@ namespace RSToolkit.UI.Paging
         }
 
         public RectTransform Container;
+
+        [SerializeField]
+        private UIPageManager _UIPageManagerInstance;
 
         public bool AutoGenerate = true;
         public bool AutoShow = false;
@@ -83,9 +86,9 @@ namespace RSToolkit.UI.Paging
         public void GenerateMenuButtons()
         {
             DestroyAllButtons();
-            for (int i = 0; i < UIPageManager.Instance.Pages.Length; i++)
+            for (int i = 0; i < _UIPageManagerInstance.Core.Pages.Length; i++)
             {
-                var page = UIPageManager.Instance.Pages[i];
+                var page = _UIPageManagerInstance.Core.Pages[i];
                 if (page.ShowInMenu)
                 {
                     GenerateMenuButton(page);
@@ -95,13 +98,17 @@ namespace RSToolkit.UI.Paging
 
         IEnumerator Init()
         {
-            yield return new WaitUntil(() => UIPageManager.Instance != null && UIPageManager.Instance.Initialized); //InitComplete);
+            if(_UIPageManagerInstance == null){
+                yield return new WaitUntil(() => UIPageManager.Instance != null); //InitComplete);
+                _UIPageManagerInstance = UIPageManager.Instance;
+            }
+            yield return new WaitUntil(() => _UIPageManagerInstance.Initialized); //InitComplete);
             if(AutoGenerate){
                 GenerateMenuButtons();
             }else{
-                for (int i = 0; i < UIPageManager.Instance.Pages.Length; i++)
+                for (int i = 0; i < _UIPageManagerInstance.Core.Pages.Length; i++)
                 {
-                    var page = UIPageManager.Instance.Pages[i];
+                    var page = _UIPageManagerInstance.Core.Pages[i];
                     page.OnNavigatedTo.AddListener(onNavigatedTo);
                 }
             }

@@ -1,87 +1,49 @@
-﻿namespace RSToolkit.UI.Paging
-{
-    using System.Linq;
-    using System.Collections;
-    using UnityEngine;
-    using RSToolkit.Collections;
+﻿using System.Linq;
+using UnityEngine;
+using RSToolkit.Collections;
+using RSToolkit.Helpers;
     
-
-    public class UIPageManager : RSSingletonMonoBehaviour<UIPageManager> // MonoBehaviour
+namespace RSToolkit.UI.Paging
+{
+    public class UIPageManager : RSMonoBehaviour//RSSingletonMonoBehaviour<UIPageManager> // MonoBehaviour
     {
-
 
         #region Fields
 
         public KeyCode ExitKey = KeyCode.Escape;    
 
-        public UIPage PreviousPage {get; private set;}
- 
-        public UIPage CurrentPage { get; private set;}
+        [SerializeField]
+        private bool _isSingleton = true;
+        public bool IsSingleton {get{return _isSingleton;}}
+        public UIPageManagerCore Core {get; private set;}
 
-        // private static UIPageManager m_instance;
-
-        private UIPage[] m_pages;
-
-        public UIPage NavigatedFromPage{get{
-            return NavigationHistory.PeekOrDefault();
-        }}
-
-        public SizedStack<UIPage> NavigationHistory = new SizedStack<UIPage>(5);
-
-        /*
-        private bool m_initComplete = false;
-        public bool InitComplete
-        {
-            get
-            {
-                return m_initComplete;
-            }
-            private set
-            {
-                m_initComplete = value;
-            }
-        }
-        */
-   
+        public static UIPageManager Instance { get; protected set; }
 
         #endregion
 
         #region Properties
 
-        /*
-        public static UIPageManager Instance{
-            get{ return m_instance; }
-        }
-        */
-       
-        public UIPage[] Pages{
-            get{
-                if (m_pages == null){
-                    m_pages = GetPages();
-                }
-                return m_pages;
-            }
-        }
-
-        public UIPage[] GetPages() {
-            return transform.GetComponentsInChildren<UIPage>(true)
+        public UIPage[] CollectPages() {
+            return transform.GetTopLevelChildrenEnumerable<UIPage>()
                         .OrderBy(p => p.SortOrder).ToArray();
         }
 
         #endregion
         #region MonoBehaviour Functions
 
-        /*
-        protected virtual void Awake(){
-            m_instance = this;
-        }
-        // Start is called before the first frame update
-        protected virtual void Start()
+        protected override void Awake()
         {
-            InitPages();
-            InitComplete = true;
+            if (Instance != null && Instance != this && IsSingleton)
+            {
+                Destroy(this);
+                throw new System.Exception("An instance of this singleton already exists.");
+            }
+            else if(IsSingleton)
+            {
+                Instance = this;
+            }
+            base.Awake();
         }
-        */
 
         // Update is called once per frame
         protected virtual void Update()
@@ -90,36 +52,21 @@
                Application.Quit();
            } 
 
-           for (int i = 0; i < Pages.Length; i++){
-               if(Input.GetKeyUp(Pages[i].NavigateShortCut)){
-                   NavigateTo(Pages[i]);
+           for (int i = 0; i < Core.Pages.Length; i++){
+               if(Input.GetKeyUp(Core.Pages[i].NavigateShortCut)){
+                   Core.NavigateTo(Core.Pages[i]);
                }
            } 
         }
         #endregion MonoBehaviour Functions
 
-        public void InitPages(){
-            
-
-            UIPage launchPage = Pages[0];
-            for (int i = 0; i < Pages.Length; i++){
-                var uiPage = Pages[i];
-                
-                uiPage.gameObject.SetActive(false);
-
-                if (uiPage.LaunchPage){
-                    launchPage = uiPage;
-                }
-            }
-            NavigateTo(launchPage);
-        }
 
         #region RSMonoBehaviour Functions
         public override bool Init(bool force = false)
         {
             if (base.Init(force))
             {
-                InitPages();
+                Core = new UIPageManagerCore(CollectPages());
                 return true;
             }
             return false;
@@ -127,89 +74,7 @@
         }
         #endregion RSMonoBehaviour Functions
 
-        #region Page Functions
 
-        protected void CloseOtherPages(UIPage activePage)
-        {
-            for (int i = 0; i < Pages.Length; i++)
-            {
-                var page = Pages[i];
-                if (page != activePage)
-                {
-                    page.gameObject.SetActive(false);
-                }
-            }
-        }
-
-        #endregion
-
-        public bool IsCurrentPage(UIPage page)
-        {
-            return CurrentPage == page;
-        }
-
-        public T GetPage<T>() where T : UIPage{
-            return Pages.OfType<T>().FirstOrDefault();
-        }
-
-        public UIPage GetPage(string name){
-            return Pages.FirstOrDefault(p => p.gameObject.name == name);
-        }
-
-
-        #region Navigation Functions
-
-
-        public virtual void NavigateTo(UIPage page, bool keepCache = false)
-        {
-
-            if (CurrentPage != null && CurrentPage.OnNavigatedFrom != null)
-            {
-                PreviousPage = CurrentPage;
-                CurrentPage.OnNavigatedFrom.Invoke(CurrentPage);
-            }
-            NavigationHistory.Push(CurrentPage, true);
-            //NavigatedFromPage = CurrentPage;
-            CurrentPage = page;
-            CloseOtherPages(page);
-
-            page.gameObject.SetActive(true);
-
-            CurrentPage.OnNavigatedTo.Invoke(CurrentPage, keepCache);
-
-        }
-
-        public virtual void NavigateBack(bool keepCache = false){
-            if(NavigatedFromPage != null){
-                //NavigatedFromPage.NavigateTo();           
-                NavigationHistory.Pop().NavigateTo(keepCache);
-            }
-        }
-
-        public virtual void NavigateBackToLastUniquePage(bool keepCache = false){
-            UIPage lastPage = null;
-            do{
-                lastPage = NavigationHistory.Pop();
-            }while((NavigationHistory.Any() && lastPage == null)
-                    || (lastPage != null && lastPage == CurrentPage));
-
-            if(lastPage != null){
-                lastPage.NavigateTo(keepCache);
-            }
-        }
-
-        public virtual void NavigateToNextPage()
-        {
-            CurrentPage.NavigateToNextPage();
-        }
-
-        public virtual void NavigateToPrevPage()
-        {
-            CurrentPage.NavigateToPrevPage();
-        }
-
-
-        #endregion
     }
 
 }
