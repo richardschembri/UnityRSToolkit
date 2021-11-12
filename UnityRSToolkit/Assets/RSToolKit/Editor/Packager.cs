@@ -96,6 +96,7 @@ namespace RSToolkit{
         public static void ExportUIPaging(){
 
             DebugLogExportStart("UI Paging");
+            var toExportPaths_Spawner = GetFileList_Spawner();
             var toExportPaths  = new string[]{
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/RSMonoBehaviour.cs",
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/RSSingletonMonoBehaviour.cs",
@@ -106,7 +107,8 @@ namespace RSToolkit{
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/Collections/SizedStack.cs"
             };
             AssetDatabase.ExportPackage(
-                    toExportPaths,
+                    //toExportPaths,
+                    toExportPaths.Concat(toExportPaths_Spawner).ToArray(),
                     GetPackageName("uipaging"),
                     ExportPackageOptions.Recurse);
             DebugLogExportEnd("UI Paging");

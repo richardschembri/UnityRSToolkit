@@ -96,7 +96,7 @@ namespace RSToolkit.UI.Controls
             }
         }
 
-        public virtual void ClosePopup(bool showControls = true, bool silent = false)
+        public virtual void ClosePopup(bool showControls, bool silent)
         {
             this.gameObject.SetActive(false);
             if(showControls){
@@ -109,6 +109,10 @@ namespace RSToolkit.UI.Controls
             }
             
             StopCoroutine("PopupTimeout");
+        }
+        public virtual void ClosePopup(bool showControls = true)
+        {
+            ClosePopup(showControls, false);
         }
 
         public virtual void DestroyPopup()

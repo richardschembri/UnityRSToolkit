@@ -14,8 +14,13 @@
         // public bool isParent = false;
         public Transform SpawnParent = null;
         private List<T> _spawnedGameObjects = new List<T>();
-        private SizedStack<T> _pooledGameObjects;
-        public int PoolSize = -1;
+        private SizedStack<T> _pooledGameObjects = null;
+        [SerializeField]
+        private int _poolSize = -1;
+        public int PoolSize {
+            get { return _poolSize; }
+            private set { _poolSize = value; }
+        }
         public bool CollectChildrenAlreadyInScene = true;
 
         public ReadOnlyCollection<T> SpawnedGameObjects
@@ -30,6 +35,7 @@
 
         public SpawnerEvent OnSpawnEvent = new SpawnerEvent();
 
+        #region Destroy Spawns
         public void DestroyLastSpawnedGameObject(float? time = null)
         {
             if (SpawnedGameObjects.Count > 0)
@@ -40,7 +46,7 @@
         }
 
         void NotDelayedDestroySpawnedGameObject(T spawnedGameObject){
-            if (PoolSize > 0 && !_pooledGameObjects.IsFull())
+            if (_poolSize > 0 && !_pooledGameObjects.IsFull())
             {
                 spawnedGameObject.gameObject.SetActive(false);
                 _pooledGameObjects.Push(spawnedGameObject);
@@ -55,7 +61,6 @@
             yield return new WaitForSeconds(time);
             NotDelayedDestroySpawnedGameObject(spawnedGameObject);
         }
-
         public void DestroySpawnedGameObject(T spawnedGameObject, float? time = null)
         {
             if (spawnedGameObject != null && SpawnedGameObjects.Contains(spawnedGameObject)){
@@ -85,7 +90,7 @@
                 DestroyAllSpawns();
             }
         }
-
+        #endregion Destroy Spawns
         public T SpawnAndGetGameObject(T gameObjectToSpawn, bool useSpawnerTransformValues = true)
         {
             if (SpawnLimit > 0 && SpawnedGameObjects.Count >= SpawnLimit){
@@ -93,7 +98,7 @@
             }
 
             T spawnedGameObject;
-            if(PoolSize > 0 && _pooledGameObjects.Any()){
+            if(_poolSize > 0 && _pooledGameObjects.Any()){
                spawnedGameObject = _pooledGameObjects.Pop(); 
                spawnedGameObject.gameObject.SetActive(true);
             }else{
@@ -140,15 +145,38 @@
             }
         }
 
+        public void SetPoolSize(int poolSize)
+        {
+            if(poolSize < 1 )
+            {
+                _pooledGameObjects = null;
+                return;
+            }
+            if (poolSize == PoolSize) return;
+            PoolSize = poolSize;
+            if (_pooledGameObjects != null)
+            {
+                var newPooledGameObjects = new SizedStack<T>(_poolSize);
+                foreach (T pgo in _pooledGameObjects)
+                {
+                    if (newPooledGameObjects.IsFull()) break;
+                    newPooledGameObjects.Push(pgo);
+                }
+                _pooledGameObjects = newPooledGameObjects;
+            }
+            else
+            {
+                _pooledGameObjects = new SizedStack<T>(_poolSize);
+            }
+        }
+
         #region RSMonoBehaviour Functions
         public override bool Init(bool force = false)
         {
             if(base.Init(force)){
                 ValidateSpawnParent();
                 CollectChildren();
-                if(PoolSize > 0){
-                    _pooledGameObjects = new SizedStack<T>(PoolSize);
-                }
+                SetPoolSize(PoolSize);
                 return true;
             }
 
