@@ -416,6 +416,31 @@
             }
         }
 
+        /// <summary>
+        /// Sets the pivot based on the local point of the rectangle <see cref="RectTransformUtility.ScreenPointToLocalPointInRectangle"/>.
+        /// Keeps the RectTransform in place when changing the pivot by countering the position change when the pivot is set.
+        /// </summary>
+        /// <param name="target">The target RectTransform</param>
+        /// <param name="localPoint">The local point of the target RectTransform</param>
+        public static void SetPivot(this RectTransform target, Vector2 localPoint)
+        {
+            // Calculate the pivot by normalizing the values
+            var targetRect = target.rect;
+            var pivotX = (float)((localPoint.x - (double)targetRect.x) / (targetRect.xMax - (double)targetRect.x));
+            var pivotY = (float)((localPoint.y - (double)targetRect.y) / (targetRect.yMax - (double)targetRect.y));
+            var newPivot = new Vector2(pivotX, pivotY);
+
+            // Delta pivot = (current - new) * scale
+            var deltaPivot = (target.pivot - newPivot) * target.transform.localScale;
+            // The delta position to add after pivot change is the inversion of the delta pivot change * size of the rect * current scale of the rect
+            var rectSize = targetRect.size;
+            var deltaPosition = new Vector3(deltaPivot.x * rectSize.x, deltaPivot.y * rectSize.y) * -1f;
+
+            // Set the pivot
+            target.pivot = newPivot;
+            target.localPosition += deltaPosition;
+        }
+
         public static void SetPivot(this RectTransform source, PivotPresets preset)
         {
 
@@ -505,6 +530,35 @@
         {
             source.SetStretch_LeftBottom(lrtb.Left, lrtb.Bottom);
             source.SetStretch_RightTop(lrtb.Right, lrtb.Top);
+        }
+
+        /// Applies the scale with the mouse pointer in mind
+        /// </summary>
+        /// <param name="newScaleValue"></param>
+        /// <param name="position"></param>
+        public static void ScaleAround(this RectTransform target, float newScale,
+                                        Vector2 position, Camera camera)
+        {
+            // Calculate the local point in the rectangle using the event position
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(target, position, camera, out var localPointInRect);
+            // Set the pivot based on the local point in the rectangle
+            SetPivot(target, localPointInRect);
+
+            // Set the new scale
+            // scale = newScale;
+            // Apply the new scale
+            target.localScale = new Vector3(newScale, newScale, newScale);
+        }
+
+        public static void ScaleAroundBy(this RectTransform target, float scaleStep,
+                                        Vector2 position, Camera camera,
+                                        float scaleMin, float scaleMax)
+        {
+
+            var newScale = Mathf.Clamp(target.localScale.x + scaleStep, 1 - scaleMin, 1 + scaleMax);
+            // If the scale did not change, don't do anything
+            if (newScale.Equals(target.localScale)) return;
+            ScaleAround(target, newScale, position, camera);
         }
 
     }
