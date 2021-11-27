@@ -23,6 +23,7 @@
         }
         public bool CollectChildrenAlreadyInScene = true;
 
+
         public ReadOnlyCollection<T> SpawnedGameObjects
         {
             get
@@ -36,12 +37,18 @@
         public SpawnerEvent OnSpawnEvent = new SpawnerEvent();
 
         #region Destroy Spawns
+        public void DestroyFirstSpawnedGameObject(float? time = null)
+        {
+            if (SpawnedGameObjects.Count > 0)
+            {
+                DestroySpawnedGameObject(SpawnedGameObjects[0], time);
+            }
+        }
         public void DestroyLastSpawnedGameObject(float? time = null)
         {
             if (SpawnedGameObjects.Count > 0)
             {
-                var spawnedGameObject = SpawnedGameObjects[SpawnedGameObjects.Count - 1];
-                DestroySpawnedGameObject(spawnedGameObject, time);
+                DestroySpawnedGameObject(SpawnedGameObjects[SpawnedGameObjects.Count - 1], time);
             }
         }
 
@@ -91,10 +98,14 @@
             }
         }
         #endregion Destroy Spawns
-        public T SpawnAndGetGameObject(T gameObjectToSpawn, bool useSpawnerTransformValues = true)
+        public T SpawnAndGetGameObject(T gameObjectToSpawn, bool useSpawnerTransformValues = true, bool force = false)
         {
             if (SpawnLimit > 0 && SpawnedGameObjects.Count >= SpawnLimit){
-                return null;
+                if(force){
+                    DestroyFirstSpawnedGameObject();
+                }else{
+                    return null;
+                }
             }
 
             T spawnedGameObject;

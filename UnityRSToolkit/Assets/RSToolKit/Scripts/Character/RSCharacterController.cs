@@ -126,20 +126,23 @@ namespace RSToolkit.Character
 
         public virtual void Move(Vector2 directionAxis, float speed){
             CurrentSpeedHorizontal = speed;
+            DirectionAxis = directionAxis;
         }
 
         #region Update Speed
         public Vector3 DirectionAxis { get; protected set; }
         protected virtual void UpdateHorizontalSpeed()
         {
-            DirectionAxis = _playerInputManager.DirectionAxis;
+            if(_playerInputManager != null){
+                DirectionAxis = _playerInputManager.DirectionAxis;
+            }
             if (DirectionAxis .sqrMagnitude > 1.0f)
             {
                 DirectionAxis.Normalize();
             }
 
             _targetSpeedHorizontal = DirectionAxis.magnitude * SettingsLocomotion.MaxSpeedHorizontal;
-            float acceleration = _playerInputManager.HasDirectionInput ? SettingsLocomotion.Acceleration : SettingsLocomotion.Decceleration;
+            float acceleration = _playerInputManager != null && _playerInputManager.HasDirectionInput ? SettingsLocomotion.Acceleration : SettingsLocomotion.Decceleration;
 
             CurrentSpeedHorizontal = Mathf.MoveTowards(CurrentSpeedHorizontal, _targetSpeedHorizontal, acceleration * Time.deltaTime);
         }
@@ -149,7 +152,7 @@ namespace RSToolkit.Character
             if (IsGrounded)
             {
                 CurrentSpeedVertical = -SettingsGravity.GroundedGravity;
-                if (_playerInputManager.JumpInput)
+                if (_playerInputManager != null && _playerInputManager.JumpInput)
                 {
                     CurrentSpeedVertical = SettingsLocomotion.JumpSpeed;
                     IsGrounded = false;
@@ -158,7 +161,8 @@ namespace RSToolkit.Character
             else
             {
 
-                if (!_playerInputManager.JumpInput && CurrentSpeedVertical > 0.0f)
+                if ((_playerInputManager != null && !_playerInputManager.JumpInput)
+                                                        && CurrentSpeedVertical > 0.0f)
                 {
                     CurrentSpeedVertical  = Mathf.MoveTowards(CurrentSpeedVertical, -SettingsGravity.MaxSpeedFall, SettingsLocomotion.JumpAbortSpeed * Time.deltaTime);
                 }
@@ -180,10 +184,13 @@ namespace RSToolkit.Character
 
         protected Vector3 GetLocomotionDirection()
         {
-            Vector3 result = _playerInputManager.HasDirectionInput ? _playerInputManager.DirectionAxis : _playerInputManager.LastDirectionAxis;
-            if (result.sqrMagnitude > 1f)
-            {
-                result.Normalize();
+            Vector3 result = Vector3.zero;
+            if(_playerInputManager != null){
+                result = _playerInputManager.HasDirectionInput ? _playerInputManager.DirectionAxis : _playerInputManager.LastDirectionAxis;
+                if (result.sqrMagnitude > 1f)
+                {
+                    result.Normalize();
+                }
             }
 
             return result;
