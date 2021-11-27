@@ -7,6 +7,7 @@
 
     public class UIPageHeader : MonoBehaviour
     {
+        [SerializeField]
         private Text m_headerText;
         private Text m_HeaderText{
             get{

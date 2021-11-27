@@ -58,7 +58,9 @@
            }
        } 
 
+
        public class OnShiftMostHorizontalEvent : UnityEvent<RectTransform, RectTransformHelpers.HorizontalPosition>{}
+       [Header("Infinite Scroll Events")]
        public OnShiftMostHorizontalEvent OnShiftMostHorizontal = new OnShiftMostHorizontalEvent();
        
        public class OnShiftMostVerticalEvent : UnityEvent<RectTransform, RectTransformHelpers.VerticalPosition>{}

@@ -163,7 +163,7 @@
                 _pooledGameObjects = null;
                 return;
             }
-            if (poolSize == PoolSize) return;
+            if (poolSize == PoolSize && _pooledGameObjects != null) return;
             PoolSize = poolSize;
             if (_pooledGameObjects != null)
             {
