@@ -10,7 +10,7 @@ namespace RSToolkit.UI.Paging
         public bool DisplayMenu = true;
         public int SortOrder = 0;
         [SerializeField]
-        private string PageHeader = "";
+        protected string PageHeader = "";
         public bool LaunchPage = false;
         public bool DisplayBackground = true;
         public Sprite BackgroundImage;

@@ -15,7 +15,11 @@
             {
                 if(_pageManagers == null || _pageManagers.Length == 0)
                 {
+#if UNITY_2020_1_OR_NEWER
                     _pageManagers = FindObjectsOfType<UIPageManager>(true);
+#else
+                    _pageManagers = FindObjectsOfType<UIPageManager>();
+#endif
                     _displayPageIndexes = new int[_pageManagers.Length];
                     for(int i = 0; i < _displayPageIndexes.Length; i++){
                         _displayPageIndexes[i] = 0;

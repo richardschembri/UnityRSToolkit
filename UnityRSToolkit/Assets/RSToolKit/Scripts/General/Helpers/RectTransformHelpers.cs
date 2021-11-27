@@ -53,11 +53,16 @@
         {
             public Vector2 Min { get; private set; }
             public Vector2 Max { get; private set; }
+            public Vector2 Mid { get; private set; }
 
             protected void SetMinMax(Vector3[] bounds)
             {
                 Min = new Vector2(bounds.Min(b => b.x), bounds.Min(b => b.y));
                 Max = new Vector2(bounds.Max(b => b.x), bounds.Max(b => b.y));
+                Mid = new Vector2(
+                    ((Max.x - Min.x) / 2) + Min.x,
+                    ((Max.y - Min.y) / 2) + Min.y
+                );
             }
 
             public RectTransformEdges(RectTransform trans)
