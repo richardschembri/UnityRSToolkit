@@ -36,6 +36,11 @@
 
         public SpawnerEvent OnSpawnEvent = new SpawnerEvent();
 
+        public bool IsFull()
+        {
+            return SpawnLimit > 0 && SpawnedGameObjects.Count >= SpawnLimit; 
+        }
+
         #region Destroy Spawns
         public void DestroyFirstSpawnedGameObject(float? time = null)
         {

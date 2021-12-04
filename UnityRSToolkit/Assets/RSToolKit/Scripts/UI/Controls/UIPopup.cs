@@ -16,6 +16,7 @@ namespace RSToolkit.UI.Controls
         public GameObject[] ControlsToHide;
         public UIPopup[] HigherPriorityPopups;
         public float PopupTimeoutSeconds = -1f;
+        private float _popupEndTime = 0f;
 
         public class OnOpenPopupEvent : UnityEvent<UIPopup, bool> { }
         public class OnClosePopupEvent : UnityEvent<UIPopup> { }
@@ -29,10 +30,20 @@ namespace RSToolkit.UI.Controls
             PopupOnTop();
         }
 
+        void Update()
+        {
+
+            if (Input.anyKeyDown)
+            {
+                ResetTimeoutTime();
+            }
+        }
+
         #endregion MonoBehaviour Functions
 
         protected virtual IEnumerator PopupTimeout(){
-            yield return new WaitForSeconds(PopupTimeoutSeconds);
+            // yield return new WaitForSeconds(PopupTimeoutSeconds);
+            yield return new WaitUntil(() => Time.time > _popupEndTime);
             ClosePopup();
         }
 
@@ -92,6 +103,7 @@ namespace RSToolkit.UI.Controls
                 OnOpenPopup.Invoke(this, keepCache);
             }
             if(PopupTimeoutSeconds > 0){
+                ResetTimeoutTime();
                 StartCoroutine("PopupTimeout");
             }
         }
@@ -128,9 +140,17 @@ namespace RSToolkit.UI.Controls
             }
 
         }
-
+        public void ResetTimeoutTime()
+        {
+            if (PopupTimeoutSeconds > 0)
+            {
+                _popupEndTime = Time.time + PopupTimeoutSeconds;
+            }
+        }
         void IDragHandler.OnDrag(PointerEventData eventData)
         {
+
+            ResetTimeoutTime();
             if (!Draggable)
             {
                 return;
@@ -151,6 +171,7 @@ namespace RSToolkit.UI.Controls
 
         void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
         {
+            ResetTimeoutTime();
             this.transform.SetAsLastSibling();
         }
 

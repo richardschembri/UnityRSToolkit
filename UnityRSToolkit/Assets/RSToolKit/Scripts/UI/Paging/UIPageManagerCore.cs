@@ -16,6 +16,8 @@ namespace RSToolkit.UI.Paging
 
         public UIPage CurrentPage { get; private set;}
 
+        public UIPage LaunchPage { get; private set;}
+
         public UIPage NavigatedFromPage{get{
             return NavigationHistory.PeekOrDefault();
         }}
@@ -43,17 +45,17 @@ namespace RSToolkit.UI.Paging
         public bool InitPages(){
             
             if (Pages.Length <= 0) return false;
-            UIPage launchPage = Pages[0];
+            LaunchPage = Pages[0];
             for (int i = 0; i < Pages.Length; i++){
                 var uiPage = Pages[i];
                 uiPage.SetUIPageManagerCore(this); 
                 uiPage.Close();
 
                 if (uiPage.LaunchPage){
-                    launchPage = uiPage;
+                    LaunchPage = uiPage;
                 }
             }
-            NavigateTo(launchPage);
+            NavigateTo(LaunchPage);
             return true;
         }
 
