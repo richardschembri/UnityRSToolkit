@@ -28,6 +28,33 @@ namespace RSToolkit.UI.Paging
                         .OrderBy(p => p.SortOrder).ToArray();
         }
 
+        private void HandleShortcuts()
+        {
+           for (int i = 0; i < Core.Pages.Length; i++){
+               if(Input.GetKeyUp(Core.Pages[i].NavigateShortCut)){
+                   Core.NavigateTo(Core.Pages[i]);
+                   return;
+               }
+           } 
+            
+           if(Input.GetKeyUp(Core.CurrentPage.NavigateToNextPageShortCut)){
+               Core.CurrentPage.NavigateToNextPage();
+            }
+            else if(Input.GetKeyUp(Core.CurrentPage.NavigateToPrevPageShortCut))
+            {
+                if(Core.CurrentPage.PrevPage != null)
+                {
+                    Core.CurrentPage.NavigateToPrevPage();
+                }
+                else
+                {
+                    Core.NavigateBack(true);
+                }
+            }
+
+
+        }
+
         #endregion
         #region MonoBehaviour Functions
 
@@ -50,13 +77,10 @@ namespace RSToolkit.UI.Paging
         {
            if (Input.GetKeyUp(ExitKey)){
                Application.Quit();
-           } 
+           }
 
-           for (int i = 0; i < Core.Pages.Length; i++){
-               if(Input.GetKeyUp(Core.Pages[i].NavigateShortCut)){
-                   Core.NavigateTo(Core.Pages[i]);
-               }
-           } 
+            HandleShortcuts();
+
         }
         #endregion MonoBehaviour Functions
 

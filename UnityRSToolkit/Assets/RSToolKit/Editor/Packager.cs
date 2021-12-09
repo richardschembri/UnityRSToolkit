@@ -113,6 +113,23 @@ namespace RSToolkit{
                     ExportPackageOptions.Recurse);
             DebugLogExportEnd("UI Paging");
         }
+        [UnityEditor.MenuItem("Tools/RSToolkit/Export Package/UI/Controls/Selectable")]
+        public static void ExportUISelectable(){
+
+            DebugLogExportStart("UI Selectable");
+            var toExportPaths_Spawner = GetFileList_Spawner();
+            var toExportPaths  = new string[]{
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/RSMonoBehaviour.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_UI) }/Controls/UISelectable.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_UI)}/Controls/UIPermanentSelectable.cs"
+            };
+            AssetDatabase.ExportPackage(
+                    //toExportPaths,
+                    toExportPaths.Concat(toExportPaths_Spawner).ToArray(),
+                    GetPackageName("uiselectable"),
+                    ExportPackageOptions.Recurse);
+            DebugLogExportEnd("UI Selectable");
+        }
     
         [UnityEditor.MenuItem("Tools/RSToolkit/Export Package/UI/Controls/Popup")]
         public static void ExportUIControlsPopup(){

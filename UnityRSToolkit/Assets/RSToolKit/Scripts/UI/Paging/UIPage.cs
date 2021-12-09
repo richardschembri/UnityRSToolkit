@@ -21,6 +21,7 @@ namespace RSToolkit.UI.Paging
         [Header("Shortcuts")]
         public KeyCode NavigateShortCut;
         public KeyCode NavigateToNextPageShortCut = KeyCode.None;
+        public KeyCode NavigateToPrevPageShortCut = KeyCode.None;
 
         [Header("Page Navigation")]
         public UIPage PrevPage;
