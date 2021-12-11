@@ -1,21 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using RSToolkit;
 
 namespace Demo.Space3D.EndlessRunner{
     public class InnerColliderTrackSegment : RSMonoBehaviour
     {
-        private SpawnerTrackSegment _spawnerTrackSegmentComponent;
+        public TrackSegment ParentTrackSegment { get; private set; }
+        public class OnTrackSegmentTriggerEnterEvent : UnityEvent<TrackSegment> { }
+        public OnTrackSegmentTriggerEnterEvent OnTrackSegmentTriggerEnter = new OnTrackSegmentTriggerEnterEvent();
 
         protected override void InitComponents()
         {
             base.InitComponents();
-            _spawnerTrackSegmentComponent = GetComponentInParent<SpawnerTrackSegment>();
+            ParentTrackSegment = GetComponentInParent<TrackSegment>();
         }
 
         void OnTriggerEnter(Collider hit){
-            _spawnerTrackSegmentComponent.SpawnGameObject();
+            OnTrackSegmentTriggerEnter.Invoke(ParentTrackSegment);
         }
 
     }

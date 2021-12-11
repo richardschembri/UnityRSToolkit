@@ -8,11 +8,16 @@ namespace Demo.Space3D.EndlessRunner{
     public class TrackSegment : RSMonoBehaviour
     {
 
-        private SpawnerTrackSegment _spawnerTrackSegmentComponent;
-
+        public InnerColliderTrackSegment InnerColliderTrackSegmentComponent {get; private set;}
         [SerializeField]
         private Transform _spawnPoint;
         public Transform SpawnPoint { get { return _spawnPoint; }}
+
+        protected override void InitComponents()
+        {
+            base.InitComponents();
+            InnerColliderTrackSegmentComponent = GetComponentInChildren<InnerColliderTrackSegment>();
+        }
 
     }
 }

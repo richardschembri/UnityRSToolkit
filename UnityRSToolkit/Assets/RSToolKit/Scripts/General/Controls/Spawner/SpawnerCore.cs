@@ -14,7 +14,8 @@
         // public bool isParent = false;
         public Transform SpawnParent = null;
         private List<T> _spawnedGameObjects = new List<T>();
-        private SizedStack<T> _pooledGameObjects = null;
+        // private SizedStack<T> _pooledGameObjects = null;
+        private Queue<T> _pooledGameObjects = null;
         [SerializeField]
         private int _poolSize = -1;
         public int PoolSize {
@@ -42,7 +43,7 @@
         }
 
         #region Destroy Spawns
-        public void DestroyFirstSpawnedGameObject(float? time = null)
+        public void DestroyOldestSpawnedGameObject(float? time = null)
         {
             if (SpawnedGameObjects.Count > 0)
             {
@@ -58,10 +59,10 @@
         }
 
         void NotDelayedDestroySpawnedGameObject(T spawnedGameObject){
-            if (_poolSize > 0 && !_pooledGameObjects.IsFull())
+            if (_poolSize > 0 && !IsPoolFull())
             {
                 spawnedGameObject.gameObject.SetActive(false);
-                _pooledGameObjects.Push(spawnedGameObject);
+                _pooledGameObjects.Enqueue(spawnedGameObject);
             }
             else
             {
@@ -107,15 +108,15 @@
         {
             if (SpawnLimit > 0 && SpawnedGameObjects.Count >= SpawnLimit){
                 if(force){
-                    DestroyFirstSpawnedGameObject();
+                    DestroyOldestSpawnedGameObject();
                 }else{
                     return null;
                 }
             }
 
             T spawnedGameObject;
-            if(_poolSize > 0 && _pooledGameObjects.Any()){
-               spawnedGameObject = _pooledGameObjects.Pop(); 
+            if(_poolSize > 0 && _pooledGameObjects.Count > 0){
+               spawnedGameObject = _pooledGameObjects.Dequeue(); 
                spawnedGameObject.gameObject.SetActive(true);
             }else{
                 spawnedGameObject = Instantiate(gameObjectToSpawn);
@@ -135,6 +136,7 @@
                 spawnedGameObject.transform.localPosition = Vector3.zero; //transform.localPosition;
             }
 
+            spawnedGameObject.transform.SetAsLastSibling();
             _spawnedGameObjects.Add(spawnedGameObject);
             OnSpawnEvent.Invoke(spawnedGameObject);
             return spawnedGameObject;
@@ -172,20 +174,22 @@
             PoolSize = poolSize;
             if (_pooledGameObjects != null)
             {
-                var newPooledGameObjects = new SizedStack<T>(_poolSize);
+                var newPooledGameObjects = new Queue<T>(_poolSize);
                 foreach (T pgo in _pooledGameObjects)
                 {
-                    if (newPooledGameObjects.IsFull()) break;
-                    newPooledGameObjects.Push(pgo);
+                    if (IsPoolFull()) break;
+                    newPooledGameObjects.Enqueue(pgo);
                 }
                 _pooledGameObjects = newPooledGameObjects;
             }
             else
             {
-                _pooledGameObjects = new SizedStack<T>(_poolSize);
+                _pooledGameObjects = new Queue<T>(_poolSize);
             }
         }
-
+        public bool IsPoolFull(){
+            return _pooledGameObjects.Count >= _poolSize;
+        }
         #region RSMonoBehaviour Functions
         public override bool Init(bool force = false)
         {

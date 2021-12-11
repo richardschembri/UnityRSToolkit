@@ -18,6 +18,7 @@ namespace RSToolkit.Character
             public float MaxSpeedHorizontal; // In meters/second
             public float JumpSpeed; // In meters/second
             public float JumpAbortSpeed; // In meters/second
+            public Vector3 BaseDirection; // For automatic movement
             public RSSettingsLocomotion(
                     float acceleration = 25.0f,
                     float decceleration = 25.0f,
@@ -31,7 +32,7 @@ namespace RSToolkit.Character
                 MaxSpeedHorizontal = maxSpeedHorizontal; // In meters/second
                 JumpSpeed = jumpSpeed; // In meters/second
                 JumpAbortSpeed = jumpAbortSpeed; // In meters/second
-
+                BaseDirection = Vector3.zero;
             }
         }
 
@@ -90,11 +91,11 @@ namespace RSToolkit.Character
         public class RSCharacterEvent :UnityEvent<RSCharacterController> {}
         public Animator AnimatorComponent {get; private set;}
 
-        public RSSettingsLocomotion SettingsLocomotion = new RSSettingsLocomotion( .0f, 25.0f, 8.0f, 10.0f, 10.0f);
-        public RSSettingsGravity SettingsGravity = new RSSettingsGravity( 20.0f, 5.0f, 40.0f );
-
         [SerializeField]
         protected RSPlayerInputManager _playerInputManager;
+
+        public RSSettingsLocomotion SettingsLocomotion = new RSSettingsLocomotion( .0f, 25.0f, 8.0f, 10.0f, 10.0f);
+        public RSSettingsGravity SettingsGravity = new RSSettingsGravity( 20.0f, 5.0f, 40.0f );
 
         public bool IsGrounded { get; protected set; }
         #region Current Speed Horizontal
@@ -114,6 +115,7 @@ namespace RSToolkit.Character
                 return MathHelpers.GetValuePercent(CurrentSpeedHorizontal, SettingsLocomotion.MaxSpeedHorizontal);
             }
         }
+
         #endregion Current Speed Horizontal
 
         public float CurrentSpeedVertical {
@@ -130,18 +132,10 @@ namespace RSToolkit.Character
         }
 
         #region Update Speed
-        public Vector3 DirectionAxis { get; protected set; }
+        public Vector3 DirectionAxis { get; protected set; } = Vector3.zero;
         protected virtual void UpdateHorizontalSpeed()
         {
-            if(_playerInputManager != null){
-                DirectionAxis = _playerInputManager.DirectionAxis;
-            }
-            if (DirectionAxis .sqrMagnitude > 1.0f)
-            {
-                DirectionAxis.Normalize();
-            }
-
-            _targetSpeedHorizontal = DirectionAxis.magnitude * SettingsLocomotion.MaxSpeedHorizontal;
+            _targetSpeedHorizontal = GetLocomotionDirection().magnitude * SettingsLocomotion.MaxSpeedHorizontal;
             float acceleration = _playerInputManager != null && _playerInputManager.HasDirectionInput ? SettingsLocomotion.Acceleration : SettingsLocomotion.Decceleration;
 
             CurrentSpeedHorizontal = Mathf.MoveTowards(CurrentSpeedHorizontal, _targetSpeedHorizontal, acceleration * Time.deltaTime);
@@ -182,15 +176,20 @@ namespace RSToolkit.Character
 
         }
 
+        protected virtual Vector3 GetPlayerInputDirectionAxis(){
+            return (Vector3)(_playerInputManager.HasDirectionInput ? _playerInputManager.DirectionAxis : _playerInputManager.LastDirectionAxis);
+        }
+
         protected Vector3 GetLocomotionDirection()
         {
-            Vector3 result = Vector3.zero;
+            Vector3 result = SettingsLocomotion.BaseDirection + DirectionAxis;
             if(_playerInputManager != null){
-                result = _playerInputManager.HasDirectionInput ? _playerInputManager.DirectionAxis : _playerInputManager.LastDirectionAxis;
-                if (result.sqrMagnitude > 1f)
-                {
-                    result.Normalize();
-                }
+                result = result + GetPlayerInputDirectionAxis();
+            }
+
+            if (result.sqrMagnitude > 1f)
+            {
+                result.Normalize();
             }
 
             return result;

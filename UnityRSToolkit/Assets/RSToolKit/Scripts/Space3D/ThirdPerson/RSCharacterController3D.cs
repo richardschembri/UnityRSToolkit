@@ -1,6 +1,4 @@
 using RSToolkit.Character;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace RSToolkit.Space3D.ThirdPerson
@@ -55,6 +53,11 @@ namespace RSToolkit.Space3D.ThirdPerson
             yawAngle %= 360.0f;
 
             _manualRotation = new Vector2(pitchAngle, yawAngle);
+        }
+
+        protected override Vector3 GetPlayerInputDirectionAxis()
+        {
+            return (_playerInputManager.HasDirectionInput ? _playerInputManager.DirectionAxis3D : _playerInputManager.LastDirectionAxis3D);
         }
 
         #region RSMonoBehaviour Functions

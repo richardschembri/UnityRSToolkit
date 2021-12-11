@@ -8,7 +8,9 @@ namespace RSToolkit
     {
         public Vector2 _directionAxis; 
         public Vector2 DirectionAxis { get { return _directionAxis; } }
+        public Vector3 DirectionAxis3D { get { return new Vector3(_directionAxis.x, 0f, _directionAxis.y); } }
         public Vector2 LastDirectionAxis { get; private set; } = Vector2.zero;
+        public Vector3 LastDirectionAxis3D { get { return new Vector3(LastDirectionAxis.x, 0f, LastDirectionAxis.y); } }
 
         public Vector2 MouseInputAxis { get; private set; }
 
