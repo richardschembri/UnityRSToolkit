@@ -19,6 +19,7 @@ namespace RSToolkit{
         const string RS_SUBPATH_GENERAL = "General"; 
         const string RS_SUBPATH_SPACE2D = "Space2D"; 
         const string RS_SUBPATH_SPACE3D = "Space3D"; 
+        const string RS_SUBPATH_GAME = "Game"; 
         const string RS_SUBPATH_AI = "AI"; 
         const string RS_SUBPATH_CHARACTER = "Character"; 
         const string RS_SUBPATH_UI = "UI"; 
@@ -161,6 +162,28 @@ namespace RSToolkit{
                     GetPackageName("navmeshvisualizer"),
                     ExportPackageOptions.Recurse);
             DebugLogExportEnd("NavMeshVisualizer");
+        }
+
+
+
+        [UnityEditor.MenuItem("Tools/RSToolkit/Export Package/Game/EndlessRunner")]
+        public static void ExportEndlessRunner(){
+            DebugLogExportStart("Endless Runner");
+
+            var toExportPaths_Spawner = GetFileList_Spawner();
+            var toExportPaths  = new string[]{
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/Helpers/RandomHelpers.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/RSMonoBehaviour.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/RSPlayerInputManager.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_CHARACTER)}",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GAME)}/EndlessRunner",
+            };
+            AssetDatabase.ExportPackage(
+                    toExportPaths.Concat(toExportPaths_Spawner).ToArray(),
+                    GetPackageName("endlessrunner"),
+                    ExportPackageOptions.Recurse);
+
+            DebugLogExportEnd("Endless Runner");
         }
     
         [UnityEditor.MenuItem("Tools/RSToolkit/Export Package/AI/Bot")]

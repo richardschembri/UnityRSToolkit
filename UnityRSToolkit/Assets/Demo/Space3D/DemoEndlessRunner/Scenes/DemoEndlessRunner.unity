@@ -180,9 +180,8 @@ MonoBehaviour:
   SpawnParent: {fileID: 0}
   _poolSize: 1
   CollectChildrenAlreadyInScene: 1
-  GameObjectToSpawn: {fileID: 3285316689484526308, guid: 00ceebfca7de5665a910821487e40f8c,
-    type: 3}
-  _preSpawnCount: -1
+  GameObjectsToSpawn:
+  - {fileID: 3285316689484526308, guid: 00ceebfca7de5665a910821487e40f8c, type: 3}
 --- !u!1 &715945839
 GameObject:
   m_ObjectHideFlags: 0
@@ -311,7 +310,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 715945839}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.49, y: 4.326951, z: -8.33}
+  m_LocalPosition: {x: 0.49, y: 8.1, z: 11.45}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 884516962}
@@ -468,12 +467,12 @@ PrefabInstance:
     - target: {fileID: 7822085019024255342, guid: 00ceebfca7de5665a910821487e40f8c,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -7.2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7822085019024255342, guid: 00ceebfca7de5665a910821487e40f8c,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 11.5
+      value: 20.25
       objectReference: {fileID: 0}
     - target: {fileID: 7822085019024255342, guid: 00ceebfca7de5665a910821487e40f8c,
         type: 3}
@@ -559,12 +558,12 @@ PrefabInstance:
     - target: {fileID: 7822085019024255342, guid: 00ceebfca7de5665a910821487e40f8c,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -7.2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7822085019024255342, guid: 00ceebfca7de5665a910821487e40f8c,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -8.701624
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7822085019024255342, guid: 00ceebfca7de5665a910821487e40f8c,
         type: 3}

@@ -1,7 +1,6 @@
-using RSToolkit.Character;
 using UnityEngine;
 
-namespace RSToolkit.Space3D.ThirdPerson
+namespace RSToolkit.Character
 {
     [RequireComponent(typeof(CharacterController))]
     public class RSCharacterController3D : RSCharacterController

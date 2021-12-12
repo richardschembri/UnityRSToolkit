@@ -1,14 +1,18 @@
-﻿namespace RSToolkit.UI.Controls
+﻿// Partially sourced from https://github.com/setchi/FancyScrollView
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using UnityEngine.Events;
+using RSToolkit.Helpers;
+using RSToolkit.Animation.Tween.Helpers;
+using RSToolkit.Controls;
+using System.Linq;
+using System;
+
+namespace RSToolkit.UI.Controls
 {
-    using System.Collections;
-    using System.Collections.Generic;
-    using UnityEngine;
-    using UnityEngine.EventSystems;
-    using UnityEngine.UI;
-    using UnityEngine.Events;
-    using RSToolkit.Helpers;
-    using RSToolkit.Controls;
-    using System.Linq;
 
     [RequireComponent(typeof(ScrollRect))]
     public class UIListBox<T> : Spawner<T> where T : MonoBehaviour
@@ -18,6 +22,42 @@
         }
         ManualScroll _manualScroll = ManualScroll.NONE;
 
+        struct Snap{
+            public bool Enable;
+            public float VelocityTreshold;
+            public float Duration;
+            public EaseHelpers.EEaseType EaseType;
+        }
+
+        static readonly EaseHelpers.EasingFunction DefaultEasingFunction = EaseHelpers.Get(EaseHelpers.EEaseType.OutCubic);
+        class AutoScrollState
+        {
+            public bool Enable {get; set;}
+            public bool Elastic {get; set;}
+            public float Duration{get; set;}
+            public EaseHelpers.EasingFunction EasingFunction{get; set;}
+            public float StartTime{get; set;}
+            public float EndPosition{get; set;}
+
+            public Action OnComplete;
+
+            public void Reset()
+            {
+                Enable = false;
+                Elastic = false;
+                Duration = 0f;
+                StartTime = 0f;
+                EasingFunction = DefaultEasingFunction;
+                EndPosition = 0f;
+                OnComplete = null;
+            }
+
+            public void Complete()
+            {
+                OnComplete?.Invoke();
+                Reset();
+            }
+        }
         private bool _initDelayedCullingComplete = false;
 
         bool m_CullingOn = false;
@@ -58,6 +98,7 @@
            }
        } 
 
+       private readonly AutoScrollState _autoScrollState = new AutoScrollState();
 
        public class OnShiftMostHorizontalEvent : UnityEvent<RectTransform, RectTransformHelpers.HorizontalPosition>{}
        [Header("Infinite Scroll Events")]
@@ -106,7 +147,7 @@
 
         protected override void InitEvents()
         {
-            ScrollRectComponent.onValueChanged.AddListener(m_onValueChanged);
+            ScrollRectComponent.onValueChanged.AddListener(_onValueChanged);
         }
 
         #endregion RSMonoBehaviour Functions
@@ -155,7 +196,7 @@
         }
         #endregion MonoBehaviour Functions
 
-       void m_onValueChanged(Vector2 value){
+       void _onValueChanged(Vector2 value){
             ViewportOcclusionCulling();
             if (_manualScroll == ManualScroll.NONE){
                 InfiniteVerticalScroll(ScrollRectComponent.velocity.y < 0);
@@ -280,6 +321,11 @@
        }
 
        #endregion Shift List
+
+        #region Scroll To
+
+        #endregion Scroll To
+
 
        private RectTransformHelpers.RectTransformPosition GetPositionWithinViewPort(RectTransform toplace, float padding){
             return ScrollRectComponent.viewport.PositionWithinBounds(toplace, new Vector2(0, padding), Vector2.zero); 

@@ -1,8 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
-using RSToolkit;
 
-namespace Demo.Space3D.EndlessRunner{
+namespace RSToolkit.Game.EndlessRunner{
     public class InnerColliderTrackSegment : RSMonoBehaviour
     {
         public TrackSegment ParentTrackSegment { get; private set; }

@@ -1,10 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using RSToolkit.Controls;
+using RSToolkit.Helpers;
 
-namespace Demo.Space3D.EndlessRunner{
-    public class SpawnerTrackSegment : Spawner<TrackSegment>
+namespace RSToolkit.Game.EndlessRunner{
+    public class SpawnerTrackSegment : MultiSpawner<TrackSegment>
     {
         private BoxCollider _pathCollider;
         private Vector3 _spawnPosition;
@@ -17,9 +16,13 @@ namespace Demo.Space3D.EndlessRunner{
         private void OnSpawnEvent_Listener(TrackSegment spawn){
             InitTrackSegment(spawn);
         }
+
+        protected virtual int GetNextSegmentIndex(){
+            return RandomHelpers.RandomInt(GameObjectsToSpawn.Length);
+        }
         private void OnTrackSegmentTriggerEnter_Listener(TrackSegment target)
         {
-            SpawnAndGetGameObject(true, true);
+            SpawnAndGetGameObject(GetNextSegmentIndex(), true, true);
         }
 
         private void InitTrackSegment(TrackSegment target){
