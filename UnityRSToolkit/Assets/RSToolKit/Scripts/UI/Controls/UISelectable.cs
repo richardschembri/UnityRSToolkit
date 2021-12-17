@@ -46,25 +46,30 @@ namespace RSToolkit.UI.Controls
             return true;
         }
 
+        private void SelectNav(Selectable nav)
+        {
+            if(nav == null)
+            {
+                return;
+            }
+            var target = nav.GetComponent<UISelectable>();
+            target?.Select();
+        }
         public void SelectLeft()
         {
-            var target = SelectableComponent.navigation.selectOnLeft.GetComponent<UISelectable>();
-            target?.Select();
+            SelectNav(SelectableComponent.navigation.selectOnLeft);
         }
         public void SelectRight()
         {
-            var target = SelectableComponent.navigation.selectOnRight.GetComponent<UISelectable>();
-            target?.Select();
+            SelectNav(SelectableComponent.navigation.selectOnRight);
         }
         public void SelectUp()
         {
-            var target = SelectableComponent.navigation.selectOnUp.GetComponent<UISelectable>();
-            target?.Select();
+            SelectNav(SelectableComponent.navigation.selectOnUp);
         }
         public void SelectDown()
         {
-            var target = SelectableComponent.navigation.selectOnDown.GetComponent<UISelectable>();
-            target?.Select();
+            SelectNav(SelectableComponent.navigation.selectOnDown);
         }
 
     }
