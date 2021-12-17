@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace RSToolkit.UI.Controls
 {
-    public class UISelectable : MonoBehaviour, ISelectHandler, IDeselectHandler
+    public class UISelectable : RSMonoBehaviour, ISelectHandler, IDeselectHandler
     {
         public bool IsSelected { get; private set; } = false;
 
@@ -33,6 +33,38 @@ namespace RSToolkit.UI.Controls
         {
             IsSelected = true;
             OnSelected.Invoke(this);
+        }
+
+        public bool Select()
+        {
+            if (EventSystem.current.alreadySelecting)
+            {
+                return false;
+            }
+            EventSystem.current.SetSelectedGameObject(null, new BaseEventData(EventSystem.current));
+            EventSystem.current.SetSelectedGameObject(gameObject, new BaseEventData(EventSystem.current));
+            return true;
+        }
+
+        public void SelectLeft()
+        {
+            var target = SelectableComponent.navigation.selectOnLeft.GetComponent<UISelectable>();
+            target?.Select();
+        }
+        public void SelectRight()
+        {
+            var target = SelectableComponent.navigation.selectOnRight.GetComponent<UISelectable>();
+            target?.Select();
+        }
+        public void SelectUp()
+        {
+            var target = SelectableComponent.navigation.selectOnUp.GetComponent<UISelectable>();
+            target?.Select();
+        }
+        public void SelectDown()
+        {
+            var target = SelectableComponent.navigation.selectOnDown.GetComponent<UISelectable>();
+            target?.Select();
         }
 
     }

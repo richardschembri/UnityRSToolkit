@@ -15,8 +15,15 @@ namespace RSToolkit.UI.Controls
 
         public GameObject[] ControlsToHide;
         public UIPopup[] HigherPriorityPopups;
-        public float PopupTimeoutSeconds = -1f;
+
+        [SerializeField]
+        private float _popupTimeoutSeconds = -1f;
+        public float PopupTimeoutSeconds { get => _popupTimeoutSeconds; set => _popupTimeoutSeconds = value; }
         private float _popupEndTime = 0f;
+
+        [SerializeField]
+        private bool _allowResetPopupTimeout = true;
+        public bool AllowResetPopupTimeout { get => _allowResetPopupTimeout; set => _allowResetPopupTimeout = value; }
 
         public class OnOpenPopupEvent : UnityEvent<UIPopup, bool> { }
         public class OnClosePopupEvent : UnityEvent<UIPopup> { }
@@ -149,8 +156,10 @@ namespace RSToolkit.UI.Controls
         }
         void IDragHandler.OnDrag(PointerEventData eventData)
         {
-
-            ResetTimeoutTime();
+            if (AllowResetPopupTimeout)
+            {
+                ResetTimeoutTime();
+            }
             if (!Draggable)
             {
                 return;
@@ -171,7 +180,10 @@ namespace RSToolkit.UI.Controls
 
         void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
         {
-            ResetTimeoutTime();
+            if (AllowResetPopupTimeout)
+            {
+                ResetTimeoutTime();
+            }
             this.transform.SetAsLastSibling();
         }
 

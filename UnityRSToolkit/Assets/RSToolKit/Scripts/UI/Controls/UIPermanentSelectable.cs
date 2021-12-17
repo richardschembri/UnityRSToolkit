@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace RSToolkit.UI.Controls
@@ -10,11 +9,54 @@ namespace RSToolkit.UI.Controls
     public class UIPermanentSelectable : RSMonoBehaviour
     {
         public UISelectable[] UISelectableComponents { get; private set; }
+        public UISelectable LastSelection { get; private set; } = null;
         public UISelectable CurrentSelection { get; private set; } = null;
+
+        public UISelectable.OnSelectedEvent OnCurrentSelectionChanged = new UISelectable.OnSelectedEvent();
+
+        [SerializeField]
+        private UIPermanentSelectableGroup _group;
+        private UIPermanentSelectableGroup Group
+        {
+            get
+            {
+                return _group;
+            }
+            set
+            {
+                _group = value;
+                SetGroup(_group, true);
+            }
+        }
+
+        public bool HasSelected { get => CurrentSelection != null && CurrentSelection.IsSelected; }
+
+        void OnDisable()
+        {
+            SetGroup(null, false);
+        }
+        void OnEnable()
+        {
+            SetGroup(_group, false);
+        }
+
+        private void SetGroup(UIPermanentSelectableGroup newGroup, bool setMemberValue)
+        {
+            if (_group != null)
+                _group.UnRegisterUIPermanentSelectable(this);
+
+            if (setMemberValue)
+                _group = newGroup;
+
+            if (newGroup != null && isActiveAndEnabled)
+                newGroup.RegisterUIPermanentSelectable(this);
+                
+        }
 
         private void GatherUISelectables()
         {
             UISelectableComponents = GetComponentsInChildren<UISelectable>(true);
+            LastSelection = null;
             CurrentSelection = UISelectableComponents.FirstOrDefault(s => s.IsSelected);
         }
 
@@ -34,7 +76,9 @@ namespace RSToolkit.UI.Controls
         }
         private void UISelectableComponentsOnSelected_Listener(UISelectable uiSelectable )
         {
+            LastSelection = CurrentSelection;
             CurrentSelection = uiSelectable;
+            OnCurrentSelectionChanged.Invoke(CurrentSelection);
         }
 
         private Navigation GetNewExplicitNav()
@@ -55,7 +99,7 @@ namespace RSToolkit.UI.Controls
             return nav;
         }
 
-        public bool SetSequentialNavigation()
+        public bool SetSequentialNavigationVertical()
         {
             Navigation nav;
             if (UISelectableComponents.Length <= 0)
@@ -79,11 +123,114 @@ namespace RSToolkit.UI.Controls
             return true;
         }
 
+        private bool Contains(UISelectable target)
+        {
+           if(_group != null)
+            {
+                return _group.Contains(target);
+            }
+
+            return UISelectableComponents.Contains(target);
+        }
+
+        #region SelectOn
+
+        private bool CannotSelectOn(UISelectable uiselectable)
+        {
+            return uiselectable != null && !Contains(uiselectable);
+        }
+
+        public bool SetSelectOnLeft(UISelectable uiselectable)
+        {
+            if (CannotSelectOn(uiselectable))
+            {
+                return false;
+            }
+
+            for (int i = 0; i < UISelectableComponents.Length; i++)
+            {
+                var nav = UISelectableComponents[i].SelectableComponent.navigation;
+                nav.selectOnLeft = null;
+                if(uiselectable != null)
+                {
+                    nav.selectOnLeft = uiselectable.SelectableComponent;
+                }
+                UISelectableComponents[i].SelectableComponent.navigation = nav;
+            }
+
+            return true;
+        }
+        public bool SetSelectOnRight(UISelectable uiselectable)
+        {
+            if (CannotSelectOn(uiselectable))
+            {
+                return false;
+            }
+
+            for (int i = 0; i < UISelectableComponents.Length; i++)
+            {
+                var nav = UISelectableComponents[i].SelectableComponent.navigation;
+                if (uiselectable != null)
+                {
+                    nav.selectOnRight = uiselectable.SelectableComponent;
+                }
+                UISelectableComponents[i].SelectableComponent.navigation = nav;
+            }
+
+            return true;
+        }
+        public bool SetSelectOnUp(UISelectable uiselectable)
+        {
+            if (CannotSelectOn(uiselectable))
+            {
+                return false;
+            }
+
+            for (int i = 0; i < UISelectableComponents.Length; i++)
+            {
+                var nav = UISelectableComponents[i].SelectableComponent.navigation;
+                if (uiselectable != null)
+                {
+                    nav.selectOnUp = uiselectable.SelectableComponent;
+                }
+                UISelectableComponents[i].SelectableComponent.navigation = nav;
+            }
+
+            return true;
+        }
+
+        public bool SetSelectOnDown(UISelectable uiselectable)
+        {
+            if (CannotSelectOn(uiselectable))
+            {
+                return false;
+            }
+
+            for (int i = 0; i < UISelectableComponents.Length; i++)
+            {
+                var nav = UISelectableComponents[i].SelectableComponent.navigation;
+                if (uiselectable != null)
+                {
+                    nav.selectOnDown = uiselectable.SelectableComponent;
+                }
+                UISelectableComponents[i].SelectableComponent.navigation = nav;
+            }
+
+            return true;
+        }
+
+        #endregion SelectOn
+
         void LateUpdate()
         {
-            if (CurrentSelection != null && !CurrentSelection.IsSelected)
+            if(Group != null && Group.CurrentSelection != null && Group.CurrentSelection.IsSelected)
             {
-                EventSystem.current.SetSelectedGameObject(CurrentSelection.gameObject, new BaseEventData(EventSystem.current));
+                return;
+            }
+            if (CurrentSelection != null && !CurrentSelection.IsSelected
+                && (Group == null || Group.CurrentSelection == CurrentSelection))
+            {
+                CurrentSelection.Select();
             }
         }
 

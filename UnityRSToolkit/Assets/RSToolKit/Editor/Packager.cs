@@ -122,7 +122,8 @@ namespace RSToolkit{
             var toExportPaths  = new string[]{
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_GENERAL)}/RSMonoBehaviour.cs",
                 $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_UI) }/Controls/UISelectable.cs",
-                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_UI)}/Controls/UIPermanentSelectable.cs"
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_UI)}/Controls/UIPermanentSelectable.cs",
+                $"{GetPath(PATH_TYPE.SCRIPTS, RS_SUBPATH_UI)}/Controls/UIPermanentSelectableGroup.cs"
             };
             AssetDatabase.ExportPackage(
                     //toExportPaths,
