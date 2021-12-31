@@ -81,7 +81,7 @@ namespace RSToolkit.UI.Controls
             OnCurrentSelectionChanged.Invoke(CurrentSelection);
         }
 
-        private Navigation GetNewExplicitNav()
+        private static Navigation GetNewExplicitNav()
         {
             Navigation nav = new Navigation();
             nav.mode = Navigation.Mode.Explicit;
@@ -99,35 +99,68 @@ namespace RSToolkit.UI.Controls
             return nav;
         }
 
-        public bool SetSequentialNavigationVertical()
+        public static bool SetSequentialNavigationVertical(UISelectable[] uiSelectableComponents)
         {
             Navigation nav;
-            if (UISelectableComponents.Length <= 0)
+            if (uiSelectableComponents.Length <= 0)
             {
                 return false;
             }
-            for (int i = 0; i < UISelectableComponents.Length; i++)
+            for (int i = 0; i < uiSelectableComponents.Length; i++)
             {
 
                 nav = GetNewExplicitNav();
                 if (i > 0)
                 {
-                    nav.selectOnUp = UISelectableComponents[i - 1].SelectableComponent;
+                    nav.selectOnUp = uiSelectableComponents[i - 1].SelectableComponent;
                 }
-                if (i < UISelectableComponents.Length - 1)
+                if (i < uiSelectableComponents.Length - 1)
                 {
-                    nav.selectOnDown = UISelectableComponents[i + 1].SelectableComponent;
+                    nav.selectOnDown = uiSelectableComponents[i + 1].SelectableComponent;
                 }
-                UISelectableComponents[i].SelectableComponent.navigation = nav;
+                uiSelectableComponents[i].SelectableComponent.navigation = nav;
             }
             return true;
         }
 
+        public bool SetSequentialNavigationVertical()
+        {
+            return SetSequentialNavigationVertical(UISelectableComponents);
+        }
+        public static bool SetSequentialNavigationHorizontal(UISelectable[] uiSelectableComponents)
+        {
+            Navigation nav;
+            if (uiSelectableComponents.Length <= 0)
+            {
+                return false;
+            }
+            for (int i = 0; i < uiSelectableComponents.Length; i++)
+            {
+
+                nav = GetNewExplicitNav();
+                if (i > 0)
+                {
+                    nav.selectOnLeft = uiSelectableComponents[i - 1].SelectableComponent;
+                }
+                if (i < uiSelectableComponents.Length - 1)
+                {
+                    nav.selectOnRight = uiSelectableComponents[i + 1].SelectableComponent;
+                }
+                uiSelectableComponents[i].SelectableComponent.navigation = nav;
+            }
+            return true;
+        }
+
+        public bool SetSequentialNavigationHorizontal()
+        {
+            return SetSequentialNavigationHorizontal(UISelectableComponents);
+        }
+
         private bool Contains(UISelectable target)
         {
-           if(_group != null)
+           if(Group != null)
             {
-                return _group.Contains(target);
+                return Group.Contains(target);
             }
 
             return UISelectableComponents.Contains(target);

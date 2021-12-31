@@ -1,8 +1,8 @@
-﻿namespace RSToolkit.Helpers
-{
-    using System;
-    using System.Globalization;
+﻿using System;
+using System.Globalization;
 
+namespace RSToolkit.Helpers
+{
     public static class DateTimeHelpers
     {
     
@@ -51,6 +51,17 @@
         }
         public static bool IsSameDate(this DateTime value, DateTime compareTo){
             return value.Day == compareTo.Day && value.IsSameYearMonth(compareTo);
+        }
+
+        public static bool IsSameWeek(this DateTime value, DateTime compareTo)
+        {
+            return value.IsSameWeek(compareTo, m_JaJp);        }
+
+
+        public static bool IsSameWeek(this DateTime value, DateTime compareTo, CultureInfo ci)
+        {
+            return ci.Calendar.GetWeekOfYear(value, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek)
+                    == ci.Calendar.GetWeekOfYear(compareTo, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek);
         }
         
         private static JapaneseCalendar m_jc = new JapaneseCalendar();

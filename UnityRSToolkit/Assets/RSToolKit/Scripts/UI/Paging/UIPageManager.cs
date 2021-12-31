@@ -15,7 +15,7 @@ namespace RSToolkit.UI.Paging
         [SerializeField]
         private bool _isSingleton = true;
         public bool IsSingleton {get{return _isSingleton;}}
-        public UIPageManagerCore Core {get; private set;}
+        public UIPageManagerCore Core {get; protected set;}
 
         public static UIPageManager Instance { get; protected set; }
 
@@ -86,11 +86,16 @@ namespace RSToolkit.UI.Paging
 
 
         #region RSMonoBehaviour Functions
+
+        protected virtual void InitCore()
+        {
+            Core = new UIPageManagerCore(CollectPages());
+        }
         public override bool Init(bool force = false)
         {
             if (base.Init(force))
             {
-                Core = new UIPageManagerCore(CollectPages());
+                InitCore();
                 return true;
             }
             return false;

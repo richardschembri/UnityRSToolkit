@@ -1,12 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace RSToolkit.UI.Paging
 {
-    [RequireComponent(typeof(Toggle))]
     public class UIPageMenuButton : RSMonoBehaviour, IPointerClickHandler, ISubmitHandler
     {
         public UIPage TargetPage;
@@ -15,31 +12,24 @@ namespace RSToolkit.UI.Paging
         public bool HideBackgroundOnToggle = false;
         public bool AllowRenavigate = false;
 
+        [SerializeField]
         private Toggle _toggleComponent;
+        public Toggle ToggleComponent { get => _toggleComponent; private set => _toggleComponent = value; }
 
-        public Toggle ToggleComponent
-        {
-            get
-            {
-                if(_toggleComponent == null)
-                {
-                    _toggleComponent = GetComponent<Toggle>();
-                }
-                return _toggleComponent;
-            }
-        }
-
+        [SerializeField]
         private Text _textComponent;
 
-        private Text _TextComponent
+        protected override void InitComponents()
         {
-            get
+            base.InitComponents();
+
+            if(_toggleComponent == null)
             {
-                if(_textComponent == null)
-                {
-                    _textComponent = GetComponentInChildren<Text>(true);
-                }
-                return _textComponent;
+                ToggleComponent = GetComponent<Toggle>();
+            }
+            if(_textComponent == null)
+            {
+                _textComponent = GetComponentInChildren<Text>(true);
             }
         }
 
@@ -64,6 +54,11 @@ namespace RSToolkit.UI.Paging
             }
         }
 
+        protected void RenavigateToTargetPage()
+        {
+            if (_isSamePage && AllowRenavigate)
+                TargetPage.NavigateTo(KeepCacheOnNavigate);
+        }
         /// <summary>
         /// React to clicks.
         /// </summary>
@@ -72,24 +67,22 @@ namespace RSToolkit.UI.Paging
             if (eventData.button != PointerEventData.InputButton.Left)
                 return;
 
-            if (_isSamePage && AllowRenavigate)
-                TargetPage.NavigateTo(KeepCacheOnNavigate);
+            RenavigateToTargetPage();
         }
 
         public virtual void OnSubmit(BaseEventData eventData)
         {
-            if (_isSamePage && AllowRenavigate)
-                TargetPage.NavigateTo(KeepCacheOnNavigate);
+            RenavigateToTargetPage();
         }
 
         public bool TrySetText(string text)
         {
-            if (_TextComponent == null)
+            if (_textComponent == null)
             {
                 return false;
             }
 
-            _TextComponent.text = text;
+            _textComponent.text = text;
             return true;
         }
 

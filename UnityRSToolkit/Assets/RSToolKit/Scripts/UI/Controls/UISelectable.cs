@@ -5,13 +5,17 @@ using UnityEngine.UI;
 
 namespace RSToolkit.UI.Controls
 {
-    public class UISelectable : RSMonoBehaviour, ISelectHandler, IDeselectHandler
+    public class UISelectable : RSMonoBehaviour, ISelectHandler, IDeselectHandler,
+                                                    IPointerEnterHandler, IPointerExitHandler
     {
-        public bool IsSelected { get; private set; } = false;
+        //public bool IsSelected { get; private set; } = false;
+        public bool IsSelected { get {return EventSystem.current.currentSelectedGameObject == SelectableComponent.gameObject; } } // = false;
+        public bool IsPointerInside { get; private set; } = false;
 
         public class OnSelectedEvent : UnityEvent<UISelectable> { }
         public OnSelectedEvent OnSelected = new OnSelectedEvent();
-        public Selectable _selectableComponent;
+        [SerializeField]
+        private Selectable _selectableComponent;
         public Selectable SelectableComponent {
             get
             {
@@ -25,13 +29,13 @@ namespace RSToolkit.UI.Controls
 
         public void OnDeselect(BaseEventData eventData)
         {
-            IsSelected = false;
+            // IsSelected = false;
         }
 
 
         public void OnSelect(BaseEventData eventData)
         {
-            IsSelected = true;
+            // IsSelected = true;
             OnSelected.Invoke(this);
         }
 
@@ -42,7 +46,7 @@ namespace RSToolkit.UI.Controls
                 return false;
             }
             EventSystem.current.SetSelectedGameObject(null, new BaseEventData(EventSystem.current));
-            EventSystem.current.SetSelectedGameObject(gameObject, new BaseEventData(EventSystem.current));
+            EventSystem.current.SetSelectedGameObject(SelectableComponent.gameObject, new BaseEventData(EventSystem.current));
             return true;
         }
 
@@ -72,5 +76,14 @@ namespace RSToolkit.UI.Controls
             SelectNav(SelectableComponent.navigation.selectOnDown);
         }
 
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            IsPointerInside = true;
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            IsPointerInside = false;
+        }
     }
 }

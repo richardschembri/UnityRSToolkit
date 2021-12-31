@@ -81,7 +81,10 @@ namespace RSToolkit.UI.Paging
             if (CurrentPage != null && CurrentPage.OnNavigatedFrom != null)
             {
                 PreviousPage = CurrentPage;
-                CurrentPage.OnNavigatedFrom.Invoke(CurrentPage);
+                if (Application.isPlaying)
+                {
+                    CurrentPage.OnNavigatedFrom.Invoke(CurrentPage);
+                }
             }
             NavigationHistory.Push(CurrentPage, true);
 
@@ -90,7 +93,10 @@ namespace RSToolkit.UI.Paging
 
             page.gameObject.SetActive(true);
 
-            CurrentPage.OnNavigatedTo.Invoke(CurrentPage, keepCache);
+            if (Application.isPlaying)
+            {
+                CurrentPage.OnNavigatedTo.Invoke(CurrentPage, keepCache);
+            }
 
         }
 

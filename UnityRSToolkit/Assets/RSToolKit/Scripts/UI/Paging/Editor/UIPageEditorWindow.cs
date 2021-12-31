@@ -24,12 +24,13 @@
                     for(int i = 0; i < _displayPageIndexes.Length; i++){
                         _displayPageIndexes[i] = 0;
                     }
-                Debug.Log($"asdadasdsad: {_displayPageIndexes.Length}");
                 }
                     
                 return _pageManagers;
             }
         }
+
+        Vector2 _scrollPos;
 
         [MenuItem("Tools/RSToolkit/UI Page Editor Window")]
         public static void Init()
@@ -45,12 +46,12 @@
             if(_PageManagers == null){
                 return;
             }
-            for(int pmi = 0; pmi < _PageManagers.Length; pmi++){
+            _scrollPos = EditorGUILayout.BeginScrollView(_scrollPos, GUILayout.ExpandHeight(true));
+            for (int pmi = 0; pmi < _PageManagers.Length; pmi++){
                 if(_PageManagers[pmi] == null){
                     _pageManagers = null;
                     break;
                 }
-                Debug.Log($"Idndeded: {_displayPageIndexes.Length}");
                 if (!_PageManagers[pmi].Initialized ) _PageManagers[pmi].Init();
                 if (_PageManagers[pmi].Core == null ) _PageManagers[pmi].Init(true);
 
@@ -79,6 +80,7 @@
                 }
                 GUILayout.Space(10);
             }
+            EditorGUILayout.EndScrollView();
         }
 
         private void OnGUI()
